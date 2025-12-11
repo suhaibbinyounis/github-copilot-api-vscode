@@ -1,0 +1,188 @@
+{
+  "name": "github-copilot-api-vscode",
+  "displayName": "GitHub Copilot API Gateway",
+  "description": "Expose GitHub Copilot as a local OpenAI-compatible API server. Use any OpenAI SDK, curl, or HTTP client to access Copilot's language models.",
+  "version": "0.0.1",
+  "author": {
+    "name": "Suhaib Bin Younis",
+    "email": "vscode@suhaib.in",
+    "url": "https://suhaib.in"
+  },
+  "publisher": "suhaibbinyounis",
+  "homepage": "https://suhaibbinyounis.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suhaibbinyounis/github-copilot-api-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/suhaibbinyounis/github-copilot-api-vscode/issues",
+    "email": "vscode@suhaib.in"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.107.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "dependencies": {
+    "swagger": "^0.7.5",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.107.0",
+    "@types/ws": "^8.18.1",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.27.1",
+    "eslint": "^9.39.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.1"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "github-copilot-api-vscode.openCopilotChat",
+        "title": "Copilot Chat: Open Chat",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.askCopilot",
+        "title": "Copilot Chat: Ask Copilot",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.askSelectionWithCopilot",
+        "title": "Copilot Chat: Ask About Selection",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.showServerControls",
+        "title": "Copilot API: Controls",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.openDashboard",
+        "title": "Copilot API: Open Dashboard",
+        "category": "GitHub Copilot"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "github-copilot-api-vscode.askSelectionWithCopilot",
+          "group": "navigation@50",
+          "when": "editorHasSelection"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "copilot-api-sidebar",
+          "title": "Copilot API",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "copilot-api-sidebar": [
+        {
+          "type": "webview",
+          "id": "copilotApiControls",
+          "name": "Controls"
+        }
+      ]
+    },
+    "configuration": {
+      "id": "githubCopilotApi",
+      "title": "GitHub Copilot API Server",
+      "type": "object",
+      "properties": {
+        "githubCopilotApi.server.host": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "Host interface used by the local Copilot-compatible HTTP server."
+        },
+        "githubCopilotApi.server.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable the Copilot API server."
+        },
+        "githubCopilotApi.server.enableHttp": {
+          "type": "boolean",
+          "default": true,
+          "description": "Expose HTTP endpoints such as /v1/chat/completions."
+        },
+        "githubCopilotApi.server.enableWebSocket": {
+          "type": "boolean",
+          "default": true,
+          "description": "Expose the WebSocket realtime endpoint at /v1/realtime."
+        },
+        "githubCopilotApi.server.port": {
+          "type": "number",
+          "default": 3030,
+          "description": "Port used by the local Copilot-compatible HTTP server."
+        },
+        "githubCopilotApi.server.maxConcurrentRequests": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "description": "Maximum number of concurrent Copilot requests processed by the local API gateway."
+        },
+        "githubCopilotApi.server.defaultModel": {
+          "type": "string",
+          "default": "gpt-4o-copilot",
+          "description": "Default model identifier exposed by the OpenAI-compatible endpoints."
+        },
+        "githubCopilotApi.server.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Optional API key for authentication. Leave empty to disable authentication. Clients must provide this as a Bearer token."
+        },
+        "githubCopilotApi.server.enableLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable request/response logging to the output channel for debugging."
+        },
+        "githubCopilotApi.server.rateLimitPerMinute": {
+          "type": "number",
+          "default": 60,
+          "minimum": 0,
+          "description": "Maximum number of requests per minute. Set to 0 to disable rate limiting."
+        },
+        "githubCopilotApi.server.defaultSystemPrompt": {
+          "type": "string",
+          "default": "",
+          "description": "Default system prompt to inject if none is provided in the request."
+        },
+        "githubCopilotApi.server.redactionPatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Regex patterns to redact sensitive information from request history. Each pattern is applied globally and case-insensitively."
+        }
+      }
+    }
+  }
+}
