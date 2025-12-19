@@ -4,7 +4,7 @@
 
 Turn your VS Code Copilot subscription into a local, OpenAI-compatible AI server. Now with native support for **Anthropic** and **Google** clients.
 
-[![VS Code](https://img.shields.io/badge/VS%20Code-1.107.0+-007ACC?logo=visual-studio-code)](https://code.visualstudio.com/)
+[![VS Code](https://img.shields.io/badge/VS%20Code-1.99.0+-007ACC?logo=visual-studio-code)](https://code.visualstudio.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-412991?logo=openai)](https://platform.openai.com/docs/api-reference)
 
