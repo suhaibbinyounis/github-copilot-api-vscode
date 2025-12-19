@@ -2,7 +2,7 @@
   "name": "github-copilot-api-vscode",
   "displayName": "GitHub Copilot API Gateway",
   "description": "Expose GitHub Copilot as a local OpenAI-compatible API server. Use any OpenAI SDK, curl, or HTTP client to access Copilot's language models.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
