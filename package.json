@@ -3,7 +3,7 @@
   "displayName": "GitHub Copilot API Gateway",
   "description": "Expose GitHub Copilot as a local OpenAI-compatible API server. Use any OpenAI SDK, curl, or HTTP client to access Copilot's language models.",
   "icon": "media/icon.png",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
@@ -26,6 +26,9 @@
   "categories": [
     "Other"
   ],
+  "activationEvents": [
+    "onUri"
+  ],
   "main": "./dist/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -43,6 +46,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.1",
+    "selfsigned": "^5.2.0",
     "swagger-ui-dist": "^5.31.0",
     "ws": "^8.18.3"
   },
@@ -84,6 +88,11 @@
       {
         "command": "github-copilot-api-vscode.openDashboard",
         "title": "Copilot API: Open Dashboard",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.createDesktopShortcut",
+        "title": "Copilot API: Create Desktop Shortcut",
         "category": "GitHub Copilot"
       }
     ],
@@ -138,6 +147,21 @@
           "type": "boolean",
           "default": true,
           "description": "Expose the WebSocket realtime endpoint at /v1/realtime."
+        },
+        "githubCopilotApi.server.enableHttps": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable HTTPS/TLS encryption for the API server. Auto-generates a self-signed certificate if no certificate paths are configured."
+        },
+        "githubCopilotApi.server.tlsCertPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the TLS/SSL certificate file (.pem or .crt)."
+        },
+        "githubCopilotApi.server.tlsKeyPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the TLS/SSL private key file (.pem or .key)."
         },
         "githubCopilotApi.server.autoStart": {
           "type": "boolean",

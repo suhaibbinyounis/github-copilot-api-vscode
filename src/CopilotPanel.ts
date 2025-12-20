@@ -115,6 +115,9 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
             case 'toggleLogging':
                 void gateway.toggleLogging();
                 break;
+            case 'toggleHttps':
+                void gateway.toggleHttps();
+                break;
             case 'setApiKey':
                 if (typeof data.value === 'string') {
                     void gateway.setApiKey(data.value);
@@ -354,7 +357,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
     }
 
     /**
-     * Simple sidebar HTML that prompts user to open full dashboard
+     * Enhanced sidebar HTML with sections and analytics
      */
     private async _getSidebarHtml(webview: vscode.Webview): Promise<string> {
         const nonce = getNonce();
@@ -362,7 +365,33 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         const isRunning = status.running;
         const statusColor = isRunning ? 'var(--vscode-testing-iconPassed)' : 'var(--vscode-testing-iconFailed)';
         const statusText = isRunning ? 'Running' : 'Stopped';
-        const url = `http://${status.config.host}:${status.config.port}`;
+        const protocol = status.isHttps ? 'https' : 'http';
+        const url = `${protocol}://${status.config.host}:${status.config.port}`;
+
+        // Get stats for charts
+        const stats = status.stats || { totalRequests: 0, totalTokensIn: 0, totalTokensOut: 0, requestsPerMinute: 0, avgLatencyMs: 0 };
+        const realtimeStats = status.realtimeStats || { requestsPerMinute: 0, avgLatencyMs: 0, errorRate: 0 };
+
+        // Get daily stats for mini chart (last 7 days)
+        const dailyStats = await this._gateway.getDailyStats(7);
+        const maxRequests = Math.max(...dailyStats.map(d => d.totalRequests), 1);
+
+        // Generate SVG bar chart for last 7 days
+        const barWidth = 20;
+        const barGap = 6;
+        const chartHeight = 50;
+        const chartWidth = (barWidth + barGap) * 7;
+
+        const barsHtml = dailyStats.map((day, i) => {
+            const height = Math.max(2, (day.totalRequests / maxRequests) * chartHeight);
+            const x = i * (barWidth + barGap);
+            const y = chartHeight - height;
+            const dayLabel = new Date(day.date).toLocaleDateString('en', { weekday: 'short' }).charAt(0);
+            return `
+                <rect x="${x}" y="${y}" width="${barWidth}" height="${height}" rx="3" fill="var(--vscode-charts-blue)" opacity="0.8"/>
+                <text x="${x + barWidth / 2}" y="${chartHeight + 12}" font-size="8" fill="var(--vscode-descriptionForeground)" text-anchor="middle">${dayLabel}</text>
+            `;
+        }).join('');
 
         return `<!DOCTYPE html>
 <html lang="en">
@@ -371,55 +400,121 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { margin: 0; padding: 12px; font-family: var(--vscode-font-family); color: var(--vscode-foreground); background: var(--vscode-sideBar-background); }
-        .status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        body { margin: 0; padding: 0; font-family: var(--vscode-font-family); color: var(--vscode-foreground); background: var(--vscode-sideBar-background); }
+        .section { padding: 12px; border-bottom: 1px solid var(--vscode-widget-border); }
+        .section:last-child { border-bottom: none; }
+        .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.6; margin-bottom: 10px; font-weight: 600; }
+        .status-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; background: ${statusColor}; box-shadow: 0 0 6px ${statusColor}; }
-        .url { font-family: var(--vscode-editor-font-family); font-size: 11px; opacity: 0.8; word-break: break-all; margin-bottom: 12px; }
-        button { width: 100%; padding: 8px 12px; margin-bottom: 8px; background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; border-radius: 4px; cursor: pointer; font-family: var(--vscode-font-family); font-weight: 500; }
+        .url { font-family: var(--vscode-editor-font-family); font-size: 10px; opacity: 0.7; word-break: break-all; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .stat-card { background: var(--vscode-editor-background); border-radius: 6px; padding: 8px 10px; text-align: center; border: 1px solid var(--vscode-widget-border); }
+        .stat-value { font-size: 18px; font-weight: 700; color: var(--vscode-foreground); }
+        .stat-label { font-size: 9px; text-transform: uppercase; opacity: 0.6; margin-top: 2px; }
+        .chart-container { background: var(--vscode-editor-background); border-radius: 8px; padding: 12px; border: 1px solid var(--vscode-widget-border); }
+        .chart-title { font-size: 11px; font-weight: 600; margin-bottom: 8px; opacity: 0.9; }
+        button { width: 100%; padding: 8px 12px; margin-bottom: 6px; background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; border-radius: 4px; cursor: pointer; font-family: var(--vscode-font-family); font-weight: 500; font-size: 12px; }
         button:hover { background: var(--vscode-button-hoverBackground); }
         button.secondary { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
         button.secondary:hover { background: var(--vscode-button-secondaryHoverBackground); }
-        .hint { font-size: 11px; opacity: 0.7; text-align: center; margin-top: 8px; }
-        .btn-group { display: flex; gap: 6px; margin-bottom: 8px; }
-        .btn-group button { width: auto; flex: 1; padding: 6px 10px; font-size: 11px; }
+        .btn-row { display: flex; gap: 6px; margin-bottom: 6px; }
+        .btn-row button { flex: 1; padding: 6px 8px; font-size: 11px; margin-bottom: 0; }
+        .copilot-status { font-size: 10px; opacity: 0.7; display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+        .copilot-dot { width: 6px; height: 6px; border-radius: 50%; }
     </style>
 </head>
 <body>
-    <div class="status">
-        <div class="dot"></div>
-        <strong>${statusText}</strong>
+    <!-- Status Section (at top) -->
+    <div class="section">
+        <div class="section-title">Server Status</div>
+        <div class="status-row">
+            <div class="dot"></div>
+            <strong>${statusText}</strong>
+        </div>
+        <div class="url">${url}</div>
+        <div class="copilot-status">
+            <div class="copilot-dot" style="background: ${status.copilot.ready ? 'var(--vscode-testing-iconPassed)' : 'var(--vscode-editorWarning-foreground)'}"></div>
+            Copilot: ${status.copilot.ready ? 'Ready' : (status.copilot.signedIn ? 'Checking' : 'Sign-in Needed')}
+        </div>
     </div>
-    <div style="font-size: 11px; opacity: 0.8; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
-        <div style="width: 7px; height: 7px; border-radius: 50%; background: ${status.copilot.ready ? 'var(--vscode-testing-iconPassed)' : 'var(--vscode-editorWarning-foreground)'};"></div>
-        <span>Copilot: ${status.copilot.ready ? 'Ready' : (status.copilot.signedIn ? 'Extension Check' : 'Sign-in Needed')}</span>
+
+    <!-- Actions Section -->
+    <div class="section">
+        <div class="section-title">⚡ Actions</div>
+        <button id="btn-dashboard">Open Dashboard</button>
+        <button id="btn-toggle" class="secondary">${isRunning ? '⏹ Stop Server' : '▶ Start Server'}</button>
+        <button id="btn-swagger" class="secondary">📝 Swagger API</button>
+        <button id="btn-metrics" class="secondary">📊 Prometheus Metrics</button>
+        <button id="btn-wiki" class="secondary">📚 Wiki</button>
+        <button id="btn-prompt" class="secondary">✨ Prompt Generator</button>
     </div>
-    <div class="url">${url}</div>
-    <button id="btn-dashboard">Open Dashboard</button>
-    <button id="btn-toggle" class="secondary">${isRunning ? 'Stop Server' : 'Start Server'}</button>
-    <button id="btn-swagger" class="secondary">📝 Swagger</button>
-    <button id="btn-wiki" class="secondary">📚 Wiki</button>
-    <button id="btn-prompt" class="secondary">✨ Prompt Generator</button>
-    <div class="hint">Use the dashboard for full controls</div>
+
+    <!-- Analytics Section -->
+    <div class="section">
+        <div class="section-title">📊 Live Stats</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-rpm">${realtimeStats.requestsPerMinute}</div>
+                <div class="stat-label">Req/Min</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-latency">${realtimeStats.avgLatencyMs}<span style="font-size: 10px; opacity: 0.6;">ms</span></div>
+                <div class="stat-label">Latency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-total">${stats.totalRequests}</div>
+                <div class="stat-label">Total Reqs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-errors">${realtimeStats.errorRate}<span style="font-size: 10px; opacity: 0.6;">%</span></div>
+                <div class="stat-label">Errors</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-title">Requests (Last 7 Days)</div>
+            <svg width="${chartWidth}" height="${chartHeight + 16}" style="display: block; margin: 0 auto;">
+                ${barsHtml}
+            </svg>
+        </div>
+    </div>
+
+    <!-- Token Usage Section -->
+    <div class="section">
+        <div class="section-title">🎫 Token Usage</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" style="font-size: 14px; color: var(--vscode-charts-green);">${this.formatNumber(stats.totalTokensIn)}</div>
+                <div class="stat-label">Tokens In</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="font-size: 14px; color: var(--vscode-charts-orange);">${this.formatNumber(stats.totalTokensOut)}</div>
+                <div class="stat-label">Tokens Out</div>
+            </div>
+        </div>
+    </div>
+
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
-        document.getElementById('btn-dashboard').addEventListener('click', () => {
-            vscode.postMessage({ type: 'openDashboard' });
-        });
-        document.getElementById('btn-toggle').addEventListener('click', () => {
-            vscode.postMessage({ type: '${isRunning ? 'stopServer' : 'startServer'}' });
-        });
-        document.getElementById('btn-swagger').addEventListener('click', () => {
-            vscode.postMessage({ type: 'openSwagger' });
-        });
-        document.getElementById('btn-wiki').addEventListener('click', () => {
-            vscode.postMessage({ type: 'openWiki' });
-        });
-        document.getElementById('btn-prompt').addEventListener('click', () => {
-            vscode.postMessage({ type: 'openPromptGenerator' });
-        });
+        document.getElementById('btn-dashboard').addEventListener('click', () => vscode.postMessage({ type: 'openDashboard' }));
+        document.getElementById('btn-toggle').addEventListener('click', () => vscode.postMessage({ type: '${isRunning ? 'stopServer' : 'startServer'}' }));
+        document.getElementById('btn-swagger').addEventListener('click', () => vscode.postMessage({ type: 'openSwagger' }));
+        document.getElementById('btn-metrics').addEventListener('click', () => vscode.postMessage({ type: 'openMetrics' }));
+        document.getElementById('btn-wiki').addEventListener('click', () => vscode.postMessage({ type: 'openWiki' }));
+        document.getElementById('btn-prompt').addEventListener('click', () => vscode.postMessage({ type: 'openPromptGenerator' }));
     </script>
 </body>
 </html>`;
+    }
+
+    private formatNumber(num: number): string {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        }
+        if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
     }
 
     private static async getPanelHtml(webview: vscode.Webview, gateway: CopilotApiGateway): Promise<string> {
@@ -429,7 +524,8 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         const isRunning = status.running;
         const statusColor = isRunning ? 'var(--vscode-testing-iconPassed)' : 'var(--vscode-testing-iconFailed)';
         const statusText = isRunning ? 'Running' : 'Stopped';
-        const url = `http://${config.host}:${config.port}`;
+        const protocol = status.isHttps ? 'https' : 'http';
+        const url = `${protocol}://${config.host}:${config.port}`;
         const networkInfo = status.networkInfo;
 
         return `<!DOCTYPE html>
@@ -669,6 +765,16 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                         </div>
                         <label class="switch">
                             <input type="checkbox" id="toggle-logging" ${config.enableLogging ? 'checked' : ''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div style="display: flex; gap: 4px; align-items: center;">
+                            <span>Enable HTTPS</span>
+                            <span title="Use HTTPS/TLS encryption. Falls back to HTTP if certificates are not configured." style="cursor: help; opacity: 0.6; font-size: 14px;">🔒</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-https" ${config.enableHttps ? 'checked' : ''}>
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -1610,6 +1716,10 @@ if response.choices[0].message.tool_calls:
             vscode.postMessage({ type: 'toggleLogging' });
         };
 
+        document.getElementById('toggle-https').onchange = function() {
+            vscode.postMessage({ type: 'toggleHttps' });
+        };
+
         // Store the current API key for copy functionality
         var currentApiKey = '${config.apiKey || ''}';
 
@@ -2320,6 +2430,12 @@ vscode.postMessage({ type: 'getAuditLogs', value: { page: 1, pageSize: 10 } });
                     const status = await this._gateway.getStatus();
                     const swaggerUrl = `http://${status.config.host}:${status.config.port}/docs`;
                     vscode.env.openExternal(vscode.Uri.parse(swaggerUrl));
+                    break;
+                }
+                case 'openMetrics': {
+                    const status = await this._gateway.getStatus();
+                    const metricsUrl = `http://${status.config.host}:${status.config.port}/metrics`;
+                    vscode.env.openExternal(vscode.Uri.parse(metricsUrl));
                     break;
                 }
                 case 'openWiki':

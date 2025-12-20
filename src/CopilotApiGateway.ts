@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { createServer, type IncomingMessage, type ServerResponse } from 'http';
+import { createServer as createHttpsServer } from 'https';
 import type { AddressInfo } from 'net';
 import * as os from 'os';
 import * as vscode from 'vscode';
@@ -56,6 +57,9 @@ export interface ApiServerConfig {
 	enabled: boolean
 	enableHttp: boolean
 	enableWebSocket: boolean
+	enableHttps: boolean
+	tlsCertPath: string
+	tlsKeyPath: string
 	host: string
 	port: number
 	maxConcurrentRequests: number
@@ -171,6 +175,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 	private config: ApiServerConfig = getServerConfig();
 	private disposed = false;
 	private activeRequests = 0;
+	private isHttps = false;
 	private suppressRestart = false;
 	private readonly _onDidChangeStatus = new vscode.EventEmitter<void>();
 	public readonly onDidChangeStatus = this._onDidChangeStatus.event;
@@ -263,6 +268,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 	public async getStatus() {
 		return {
 			running: !!this.httpServer,
+			isHttps: this.isHttps,
 			config: this.config,
 			activeRequests: this.activeRequests,
 			networkInfo: this.getNetworkInfo(),
@@ -518,6 +524,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		// Update stats every 5 seconds
 		this.statsInterval = setInterval(() => {
 			this.updateRealtimeStats();
+			this._onDidChangeStatus.fire();
 		}, 5000);
 	}
 
@@ -730,6 +737,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 		await this.updateServerConfig({ enableLogging: !this.config.enableLogging });
 	}
 
+	public async toggleHttps(): Promise<void> {
+		await this.updateServerConfig({ enableHttps: !this.config.enableHttps, enabled: true });
+	}
+
 	public async setApiKey(apiKey: string): Promise<void> {
 		const value = (apiKey ?? '').trim();
 		await this.updateServerConfig({ apiKey: value });
@@ -809,7 +820,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 		this.updateStatusBar('starting');
 		this._onDidChangeStatus.fire();
 
-		this.httpServer = createServer((req, res) => {
+		// Create request handler function
+		const requestHandler = (req: IncomingMessage, res: ServerResponse) => {
 			// Track active connections for graceful shutdown
 			this.connections.add(res);
 			res.on('close', () => this.connections.delete(res));
@@ -842,7 +854,60 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 			this.activeRequests++;
 			this._onDidChangeStatus.fire();
-		});
+		};
+
+		// Create HTTP or HTTPS server based on config
+		let isHttps = false;
+		if (this.config.enableHttps) {
+			try {
+				let certData: { cert: Buffer | string; key: Buffer | string } | null = null;
+
+				// Check if user provided cert paths
+				if (this.config.tlsCertPath && this.config.tlsKeyPath) {
+					const certPath = this.config.tlsCertPath.startsWith('~')
+						? path.join(os.homedir(), this.config.tlsCertPath.slice(1))
+						: this.config.tlsCertPath;
+					const keyPath = this.config.tlsKeyPath.startsWith('~')
+						? path.join(os.homedir(), this.config.tlsKeyPath.slice(1))
+						: this.config.tlsKeyPath;
+
+					if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+						certData = {
+							cert: fs.readFileSync(certPath),
+							key: fs.readFileSync(keyPath)
+						};
+						this.logInfo(`HTTPS enabled with certificate from ${certPath}`);
+					}
+				}
+
+				// Auto-generate self-signed cert if no cert configured
+				if (!certData) {
+					const selfsigned = require('selfsigned');
+					const attrs = [{ name: 'commonName', value: 'localhost' }];
+					const pems = selfsigned.generate(attrs, {
+						days: 365,
+						keySize: 2048,
+						algorithm: 'sha256'
+					});
+					certData = {
+						cert: pems.cert,
+						key: pems.private
+					};
+					this.logInfo('HTTPS enabled with auto-generated self-signed certificate (valid 365 days)');
+				}
+
+				this.httpServer = createHttpsServer(certData, requestHandler);
+				isHttps = true;
+			} catch (error) {
+				this.logError('Failed to setup HTTPS, falling back to HTTP', error);
+				this.httpServer = createServer(requestHandler);
+			}
+		} else {
+			this.httpServer = createServer(requestHandler);
+		}
+
+		// Track actual runtime protocol
+		this.isHttps = isHttps;
 
 		this.httpServer.on('error', error => {
 			this.logError('HTTP server error', error);
@@ -883,9 +948,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		const address = this.httpServer.address() as AddressInfo | null;
 		if (address) {
-			const location = `http://${address.address}:${address.port}`;
-			this.logInfo(`HTTP server listening on ${location}`);
-			this.updateStatusBar('running', `HTTP${this.config.enableWebSocket ? '+WS' : ''} on ${location}`);
+			const protocol = isHttps ? 'https' : 'http';
+			const location = `${protocol}://${address.address}:${address.port}`;
+			this.logInfo(`${isHttps ? 'HTTPS' : 'HTTP'} server listening on ${location}`);
+			this.updateStatusBar('running', `${isHttps ? 'HTTPS' : 'HTTP'}${this.config.enableWebSocket ? '+WS' : ''} on ${location}`);
 			this._onDidChangeStatus.fire();
 		}
 	}
@@ -1126,6 +1192,49 @@ export class CopilotApiGateway implements vscode.Disposable {
 				uptime_seconds: uptime,
 				active_requests: this.activeRequests
 			});
+			return;
+		}
+
+		// Prometheus metrics endpoint
+		if (req.method === 'GET' && url.pathname === '/metrics') {
+			const uptime = Math.floor((Date.now() - this.usageStats.startTime) / 1000);
+			const metrics = [
+				'# HELP copilot_api_requests_total Total number of API requests',
+				'# TYPE copilot_api_requests_total counter',
+				`copilot_api_requests_total ${this.usageStats.totalRequests}`,
+				'',
+				'# HELP copilot_api_active_requests Current number of active requests',
+				'# TYPE copilot_api_active_requests gauge',
+				`copilot_api_active_requests ${this.activeRequests}`,
+				'',
+				'# HELP copilot_api_tokens_input_total Total input tokens consumed',
+				'# TYPE copilot_api_tokens_input_total counter',
+				`copilot_api_tokens_input_total ${this.usageStats.totalTokensIn}`,
+				'',
+				'# HELP copilot_api_tokens_output_total Total output tokens generated',
+				'# TYPE copilot_api_tokens_output_total counter',
+				`copilot_api_tokens_output_total ${this.usageStats.totalTokensOut}`,
+				'',
+				'# HELP copilot_api_uptime_seconds Server uptime in seconds',
+				'# TYPE copilot_api_uptime_seconds gauge',
+				`copilot_api_uptime_seconds ${uptime}`,
+				'',
+				'# HELP copilot_api_requests_per_minute Rate of requests per minute',
+				'# TYPE copilot_api_requests_per_minute gauge',
+				`copilot_api_requests_per_minute ${this.realtimeStats.requestsPerMinute}`,
+				'',
+				'# HELP copilot_api_latency_avg_ms Average request latency in milliseconds',
+				'# TYPE copilot_api_latency_avg_ms gauge',
+				`copilot_api_latency_avg_ms ${this.realtimeStats.avgLatencyMs}`,
+				'',
+				'# HELP copilot_api_error_rate_percent Error rate percentage',
+				'# TYPE copilot_api_error_rate_percent gauge',
+				`copilot_api_error_rate_percent ${this.realtimeStats.errorRate}`,
+				''
+			].join('\n');
+
+			res.writeHead(200, { 'Content-Type': 'text/plain; version=0.0.4; charset=utf-8' });
+			res.end(metrics);
 			return;
 		}
 
@@ -3807,6 +3916,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 		if (patch.enableWebSocket !== undefined) {
 			updates.push(Promise.resolve(config.update('server.enableWebSocket', patch.enableWebSocket, vscode.ConfigurationTarget.Global)));
 		}
+		if (patch.enableHttps !== undefined) {
+			updates.push(Promise.resolve(config.update('server.enableHttps', patch.enableHttps, vscode.ConfigurationTarget.Global)));
+		}
 		if (patch.host !== undefined) {
 			updates.push(Promise.resolve(config.update('server.host', patch.host, vscode.ConfigurationTarget.Global)));
 		}
@@ -4007,6 +4119,9 @@ function getServerConfig(): ApiServerConfig {
 	const enabled = configuration.get<boolean>('server.enabled', false);
 	const enableHttp = configuration.get<boolean>('server.enableHttp', true);
 	const enableWebSocket = configuration.get<boolean>('server.enableWebSocket', true);
+	const enableHttps = configuration.get<boolean>('server.enableHttps', false);
+	const tlsCertPath = configuration.get<string>('server.tlsCertPath', '').trim();
+	const tlsKeyPath = configuration.get<string>('server.tlsKeyPath', '').trim();
 	const host = configuration.get<string>('server.host', '127.0.0.1').trim() || '127.0.0.1';
 	const rawPort = configuration.get<number>('server.port', 3030);
 	const port = Number.isFinite(rawPort) ? Math.max(1, Math.floor(rawPort)) : 3030;
@@ -4065,7 +4180,7 @@ function getServerConfig(): ApiServerConfig {
 	const mcpEnabled = vscode.workspace.getConfiguration('githubCopilotApi.mcp').get<boolean>('enabled', true);
 
 	return {
-		enabled, enableHttp, enableWebSocket, host, port, maxConcurrentRequests,
+		enabled, enableHttp, enableWebSocket, enableHttps, tlsCertPath, tlsKeyPath, host, port, maxConcurrentRequests,
 		defaultModel, apiKey, enableLogging, rateLimitPerMinute, defaultSystemPrompt,
 		redactionPatterns, ipAllowlist, requestTimeoutSeconds, maxPayloadSizeMb, maxConnectionsPerIp,
 		mcpEnabled
