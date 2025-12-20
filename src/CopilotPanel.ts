@@ -360,7 +360,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         const nonce = getNonce();
         const status = await this._gateway.getStatus();
         const isRunning = status.running;
-        const statusColor = isRunning ? '#4ade80' : '#f87171';
+        const statusColor = isRunning ? 'var(--vscode-testing-iconPassed)' : 'var(--vscode-testing-iconFailed)';
         const statusText = isRunning ? 'Running' : 'Stopped';
         const url = `http://${status.config.host}:${status.config.port}`;
 
@@ -390,7 +390,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         <strong>${statusText}</strong>
     </div>
     <div style="font-size: 11px; opacity: 0.8; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
-        <div style="width: 7px; height: 7px; border-radius: 50%; background: ${status.copilot.ready ? '#4ade80' : '#fbbf24'};"></div>
+        <div style="width: 7px; height: 7px; border-radius: 50%; background: ${status.copilot.ready ? 'var(--vscode-testing-iconPassed)' : 'var(--vscode-editorWarning-foreground)'};"></div>
         <span>Copilot: ${status.copilot.ready ? 'Ready' : (status.copilot.signedIn ? 'Extension Check' : 'Sign-in Needed')}</span>
     </div>
     <div class="url">${url}</div>
@@ -456,7 +456,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         .hero p { margin: 6px 0 0 0; opacity: 0.7; font-size: 14px; max-width: 600px; line-height: 1.5; }
         .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--vscode-badge-background); color: var(--vscode-badge-foreground); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .card { background-color: color-mix(in srgb, var(--vscode-sideBar-background) 80%, transparent); border: 1px solid var(--vscode-widget-border); border-radius: 12px; padding: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+        .card { background-color: var(--vscode-editorWidget-background); border: 1px solid var(--vscode-widget-border); border-radius: 12px; padding: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
         .card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.12); border-color: var(--vscode-focusBorder); }
         .card.full-width { grid-column: 1 / -1; }
         h3 { margin-top: 0; margin-bottom: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.8; }
@@ -504,8 +504,8 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
 
         /* Live Log Tail Styles */
         .log-container {
-            background: #0d1117;
-            color: #e6edf3;
+            background: var(--vscode-textBlockQuote-background);
+            color: var(--vscode-editor-foreground);
             font-family: var(--vscode-editor-font-family);
             font-size: 11px;
             padding: 12px;
@@ -525,13 +525,13 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
             display: flex;
             gap: 8px;
         }
-        .log-time { color: #8b949e; min-width: 75px; flex-shrink: 0; }
-        .log-method { font-weight: 600; color: #58a6ff; min-width: 50px; flex-shrink: 0; }
-        .log-path { color: #d2a8ff; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .log-time { color: var(--vscode-descriptionForeground); min-width: 75px; flex-shrink: 0; }
+        .log-method { font-weight: 600; color: var(--vscode-terminal-ansiBlue); min-width: 50px; flex-shrink: 0; }
+        .log-path { color: var(--vscode-terminal-ansiMagenta); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .log-status { font-weight: 600; min-width: 35px; flex-shrink: 0; }
-        .log-status.success { color: #3fb950; }
-        .log-status.error { color: #f85149; }
-        .log-latency { color: #d0d7de; min-width: 60px; text-align: right; flex-shrink: 0; }
+        .log-status.success { color: var(--vscode-testing-iconPassed); }
+        .log-status.error { color: var(--vscode-testing-iconFailed); }
+        .log-latency { color: var(--vscode-descriptionForeground); min-width: 60px; text-align: right; flex-shrink: 0; }
         
         #log-status-indicator {
             width: 8px;
@@ -540,8 +540,8 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
             display: inline-block;
             transition: background-color 0.3s ease;
         }
-        #log-status-indicator.active { background-color: #3fb950; box-shadow: 0 0 8px #3fb950; }
-        #log-status-indicator.inactive { background-color: #8b949e; }
+        #log-status-indicator.active { background-color: var(--vscode-testing-iconPassed); box-shadow: 0 0 8px var(--vscode-testing-iconPassed); }
+        #log-status-indicator.inactive { background-color: var(--vscode-disabledForeground); }
 
     </style>
 </head>
@@ -960,7 +960,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
             </div>
         </div>
 
-        <div class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-sideBar-background) 90%, #3b82f6 10%), color-mix(in srgb, var(--vscode-sideBar-background) 95%, #8b5cf6 5%));">
+        <div class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 90%, #3b82f6 10%), color-mix(in srgb, var(--vscode-editor-background) 95%, #8b5cf6 5%));">
             <h3>👨‍💻 About</h3>
             <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 200px;">
@@ -981,7 +981,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         </div>
 
         <!-- Prompt Generator Section -->
-        <div id="prompt-generator-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-sideBar-background) 95%, #8b5cf6 5%), color-mix(in srgb, var(--vscode-sideBar-background) 98%, #7c3aed 2%));">
+        <div id="prompt-generator-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 95%, #8b5cf6 5%), color-mix(in srgb, var(--vscode-editor-background) 98%, #7c3aed 2%));">
             <h3>✨ Prompt Generator</h3>
             <p class="muted" style="margin-bottom: 16px;">Create high-quality, detailed prompts for AI assistants. Select options or describe what you need. <span style="opacity: 0.7; font-size: 10px;">💡 Uses Copilot directly - server not required</span></p>
             
@@ -1092,7 +1092,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         </div>
 
         <!-- Mini Wiki Section -->
-        <div id="wiki-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-sideBar-background) 92%, #10b981 8%), color-mix(in srgb, var(--vscode-sideBar-background) 96%, #059669 4%));">
+        <div id="wiki-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 92%, #10b981 8%), color-mix(in srgb, var(--vscode-editor-background) 96%, #059669 4%));">
             <h3>📚 API Usage Guide</h3>
             <p class="muted" style="margin-bottom: 16px;">Complete reference for connecting to the Copilot API Gateway from various languages, with installation instructions and real-world examples.</p>
             
@@ -1110,14 +1110,14 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                 <!-- Python Tab -->
                 <div class="wiki-panel" data-panel="python">
                     <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">📦 Installation</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;"># Install the OpenAI Python library
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;"># Install the OpenAI Python library
 pip install openai
 
 # Or with Anthropic support
 pip install anthropic</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🚀 Quick Start - OpenAI SDK</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
 
 # Point to your local Copilot API Gateway
 client = OpenAI(
@@ -1139,7 +1139,7 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">📡 Streaming Responses</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
 
 client = OpenAI(
     base_url="http://${config.host}:${config.port}/v1",
@@ -1159,7 +1159,7 @@ for chunk in stream:
 print()  # Newline at end</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🔧 Function Calling (Tool Use)</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
 import json
 
 client = OpenAI(
@@ -1200,7 +1200,7 @@ if response.choices[0].message.tool_calls:
     print(f"Arguments: {tool_call.function.arguments}")</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🎭 Using with Anthropic SDK</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import anthropic
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import anthropic
 
 client = anthropic.Anthropic(
     base_url="http://${config.host}:${config.port}",
@@ -1222,14 +1222,14 @@ print(message.content[0].text)</pre>
                 <!-- JavaScript Tab -->
                 <div class="wiki-panel" data-panel="javascript" style="display: none;">
                     <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">📦 Installation</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;"># Node.js - Install OpenAI SDK
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;"># Node.js - Install OpenAI SDK
 npm install openai
 
 # Or with yarn
 yarn add openai</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🚀 Quick Start - Node.js</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
 
 const openai = new OpenAI({
   baseURL: 'http://${config.host}:${config.port}/v1',
@@ -1251,7 +1251,7 @@ async function chat() {
 chat();</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">📡 Streaming Responses</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
 
 const openai = new OpenAI({
   baseURL: 'http://${config.host}:${config.port}/v1',
@@ -1274,7 +1274,7 @@ async function streamChat() {
 streamChat();</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🌐 Browser - Fetch API</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">async function chat(message) {
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">async function chat(message) {
   const response = await fetch('http://${config.host}:${config.port}/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1293,7 +1293,7 @@ const answer = await chat('What is the capital of France?');
 console.log(answer);</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🔧 Function Calling</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
 
 const openai = new OpenAI({
   baseURL: 'http://${config.host}:${config.port}/v1',
@@ -1328,7 +1328,7 @@ console.log(response.choices[0].message.tool_calls);</pre>
                 <!-- cURL Tab -->
                 <div class="wiki-panel" data-panel="curl" style="display: none;">
                     <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">🚀 Basic Chat Completion</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -d '{
     "model": "gpt-4o",
@@ -1339,7 +1339,7 @@ console.log(response.choices[0].message.tool_calls);</pre>
   }'</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">📡 Streaming Response</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -N \\
   -d '{
@@ -1349,7 +1349,7 @@ console.log(response.choices[0].message.tool_calls);</pre>
   }'</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🔐 With API Key Authentication</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer your-secret-api-key" \\
   -d '{
@@ -1358,10 +1358,10 @@ console.log(response.choices[0].message.tool_calls);</pre>
   }'</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">📋 List Available Models</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/models</pre>
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/models</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🎭 Anthropic Endpoint (Claude)</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/messages \\
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/messages \\
   -H "Content-Type: application/json" \\
   -H "x-api-key: not-needed" \\
   -H "anthropic-version: 2023-06-01" \\
@@ -1372,7 +1372,7 @@ console.log(response.choices[0].message.tool_calls);</pre>
   }'</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🔧 Function Calling</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -d '{
     "model": "gpt-4o",
@@ -1396,7 +1396,7 @@ console.log(response.choices[0].message.tool_calls);</pre>
                 <!-- MCP Tools Tab -->
                 <div class="wiki-panel" data-panel="mcp" style="display: none;">
                     <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">⚙️ Configure MCP Servers (settings.json)</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">// Add to your VS Code settings.json
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">// Add to your VS Code settings.json
 "githubCopilotApi.mcp.servers": {
   // Filesystem access
   "filesystem": {
@@ -1418,31 +1418,31 @@ console.log(response.choices[0].message.tool_calls);</pre>
                     <p class="muted" style="font-size: 11px; margin-bottom: 12px;">These tools are automatically available without any configuration:</p>
                     
                     <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
-                        <div style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #10b981;">
+                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #10b981;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_read_file</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">Read the contents of any file in the workspace</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "uri": "file:///path/to/file.ts" }</pre>
                         </div>
                         
-                        <div style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6;">
+                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_list_files</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">List files in a directory with optional glob pattern</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "folder": "/src", "pattern": "**/*.ts" }</pre>
                         </div>
                         
-                        <div style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_open_file</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">Open a file in VS Code editor, optionally at specific lines</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "uri": "file:///path/to/file.ts", "startLine": 10, "endLine": 20 }</pre>
                         </div>
                         
-                        <div style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #ef4444;">
+                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #ef4444;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_get_diagnostics</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">Get current errors and warnings from the Problems panel</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "maxResults": 50 }</pre>
                         </div>
                         
-                        <div style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #8b5cf6;">
+                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #8b5cf6;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_get_active_editor</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">Get content and cursor position of currently open file</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ } // No parameters needed</pre>
@@ -1450,7 +1450,7 @@ console.log(response.choices[0].message.tool_calls);</pre>
                     </div>
 
                     <h4 style="color: var(--vscode-textLink-foreground); margin-top: 20px;">🐍 Using VS Code Tools with Python</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
 
 client = OpenAI(
     base_url="http://${config.host}:${config.port}/v1",
@@ -1504,7 +1504,7 @@ if response.choices[0].message.tool_calls:
         print(f"Args: {tool_call.function.arguments}")</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🔧 cURL Example with MCP Tools</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
+                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -d '{
     "model": "gpt-4o",
