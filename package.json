@@ -3,7 +3,7 @@
   "displayName": "GitHub Copilot API Gateway",
   "description": "Transform GitHub Copilot into a full AI platform: OpenAI-compatible API server + Enterprise Apps Hub with Playwright Generator, Code Review, Commit Messages, and more.",
   "icon": "media/icon.png",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
@@ -116,6 +116,11 @@
           "id": "copilot-api-sidebar",
           "title": "Copilot API",
           "icon": "media/icon.svg"
+        },
+        {
+          "id": "copilot-apps-sidebar",
+          "title": "Copilot Apps",
+          "icon": "media/apps-icon.svg"
         }
       ]
     },
@@ -125,6 +130,13 @@
           "type": "webview",
           "id": "copilotApiControls",
           "name": "Controls"
+        }
+      ],
+      "copilot-apps-sidebar": [
+        {
+          "type": "webview",
+          "id": "copilotAppsHub",
+          "name": "Apps Hub"
         }
       ]
     },

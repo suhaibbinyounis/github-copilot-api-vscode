@@ -13,6 +13,21 @@ export const bugReportWriterApp: AppDefinition = {
     description: 'Create structured bug reports with repro steps',
     icon: '🐛',
     category: 'qa',
+    helpDocumentation: `
+### What is this?
+The **Bug Report Writer** ensures your issues are addressed quickly by helping you write clear, comprehensive, and professional bug reports.
+
+### How to use it:
+1. **Describe the Bug**: provide a brief summary of what happened and what you expected.
+2. **Add Context**: (Optional) Include reproduction steps, URLs, and environment details (Browser/OS).
+3. **Set Severity**: Help developers prioritize by correctly identifying the impact.
+4. **Result**: The AI will generate a structured report with clear sections for Environment, Repro Steps, and Expected/Actual behavior.
+
+### Use cases:
+- Filing a high-quality GitHub issue.
+- Drafting a JIRA ticket for a complex bug.
+- Communicating an issue clearly to a remote engineering team.
+    `,
 
     inputs: [
         {
@@ -22,7 +37,7 @@ export const bugReportWriterApp: AppDefinition = {
             placeholder: 'Describe the bug in a few sentences...',
             required: true,
             rows: 3,
-            hint: 'Describe what went wrong'
+            hint: 'Describe what went wrong. Be as specific as possible about the error symptoms.'
         },
         {
             id: 'expected',
@@ -41,7 +56,7 @@ export const bugReportWriterApp: AppDefinition = {
 3. Clicked login button
 4. Nothing happened`,
             rows: 5,
-            hint: 'We\'ll enhance these into proper repro steps'
+            hint: 'We\'ll enhance these into professional reproduction steps with clear preconditions.'
         },
         {
             id: 'url',

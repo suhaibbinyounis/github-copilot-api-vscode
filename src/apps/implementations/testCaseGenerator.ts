@@ -13,6 +13,21 @@ export const testCaseGeneratorApp: AppDefinition = {
     description: 'Generate test cases from requirements/user stories',
     icon: '🧪',
     category: 'qa',
+    helpDocumentation: `
+### What is this?
+The **Test Case Generator** helps QA and Developers ensure comprehensive coverage by converting requirements into structured test plans.
+
+### How to use it:
+1. **Input Requirement**: Paste a user story or feature description.
+2. **Choose Test Types**: Select from Functional, Edge Cases, Security, Accessibility, etc.
+3. **Pick Format**: Choose your preferred documentation style (Gherkin, Traditional Table, or Checklist).
+4. **Generate**: The AI will design a series of test cases with clear Pass/Fail criteria.
+
+### Use cases:
+- Drafting a test plan for a new feature.
+- Generating BDD-style "Given-When-Then" scenarios.
+- Ensuring edge cases are considered during the design phase.
+    `,
 
     inputs: [
         {
@@ -62,6 +77,14 @@ Acceptance Criteria:
             label: 'Include Priority Levels',
             type: 'checkbox',
             defaultValue: 'true'
+        },
+        {
+            id: 'jiraIssueId',
+            label: 'Jira Issue ID (optional)',
+            type: 'text',
+            placeholder: 'e.g., PROJ-123, TEST-456',
+            hint: 'Auto-fetch requirements from Jira. Configure Jira in Apps Hub first.',
+            required: false
         },
         {
             id: 'additionalContext',
@@ -155,6 +178,11 @@ Always include:
 
         if (inputs.priority === 'true') {
             parts.push(`## Include Priority\nYes - mark each test case with priority (P1=Critical, P2=High, P3=Medium, P4=Low)`);
+        }
+
+        // Jira Context (auto-fetched if issue ID was provided)
+        if (inputs.jiraContext && inputs.jiraContext.trim()) {
+            parts.push(`## Jira Issue Context\n${inputs.jiraContext}`);
         }
 
         parts.push(`\nPlease generate comprehensive test cases covering all the requested types in the specified format.`);

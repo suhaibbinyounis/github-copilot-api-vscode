@@ -8,7 +8,7 @@
 /**
  * Category of the app - used for filtering and organization
  */
-export type AppCategory = 'developer' | 'qa' | 'leadership' | 'productivity';
+export type AppCategory = 'developer' | 'qa' | 'leadership' | 'productivity' | 'security' | 'devops' | 'architecture' | 'product' | 'jira' | 'communication' | 'inspiration' | 'wellness' | 'games';
 
 /**
  * Input field types supported by the app system
@@ -19,6 +19,7 @@ export type InputFieldType =
     | 'code'           // Code editor with syntax highlighting
     | 'select'         // Dropdown selection
     | 'multi-select'   // Multiple selection checkboxes
+    | 'checkbox-group' // Multiple checkboxes (returns array)
     | 'project-picker' // Folder picker for projects
     | 'file-picker'    // File picker
     | 'model-picker'   // AI model picker (from vscode.lm)
@@ -28,7 +29,7 @@ export type InputFieldType =
 /**
  * Output types for app results
  */
-export type OutputType = 'markdown' | 'code' | 'structured' | 'diff';
+export type OutputType = 'markdown' | 'code' | 'structured' | 'diff' | 'sections';
 
 /**
  * Actions that can be performed on output
@@ -223,6 +224,9 @@ export interface AppDefinition {
     /** Category for organization */
     category: AppCategory;
 
+    /** Optional tags for better discovery */
+    tags?: string[];
+
     /** Input fields configuration */
     inputs: InputField[];
 
@@ -269,6 +273,12 @@ export interface AppDefinition {
         workspace?: boolean;
         copilot?: boolean;
     };
+
+    /**
+     * Optional: Detailed documentation on what the app is and how to use it.
+     * Supports markdown-like formatting for display in the UI.
+     */
+    helpDocumentation?: string;
 }
 
 /**
@@ -306,6 +316,16 @@ export interface AppsHubPreferences {
 
     /** Per-app settings */
     appSettings: Record<string, Record<string, unknown>>;
+
+    /** Default AI model ID for apps */
+    defaultModelId?: string;
+
+    /** Jira integration config (used by multiple apps) */
+    jiraConfig?: {
+        baseUrl: string;   // e.g., https://yourcompany.atlassian.net
+        email: string;     // User email
+        token: string;     // API token
+    };
 }
 
 /**

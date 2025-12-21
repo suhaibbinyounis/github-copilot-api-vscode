@@ -13,6 +13,21 @@ export const meetingNotesToActionsApp: AppDefinition = {
     description: 'Extract action items from meeting notes',
     icon: '📝',
     category: 'leadership',
+    helpDocumentation: `
+### What is this?
+**Meeting Notes → Actions** is a productivity tool that extracts clear, assigned tasks and key decisions from unstructured meeting notes or transcripts.
+
+### How to use it:
+1. **Paste Notes**: Drop in your raw notes, a Slack thread, or a meeting transcript.
+2. **Configure Extraction**: Select which items you want to focus on (Actions, Decisions, Risks, etc.).
+3. **Set Format**: Choose between Markdown, Slack-ready formatting, or professional Email style.
+4. **Identify Owners**: (Recommended) Enable this to have the AI attempt to assign tasks based on the conversation context.
+
+### Use cases:
+- Quickly updating a team Slack channel after a sync.
+- Drafting a project follow-up email.
+- Extracting JIRA-ready tasks from a planning session.
+    `,
 
     inputs: [
         {

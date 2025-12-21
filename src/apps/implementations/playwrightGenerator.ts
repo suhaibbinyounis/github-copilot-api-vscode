@@ -18,6 +18,22 @@ export const playwrightGeneratorApp: AppDefinition = {
     description: 'Generate automation scripts from test steps',
     icon: '🎭',
     category: 'qa',
+    helpDocumentation: `
+### What is this?
+The **Playwright Script Generator** turns manual test steps or requirements into high-quality automation scripts. It supports TypeScript, JavaScript, and Python.
+
+### How to use it:
+1. **Define Steps**: Paste your steps in the textarea or **attach an Excel/Word file** containing the test cases.
+2. **Provide Locators**: (Optional) If you have specific IDs or selectors, list them to ensure the AI uses your preferred identifiers.
+3. **Configure**: Choose your target language, browser, and features (like screenshots or video).
+4. **Generate**: Click the primary action. 
+5. **Magic Feature**: Once the script is generated, use the **🚀 Create Full Project** button to automatically scaffold a complete, ready-to-run Playwright environment.
+
+### Use cases:
+- Rapidly automating manual regression tests.
+- Scaffolding new end-to-end test suites.
+- Converting legacy test documentation into executable code.
+    `,
 
     inputs: [
         {
@@ -136,6 +152,14 @@ Settings menu: [data-testid="settings-link"]`,
             required: true,
             placeholder: 'Select where to create the test project',
             hint: 'A folder named after your test will be created here with all files'
+        },
+        {
+            id: 'jiraIssueId',
+            label: 'Jira Issue ID (optional)',
+            type: 'text',
+            placeholder: 'e.g., PROJ-123, TEST-456',
+            hint: 'Enter a Jira issue ID to auto-fetch requirements as context. Configure Jira in Apps Hub settings.',
+            required: false
         },
         {
             id: 'model',
@@ -258,6 +282,11 @@ Include HTML reporter configuration for visual reports.`,
             parts.push(`\n## Additional Requirements\n${inputs.requirements}`);
         }
 
+        // Jira Context (auto-fetched if issue ID was provided)
+        if (inputs.jiraContext && inputs.jiraContext.trim()) {
+            parts.push(`\n## Jira Issue Context\n${inputs.jiraContext}`);
+        }
+
         parts.push(`\n## Instructions
 Generate a complete, ready-to-run Playwright test script. Include:
 1. All necessary setup files (package.json, playwright.config)
@@ -338,6 +367,12 @@ Make sure the code has NO ERRORS and follows best practices.`);
                     suggestedFilename: testFileName,
                     data: mainCode || response
                 },
+                {
+                    label: '🚀 Create Full Project',
+                    icon: '📁',
+                    action: 'export',
+                    data: 'extractAndCreateProject'
+                },
                 { label: 'Copy All', icon: '📋', action: 'copy' },
                 { label: 'Insert at Cursor', icon: '📝', action: 'insert' }
             ]
@@ -345,6 +380,7 @@ Make sure the code has NO ERRORS and follows best practices.`);
     },
 
     defaultActions: [
+        { label: '🚀 Create Project', icon: '📁', action: 'export', data: 'extractAndCreateProject' },
         { label: 'Download Script', icon: '⬇️', action: 'newFile', fileExtension: '.ts' },
         { label: 'Copy', icon: '📋', action: 'copy' }
     ],

@@ -14,6 +14,21 @@ export const codeReviewApp: AppDefinition = {
     description: 'Full project code review using git diff',
     icon: '🔍',
     category: 'developer',
+    helpDocumentation: `
+### What is this?
+The **Code Review** app provides an AI-powered senior engineer's perspective on your changes. It analyzes your git diff and provides constructive feedback on code quality, security, and performance.
+
+### How to use it:
+1. **Select Projects**: Add the local folders you want to review.
+2. **Choose Diff Type**: Review staged changes, unstaged work, recent commits, or compare two branches.
+3. **Set Depth**: Choose from Quick, Thorough, or category-specific focus (Security/Performance).
+4. **Execution**: The AI will generate a structured report with Critical, Warning, and Suggestion findings.
+
+### Use cases:
+- Preparing a PR for review.
+- Auditing a colleague's complex changes.
+- Quick security sanity checks on recent work.
+    `,
 
     inputs: [
         {
@@ -22,7 +37,7 @@ export const codeReviewApp: AppDefinition = {
             type: 'project-picker',
             placeholder: 'Add project folders to review...',
             required: true,
-            hint: 'You can add multiple projects for a combined review'
+            hint: 'Select the folders you want to review. Use "Pick Project Folder" to add new ones.'
         },
         {
             id: 'diffType',
@@ -43,7 +58,8 @@ export const codeReviewApp: AppDefinition = {
             type: 'text',
             defaultValue: '5',
             placeholder: '5',
-            hint: 'How many recent commits to include',
+            rows: 5,
+            hint: 'We\'ll enhance these into professional reproduction steps with clear preconditions.',
             showIf: { field: 'diffType', equals: 'commits' }
         },
         {
@@ -69,8 +85,8 @@ export const codeReviewApp: AppDefinition = {
             label: 'Review Focus (optional)',
             type: 'textarea',
             placeholder: 'e.g., Focus on security vulnerabilities, performance issues, and error handling...',
-            hint: 'Specific areas you want the reviewer to focus on',
-            rows: 2
+            rows: 3,
+            hint: 'Describe what went wrong. Be as specific as possible about the error symptoms.'
         },
         {
             id: 'reviewType',

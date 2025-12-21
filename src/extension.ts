@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import { CopilotApiGateway, ensureCopilotChatReady, getErrorMessage, normalizePrompt } from './CopilotApiGateway';
 
 import { CopilotPanel } from './CopilotPanel';
-import { AppsPanel } from './AppsPanel';
+import { AppsPanel, AppsHubSidebarProvider } from './AppsPanel';
 import { createDesktopShortcut } from './commands/createDesktopShortcut';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -25,6 +25,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Initialize Apps Hub
 	AppsPanel.initialize(context);
+
+	// Register Apps Hub sidebar provider
+	const appsHubSidebarProvider = new AppsHubSidebarProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(AppsHubSidebarProvider.viewType, appsHubSidebarProvider)
+	);
 
 	// Register Apps Hub command
 	context.subscriptions.push(

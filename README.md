@@ -36,10 +36,11 @@
 
 | What You Get | Without This Extension | With This Extension |
 |--------------|----------------------|---------------------|
-| **AI Apps** | None | 6 enterprise-grade apps built into VS Code |
+| **AI Apps** | None | 30+ enterprise-grade apps built into VS Code |
 | **API Access** | None | Full OpenAI, Anthropic, Google API compatibility |
 | **External Tools** | Limited | LangChain, AutoGPT, CrewAI, and 50+ frameworks |
 | **MCP Support** | None | Connect any Model Context Protocol server |
+| **Jira Integration** | None | Auto-fetch issue details into any app |
 | **Cost** | $10/month (Copilot only) | $10/month (everything included) |
 
 ---
@@ -52,16 +53,25 @@ Click **📦 Open Apps Hub** in the Copilot API sidebar to launch:
 
 ![Enterprise Apps Hub](Apps.png)
 
-### Available Apps
+### Featured Apps
 
-| App | What It Does |
-|-----|-------------|
-| 🎭 **Playwright Script Generator** | Generate complete Playwright test projects from natural language descriptions |
-| 🔍 **Code Review Assistant** | Get AI-powered code reviews with actionable feedback and best practices |
-| 📝 **Commit Message Generator** | Create semantic, conventional commit messages from your staged changes |
-| 📖 **Documentation Generator** | Auto-generate comprehensive documentation for any codebase |
-| ⚡ **Quick Prompt** | Fast AI responses for any question without leaving your editor |
-| ✨ **Code Improver** | Refactor, optimize, and enhance your code with AI suggestions |
+| Category | Apps |
+|----------|------|
+| 🎭 **QA & Testing** | Playwright Generator, Test Case Generator, Bug Report Writer, Accessibility Checker |
+| 👥 **Leadership** | 1:1 Meeting Prep, Performance Review Writer, Team Feedback Generator |
+| 💻 **Developer** | Code Review, Regex Generator, SQL Query Builder, API Doc Writer |
+| 🎮 **Games** | Trivia Showdown, Story Chain, Caption Battle, Debate Arena |
+| 🧘 **Wellness** | Rubber Duck Therapist, Gratitude Journal, Focus & Mindfulness |
+| 📝 **Productivity** | Email Composer, Slack Polisher, Meeting Notes to Actions |
+
+### 🔗 Jira Integration (NEW!)
+
+**Auto-fetch Jira issue details** into any app:
+
+1. Click **⚙️ JIRA Configuration** in Apps Hub
+2. Enter your Jira URL, email, and API token
+3. In apps like Playwright Generator or Test Case Generator, enter a Jira Issue ID
+4. Issue summary, description, and acceptance criteria are automatically fetched as context!
 
 ### 🎭 Playwright Script Generator
 

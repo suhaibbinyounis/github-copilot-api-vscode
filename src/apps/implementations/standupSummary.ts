@@ -13,6 +13,21 @@ export const standupSummaryApp: AppDefinition = {
     description: 'Format your daily standup update',
     icon: '📊',
     category: 'productivity',
+    helpDocumentation: `
+### What is this?
+The **Standup Summary** app transforms your informal thoughts or "stream of consciousness" notes into a professionally formatted daily update.
+
+### How to use it:
+1. **Unload Your Thoughts**: Just type what you did yesterday, what you're doing today, and any blockers. Don't worry about formatting.
+2. **Choose Format**: Select your target channel (Slack, Teams, etc.).
+3. **Set Tone**: Match your team's culture with Professional, Casual, or Ultra-Brief styles.
+4. **Generate**: The AI will organize your points using action verbs and highlight blockers clearly.
+
+### Use cases:
+- Preparing for a morning standup call.
+- Posting a daily update to an async team channel.
+- Maintaining a personal log of daily engineering activity.
+    `,
 
     inputs: [
         {

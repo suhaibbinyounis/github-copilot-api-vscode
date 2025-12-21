@@ -7,6 +7,8 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
 
     // Full editor panel singleton
     private static currentPanel: vscode.WebviewPanel | undefined;
+    // Track previous state to prevent unnecessary re-renders
+    private _lastRunningState: boolean | undefined;
     private static panelDisposables: vscode.Disposable[] = [];
 
     constructor(
@@ -14,6 +16,27 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
         private readonly _gateway: CopilotApiGateway
     ) {
         this._gateway.onDidChangeStatus(async () => {
+            const status = await this._gateway.getStatus();
+
+            // Check if critical state changed (Running vs Stopped)
+            // If just stats changed, send data update message instead of re-rendering HTML
+            if (this._lastRunningState === status.running) {
+                // State is stable, just update stats/UI via message
+                if (this._view) {
+                    this._view.webview.postMessage({ type: 'statsData', data: status.stats });
+                    // Also send realtime stats
+                    this._view.webview.postMessage({ type: 'realtimeStats', data: status.realtimeStats });
+                }
+                if (CopilotPanel.currentPanel) {
+                    CopilotPanel.currentPanel.webview.postMessage({ type: 'statsData', data: status.stats });
+                    CopilotPanel.currentPanel.webview.postMessage({ type: 'realtimeStats', data: status.realtimeStats });
+                }
+                return;
+            }
+
+            // Critical state change (Start/Stop) - Re-render HTML
+            this._lastRunningState = status.running;
+
             if (this._view) {
                 this._view.webview.html = await this._getSidebarHtml(this._view.webview);
             }
@@ -23,6 +46,7 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
             }
         });
         this._gateway.onDidLogRequest(log => {
+            // console.log('[CopilotPanel] onDidLogRequest fired', log.requestId);
             if (this._view) {
                 this._view.webview.postMessage({ type: 'liveLog', value: log });
             }
@@ -442,7 +466,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
     <div class="section">
         <div class="section-title">⚡ Actions</div>
         <button id="btn-dashboard">Open Dashboard</button>
-        <button id="btn-apps" style="background: linear-gradient(135deg, #38bdf8, #a78bfa); border: none;">📦 Open Apps Hub</button>
+        <button id="btn-apps" class="secondary">Open Apps Hub</button>
         <button id="btn-toggle" class="secondary">${isRunning ? '⏹ Stop Server' : '▶ Start Server'}</button>
         <button id="btn-swagger" class="secondary">📝 Swagger API</button>
         <button id="btn-metrics" class="secondary">📊 Prometheus Metrics</button>
@@ -2128,6 +2152,11 @@ if response.choices[0].message.tool_calls:
                 // Legacy support if needed
             } else if (message.type === 'statsData') {
                 updateStats(message.data);
+            } else if (message.type === 'realtimeStats') {
+                // Update specific realtime cards
+                if (message.data.requestsPerMinute !== undefined) document.getElementById('stat-rpm').textContent = message.data.requestsPerMinute;
+                if (message.data.avgLatencyMs !== undefined) document.getElementById('stat-latency').innerHTML = message.data.avgLatencyMs + '<span style="font-size: 10px; opacity: 0.6;">ms</span>';
+                if (message.data.errorRate !== undefined) document.getElementById('stat-errors').innerHTML = message.data.errorRate + '<span style="font-size: 10px; opacity: 0.6;">%</span>';
             } else if (message.type === 'auditStatsData') {
                 updateCharts(message.data);
             } else if (message.type === 'auditLogData') {
@@ -2197,6 +2226,8 @@ if response.choices[0].message.tool_calls:
         const autoScroll = document.getElementById('log-autoscroll');
         const logStatus = document.getElementById('log-status-indicator');
         let linesCount = 0;
+
+
 
         function appendLog(log) {
             if (!logContainer) return;
