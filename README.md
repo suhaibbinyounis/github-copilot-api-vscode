@@ -27,6 +27,8 @@ A powerful suite of AI-powered apps built directly into VS Code:
 | ⚡ **Quick Prompt** | Fast AI responses for any question |
 | ✨ **Code Improver** | Refactor and optimize your code |
 
+![Enterprise Apps Hub](Apps.png)
+
 ### Playwright Generator Features
 
 - **Multi-language support**: TypeScript, JavaScript, Python
@@ -35,6 +37,12 @@ A powerful suite of AI-powered apps built directly into VS Code:
 - **AI Model selection**: Choose from available VS Code language models
 - **Automatic project creation**: Creates complete project folder with all files
 - **One-click setup**: Commands for npm install and running tests
+
+### Interactive API Documentation
+
+Full Swagger UI with try-it-out capabilities for all API endpoints:
+
+![Swagger API Documentation](Swagger.png)
 
 ---
 
