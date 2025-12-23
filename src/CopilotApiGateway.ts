@@ -3080,7 +3080,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 	}
 
 	private getOpenApiSpec(): object {
-		const url = `http://${this.config.host}:${this.config.port}`;
+		const url = '/';
 		return {
 			openapi: '3.1.0',
 			info: {

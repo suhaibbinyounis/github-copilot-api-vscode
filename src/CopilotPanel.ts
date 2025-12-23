@@ -499,7 +499,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                 <div class="stat-label">Errors</div>
             </div>
         </div>
-        
+
         <div class="chart-container">
             <div class="chart-title">Requests (Last 7 Days)</div>
             <svg width="${chartWidth}" height="${chartHeight + 16}" style="display: block; margin: 0 auto;">
@@ -519,8 +519,17 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
             <div class="stat-card">
                 <div class="stat-value" style="font-size: 14px; color: var(--vscode-charts-orange);">${this.formatNumber(stats.totalTokensOut)}</div>
                 <div class="stat-label">Tokens Out</div>
-            </div>
         </div>
+    </div>
+
+    <!-- GitHub Star Section -->
+    <div class="section" style="text-align: center; padding: 16px 12px;">
+        <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode" 
+           target="_blank" 
+           style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 500; transition: background 0.15s ease;">
+            ⭐ Star on GitHub
+        </a>
+        <div style="margin-top: 8px; font-size: 10px; opacity: 0.6;">If you find this useful, please star the repo!</div>
     </div>
 
     <script nonce="${nonce}">
@@ -628,7 +637,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         .doc-card p { margin: 6px 0 0 0; opacity: 0.85; font-size: 12px; }
         pre { background: var(--vscode-textBlockQuote-background); border-radius: 8px; padding: 10px; font-size: 12px; overflow-x: auto; margin: 0; white-space: pre-wrap; word-break: break-word; }
         a { color: var(--vscode-textLink-foreground); }
-        
+
         .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -662,7 +671,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         .log-status.success { color: var(--vscode-testing-iconPassed); }
         .log-status.error { color: var(--vscode-testing-iconFailed); }
         .log-latency { color: var(--vscode-descriptionForeground); min-width: 60px; text-align: right; flex-shrink: 0; }
-        
+
         #log-status-indicator {
             width: 8px;
             height: 8px;
@@ -682,7 +691,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                 <h1>Copilot API Dashboard</h1>
                 <p>Monitor and control your local Copilot API Gateway.</p>
                 <div style="margin-top: 8px; font-size: 13px; opacity: 0.9; font-family: var(--vscode-editor-font-family); display: flex; align-items: center; gap: 8px;">
-                    <span style="opacity: 0.6;">Running on:</span> 
+                    <span style="opacity: 0.6;">Running on:</span>
                     <strong id="server-url">${url}</strong>
                     <button id="btn-copy-url" class="secondary" style="padding: 4px 8px; font-size: 11px; min-width: auto;" title="Copy URL">📋 Copy</button>
                 </div>
@@ -813,7 +822,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                             <span class="slider"></span>
                         </label>
                     </div>
-                    
+
                     <div style="margin-top: 16px;">
                         <div style="display: flex; gap: 16px; margin-bottom: 12px;">
                             <div style="flex: 1;">
@@ -847,7 +856,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                             <span class="slider"></span>
                         </label>
                     </div>
-                    
+
                     <div style="margin-top: 12px;">
                         <div style="display: flex; gap: 8px; margin-bottom: 8px;">
                             <input type="password" id="api-key-input" value="${config.apiKey || ''}" placeholder="sk-..." style="flex: 1;">
@@ -887,7 +896,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
 
                     <div style="margin-top: 16px; border-top: 1px solid var(--vscode-widget-border); padding-top: 16px;">
                         <span style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 8px;">HARDENING & LIMITS</span>
-                        
+
                         <div style="display: flex; flex-direction: column; gap: 12px;">
                             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                                 <span class="muted" style="width: 120px; font-size: 11px;">Request Timeout</span>
@@ -942,7 +951,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                     </label>
                 </div>
             </div>
-            
+
             <div id="mcp-content-area">
                 <div class="muted" style="text-align: center; padding: 20px;">Loading tools...</div>
             </div>
@@ -966,7 +975,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
 
         <!-- Audit & Analytics -->
         <div class="card full-width">
-            
+
             <!-- Charts removed per user request -->
             <div style="margin-bottom: 24px;"></div>
 
@@ -1008,13 +1017,13 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                 </div>
             </div>
         </div>
-        
+
         <div class="card full-width">
             <h3>🛡️ Data Redaction</h3>
             <p class="muted" style="margin-bottom: 16px;">
                 Toggle patterns to automatically redact sensitive data from logs. All patterns are applied in real-time.
             </p>
-            
+
             <!-- Built-in Patterns -->
             <div style="margin-bottom: 20px;">
                 <h4 style="font-size: 13px; margin-bottom: 12px; opacity: 0.9;">Built-in Patterns</h4>
@@ -1033,11 +1042,11 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                     `).join('')}
                 </div>
             </div>
-            
+
             <!-- Custom Patterns -->
             <div style="border-top: 1px solid var(--vscode-widget-border); padding-top: 16px;">
                 <h4 style="font-size: 13px; margin-bottom: 12px; opacity: 0.9;">Custom Patterns</h4>
-                
+
                 <div id="custom-patterns-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
                     ${(config.redactionPatterns || []).filter((p: any) => !p.isBuiltin).map((p: any) => `
                         <div class="toggle-row" style="padding: 8px 12px; background: var(--vscode-editor-background); border-radius: 6px; border: 1px solid var(--vscode-widget-border);">
@@ -1056,7 +1065,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                     `).join('')}
                     ${(config.redactionPatterns || []).filter(p => !p.isBuiltin).length === 0 ? '<span class="muted" style="text-align: center; padding: 12px;">No custom patterns added yet</span>' : ''}
                 </div>
-                
+
                 <!-- Add Custom Pattern Form -->
                 <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--vscode-textBlockQuote-background); border-radius: 8px;">
                     <span style="font-size: 11px; font-weight: 600; opacity: 0.8;">ADD CUSTOM PATTERN</span>
@@ -1116,7 +1125,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                         <a href="https://suhaibbinyounis.com" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--vscode-button-secondaryBackground); border-radius: 4px; text-decoration: none; font-size: 12px;">🌐 Website</a>
                         <a href="https://suhaib.in" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--vscode-button-secondaryBackground); border-radius: 4px; text-decoration: none; font-size: 12px;">🔗 suhaib.in</a>
                         <a href="mailto:vscode@suhaib.in" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--vscode-button-secondaryBackground); border-radius: 4px; text-decoration: none; font-size: 12px;">📧 Email</a>
-                        <a href="https://github.com/pmbyt/github-copilot-api-vscode" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--vscode-button-secondaryBackground); border-radius: 4px; text-decoration: none; font-size: 12px;">⭐ Star on GitHub</a>
+                        <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--vscode-button-secondaryBackground); border-radius: 4px; text-decoration: none; font-size: 12px;">⭐ Star on GitHub</a>
                     </div>
                 </div>
                 <div class="muted" style="font-size: 11px; text-align: right;">
@@ -1130,7 +1139,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         <div id="prompt-generator-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 95%, #8b5cf6 5%), color-mix(in srgb, var(--vscode-editor-background) 98%, #7c3aed 2%));">
             <h3>✨ Prompt Generator</h3>
             <p class="muted" style="margin-bottom: 16px;">Create high-quality, detailed prompts for AI assistants. Select options or describe what you need. <span style="opacity: 0.7; font-size: 10px;">💡 Uses Copilot directly - server not required</span></p>
-            
+
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
                 <!-- Project Type -->
                 <div>
@@ -1149,7 +1158,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                         <option value="other">Other</option>
                     </select>
                 </div>
-                
+
                 <!-- Tech Stack -->
                 <div>
                     <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">🛠️ Tech Stack</label>
@@ -1170,7 +1179,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                         <option value="other">Other</option>
                     </select>
                 </div>
-                
+
                 <!-- Goal -->
                 <div>
                     <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">🎪 Goal</label>
@@ -1188,7 +1197,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                         <option value="learn">Learn / Explain</option>
                     </select>
                 </div>
-                
+
                 <!-- Complexity -->
                 <div>
                     <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">📊 Complexity</label>
@@ -1201,13 +1210,13 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                     </select>
                 </div>
             </div>
-            
+
             <!-- Custom Context -->
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">📝 Describe what you want to build</label>
                 <textarea id="prompt-context" placeholder="E.g., 'A user authentication system with OAuth, password reset, and role-based access control...'" style="width: 100%; min-height: 80px; padding: 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px; resize: vertical; font-family: inherit; box-sizing: border-box;"></textarea>
             </div>
-            
+
             <!-- Generate Button -->
             <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                 <button id="btn-generate-prompt" style="flex: 1; padding: 10px 16px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
@@ -1217,7 +1226,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                     🚀 Enhance
                 </button>
             </div>
-            
+
             <!-- Output Area -->
             <div id="prompt-output-container" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -1229,7 +1238,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
                 </div>
                 <div id="prompt-output" style="background: var(--vscode-editor-background); border: 1px solid var(--vscode-widget-border); border-radius: 8px; padding: 16px; font-size: 12px; line-height: 1.6; white-space: pre-wrap; max-height: 400px; overflow-y: auto; font-family: var(--vscode-editor-font-family);"></div>
             </div>
-            
+
             <!-- Loading State -->
             <div id="prompt-loading" style="display: none; text-align: center; padding: 20px;">
                 <div style="display: inline-block; animation: spin 1s linear infinite; font-size: 24px;">⚙️</div>
@@ -1241,7 +1250,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         <div id="wiki-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 92%, #10b981 8%), color-mix(in srgb, var(--vscode-editor-background) 96%, #059669 4%));">
             <h3>📚 API Usage Guide</h3>
             <p class="muted" style="margin-bottom: 16px;">Complete reference for connecting to the Copilot API Gateway from various languages, with installation instructions and real-world examples.</p>
-            
+
             <!-- Tab Navigation -->
             <div id="wiki-tabs" style="display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap;">
                 <button class="wiki-tab active" data-tab="python" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">🐍 Python</button>
@@ -1252,7 +1261,7 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
 
             <!-- Tab Content -->
             <div id="wiki-content" style="background: var(--vscode-editor-background); border-radius: 0 8px 8px 8px; padding: 16px; max-height: 600px; overflow-y: auto;">
-                
+
                 <!-- Python Tab -->
                 <div class="wiki-panel" data-panel="python">
                     <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">📦 Installation</h4>
@@ -1575,32 +1584,32 @@ console.log(response.choices[0].message.tool_calls);</pre>
 
                     <h4 style="color: var(--vscode-textLink-foreground);">🖥️ Built-in VS Code Tools</h4>
                     <p class="muted" style="font-size: 11px; margin-bottom: 12px;">These tools are automatically available without any configuration:</p>
-                    
+
                     <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
                         <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #10b981;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_read_file</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">Read the contents of any file in the workspace</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "uri": "file:///path/to/file.ts" }</pre>
                         </div>
-                        
+
                         <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_list_files</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">List files in a directory with optional glob pattern</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "folder": "/src", "pattern": "**/*.ts" }</pre>
                         </div>
-                        
+
                         <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_open_file</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">Open a file in VS Code editor, optionally at specific lines</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "uri": "file:///path/to/file.ts", "startLine": 10, "endLine": 20 }</pre>
                         </div>
-                        
+
                         <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #ef4444;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_get_diagnostics</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">Get current errors and warnings from the Problems panel</div>
                             <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "maxResults": 50 }</pre>
                         </div>
-                        
+
                         <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #8b5cf6;">
                             <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_get_active_editor</code>
                             <div class="muted" style="font-size: 11px; margin-top: 4px;">Get content and cursor position of currently open file</div>
@@ -1733,7 +1742,7 @@ if response.choices[0].message.tool_calls:
 
     <script nonce="${nonce}">
         var vscode = acquireVsCodeApi();
-        
+
         // Pagination state - declare at top to avoid hoisting issues
         var currentPage = 1;
         var pageSize = 10;
@@ -1852,7 +1861,7 @@ if response.choices[0].message.tool_calls:
 
         // Initialize on load
         // try { initCharts(); } catch (e) { console.error('Failed to init charts', e); }
-        
+
         // Request initial data
         setTimeout(() => vscode.postMessage({ type: 'getAuditStats' }), 500);
 
@@ -1877,7 +1886,7 @@ if response.choices[0].message.tool_calls:
         }
 
         document.getElementById('btn-close-modal').onclick = closeModal;
-        
+
         window.onclick = function(event) {
             if (event.target == modal) {
                 closeModal();
@@ -1888,7 +1897,7 @@ if response.choices[0].message.tool_calls:
         window.showDetails = function(index) {
             if (!lastLogs || !lastLogs[index]) return;
             const log = lastLogs[index];
-            
+
             const reqContent = {
                 headers: log.requestHeaders,
                 body: log.requestBody
@@ -1901,7 +1910,7 @@ if response.choices[0].message.tool_calls:
 
             document.getElementById('modal-request').textContent = JSON.stringify(reqContent, null, 2);
             document.getElementById('modal-response').textContent = JSON.stringify(resContent, null, 2);
-            
+
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden'; // Lock scrolling
         };
@@ -1958,38 +1967,38 @@ if response.choices[0].message.tool_calls:
             var goal = document.getElementById('prompt-goal').value;
             var complexity = document.getElementById('prompt-complexity').value;
             var context = document.getElementById('prompt-context').value;
-            
+
             if (!context && !projectType && !techStack && !goal) {
                 alert('Please select at least one option or describe what you want to build.');
                 return;
             }
-            
+
             document.getElementById('prompt-output-container').style.display = 'none';
             document.getElementById('prompt-loading').style.display = 'block';
-            
+
             vscode.postMessage({
                 type: 'generatePrompt',
                 data: { projectType: projectType, techStack: techStack, goal: goal, complexity: complexity, context: context }
             });
         };
-        
+
         document.getElementById('btn-enhance-prompt').onclick = function() {
             var context = document.getElementById('prompt-context').value;
             var currentOutput = document.getElementById('prompt-output').textContent;
-            
+
             if (!context && !currentOutput) {
                 alert('Please enter a description or generate a prompt first.');
                 return;
             }
-            
+
             document.getElementById('prompt-loading').style.display = 'block';
-            
+
             vscode.postMessage({
                 type: 'enhancePrompt',
                 data: { context: context, existingPrompt: currentOutput }
             });
         };
-        
+
         document.getElementById('btn-copy-prompt').onclick = function() {
             var content = document.getElementById('prompt-output').textContent;
             navigator.clipboard.writeText(content).then(function() {
@@ -1998,7 +2007,7 @@ if response.choices[0].message.tool_calls:
                 setTimeout(function() { btn.textContent = '📋 Copy'; }, 1500);
             });
         };
-        
+
         document.getElementById('btn-export-prompt').onclick = function() {
             var content = document.getElementById('prompt-output').textContent;
             var blob = new Blob([content], { type: 'text/plain' });
@@ -2014,17 +2023,17 @@ if response.choices[0].message.tool_calls:
         let refreshTimer = 10;
         let refreshIntervalVal = null;
         const refreshSpan = document.getElementById('refresh-timer');
-        
+
         function startCountdown() {
             if (refreshIntervalVal) clearInterval(refreshIntervalVal);
-            
+
             refreshTimer = 10;
             updateTimerDisplay();
-            
+
             refreshIntervalVal = setInterval(() => {
                 refreshTimer--;
                 updateTimerDisplay();
-                
+
                 if (refreshTimer <= 0) {
                     refreshTimer = 10;
                     vscode.postMessage({ type: 'getAuditStats' });
@@ -2268,38 +2277,38 @@ if response.choices[0].message.tool_calls:
         function appendLog(log) {
             if (!logContainer) return;
             if (linesCount === 0) logContainer.innerHTML = '';
-            
+
             const line = document.createElement('div');
             line.className = 'log-line';
-            
+
             const isError = log.status >= 400;
             const statusClass = isError ? 'error' : 'success';
-            
+
             const time = new Date(log.timestamp).toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            
+
             line.innerHTML = '<span class="log-time">[' + time + ']</span>' +
                              '<span class="log-method">' + (log.method || 'UNK') + '</span>' +
                              '<span class="log-path">' + (log.path || '/') + '</span>' +
                              '<span class="log-status ' + statusClass + '">' + (log.status || 0) + '</span>' +
                              '<span class="log-latency">' + (log.durationMs || 0) + 'ms</span>';
 
-            
+
             logContainer.appendChild(line);
             linesCount++;
-            
+
             // Pulse status indicator
             if (logStatus) {
                 logStatus.classList.remove('active');
                 void logStatus.offsetWidth; // Trigger reflow
                 logStatus.classList.add('active');
             }
-            
+
             // Limit shown lines to 100 for performance
             if (linesCount > 100) {
                 logContainer.removeChild(logContainer.firstChild);
                 linesCount--;
             }
-            
+
             if (autoScroll && autoScroll.checked) {
                 logContainer.scrollTop = logContainer.scrollHeight;
             }
@@ -2332,10 +2341,10 @@ if response.choices[0].message.tool_calls:
             if (btnNext) btnNext.disabled = page * pageSize >= total;
 
             if (!tbody) return;
-            
+
             // Clear checks to force refresh
             tbody.innerHTML = '';
-            
+
             if (!logs || logs.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="padding: 24px; text-align: center; opacity: 0.6; font-style: italic;">No audit logs found.<br><span style="font-size: 11px; opacity: 0.8; margin-top: 4px; display: block;">Make a request to generate logs.</span></td></tr>';
                 return;
@@ -2345,7 +2354,7 @@ if response.choices[0].message.tool_calls:
                 const date = new Date(log.timestamp);
                 const time = date.toLocaleTimeString();
                 const statusColor = log.status >= 400 ? 'var(--vscode-testing-iconFailed)' : (log.status >= 300 ? 'var(--vscode-charts-yellow)' : 'var(--vscode-testing-iconPassed)');
-                
+
                 return \`
                 <tr style="border-bottom: 1px solid var(--vscode-widget-border);">
                     <td style="padding: 8px 12px; white-space: nowrap; opacity: 0.8;">\${time}</td>
@@ -2391,7 +2400,7 @@ function updateStats(stats) {
         var display = hours > 0 ? hours + 'h ' + (minutes % 60) + 'm' : minutes + 'm';
         document.getElementById('stat-uptime').textContent = display;
     }
-    
+
     // Update MCP Status
     if (stats.mcp) {
         var mcpEnabled = stats.mcp.enabled;
@@ -2429,7 +2438,7 @@ function updateStats(stats) {
             });
 
             var html = '<div style="display: flex; flex-direction: column; gap: 24px;">';
-            
+
             Object.keys(groups).sort().forEach(function(serverName) {
                 var serverTools = groups[serverName];
                 html += '<div>';
