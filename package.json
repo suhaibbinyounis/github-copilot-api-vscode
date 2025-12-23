@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.1",
-    "selfsigned": "^5.2.0",
+    "selfsigned": "^5.4.0",
     "swagger-ui-dist": "^5.31.0",
     "ws": "^8.18.3"
   },
