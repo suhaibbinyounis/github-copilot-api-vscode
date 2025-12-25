@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>API Reference | GitHub Copilot API Gateway</title>
+    <meta name="title" content="API Reference | GitHub Copilot API Gateway">
+    <meta name="description"
+        content="Complete API reference for GitHub Copilot API Gateway. Explore all endpoints for OpenAI, Anthropic, Google, and Llama APIs with interactive examples.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://copilot-api.suhaib.in/api.html">
+    <meta property="og:title" content="API Reference | GitHub Copilot API Gateway">
+    <meta property="og:description"
+        content="Complete API reference for OpenAI, Anthropic, Google, and Llama compatible endpoints.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .endpoint-card.expanded .endpoint-body {
+            display: block;
+        }
+
+        .endpoint-card .endpoint-body {
+            display: none;
+        }
+
+        .endpoint-toggle {
+            margin-left: auto;
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            transition: transform var(--transition-base);
+        }
+
+        .endpoint-card.expanded .endpoint-toggle {
+            transform: rotate(180deg);
+        }
+
+        .param-table {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .param-table th,
+        .param-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .param-table th {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .param-required {
+            color: var(--color-accent);
+            font-size: 0.75rem;
+        }
+
+        .param-type {
+            color: var(--color-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <a href="/" class="nav-logo">
+                <img src="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png"
+                    alt="Logo">
+                <span>Copilot API Gateway</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#use-cases" class="nav-link">Use Cases</a></li>
+                <li><a href="index.html#integrations" class="nav-link">Integrations</a></li>
+                <li><a href="docs.html" class="nav-link">Docs</a></li>
+                <li><a href="api.html" class="nav-link active">API</a></li>
+                <li><a href="faq.html" class="nav-link">FAQ</a></li>
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=suhaibbinyounis.github-copilot-api-vscode"
+                        class="btn btn-primary" target="_blank" rel="noopener">
+                        Install Extension
+                    </a>
+                </li>
+            </ul>
+
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- API Reference Layout -->
+    <div class="container">
+        <div class="docs-layout">
+            <!-- Sidebar -->
+            <aside class="docs-sidebar">
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Overview</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#introduction" class="active">Introduction</a></li>
+                        <li><a href="#authentication">Authentication</a></li>
+                        <li><a href="#base-url">Base URL</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">OpenAI API</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#openai-chat">Chat Completions</a></li>
+                        <li><a href="#openai-models">List Models</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Anthropic API</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#anthropic-messages">Create Message</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Google API</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#google-generate">Generate Content</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Llama API</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#llama-chat">Chat Completions</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Utilities</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#usage">Usage Statistics</a></li>
+                        <li><a href="#swagger">Swagger UI</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Content -->
+            <main class="docs-content">
+                <h1 id="introduction">API Reference</h1>
+                <p>The GitHub Copilot API Gateway exposes OpenAI-compatible endpoints that translate requests to your
+                    authenticated Copilot session. This reference documents all available endpoints.</p>
+
+                <!-- Authentication -->
+                <h2 id="authentication">Authentication</h2>
+                <p>Authentication happens automatically through your VS Code GitHub Copilot session. For the API client,
+                    you have two options:</p>
+
+                <h3>Option 1: No Authentication (Local)</h3>
+                <p>When running locally (<code>127.0.0.1</code>), you can use any string as the API key:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>client = OpenAI(
+    <span class="code-variable">base_url</span>=<span class="code-string">"http://127.0.0.1:3030/v1"</span>,
+    <span class="code-variable">api_key</span>=<span class="code-string">"anything"</span>  <span class="code-comment"># Ignored by server</span>
+)</pre>
+                    </div>
+                </div>
+
+                <h3>Option 2: Bearer Token (When API Key Configured)</h3>
+                <p>If you've set <code>server.apiKey</code> in settings, include it in your requests:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">HTTP</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>Authorization: Bearer your-configured-api-key</pre>
+                    </div>
+                </div>
+
+                <!-- Base URL -->
+                <h2 id="base-url">Base URL</h2>
+                <div class="code-block" style="margin-bottom: 1rem;">
+                    <div class="code-content">
+                        <pre>http://127.0.0.1:3030</pre>
+                    </div>
+                </div>
+                <p>Or if running on LAN: <code>http://YOUR-IP:3030</code></p>
+
+                <!-- OpenAI Endpoints -->
+                <h2 style="margin-top: 3rem;">OpenAI API</h2>
+                <p>Full compatibility with OpenAI's Chat Completions API.</p>
+
+                <!-- Chat Completions -->
+                <div class="endpoint-card expanded" id="openai-chat">
+                    <div class="endpoint-header" onclick="this.parentElement.classList.toggle('expanded')">
+                        <span class="endpoint-method post">POST</span>
+                        <span class="endpoint-path">/v1/chat/completions</span>
+                        <span class="endpoint-desc">Create a chat completion</span>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <h4>Request Body</h4>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>model</code> <span class="param-required">required</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td>Model ID (e.g., <code>gpt-4o</code>, <code>gpt-4</code>,
+                                        <code>gpt-3.5-turbo</code>)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>messages</code> <span class="param-required">required</span></td>
+                                    <td><span class="param-type">array</span></td>
+                                    <td>Array of message objects with <code>role</code> and <code>content</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>stream</code></td>
+                                    <td><span class="param-type">boolean</span></td>
+                                    <td>Enable streaming responses (SSE)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>temperature</code></td>
+                                    <td><span class="param-type">number</span></td>
+                                    <td>Sampling temperature (0-2)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>max_tokens</code></td>
+                                    <td><span class="param-type">integer</span></td>
+                                    <td>Maximum tokens to generate</td>
+                                </tr>
+                                <tr>
+                                    <td><code>tools</code></td>
+                                    <td><span class="param-type">array</span></td>
+                                    <td>List of tool/function definitions</td>
+                                </tr>
+                                <tr>
+                                    <td><code>response_format</code></td>
+                                    <td><span class="param-type">object</span></td>
+                                    <td>Set to <code>{"type": "json_object"}</code> for JSON mode</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Example Request</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span></span><span></span><span></span></div>
+                                <span class="code-lang">Python</span>
+                                <button class="code-copy">Copy</button>
+                            </div>
+                            <div class="code-content">
+                                <pre><span class="code-keyword">from</span> openai <span class="code-keyword">import</span> OpenAI
+
+client = OpenAI(
+    <span class="code-variable">base_url</span>=<span class="code-string">"http://127.0.0.1:3030/v1"</span>,
+    <span class="code-variable">api_key</span>=<span class="code-string">"copilot"</span>
+)
+
+response = client.chat.completions.create(
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>,
+    <span class="code-variable">messages</span>=[
+        {<span class="code-string">"role"</span>: <span class="code-string">"system"</span>, <span class="code-string">"content"</span>: <span class="code-string">"You are a helpful assistant."</span>},
+        {<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"What is the capital of France?"</span>}
+    ],
+    <span class="code-variable">temperature</span>=<span class="code-number">0.7</span>
+)
+
+<span class="code-function">print</span>(response.choices[<span class="code-number">0</span>].message.content)</pre>
+                            </div>
+                        </div>
+
+                        <h4>Example with Streaming</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span></span><span></span><span></span></div>
+                                <span class="code-lang">Python</span>
+                                <button class="code-copy">Copy</button>
+                            </div>
+                            <div class="code-content">
+                                <pre>stream = client.chat.completions.create(
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>,
+    <span class="code-variable">messages</span>=[{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Write a haiku"</span>}],
+    <span class="code-variable">stream</span>=<span class="code-keyword">True</span>
+)
+
+<span class="code-keyword">for</span> chunk <span class="code-keyword">in</span> stream:
+    <span class="code-keyword">if</span> chunk.choices[<span class="code-number">0</span>].delta.content:
+        <span class="code-function">print</span>(chunk.choices[<span class="code-number">0</span>].delta.content, <span class="code-variable">end</span>=<span class="code-string">""</span>)</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List Models -->
+                <div class="endpoint-card" id="openai-models">
+                    <div class="endpoint-header" onclick="this.parentElement.classList.toggle('expanded')">
+                        <span class="endpoint-method get">GET</span>
+                        <span class="endpoint-path">/v1/models</span>
+                        <span class="endpoint-desc">List available models</span>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <p>Returns a list of models available through your Copilot subscription.</p>
+
+                        <h4>Example Request</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span></span><span></span><span></span></div>
+                                <span class="code-lang">curl</span>
+                                <button class="code-copy">Copy</button>
+                            </div>
+                            <div class="code-content">
+                                <pre>curl http://127.0.0.1:3030/v1/models</pre>
+                            </div>
+                        </div>
+
+                        <h4>Example Response</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span></span><span></span><span></span></div>
+                                <span class="code-lang">JSON</span>
+                                <button class="code-copy">Copy</button>
+                            </div>
+                            <div class="code-content">
+                                <pre>{
+  <span class="code-string">"object"</span>: <span class="code-string">"list"</span>,
+  <span class="code-string">"data"</span>: [
+    { <span class="code-string">"id"</span>: <span class="code-string">"gpt-4o"</span>, <span class="code-string">"object"</span>: <span class="code-string">"model"</span> },
+    { <span class="code-string">"id"</span>: <span class="code-string">"gpt-4"</span>, <span class="code-string">"object"</span>: <span class="code-string">"model"</span> },
+    { <span class="code-string">"id"</span>: <span class="code-string">"gpt-3.5-turbo"</span>, <span class="code-string">"object"</span>: <span class="code-string">"model"</span> },
+    { <span class="code-string">"id"</span>: <span class="code-string">"claude-3.5-sonnet"</span>, <span class="code-string">"object"</span>: <span class="code-string">"model"</span> }
+  ]
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anthropic Endpoints -->
+                <h2 id="anthropic-messages" style="margin-top: 3rem;">Anthropic API</h2>
+                <p>Compatible with Anthropic Claude SDK.</p>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="this.parentElement.classList.toggle('expanded')">
+                        <span class="endpoint-method post">POST</span>
+                        <span class="endpoint-path">/v1/messages</span>
+                        <span class="endpoint-desc">Create a message (Claude)</span>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <h4>Request Body</h4>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>model</code> <span class="param-required">required</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td>e.g., <code>claude-3-5-sonnet-20241022</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>messages</code> <span class="param-required">required</span></td>
+                                    <td><span class="param-type">array</span></td>
+                                    <td>Array of message objects</td>
+                                </tr>
+                                <tr>
+                                    <td><code>max_tokens</code> <span class="param-required">required</span></td>
+                                    <td><span class="param-type">integer</span></td>
+                                    <td>Maximum tokens to generate</td>
+                                </tr>
+                                <tr>
+                                    <td><code>system</code></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td>System prompt</td>
+                                </tr>
+                                <tr>
+                                    <td><code>stream</code></td>
+                                    <td><span class="param-type">boolean</span></td>
+                                    <td>Enable streaming</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Example Request</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span></span><span></span><span></span></div>
+                                <span class="code-lang">Python</span>
+                                <button class="code-copy">Copy</button>
+                            </div>
+                            <div class="code-content">
+                                <pre><span class="code-keyword">import</span> anthropic
+
+client = anthropic.Anthropic(
+    <span class="code-variable">base_url</span>=<span class="code-string">"http://127.0.0.1:3030"</span>,
+    <span class="code-variable">api_key</span>=<span class="code-string">"copilot"</span>
+)
+
+message = client.messages.create(
+    <span class="code-variable">model</span>=<span class="code-string">"claude-3-5-sonnet-20241022"</span>,
+    <span class="code-variable">max_tokens</span>=<span class="code-number">1024</span>,
+    <span class="code-variable">messages</span>=[
+        {<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Explain quantum computing"</span>}
+    ]
+)
+
+<span class="code-function">print</span>(message.content[<span class="code-number">0</span>].text)</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Endpoints -->
+                <h2 id="google-generate" style="margin-top: 3rem;">Google API</h2>
+                <p>Compatible with Google Generative AI SDK.</p>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="this.parentElement.classList.toggle('expanded')">
+                        <span class="endpoint-method post">POST</span>
+                        <span class="endpoint-path">/v1beta/models/:model:generateContent</span>
+                        <span class="endpoint-desc">Generate content (Gemini)</span>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <h4>URL Parameters</h4>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>:model</code> <span class="param-required">required</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td>Model name (e.g., <code>gemini-pro</code>)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Example Request</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span></span><span></span><span></span></div>
+                                <span class="code-lang">Python</span>
+                                <button class="code-copy">Copy</button>
+                            </div>
+                            <div class="code-content">
+                                <pre><span class="code-keyword">import</span> google.generativeai <span class="code-keyword">as</span> genai
+
+genai.configure(
+    <span class="code-variable">api_key</span>=<span class="code-string">"copilot"</span>,
+    <span class="code-variable">transport</span>=<span class="code-string">"rest"</span>,
+    <span class="code-variable">client_options</span>={<span class="code-string">"api_endpoint"</span>: <span class="code-string">"http://127.0.0.1:3030"</span>}
+)
+
+model = genai.GenerativeModel(<span class="code-string">"gemini-pro"</span>)
+response = model.generate_content(<span class="code-string">"Tell me a joke"</span>)
+<span class="code-function">print</span>(response.text)</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Llama Endpoints -->
+                <h2 id="llama-chat" style="margin-top: 3rem;">Llama API</h2>
+                <p>Compatible with Llama client libraries.</p>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="this.parentElement.classList.toggle('expanded')">
+                        <span class="endpoint-method post">POST</span>
+                        <span class="endpoint-path">/llama/v1/chat/completions</span>
+                        <span class="endpoint-desc">Chat completions (Llama)</span>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <p>Same request/response format as OpenAI Chat Completions, but routed through the Llama
+                            endpoint.</p>
+
+                        <h4>Example Request</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span></span><span></span><span></span></div>
+                                <span class="code-lang">curl</span>
+                                <button class="code-copy">Copy</button>
+                            </div>
+                            <div class="code-content">
+                                <pre>curl -X POST http://127.0.0.1:3030/llama/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama-3.1-70b",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Utilities -->
+                <h2 id="usage" style="margin-top: 3rem;">Utilities</h2>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header" onclick="this.parentElement.classList.toggle('expanded')">
+                        <span class="endpoint-method get">GET</span>
+                        <span class="endpoint-path">/v1/usage</span>
+                        <span class="endpoint-desc">Get usage statistics</span>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <p>Returns server usage statistics including request counts and token usage.</p>
+
+                        <h4>Example Response</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span></span><span></span><span></span></div>
+                                <span class="code-lang">JSON</span>
+                                <button class="code-copy">Copy</button>
+                            </div>
+                            <div class="code-content">
+                                <pre>{
+  <span class="code-string">"totalRequests"</span>: <span class="code-number">1234</span>,
+  <span class="code-string">"successfulRequests"</span>: <span class="code-number">1200</span>,
+  <span class="code-string">"failedRequests"</span>: <span class="code-number">34</span>,
+  <span class="code-string">"totalInputTokens"</span>: <span class="code-number">50000</span>,
+  <span class="code-string">"totalOutputTokens"</span>: <span class="code-number">75000</span>,
+  <span class="code-string">"uptime"</span>: <span class="code-number">3600</span>
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-card" id="swagger">
+                    <div class="endpoint-header" onclick="this.parentElement.classList.toggle('expanded')">
+                        <span class="endpoint-method get">GET</span>
+                        <span class="endpoint-path">/docs</span>
+                        <span class="endpoint-desc">Swagger UI documentation</span>
+                        <span class="endpoint-toggle">▼</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <p>Access interactive API documentation using Swagger UI. Test endpoints directly from your
+                            browser.</p>
+
+                        <p>Open in browser: <a href="http://127.0.0.1:3030/docs"
+                                target="_blank">http://127.0.0.1:3030/docs</a></p>
+
+                        <ul>
+                            <li><strong>Try It Out:</strong> Send real requests and see responses</li>
+                            <li><strong>Schema Explorer:</strong> View detailed request/response schemas</li>
+                            <li><strong>Offline:</strong> Works locally without external dependencies</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 3rem; padding: 2rem; background: var(--bg-surface); border-radius: var(--radius-xl); text-align: center;">
+                    <h3>Need Integration Guides?</h3>
+                    <p style="margin-bottom: 1rem;">Check out the Wiki for step-by-step guides on integrating with
+                        LangChain, Cursor, Aider, and more.</p>
+                    <a href="wiki.html" class="btn btn-primary">View Integration Guides</a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 4rem;">
+        <div class="container">
+            <div class="footer-bottom">
+                <p class="text-muted">&copy; 2024 Suhaib Bin Younis. MIT License.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/suhaibbinyounis" target="_blank" rel="noopener" aria-label="GitHub">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com/suhaibbinyounis" target="_blank" rel="noopener" aria-label="Twitter">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

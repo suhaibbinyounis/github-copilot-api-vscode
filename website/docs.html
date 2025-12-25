@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Documentation | GitHub Copilot API Gateway</title>
+    <meta name="title" content="Documentation | GitHub Copilot API Gateway">
+    <meta name="description"
+        content="Complete documentation for GitHub Copilot API Gateway. Learn how to install, configure, and use the extension to power your AI tools.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://copilot-api.suhaib.in/docs.html">
+    <meta property="og:title" content="Documentation | GitHub Copilot API Gateway">
+    <meta property="og:description"
+        content="Complete documentation for GitHub Copilot API Gateway. Learn how to install, configure, and secure the extension.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <a href="/" class="nav-logo">
+                <img src="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png"
+                    alt="Logo">
+                <span>Copilot API Gateway</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#use-cases" class="nav-link">Use Cases</a></li>
+                <li><a href="index.html#integrations" class="nav-link">Integrations</a></li>
+                <li><a href="docs.html" class="nav-link active">Docs</a></li>
+                <li><a href="api.html" class="nav-link">API</a></li>
+                <li><a href="faq.html" class="nav-link">FAQ</a></li>
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=suhaibbinyounis.github-copilot-api-vscode"
+                        class="btn btn-primary" target="_blank" rel="noopener">
+                        Install Extension
+                    </a>
+                </li>
+            </ul>
+
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="container">
+        <div class="docs-layout">
+            <!-- Sidebar -->
+            <aside class="docs-sidebar">
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Getting Started</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#overview" class="active">Overview</a></li>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="#quick-start">Quick Start</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Configuration</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#server-settings">Server Settings</a></li>
+                        <li><a href="#network-config">Network Configuration</a></li>
+                        <li><a href="#environment-vars">Environment Variables</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Security</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#access-control">Access Control</a></li>
+                        <li><a href="#ip-allowlist">IP Allowlisting</a></li>
+                        <li><a href="#api-key-auth">API Key Auth</a></li>
+                        <li><a href="#audit-logging">Audit Logging</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Advanced</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#https-ssl">HTTPS/SSL</a></li>
+                        <li><a href="#rate-limiting">Rate Limiting</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Content -->
+            <main class="docs-content">
+                <h1 id="overview">Documentation</h1>
+                <p>Welcome to the GitHub Copilot API Gateway documentation. This guide will help you install, configure,
+                    and secure the extension.</p>
+
+                <!-- Installation -->
+                <h2 id="installation">Installation</h2>
+
+                <h3>Prerequisites</h3>
+                <ul>
+                    <li><strong>Visual Studio Code</strong> version 1.95 or higher</li>
+                    <li><strong>GitHub Copilot</strong> extension installed and authenticated</li>
+                    <li><strong>GitHub Copilot Chat</strong> extension installed</li>
+                    <li>An active <strong>GitHub Copilot subscription</strong> (Individual, Business, or Enterprise)
+                    </li>
+                </ul>
+
+                <h3>Install from VS Code Marketplace</h3>
+                <ol>
+                    <li>Open VS Code</li>
+                    <li>Go to Extensions (<code>Ctrl+Shift+X</code> / <code>Cmd+Shift+X</code>)</li>
+                    <li>Search for <strong>"GitHub Copilot API Gateway"</strong></li>
+                    <li>Click <strong>Install</strong></li>
+                </ol>
+
+                <p>Or install directly via command line:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">bash</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>code --install-extension suhaibbinyounis.github-copilot-api-vscode</pre>
+                    </div>
+                </div>
+
+                <!-- Quick Start -->
+                <h2 id="quick-start">Quick Start</h2>
+
+                <h3>Step 1: Start the Server</h3>
+                <p>After installation, start the API server using one of these methods:</p>
+                <ul>
+                    <li>Click the <strong>"Start Server"</strong> button in the sidebar</li>
+                    <li>Open Command Palette (<code>Ctrl+Shift+P</code>) → <strong>"GitHub Copilot: Start API
+                            Server"</strong></li>
+                </ul>
+
+                <h3>Step 2: Connect Your App</h3>
+                <p>Point any OpenAI-compatible client to <code>http://127.0.0.1:3030</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="code-keyword">from</span> openai <span class="code-keyword">import</span> OpenAI
+
+client = OpenAI(
+    <span class="code-variable">base_url</span>=<span class="code-string">"http://127.0.0.1:3030/v1"</span>,
+    <span class="code-variable">api_key</span>=<span class="code-string">"copilot"</span>  <span class="code-comment"># Any string works</span>
+)
+
+response = client.chat.completions.create(
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>,
+    <span class="code-variable">messages</span>=[{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Hello!"</span>}]
+)
+<span class="code-function">print</span>(response.choices[<span class="code-number">0</span>].message.content)</pre>
+                    </div>
+                </div>
+
+                <h3>Step 3: Verify It Works</h3>
+                <p>Open your browser and visit:</p>
+                <ul>
+                    <li><code>http://127.0.0.1:3030/v1/models</code> — List available models</li>
+                    <li><code>http://127.0.0.1:3030/docs</code> — Interactive Swagger UI</li>
+                </ul>
+
+                <!-- Server Settings -->
+                <h2 id="server-settings">Server Settings</h2>
+
+                <p>Configure the extension via VS Code Settings (<code>Ctrl+,</code>) → search for
+                    <code>githubCopilotApi</code>:
+                </p>
+
+                <table class="comparison-table" style="margin: 1rem 0;">
+                    <thead>
+                        <tr>
+                            <th>Setting</th>
+                            <th>Default</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>server.port</code></td>
+                            <td>3030</td>
+                            <td>Port the API server listens on</td>
+                        </tr>
+                        <tr>
+                            <td><code>server.host</code></td>
+                            <td>127.0.0.1</td>
+                            <td>Host to bind (use 0.0.0.0 for LAN access)</td>
+                        </tr>
+                        <tr>
+                            <td><code>server.apiKey</code></td>
+                            <td><em>none</em></td>
+                            <td>Optional Bearer token for authentication</td>
+                        </tr>
+                        <tr>
+                            <td><code>server.ipAllowlist</code></td>
+                            <td>[]</td>
+                            <td>Array of allowed IPs/CIDR ranges</td>
+                        </tr>
+                        <tr>
+                            <td><code>server.rateLimit</code></td>
+                            <td>60</td>
+                            <td>Max requests per minute per IP</td>
+                        </tr>
+                        <tr>
+                            <td><code>server.maxConcurrent</code></td>
+                            <td>10</td>
+                            <td>Max concurrent connections per IP</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Example settings.json</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">JSON</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>{
+  <span class="code-string">"githubCopilotApi.server.port"</span>: <span class="code-number">3030</span>,
+  <span class="code-string">"githubCopilotApi.server.host"</span>: <span class="code-string">"127.0.0.1"</span>,
+  <span class="code-string">"githubCopilotApi.server.apiKey"</span>: <span class="code-string">"my-secret-token"</span>,
+  <span class="code-string">"githubCopilotApi.server.ipAllowlist"</span>: [<span class="code-string">"127.0.0.1"</span>, <span class="code-string">"192.168.1.0/24"</span>]
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Network Configuration -->
+                <h2 id="network-config">Network Configuration</h2>
+
+                <h3>Local-only Access (Default)</h3>
+                <p>By default, the server binds to <code>127.0.0.1</code>, making it accessible only from your local
+                    machine. This is the most secure configuration.</p>
+
+                <h3>LAN Access</h3>
+                <p>To share the API with other devices on your network:</p>
+                <ol>
+                    <li>Change <code>server.host</code> to <code>0.0.0.0</code></li>
+                    <li>Configure your firewall to allow port 3030</li>
+                    <li>Use the <strong>IP Allowlist</strong> to restrict access to trusted devices</li>
+                </ol>
+
+                <p>Your API will be accessible at <code>http://YOUR-LAN-IP:3030</code></p>
+
+                <!-- Environment Variables -->
+                <h2 id="environment-vars">Environment Variables</h2>
+
+                <p>You can also configure the extension using environment variables, which is useful for CI/CD pipelines
+                    or Docker deployments:</p>
+
+                <table class="comparison-table" style="margin: 1rem 0;">
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Equivalent Setting</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>COPILOT_API_PORT</code></td>
+                            <td>server.port</td>
+                            <td><code>3030</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>COPILOT_API_HOST</code></td>
+                            <td>server.host</td>
+                            <td><code>0.0.0.0</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>COPILOT_API_KEY</code></td>
+                            <td>server.apiKey</td>
+                            <td><code>my-secret</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Environment variables take precedence over VS Code settings when both are defined.</p>
+
+                <!-- Access Control -->
+                <h2 id="access-control">Access Control</h2>
+
+                <p>The gateway provides multiple layers of security to protect your Copilot access.</p>
+
+                <h3 id="ip-allowlist">IP Allowlisting</h3>
+                <p>Restrict access to specific IP addresses or CIDR ranges:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">JSON</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>{
+  <span class="code-string">"githubCopilotApi.server.ipAllowlist"</span>: [
+    <span class="code-string">"127.0.0.1"</span>,        <span class="code-comment">// localhost</span>
+    <span class="code-string">"192.168.1.0/24"</span>,   <span class="code-comment">// local subnet</span>
+    <span class="code-string">"10.0.0.50"</span>         <span class="code-comment">// specific device</span>
+  ]
+}</pre>
+                    </div>
+                </div>
+
+                <h3 id="api-key-auth">API Key Authentication</h3>
+                <p>Require a Bearer token for all requests:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">JSON</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>{
+  <span class="code-string">"githubCopilotApi.server.apiKey"</span>: <span class="code-string">"your-secret-token-here"</span>
+}</pre>
+                    </div>
+                </div>
+
+                <p>Clients must include the header:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">HTTP</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>Authorization: Bearer your-secret-token-here</pre>
+                    </div>
+                </div>
+
+                <h3 id="audit-logging">Audit Logging</h3>
+                <p>All requests are logged with:</p>
+                <ul>
+                    <li>Timestamp</li>
+                    <li>Client IP address</li>
+                    <li>Request method and path</li>
+                    <li>Response status code</li>
+                    <li>Latency</li>
+                    <li>Token usage (if applicable)</li>
+                </ul>
+
+                <p>Logs are stored in VS Code's extension storage and accessible via the Dashboard.</p>
+
+                <!-- HTTPS/SSL -->
+                <h2 id="https-ssl">HTTPS/SSL</h2>
+
+                <p>Enable HTTPS for encrypted connections:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">JSON</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>{
+  <span class="code-string">"githubCopilotApi.server.https.enabled"</span>: <span class="code-keyword">true</span>,
+  <span class="code-string">"githubCopilotApi.server.https.certPath"</span>: <span class="code-string">"/path/to/cert.pem"</span>,
+  <span class="code-string">"githubCopilotApi.server.https.keyPath"</span>: <span class="code-string">"/path/to/key.pem"</span>
+}</pre>
+                    </div>
+                </div>
+
+                <p>For local development, you can generate self-signed certificates using <code>mkcert</code>.</p>
+
+                <!-- Rate Limiting -->
+                <h2 id="rate-limiting">Rate Limiting</h2>
+
+                <p>Prevent abuse by limiting requests per client:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">JSON</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>{
+  <span class="code-string">"githubCopilotApi.server.rateLimit"</span>: <span class="code-number">60</span>,      <span class="code-comment">// requests per minute</span>
+  <span class="code-string">"githubCopilotApi.server.maxConcurrent"</span>: <span class="code-number">10</span>  <span class="code-comment">// concurrent connections</span>
+}</pre>
+                    </div>
+                </div>
+
+                <p>When rate limits are exceeded, the server returns <code>429 Too Many Requests</code>.</p>
+
+                <!-- Dashboard -->
+                <h2 id="dashboard">Dashboard</h2>
+
+                <p>Monitor your API usage in real-time through the built-in dashboard:</p>
+                <ul>
+                    <li><strong>Live traffic</strong>: See requests as they happen</li>
+                    <li><strong>Token usage</strong>: Track input/output token consumption</li>
+                    <li><strong>Error rates</strong>: Monitor failed requests</li>
+                    <li><strong>Latency metrics</strong>: View response times</li>
+                    <li><strong>Top clients</strong>: See which IPs are making requests</li>
+                </ul>
+
+                <p>Access the dashboard by clicking the <strong>"Dashboard"</strong> button in the VS Code sidebar.</p>
+
+                <div
+                    style="margin-top: 3rem; padding: 2rem; background: var(--bg-surface); border-radius: var(--radius-xl); text-align: center;">
+                    <h3>Need more help?</h3>
+                    <p style="margin-bottom: 1rem;">Check out the API Reference for endpoint details or browse the Wiki
+                        for integration guides.</p>
+                    <div class="flex flex-center gap-md" style="flex-wrap: wrap;">
+                        <a href="api.html" class="btn btn-primary">API Reference</a>
+                        <a href="wiki.html" class="btn btn-secondary">Wiki & Guides</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 4rem;">
+        <div class="container">
+            <div class="footer-bottom">
+                <p class="text-muted">&copy; 2024 Suhaib Bin Younis. MIT License.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/suhaibbinyounis" target="_blank" rel="noopener" aria-label="GitHub">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com/suhaibbinyounis" target="_blank" rel="noopener" aria-label="Twitter">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Update active nav link on scroll for docs
+        document.querySelectorAll('.docs-nav-links a').forEach(link => {
+            link.addEventListener('click', function (e) {
+                document.querySelectorAll('.docs-nav-links a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

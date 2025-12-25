@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Wiki & Guides | GitHub Copilot API Gateway</title>
+    <meta name="title" content="Wiki & Guides | GitHub Copilot API Gateway">
+    <meta name="description"
+        content="Integration guides for LangChain, Cursor, Aider, and more. Learn how to use GitHub Copilot API Gateway with your favorite AI tools.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://copilot-api.suhaib.in/wiki.html">
+    <meta property="og:title" content="Wiki & Guides | GitHub Copilot API Gateway">
+    <meta property="og:description" content="Integration guides for LangChain, Cursor, Aider, and more.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <a href="/" class="nav-logo">
+                <img src="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png"
+                    alt="Logo">
+                <span>Copilot API Gateway</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#use-cases" class="nav-link">Use Cases</a></li>
+                <li><a href="index.html#integrations" class="nav-link">Integrations</a></li>
+                <li><a href="docs.html" class="nav-link">Docs</a></li>
+                <li><a href="api.html" class="nav-link">API</a></li>
+                <li><a href="faq.html" class="nav-link">FAQ</a></li>
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=suhaibbinyounis.github-copilot-api-vscode"
+                        class="btn btn-primary" target="_blank" rel="noopener">
+                        Install Extension
+                    </a>
+                </li>
+            </ul>
+
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Wiki Layout -->
+    <div class="container">
+        <div class="docs-layout">
+            <!-- Sidebar -->
+            <aside class="docs-sidebar">
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Integrations</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#langchain" class="active">LangChain</a></li>
+                        <li><a href="#llamaindex">LlamaIndex</a></li>
+                        <li><a href="#cursor">Cursor</a></li>
+                        <li><a href="#aider">Aider</a></li>
+                        <li><a href="#continue">Continue</a></li>
+                        <li><a href="#open-interpreter">Open Interpreter</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Agents</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#autogpt">AutoGPT</a></li>
+                        <li><a href="#crewai">CrewAI</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Apps Hub</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#apps-hub">Overview</a></li>
+                        <li><a href="#playwright-gen">Playwright Generator</a></li>
+                        <li><a href="#jira">Jira Integration</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-nav-section">
+                    <h4 class="docs-nav-title">Advanced</h4>
+                    <ul class="docs-nav-links">
+                        <li><a href="#function-calling">Function Calling</a></li>
+                        <li><a href="#json-mode">JSON Mode</a></li>
+                        <li><a href="#streaming">Streaming</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Content -->
+            <main class="docs-content">
+                <h1>Wiki & Integration Guides</h1>
+                <p>Step-by-step guides for integrating GitHub Copilot API Gateway with popular AI tools and frameworks.
+                </p>
+
+                <!-- LangChain -->
+                <h2 id="langchain">🦜 LangChain Integration</h2>
+                <p>Use Copilot as your LLM provider in LangChain for building RAG pipelines, agents, and chains.</p>
+
+                <h3>Installation</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">bash</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>pip install langchain langchain-openai</pre>
+                    </div>
+                </div>
+
+                <h3>Configuration</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="code-keyword">from</span> langchain_openai <span class="code-keyword">import</span> ChatOpenAI
+
+llm = ChatOpenAI(
+    <span class="code-variable">base_url</span>=<span class="code-string">"http://127.0.0.1:3030/v1"</span>,
+    <span class="code-variable">api_key</span>=<span class="code-string">"copilot"</span>,
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>
+)
+
+<span class="code-comment"># Use in chains</span>
+response = llm.invoke(<span class="code-string">"Explain RAG in one sentence"</span>)
+<span class="code-function">print</span>(response.content)</pre>
+                    </div>
+                </div>
+
+                <h3>With RAG Pipeline</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="code-keyword">from</span> langchain_openai <span class="code-keyword">import</span> ChatOpenAI, OpenAIEmbeddings
+<span class="code-keyword">from</span> langchain_community.vectorstores <span class="code-keyword">import</span> FAISS
+<span class="code-keyword">from</span> langchain.chains <span class="code-keyword">import</span> RetrievalQA
+
+<span class="code-comment"># Configure LLM and embeddings</span>
+llm = ChatOpenAI(
+    <span class="code-variable">base_url</span>=<span class="code-string">"http://127.0.0.1:3030/v1"</span>,
+    <span class="code-variable">api_key</span>=<span class="code-string">"copilot"</span>,
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>
+)
+
+embeddings = OpenAIEmbeddings(
+    <span class="code-variable">base_url</span>=<span class="code-string">"http://127.0.0.1:3030/v1"</span>,
+    <span class="code-variable">api_key</span>=<span class="code-string">"copilot"</span>
+)
+
+<span class="code-comment"># Create vector store and QA chain</span>
+vectorstore = FAISS.from_texts(your_documents, embeddings)
+qa_chain = RetrievalQA.from_chain_type(llm, retriever=vectorstore.as_retriever())</pre>
+                    </div>
+                </div>
+
+                <!-- LlamaIndex -->
+                <h2 id="llamaindex">🦙 LlamaIndex Integration</h2>
+                <p>Build data-centric LLM applications with LlamaIndex powered by Copilot.</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="code-keyword">from</span> llama_index.llms.openai <span class="code-keyword">import</span> OpenAI
+<span class="code-keyword">from</span> llama_index.core <span class="code-keyword">import</span> Settings
+
+<span class="code-comment"># Configure global LLM</span>
+Settings.llm = OpenAI(
+    <span class="code-variable">api_base</span>=<span class="code-string">"http://127.0.0.1:3030/v1"</span>,
+    <span class="code-variable">api_key</span>=<span class="code-string">"copilot"</span>,
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>
+)
+
+<span class="code-comment"># Now use LlamaIndex normally</span>
+<span class="code-keyword">from</span> llama_index.core <span class="code-keyword">import</span> VectorStoreIndex, SimpleDirectoryReader
+
+documents = SimpleDirectoryReader(<span class="code-string">"./data"</span>).load_data()
+index = VectorStoreIndex.from_documents(documents)
+query_engine = index.as_query_engine()
+
+response = query_engine.query(<span class="code-string">"Summarize the documents"</span>)</pre>
+                    </div>
+                </div>
+
+                <!-- Cursor -->
+                <h2 id="cursor">🎯 Cursor IDE</h2>
+                <p>Use Copilot API Gateway as your model provider in Cursor.</p>
+
+                <h3>Configuration Steps</h3>
+                <ol>
+                    <li>Open Cursor Settings (<code>Cmd+,</code> / <code>Ctrl+,</code>)</li>
+                    <li>Navigate to <strong>Models</strong> → <strong>OpenAI API Key</strong></li>
+                    <li>Set the API Key to any value (e.g., <code>copilot</code>)</li>
+                    <li>Enable <strong>Override OpenAI Base URL</strong></li>
+                    <li>Set Base URL to: <code>http://127.0.0.1:3030/v1</code></li>
+                    <li>Select your preferred model (e.g., <code>gpt-4o</code>)</li>
+                </ol>
+
+                <p>Now Cursor will use your Copilot subscription for all AI features!</p>
+
+                <!-- Aider -->
+                <h2 id="aider">💬 Aider</h2>
+                <p>Aider is an AI pair programming tool for your terminal. Use it with Copilot:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">bash</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="code-comment"># Set environment variables</span>
+export OPENAI_API_KEY=copilot
+export OPENAI_API_BASE=http://127.0.0.1:3030/v1
+
+<span class="code-comment"># Run aider</span>
+aider --model gpt-4o</pre>
+                    </div>
+                </div>
+
+                <p>Or create a <code>.aider.conf.yml</code> in your project:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">YAML</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>openai-api-key: copilot
+openai-api-base: http://127.0.0.1:3030/v1
+model: gpt-4o</pre>
+                    </div>
+                </div>
+
+                <!-- Continue -->
+                <h2 id="continue">🔄 Continue</h2>
+                <p>Configure Continue (open-source AI code assistant) to use Copilot:</p>
+
+                <p>Edit <code>~/.continue/config.json</code>:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">JSON</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>{
+  <span class="code-string">"models"</span>: [
+    {
+      <span class="code-string">"title"</span>: <span class="code-string">"Copilot GPT-4o"</span>,
+      <span class="code-string">"provider"</span>: <span class="code-string">"openai"</span>,
+      <span class="code-string">"model"</span>: <span class="code-string">"gpt-4o"</span>,
+      <span class="code-string">"apiKey"</span>: <span class="code-string">"copilot"</span>,
+      <span class="code-string">"apiBase"</span>: <span class="code-string">"http://127.0.0.1:3030/v1"</span>
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Open Interpreter -->
+                <h2 id="open-interpreter">🔧 Open Interpreter</h2>
+                <p>Let language models run code on your computer, powered by Copilot:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">bash</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="code-comment"># Set environment</span>
+export OPENAI_API_KEY=copilot
+export OPENAI_API_BASE=http://127.0.0.1:3030/v1
+
+<span class="code-comment"># Run interpreter</span>
+interpreter --model gpt-4o</pre>
+                    </div>
+                </div>
+
+                <!-- AutoGPT -->
+                <h2 id="autogpt">🤖 AutoGPT</h2>
+                <p>Run autonomous AI agents with your Copilot subscription:</p>
+
+                <p>Edit <code>.env</code> in your AutoGPT directory:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">env</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>OPENAI_API_KEY=copilot
+OPENAI_API_BASE_URL=http://127.0.0.1:3030/v1
+SMART_LLM=gpt-4o
+FAST_LLM=gpt-4o-mini</pre>
+                    </div>
+                </div>
+
+                <!-- CrewAI -->
+                <h2 id="crewai">👥 CrewAI</h2>
+                <p>Orchestrate AI agent teams with CrewAI:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="code-keyword">import</span> os
+os.environ[<span class="code-string">"OPENAI_API_KEY"</span>] = <span class="code-string">"copilot"</span>
+os.environ[<span class="code-string">"OPENAI_API_BASE"</span>] = <span class="code-string">"http://127.0.0.1:3030/v1"</span>
+
+<span class="code-keyword">from</span> crewai <span class="code-keyword">import</span> Agent, Task, Crew
+
+researcher = Agent(
+    <span class="code-variable">role</span>=<span class="code-string">"Researcher"</span>,
+    <span class="code-variable">goal</span>=<span class="code-string">"Research and summarize topics"</span>,
+    <span class="code-variable">backstory</span>=<span class="code-string">"Expert research analyst"</span>,
+    <span class="code-variable">llm</span>=<span class="code-string">"gpt-4o"</span>
+)
+
+task = Task(
+    <span class="code-variable">description</span>=<span class="code-string">"Research the latest trends in AI"</span>,
+    <span class="code-variable">agent</span>=researcher
+)
+
+crew = Crew(<span class="code-variable">agents</span>=[researcher], <span class="code-variable">tasks</span>=[task])
+result = crew.kickoff()</pre>
+                    </div>
+                </div>
+
+                <!-- Apps Hub -->
+                <h2 id="apps-hub">🎯 Enterprise Apps Hub</h2>
+                <p>The extension includes 30+ built-in AI workflows accessible from the VS Code sidebar.</p>
+
+                <h3>Accessing Apps Hub</h3>
+                <ol>
+                    <li>Open VS Code with the extension installed</li>
+                    <li>Click <strong>"Open Apps Hub"</strong> in the sidebar</li>
+                    <li>Browse or search for the app you need</li>
+                    <li>Fill in the form and run the workflow</li>
+                </ol>
+
+                <h3 id="playwright-gen">🎭 Playwright Generator</h3>
+                <p>Generate production-ready E2E tests from natural language:</p>
+                <ol>
+                    <li>Open Apps Hub → Playwright Generator</li>
+                    <li>Describe the test scenario (e.g., "Login with valid credentials")</li>
+                    <li>Optionally add Jira issue ID for context</li>
+                    <li>Click Generate to create the test code</li>
+                </ol>
+
+                <h3 id="jira">🔗 Jira Integration</h3>
+                <p>Connect Jira to automatically fetch issue context:</p>
+                <ol>
+                    <li>Open Apps Hub → Settings</li>
+                    <li>Enter your Jira URL, email, and API token</li>
+                    <li>Save credentials</li>
+                    <li>Now any app can pull context from Jira issues</li>
+                </ol>
+
+                <!-- Advanced: Function Calling -->
+                <h2 id="function-calling">🛠️ Function Calling</h2>
+                <p>Use OpenAI-compatible tool/function calling:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>tools = [
+    {
+        <span class="code-string">"type"</span>: <span class="code-string">"function"</span>,
+        <span class="code-string">"function"</span>: {
+            <span class="code-string">"name"</span>: <span class="code-string">"get_weather"</span>,
+            <span class="code-string">"description"</span>: <span class="code-string">"Get current weather for a location"</span>,
+            <span class="code-string">"parameters"</span>: {
+                <span class="code-string">"type"</span>: <span class="code-string">"object"</span>,
+                <span class="code-string">"properties"</span>: {
+                    <span class="code-string">"location"</span>: {<span class="code-string">"type"</span>: <span class="code-string">"string"</span>}
+                },
+                <span class="code-string">"required"</span>: [<span class="code-string">"location"</span>]
+            }
+        }
+    }
+]
+
+response = client.chat.completions.create(
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>,
+    <span class="code-variable">messages</span>=[{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"What's the weather in Tokyo?"</span>}],
+    <span class="code-variable">tools</span>=tools
+)</pre>
+                    </div>
+                </div>
+
+                <!-- JSON Mode -->
+                <h2 id="json-mode">📋 JSON Mode</h2>
+                <p>Guarantee valid JSON output:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>response = client.chat.completions.create(
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>,
+    <span class="code-variable">messages</span>=[{
+        <span class="code-string">"role"</span>: <span class="code-string">"user"</span>,
+        <span class="code-string">"content"</span>: <span class="code-string">"Extract name and email from: John Doe, john@example.com"</span>
+    }],
+    <span class="code-variable">response_format</span>={<span class="code-string">"type"</span>: <span class="code-string">"json_object"</span>}
+)
+
+<span class="code-keyword">import</span> json
+data = json.loads(response.choices[<span class="code-number">0</span>].message.content)
+<span class="code-comment"># {"name": "John Doe", "email": "john@example.com"}</span></pre>
+                    </div>
+                </div>
+
+                <!-- Streaming -->
+                <h2 id="streaming">🌊 Streaming Responses</h2>
+                <p>Build responsive UIs with real-time streaming:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots"><span></span><span></span><span></span></div>
+                        <span class="code-lang">Python</span>
+                        <button class="code-copy">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>stream = client.chat.completions.create(
+    <span class="code-variable">model</span>=<span class="code-string">"gpt-4o"</span>,
+    <span class="code-variable">messages</span>=[{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Write a poem"</span>}],
+    <span class="code-variable">stream</span>=<span class="code-keyword">True</span>
+)
+
+<span class="code-keyword">for</span> chunk <span class="code-keyword">in</span> stream:
+    <span class="code-keyword">if</span> chunk.choices[<span class="code-number">0</span>].delta.content:
+        <span class="code-function">print</span>(chunk.choices[<span class="code-number">0</span>].delta.content, <span class="code-variable">end</span>=<span class="code-string">""</span>, <span class="code-variable">flush</span>=<span class="code-keyword">True</span>)</pre>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 3rem; padding: 2rem; background: var(--bg-surface); border-radius: var(--radius-xl); text-align: center;">
+                    <h3>Have Questions?</h3>
+                    <p style="margin-bottom: 1rem;">Check out the FAQ for common questions and troubleshooting.</p>
+                    <a href="faq.html" class="btn btn-primary">View FAQ</a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 4rem;">
+        <div class="container">
+            <div class="footer-bottom">
+                <p class="text-muted">&copy; 2024 Suhaib Bin Younis. MIT License.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/suhaibbinyounis" target="_blank" rel="noopener" aria-label="GitHub">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com/suhaibbinyounis" target="_blank" rel="noopener" aria-label="Twitter">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

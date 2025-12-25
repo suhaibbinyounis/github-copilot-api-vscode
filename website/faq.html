@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>FAQ | GitHub Copilot API Gateway</title>
+    <meta name="title" content="FAQ | GitHub Copilot API Gateway">
+    <meta name="description"
+        content="Frequently asked questions about GitHub Copilot API Gateway. Learn about pricing, security, troubleshooting, and more.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://copilot-api.suhaib.in/faq.html">
+    <meta property="og:title" content="FAQ | GitHub Copilot API Gateway">
+    <meta property="og:description" content="Frequently asked questions about GitHub Copilot API Gateway.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <a href="/" class="nav-logo">
+                <img src="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png"
+                    alt="Logo">
+                <span>Copilot API Gateway</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#use-cases" class="nav-link">Use Cases</a></li>
+                <li><a href="index.html#integrations" class="nav-link">Integrations</a></li>
+                <li><a href="docs.html" class="nav-link">Docs</a></li>
+                <li><a href="api.html" class="nav-link">API</a></li>
+                <li><a href="faq.html" class="nav-link active">FAQ</a></li>
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=suhaibbinyounis.github-copilot-api-vscode"
+                        class="btn btn-primary" target="_blank" rel="noopener">
+                        Install Extension
+                    </a>
+                </li>
+            </ul>
+
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- FAQ Content -->
+    <section class="section" style="padding-top: 120px;">
+        <div class="container" style="max-width: 800px;">
+            <div class="section-header">
+                <h1>Frequently Asked <span class="text-gradient">Questions</span></h1>
+                <p>Find answers to common questions about GitHub Copilot API Gateway.</p>
+            </div>
+
+            <!-- General -->
+            <h2 style="margin-bottom: 1.5rem; margin-top: 2rem;">General</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What is GitHub Copilot API Gateway?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>GitHub Copilot API Gateway is a VS Code extension that exposes your authenticated GitHub
+                            Copilot session as a local HTTP API server. This allows you to use your Copilot subscription
+                            with any tool that supports OpenAI-compatible APIs—like LangChain, Cursor, Aider, and
+                            more—without paying for separate API keys.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Is this free?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Yes! The extension itself is completely free and open source. You just need an active GitHub
+                            Copilot subscription (Individual at $10/mo, Business, or Enterprise). If you're a student
+                            with the GitHub Student Developer Pack, you likely have free access to Copilot.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Can I use this to get free GPT-4 access?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>This extension uses your <em>existing</em> GitHub Copilot subscription. If your plan includes
+                            GPT-4 (which most do), then yes—you can access GPT-4 programmatically without paying extra
+                            for OpenAI API credits. However, you still need a valid Copilot subscription.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Which AI models are available?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>The available models depend on your Copilot subscription, but typically include:</p>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li>OpenAI: GPT-4o, GPT-4, GPT-3.5 Turbo</li>
+                            <li>Anthropic: Claude 3.5 Sonnet, Claude 3 Opus</li>
+                            <li>Google: Gemini Pro, Gemini Flash</li>
+                            <li>Meta: Llama 3.1, Llama 3.2</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">Use the <code>/v1/models</code> endpoint to see all available
+                            models for your subscription.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security -->
+            <h2 style="margin-bottom: 1.5rem; margin-top: 3rem;">Security</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Is this safe for enterprise use?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Yes. The extension runs entirely locally on your machine. No data is sent to any third-party
+                            server other than GitHub itself (which is where Copilot is hosted). You can enforce:</p>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li>IP Allowlisting to restrict access</li>
+                            <li>API Key authentication</li>
+                            <li>Full audit logging for compliance</li>
+                            <li>Rate limiting to prevent abuse</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Does this violate GitHub's Terms of Service?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>This extension uses GitHub Copilot's official VS Code extension API to authenticate and make
+                            requests. It doesn't extract or store tokens, doesn't make unauthorized requests, and
+                            operates within the normal usage patterns. However, you should review GitHub's current terms
+                            for your subscription type and use responsibly.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Can others on my network access the API?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>By default, no. The server binds to <code>127.0.0.1</code> (localhost only). To enable LAN
+                            access:</p>
+                        <ol style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li>Change <code>server.host</code> to <code>0.0.0.0</code></li>
+                            <li>Configure your firewall to allow the port</li>
+                            <li>Use IP Allowlisting to restrict to trusted devices</li>
+                            <li>Optionally enable API Key authentication</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical -->
+            <h2 style="margin-bottom: 1.5rem; margin-top: 3rem;">Technical</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How do I find my GitHub Copilot API Key?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>You don't need to extract or hunt for a static API key! This extension handles the secure
+                            authentication handshake with GitHub automatically through your VS Code session. Your local
+                            tools just need to point to <code>http://127.0.0.1:3030</code> and use any placeholder API
+                            key.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Does this work with local LLMs like Ollama?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>This extension <em>is</em> a local LLM server, but powered by GitHub's cloud. It's a perfect
+                            alternative to running heavy local models if your hardware is limited, offering
+                            cloud-quality performance (GPT-4o, Claude 3.5) with local-like control and privacy.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Why isn't VS Code finding the extension?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Make sure you have:</p>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li>VS Code version 1.95 or higher</li>
+                            <li>GitHub Copilot extension installed</li>
+                            <li>GitHub Copilot Chat extension installed</li>
+                            <li>You're signed in with a valid Copilot subscription</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">Try restarting VS Code after installing the prerequisites.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>The server starts but requests fail. What's wrong?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Common issues:</p>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li><strong>Copilot not authenticated:</strong> Ensure you're signed into GitHub Copilot in
+                                VS Code</li>
+                            <li><strong>Wrong port:</strong> Check that your client is using the same port as configured
+                                (default 3030)</li>
+                            <li><strong>API Key mismatch:</strong> If you've set <code>server.apiKey</code>, your client
+                                must send the correct Bearer token</li>
+                            <li><strong>IP blocked:</strong> If you have an IP allowlist, make sure your client's IP is
+                                included</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">Check the VS Code Output panel (select "GitHub Copilot API
+                            Gateway") for detailed logs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What's the rate limit?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>The extension itself doesn't impose hard rate limits beyond what you configure. However,
+                            GitHub Copilot has fair-use policies. If you're making extremely high-volume requests, you
+                            may experience throttling from GitHub's side. For typical development use cases, you
+                            shouldn't hit any limits.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison -->
+            <h2 style="margin-bottom: 1.5rem; margin-top: 3rem;">Comparison</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How is this different from using OpenAI API directly?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <table class="comparison-table" style="margin-top: 1rem;">
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Copilot API Gateway</th>
+                                <th>OpenAI API</th>
+                            </tr>
+                            <tr>
+                                <td>Cost</td>
+                                <td>$0 extra (included in Copilot)</td>
+                                <td>Pay per token ($$$)</td>
+                            </tr>
+                            <tr>
+                                <td>Models</td>
+                                <td>GPT-4o, Claude, Gemini, Llama</td>
+                                <td>GPT models only</td>
+                            </tr>
+                            <tr>
+                                <td>Setup</td>
+                                <td>1-click VS Code extension</td>
+                                <td>API key management</td>
+                            </tr>
+                            <tr>
+                                <td>Privacy</td>
+                                <td>Local proxy (you control)</td>
+                                <td>Cloud API</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Should I use this in production?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>This extension is designed for development, prototyping, and personal projects. For
+                            production deployments, consider:</p>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li>Official API services with SLAs</li>
+                            <li>Your organization's compliance requirements</li>
+                            <li>GitHub Copilot's terms of service</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">That said, many developers use it for internal tools, dev/staging
+                            environments, and private projects without issues.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div
+                style="margin-top: 3rem; padding: 2rem; background: var(--bg-surface); border-radius: var(--radius-xl); text-align: center;">
+                <h3>Still Have Questions?</h3>
+                <p style="margin-bottom: 1rem;">Open an issue on GitHub or check out the documentation.</p>
+                <div class="flex flex-center gap-md" style="flex-wrap: wrap;">
+                    <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/issues"
+                        class="btn btn-primary" target="_blank" rel="noopener">Open Issue</a>
+                    <a href="docs.html" class="btn btn-secondary">View Docs</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p class="text-muted">&copy; 2024 Suhaib Bin Younis. MIT License.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/suhaibbinyounis" target="_blank" rel="noopener" aria-label="GitHub">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com/suhaibbinyounis" target="_blank" rel="noopener" aria-label="Twitter">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+# GitHub Copilot API Gateway Website
+# https://copilot-api.suhaib.in/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://copilot-api.suhaib.in/sitemap.xml
