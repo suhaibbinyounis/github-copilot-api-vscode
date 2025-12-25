@@ -1152,7 +1152,8 @@ p {
     top: 60px;
     left: 0;
     right: 0;
-    bottom: 0;
+    width: 100vw;
+    height: calc(100vh - 60px);
     flex-direction: column;
     align-items: stretch;
     padding: var(--space-xl);
@@ -1160,6 +1161,8 @@ p {
     background: var(--bg-dark);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     overflow-y: auto;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
   }
 
   .nav-links.active {
@@ -1194,11 +1197,12 @@ p {
     flex-direction: column;
     justify-content: space-between;
     width: 30px;
-    height: 24px;
+    height: 20px;
     padding: 0;
     border: none;
     background: transparent;
     cursor: pointer;
+    z-index: 1001;
   }
 
   .nav-toggle span {
@@ -1207,6 +1211,19 @@ p {
     background-color: var(--text-primary);
     border-radius: 2px;
     transition: all 0.3s ease;
+    transform-origin: left;
+  }
+
+  .nav-toggle.active span:first-child {
+    transform: rotate(45deg);
+  }
+
+  .nav-toggle.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-toggle.active span:last-child {
+    transform: rotate(-45deg);
   }
 
   /* Hero */
