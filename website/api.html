@@ -81,6 +81,24 @@
             font-size: 0.875rem;
         }
     </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4Y0K38JFR0"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-4Y0K38JFR0');
+    </script>
+
+    <!-- Microsoft Clarity -->
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "ur0y471x2g");
+    </script>
 </head>
 
 <body>
@@ -119,6 +137,14 @@
     <!-- API Reference Layout -->
     <div class="container">
         <div class="docs-layout">
+            <!-- Mobile Sidebar Toggle -->
+            <button class="docs-sidebar-toggle" aria-label="Toggle navigation menu">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path
+                        d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                </svg>
+                Show Navigation
+            </button>
             <!-- Sidebar -->
             <aside class="docs-sidebar">
                 <div class="docs-nav-section">
@@ -244,7 +270,8 @@
                                     <td><code>model</code> <span class="param-required">required</span></td>
                                     <td><span class="param-type">string</span></td>
                                     <td>Model ID (e.g., <code>gpt-4o</code>, <code>gpt-4</code>,
-                                        <code>gpt-3.5-turbo</code>)</td>
+                                        <code>gpt-3.5-turbo</code>)
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><code>messages</code> <span class="param-required">required</span></td>

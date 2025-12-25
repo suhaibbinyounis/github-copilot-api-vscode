@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFAQ();
   initTabs();
   initSmoothScroll();
+  initDocsSidebar();
 });
 
 // ---------- Navigation ----------
@@ -49,7 +50,7 @@ function initNavigation() {
       const sectionTop = section.offsetTop - 100;
       const sectionId = section.getAttribute('id');
       const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-      
+
       if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
         navLink?.classList.add('active');
       } else {
@@ -62,19 +63,19 @@ function initNavigation() {
 // ---------- Scroll Reveal ----------
 function initScrollReveal() {
   const reveals = document.querySelectorAll('.reveal');
-  
+
   const revealOnScroll = () => {
     reveals.forEach(el => {
       const windowHeight = window.innerHeight;
       const elementTop = el.getBoundingClientRect().top;
       const revealPoint = 150;
-      
+
       if (elementTop < windowHeight - revealPoint) {
         el.classList.add('visible');
       }
     });
   };
-  
+
   window.addEventListener('scroll', revealOnScroll);
   revealOnScroll(); // Initial check
 }
@@ -85,14 +86,14 @@ function initCodeCopy() {
     btn.addEventListener('click', async () => {
       const codeBlock = btn.closest('.code-block');
       const code = codeBlock?.querySelector('pre')?.textContent;
-      
+
       if (code) {
         try {
           await navigator.clipboard.writeText(code);
           const originalText = btn.textContent;
           btn.textContent = 'Copied!';
           btn.style.color = 'var(--color-secondary)';
-          
+
           setTimeout(() => {
             btn.textContent = originalText;
             btn.style.color = '';
@@ -111,12 +112,12 @@ function initFAQ() {
     question.addEventListener('click', () => {
       const item = question.closest('.faq-item');
       const isActive = item?.classList.contains('active');
-      
+
       // Close all others
       document.querySelectorAll('.faq-item').forEach(i => {
         i.classList.remove('active');
       });
-      
+
       // Toggle current
       if (!isActive) {
         item?.classList.add('active');
@@ -131,15 +132,15 @@ function initTabs() {
     const tabs = tabContainer.querySelectorAll('.tab');
     const parent = tabContainer.parentElement;
     const contents = parent?.querySelectorAll('.tab-content');
-    
+
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const target = tab.dataset.tab;
-        
+
         // Update tabs
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        
+
         // Update content
         contents?.forEach(content => {
           content.classList.remove('active');
@@ -158,11 +159,11 @@ function initSmoothScroll() {
     anchor.addEventListener('click', e => {
       e.preventDefault();
       const target = document.querySelector(anchor.getAttribute('href'));
-      
+
       if (target) {
         const navHeight = document.querySelector('.nav')?.offsetHeight || 0;
         const targetPosition = target.offsetTop - navHeight - 20;
-        
+
         window.scrollTo({
           top: targetPosition,
           behavior: 'smooth'
@@ -188,15 +189,15 @@ function debounce(func, wait) {
 // ---------- Search (for docs) ----------
 function initSearch() {
   const searchInput = document.querySelector('.docs-search');
-  
+
   searchInput?.addEventListener('input', debounce(e => {
     const query = e.target.value.toLowerCase();
     const items = document.querySelectorAll('.docs-nav-links a');
-    
+
     items.forEach(item => {
       const text = item.textContent?.toLowerCase() || '';
       const parent = item.closest('li');
-      
+
       if (text.includes(query)) {
         parent?.style.setProperty('display', 'block');
       } else {
@@ -210,4 +211,20 @@ function initSearch() {
 function toggleEndpoint(element) {
   const card = element.closest('.endpoint-card');
   card?.classList.toggle('expanded');
+}
+
+// ---------- Docs Sidebar Toggle (Mobile) ----------
+function initDocsSidebar() {
+  const sidebarToggle = document.querySelector('.docs-sidebar-toggle');
+  const sidebar = document.querySelector('.docs-sidebar');
+
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', function () {
+      this.classList.toggle('active');
+      sidebar.classList.toggle('active');
+      this.innerHTML = sidebar.classList.contains('active')
+        ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/></svg> Hide Navigation'
+        : '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg> Show Navigation';
+    });
+  }
 }

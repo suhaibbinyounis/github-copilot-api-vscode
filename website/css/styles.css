@@ -792,6 +792,35 @@ p {
   min-height: 100vh;
 }
 
+/* Sidebar toggle button - only visible on mobile */
+.docs-sidebar-toggle {
+  display: none;
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: var(--space-md);
+  transition: all var(--transition-fast);
+}
+
+.docs-sidebar-toggle:hover {
+  background: var(--bg-surface-light);
+}
+
+.docs-sidebar-toggle svg {
+  margin-right: var(--space-sm);
+  transition: transform var(--transition-fast);
+}
+
+.docs-sidebar-toggle.active svg {
+  transform: rotate(180deg);
+}
+
 .docs-sidebar {
   position: sticky;
   top: 100px;
@@ -1162,9 +1191,22 @@ p {
 
   .nav-toggle {
     display: flex;
-    padding: var(--space-sm);
-    border-radius: var(--radius-md);
-    background: var(--bg-surface);
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .nav-toggle span {
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-primary);
+    border-radius: 2px;
+    transition: all 0.3s ease;
   }
 
   /* Hero */
@@ -1368,9 +1410,25 @@ p {
     padding-top: 70px;
   }
 
+  /* Mobile sidebar toggle button */
+  .docs-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Hide sidebar by default on mobile */
   .docs-sidebar {
+    display: none;
     padding: var(--space-md);
     border-radius: var(--radius-lg);
+    position: relative;
+    top: 0;
+  }
+
+  /* Show sidebar when toggle is active */
+  .docs-sidebar.active {
+    display: block;
   }
 
   .docs-nav-section {
