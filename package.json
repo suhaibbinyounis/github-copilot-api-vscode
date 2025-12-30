@@ -3,14 +3,14 @@
   "displayName": "GitHub Copilot API Gateway",
   "description": "Universal API Gateway for GitHub Copilot. Expose GPT-4o, Claude 3.5, & Gemini via local OpenAI, Anthropic, & Google compatible APIs. Use Copilot with Cursor, LangChain, & Agents. Includes Enterprise Apps Hub.",
   "icon": "media/icon.png",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
     "url": "https://suhaib.in"
   },
   "publisher": "suhaibbinyounis",
-  "homepage": "https://suhaibbinyounis.com",
+  "homepage": "https://copilot-api.suhaib.in/",
   "repository": {
     "type": "git",
     "url": "https://github.com/suhaibbinyounis/github-copilot-api-vscode"
