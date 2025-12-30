@@ -16,6 +16,9 @@
   <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/releases">
     <img src="https://img.shields.io/github/v/release/suhaibbinyounis/github-copilot-api-vscode?style=for-the-badge&logo=github" alt="GitHub Release">
   </a>
+  <a href="https://open-vsx.org/extension/suhaibbinyounis/github-copilot-api-vscode">
+    <img src="https://img.shields.io/open-vsx/v/suhaibbinyounis/github-copilot-api-vscode?style=for-the-badge&logo=eclipse-ide&logoColor=white&label=Open%20VSX" alt="Open VSX Registry">
+  </a>
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="License: MIT">
   </a>
