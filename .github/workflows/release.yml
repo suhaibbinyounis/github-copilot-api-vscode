@@ -28,6 +28,7 @@ jobs:
         
       - name: Publish to VS Code Marketplace
         run: npx @vscode/vsce publish -p ${{ secrets.VSCE_PAT }}
+        continue-on-error: true
         
       - name: Publish to Open VSX Registry
         run: npx ovsx publish -p ${{ secrets.OVSX_PAT }}
