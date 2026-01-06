@@ -102,7 +102,7 @@
     "@modelcontextprotocol/sdk": "^1.25.1",
     "selfsigned": "^5.2.0",
     "swagger-ui-dist": "^5.31.0",
-    "ws": "^8.18.3"
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
