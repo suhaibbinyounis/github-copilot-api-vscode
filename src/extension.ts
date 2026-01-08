@@ -48,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (status.running) {
 			const rpm = status.stats.requestsPerMinute;
 			const latency = status.stats.avgLatencyMs;
+			const errorRate = status.stats.errorRate || 0;
 			let text = `$(broadcast) Copilot API: ON`;
 
 			// Add RPM and Latency if there is activity
@@ -56,6 +57,10 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			if (latency > 0) {
 				text += `  $(pulse) ${latency}ms`;
+			}
+			// Show error indicator if error rate is notable
+			if (errorRate >= 5) {
+				text += `  $(warning) ${errorRate}%`;
 			}
 
 			if (status.activeRequests > 0) {
@@ -66,18 +71,38 @@ export function activate(context: vscode.ExtensionContext) {
 				statusItem.backgroundColor = undefined;
 			}
 
+			const protocol = status.isHttps ? 'https' : 'http';
+			const displayHost = (status.config.host === '0.0.0.0' && status.networkInfo?.localIPs?.length)
+				? status.networkInfo.localIPs[0]
+				: status.config.host;
+			const url = `${protocol}://${displayHost}:${status.config.port}`;
+
 			statusItem.tooltip = new vscode.MarkdownString(`
-**Copilot API Gateway**
-- **Status**: Active
-- **Host**: ${status.config.host}:${status.config.port}
-- **Requests/min**: ${rpm}
-- **Avg Latency**: ${latency}ms
-- **Total Requests**: ${status.stats.totalRequests}
+**$(broadcast) Copilot API Gateway**
+
+| Metric | Value |
+|--------|-------|
+| Status | 🟢 Active |
+| Endpoint | \`${url}\` |
+| Requests/min | ${rpm} |
+| Avg Latency | ${latency}ms |
+| Error Rate | ${errorRate}% |
+| Total Requests | ${status.stats.totalRequests.toLocaleString()} |
+| Tokens In/Out | ${(status.stats.totalTokensIn || 0).toLocaleString()} / ${(status.stats.totalTokensOut || 0).toLocaleString()} |
+
+*Click to open controls*
 			`);
+			statusItem.tooltip.isTrusted = true;
 			statusItem.show();
 		} else {
 			statusItem.text = '$(circle-slash) Copilot API: OFF';
-			statusItem.tooltip = 'Copilot API server is stopped. Click to manage.';
+			statusItem.tooltip = new vscode.MarkdownString(`
+**$(circle-slash) Copilot API Gateway**
+
+Server is stopped. Click to start or manage.
+
+*Tip: Enable auto-start in settings for convenience*
+			`);
 			statusItem.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
 			statusItem.show();
 		}

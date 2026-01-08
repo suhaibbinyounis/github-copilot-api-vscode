@@ -36,6 +36,9 @@ const appLoaders: Record<string, () => Promise<AppDefinition>> = {
     'regex-generator': () => import('./implementations/regexGenerator').then(m => m.regexGeneratorApp),
     'api-doc-writer': () => import('./implementations/apiDocWriter').then(m => m.apiDocWriterApp),
     'sql-query-builder': () => import('./implementations/sqlQueryBuilder').then(m => m.sqlQueryBuilderApp),
+    'git-commit-writer': () => import('./implementations/gitCommitWriter').then(m => m.gitCommitWriterApp),
+    'json-tools': () => import('./implementations/jsonTools').then(m => m.jsonToolsApp),
+    'code-explainer': () => import('./implementations/codeExplainer').then(m => m.codeExplainerApp),
 
     // Productivity
     'meeting-notes-to-actions': () => import('./implementations/meetingNotesToActions').then(m => m.meetingNotesToActionsApp),
@@ -107,6 +110,9 @@ const appMetadataList: AppMetadata[] = [
     { id: 'regex-generator', name: 'Regex Generator', description: 'Generate and explain regex patterns', icon: '🔣', category: 'developer' },
     { id: 'api-doc-writer', name: 'API Doc Writer', description: 'Generate API documentation', icon: '📚', category: 'developer' },
     { id: 'sql-query-builder', name: 'SQL Query Builder', description: 'Build complex SQL queries', icon: '🗃️', category: 'developer' },
+    { id: 'git-commit-writer', name: 'Git Commit Writer', description: 'Generate professional commit messages', icon: '📝', category: 'developer' },
+    { id: 'json-tools', name: 'JSON Tools', description: 'Format, validate, and transform JSON', icon: '🔧', category: 'developer' },
+    { id: 'code-explainer', name: 'Code Explainer', description: 'Understand any code with explanations', icon: '🎓', category: 'developer' },
 
     // Productivity
     { id: 'meeting-notes-to-actions', name: 'Meeting Notes to Actions', description: 'Convert meeting notes to action items', icon: '📋', category: 'productivity' },

@@ -475,6 +475,16 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         </div>
     </div>
 
+    <!-- Quick Copy Section -->
+    <div class="section">
+        <div class="section-title">📋 Quick Copy</div>
+        <div class="btn-row">
+            <button id="btn-copy-url" class="secondary" title="Copy API URL">URL</button>
+            <button id="btn-copy-curl" class="secondary" title="Copy curl command">curl</button>
+            <button id="btn-copy-python" class="secondary" title="Copy Python code">Python</button>
+        </div>
+    </div>
+
     <!-- Actions Section -->
     <div class="section">
         <div class="section-title">⚡ Actions</div>
@@ -553,6 +563,36 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
 
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
+        const serverUrl = '${url}';
+        const curlCommand = \`curl -X POST ${url}/v1/chat/completions \\\\
+  -H "Content-Type: application/json" \\\\
+  -d '{"model": "gpt-4o", "messages": [{"role": "user", "content": "Hello!"}]}'\`;
+        const pythonCode = \`from openai import OpenAI
+
+client = OpenAI(base_url="${url}/v1", api_key="optional")
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)\`;
+
+        function copyWithFeedback(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = 'var(--vscode-testing-iconPassed)';
+                btn.style.color = 'var(--vscode-editor-background)';
+                setTimeout(() => {
+                    btn.textContent = original;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 1500);
+            });
+        }
+
+        document.getElementById('btn-copy-url').addEventListener('click', (e) => copyWithFeedback(e.target, serverUrl));
+        document.getElementById('btn-copy-curl').addEventListener('click', (e) => copyWithFeedback(e.target, curlCommand));
+        document.getElementById('btn-copy-python').addEventListener('click', (e) => copyWithFeedback(e.target, pythonCode));
         document.getElementById('btn-dashboard').addEventListener('click', () => vscode.postMessage({ type: 'openDashboard' }));
         document.getElementById('btn-apps').addEventListener('click', () => vscode.postMessage({ type: 'openAppsHub' }));
         document.getElementById('btn-toggle').addEventListener('click', () => vscode.postMessage({ type: '${isRunning ? 'stopServer' : 'startServer'}' }));

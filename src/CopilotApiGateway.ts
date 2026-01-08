@@ -1180,7 +1180,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 			this.logRequest(requestId, req.method || 'UNKNOWN', url.pathname, 429, Date.now() - requestStart, {
 				requestHeaders: req.headers
 			});
-			throw new ApiError(429, 'Rate limit exceeded. Please try again later.', 'rate_limit_error', 'rate_limit_exceeded');
+			const oldestRequest = this.rateLimitBucket.length > 0 ? this.rateLimitBucket[0] : Date.now();
+			const waitTime = Math.ceil((oldestRequest + 60000 - Date.now()) / 1000);
+			throw new ApiError(429, `Rate limit exceeded (${this.config.rateLimitPerMinute} requests/min). Please wait ${waitTime > 0 ? waitTime : 1} seconds before retrying.`, 'rate_limit_error', 'rate_limit_exceeded');
 		}
 
 		// IP Allowlist check
@@ -1231,20 +1233,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 			return;
 		}
 
-		// Local diagnostics
-		if (req.method === 'GET' && url.pathname === '/debug-paths') {
-			this.sendDebugPaths(res);
-			return;
-		}
-
 		// Swagger UI documentation
 		if (req.method === 'GET' && url.pathname === '/docs') {
 			this.sendSwaggerUi(res);
-			return;
-		}
-
-		if (req.method === 'GET' && url.pathname.startsWith('/swagger-ui/')) {
-			this.serveStaticFile(req, res, url.pathname);
 			return;
 		}
 
@@ -2503,19 +2494,19 @@ export class CopilotApiGateway implements vscode.Disposable {
 		const health = await this.getCopilotHealth();
 
 		if (!health.installed) {
-			throw new ApiError(503, 'GitHub Copilot extension is not installed.', 'service_unavailable', 'copilot_not_installed');
+			throw new ApiError(503, 'GitHub Copilot extension is not installed. Install it from the VS Code Marketplace: https://marketplace.visualstudio.com/items?itemName=GitHub.copilot', 'service_unavailable', 'copilot_not_installed');
 		}
 		if (!health.chatInstalled) {
-			throw new ApiError(503, 'GitHub Copilot Chat extension is not installed.', 'service_unavailable', 'copilot_chat_not_installed');
+			throw new ApiError(503, 'GitHub Copilot Chat extension is not installed. Install it from the VS Code Marketplace: https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat', 'service_unavailable', 'copilot_chat_not_installed');
 		}
 		if (!health.signedIn) {
-			throw new ApiError(401, 'Not signed in to GitHub Copilot. Please sign in in VS Code.', 'unauthorized', 'copilot_not_signed_in');
+			throw new ApiError(401, 'Not signed in to GitHub Copilot. Open VS Code Command Palette (Cmd+Shift+P) and run "GitHub Copilot: Sign In".', 'unauthorized', 'copilot_not_signed_in');
 		}
 
 		const copilotModels = await vscode.lm.selectChatModels({ vendor: 'copilot' });
 
 		if (!copilotModels || copilotModels.length === 0) {
-			throw new ApiError(503, 'No Copilot language model available.', 'service_unavailable', 'copilot_unavailable');
+			throw new ApiError(503, 'No Copilot language model available. Ensure you have an active GitHub Copilot subscription and VS Code is connected to the internet.', 'service_unavailable', 'copilot_unavailable');
 		}
 
 		const model = copilotModels[0];
@@ -2583,7 +2574,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 			// Process the response stream
 			for await (const part of response.stream) {
 				if (cts.token.isCancellationRequested) {
-					throw new ApiError(504, 'Request timed out waiting for Copilot response.', 'gateway_timeout', 'request_timeout');
+					throw new ApiError(504, `Request timed out after ${this.config.requestTimeoutSeconds}s. Try a shorter prompt or check your network connection.`, 'gateway_timeout', 'request_timeout');
 				}
 				if (part instanceof vscode.LanguageModelTextPart) {
 					textContent += part.value;
@@ -2782,7 +2773,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 	private async runWithConcurrency<T>(task: () => Promise<T>): Promise<T> {
 		if (this.activeRequests >= this.config.maxConcurrentRequests) {
-			throw new ApiError(429, 'Too many concurrent requests. Try again shortly.', 'rate_limit_exceeded', 'concurrency_limit');
+			throw new ApiError(429, `Too many concurrent requests (max ${this.config.maxConcurrentRequests}). Your request has been queued. Try again in a moment.`, 'rate_limit_exceeded', 'concurrency_limit');
 		}
 		this.activeRequests += 1;
 		try {
@@ -3017,14 +3008,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 	}
 
 	private sendSwaggerUi(res: ServerResponse): void {
-		// Use root-relative paths to avoid host/port mismatch issues
+		// Use CDN for swagger-ui assets to reduce bundle size
 		const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Copilot API - Swagger UI</title>
-    <link rel="stylesheet" href="/swagger-ui/swagger-ui.css">
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
     <style>
         body { margin: 0; background: #fafafa; }
         .swagger-ui .topbar { display: none; }
@@ -3034,8 +3025,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 </head>
 <body>
     <div id="swagger-ui"></div>
-    <script src="/swagger-ui/swagger-ui-bundle.js"></script>
-    <script src="/swagger-ui/swagger-ui-standalone-preset.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
     <script>
         window.onload = function() {
             SwaggerUIBundle({
@@ -3054,121 +3045,6 @@ export class CopilotApiGateway implements vscode.Disposable {
 		res.statusCode = 200;
 		res.setHeader('Content-Type', 'text/html');
 		res.end(html);
-	}
-
-	private serveStaticFile(req: IncomingMessage, res: ServerResponse, urlValue: string): void {
-		const fileName = path.basename(urlValue);
-		const candidates: string[] = [];
-
-		if (this.context) {
-			try {
-				// Use VS Code API to resolve path relative to extension root
-				candidates.push(this.context.asAbsolutePath(path.join('dist', 'swagger-ui', fileName)));
-			} catch (err) {
-				// ignore
-			}
-		}
-
-		// Fallbacks
-		candidates.push(
-			path.join(__dirname, 'swagger-ui', fileName),
-			path.join(__dirname, '..', 'swagger-ui', fileName),
-			path.join(__dirname, 'dist', 'swagger-ui', fileName)
-		);
-
-		let filePath = '';
-		for (const candidate of candidates) {
-			if (fs.existsSync(candidate)) {
-				filePath = candidate;
-				break;
-			}
-		}
-
-		if (filePath) {
-			const stat = fs.statSync(filePath);
-			const ext = path.extname(filePath);
-			let contentType = 'text/plain';
-			if (ext === '.css') {
-				contentType = 'text/css';
-			} else if (ext === '.js') {
-				contentType = 'application/javascript';
-			}
-
-			res.writeHead(200, {
-				'Content-Type': contentType,
-				'Content-Length': stat.size
-			});
-
-			const readStream = fs.createReadStream(filePath);
-			readStream.pipe(res);
-		} else {
-			const msg = `[Static] File not found: ${fileName}. Checked: ${JSON.stringify(candidates)}`;
-			console.error(msg);
-			this.output.appendLine(`[${new Date().toISOString()}] ERROR ${msg}`);
-
-			// Debug directory listing
-			if (this.context) {
-				try {
-					const dir = this.context.asAbsolutePath(path.join('dist', 'swagger-ui'));
-					if (fs.existsSync(dir)) {
-						this.output.appendLine(`Contents of ${dir}: ${fs.readdirSync(dir).join(', ')}`);
-					} else {
-						this.output.appendLine(`Directory not found: ${dir}`);
-					}
-				} catch (e) {
-					this.output.appendLine(`Error listing directory: ${e}`);
-				}
-			}
-
-			res.statusCode = 404;
-			res.end('Not found');
-		}
-	}
-
-	private sendDebugPaths(res: ServerResponse): void {
-		const debugInfo: any = {
-			dirname: __dirname,
-			cwd: process.cwd(),
-			contextExtensionUri: this.context?.extensionUri.fsPath ?? 'undefined',
-			candidates_css: [],
-			dist_swagger_contents: 'N/A'
-		};
-
-		const testFile = 'swagger-ui.css';
-		const candidates: any[] = [];
-
-		if (this.context) {
-			try {
-				const p = this.context.asAbsolutePath(path.join('dist', 'swagger-ui', testFile));
-				const dir = path.dirname(p);
-
-				let contents = 'N/A';
-				if (fs.existsSync(dir)) {
-					contents = fs.readdirSync(dir).join(', ');
-				}
-
-				candidates.push({
-					type: 'context.asAbsolutePath',
-					path: p,
-					exists: fs.existsSync(p),
-					dir_exists: fs.existsSync(dir),
-					dir_contents: contents
-				});
-				debugInfo.dist_swagger_contents = contents;
-			} catch (e) { candidates.push({ error: String(e) }); }
-		}
-
-		candidates.push({
-			type: 'fallback_dirname',
-			path: path.join(__dirname, 'swagger-ui', testFile),
-			exists: fs.existsSync(path.join(__dirname, 'swagger-ui', testFile))
-		});
-
-		debugInfo.candidates_css = candidates;
-
-		res.statusCode = 200;
-		res.setHeader('Content-Type', 'application/json');
-		res.end(JSON.stringify(debugInfo, null, 2));
 	}
 
 	private getOpenApiSpec(): object {

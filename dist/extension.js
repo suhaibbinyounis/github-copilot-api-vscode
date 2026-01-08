@@ -46037,12 +46037,107 @@ var require_selfsigned = __commonJS({
           return "SHA-1";
       }
     }
-    function getSigningAlgorithm(key) {
-      const hashAlg = getAlgorithmName(key);
+    function getSigningAlgorithm(hashKey, keyType) {
+      const hashAlg = getAlgorithmName(hashKey);
+      if (keyType === "ec") {
+        return {
+          name: "ECDSA",
+          hash: hashAlg
+        };
+      }
       return {
         name: "RSASSA-PKCS1-v1_5",
         hash: hashAlg
       };
+    }
+    function getKeyAlgorithm(options) {
+      const keyType = options.keyType || "rsa";
+      const hashAlg = getAlgorithmName(options.algorithm || "sha1");
+      if (keyType === "ec") {
+        const curve = options.curve || "P-256";
+        return {
+          name: "ECDSA",
+          namedCurve: curve
+        };
+      }
+      return {
+        name: "RSASSA-PKCS1-v1_5",
+        modulusLength: options.keySize || 2048,
+        publicExponent: new Uint8Array([1, 0, 1]),
+        hash: hashAlg
+      };
+    }
+    function buildExtensions(userExtensions, commonName) {
+      if (!userExtensions || userExtensions.length === 0) {
+        return [
+          new BasicConstraintsExtension(false, void 0, true),
+          new KeyUsagesExtension(KeyUsageFlags.digitalSignature | KeyUsageFlags.keyEncipherment, true),
+          new ExtendedKeyUsageExtension([ExtendedKeyUsage.serverAuth, ExtendedKeyUsage.clientAuth], false),
+          new SubjectAlternativeNameExtension([
+            { type: "dns", value: commonName },
+            ...commonName === "localhost" ? [{ type: "ip", value: "127.0.0.1" }] : []
+          ], false)
+        ];
+      }
+      const extensions2 = [];
+      for (const ext of userExtensions) {
+        const critical = ext.critical || false;
+        switch (ext.name) {
+          case "basicConstraints":
+            extensions2.push(new BasicConstraintsExtension(
+              ext.cA || false,
+              ext.pathLenConstraint,
+              critical
+            ));
+            break;
+          case "keyUsage":
+            let flags = 0;
+            if (ext.digitalSignature) flags |= KeyUsageFlags.digitalSignature;
+            if (ext.nonRepudiation || ext.contentCommitment) flags |= KeyUsageFlags.nonRepudiation;
+            if (ext.keyEncipherment) flags |= KeyUsageFlags.keyEncipherment;
+            if (ext.dataEncipherment) flags |= KeyUsageFlags.dataEncipherment;
+            if (ext.keyAgreement) flags |= KeyUsageFlags.keyAgreement;
+            if (ext.keyCertSign) flags |= KeyUsageFlags.keyCertSign;
+            if (ext.cRLSign) flags |= KeyUsageFlags.cRLSign;
+            if (ext.encipherOnly) flags |= KeyUsageFlags.encipherOnly;
+            if (ext.decipherOnly) flags |= KeyUsageFlags.decipherOnly;
+            extensions2.push(new KeyUsagesExtension(flags, critical));
+            break;
+          case "extKeyUsage":
+            const usages = [];
+            if (ext.serverAuth) usages.push(ExtendedKeyUsage.serverAuth);
+            if (ext.clientAuth) usages.push(ExtendedKeyUsage.clientAuth);
+            if (ext.codeSigning) usages.push(ExtendedKeyUsage.codeSigning);
+            if (ext.emailProtection) usages.push(ExtendedKeyUsage.emailProtection);
+            if (ext.timeStamping) usages.push(ExtendedKeyUsage.timeStamping);
+            extensions2.push(new ExtendedKeyUsageExtension(usages, critical));
+            break;
+          case "subjectAltName":
+            const altNames = (ext.altNames || []).map((alt) => {
+              switch (alt.type) {
+                case 1:
+                  return { type: "email", value: alt.value };
+                case 2:
+                  return { type: "dns", value: alt.value };
+                case 6:
+                  return { type: "url", value: alt.value };
+                case 7:
+                  return { type: "ip", value: alt.ip || alt.value };
+                default:
+                  if (alt.ip) return { type: "ip", value: alt.ip };
+                  if (alt.dns) return { type: "dns", value: alt.dns };
+                  if (alt.email) return { type: "email", value: alt.email };
+                  if (alt.uri || alt.url) return { type: "url", value: alt.uri || alt.url };
+                  return { type: "dns", value: alt.value };
+              }
+            });
+            extensions2.push(new SubjectAlternativeNameExtension(altNames, critical));
+            break;
+          default:
+            console.warn(`Unknown extension "${ext.name}" ignored`);
+        }
+      }
+      return extensions2;
     }
     function convertAttributes(attrs) {
       const nameMap = {
@@ -46059,51 +46154,71 @@ var require_selfsigned = __commonJS({
         return `${oid}=${attr.value}`;
       }).join(", ");
     }
-    async function importPrivateKey(pemKey, algorithm) {
-      const pkcs8Match = pemKey.match(/-----BEGIN PRIVATE KEY-----([\s\S]*?)-----END PRIVATE KEY-----/);
-      const rsaMatch = pemKey.match(/-----BEGIN RSA PRIVATE KEY-----([\s\S]*?)-----END RSA PRIVATE KEY-----/);
-      if (pkcs8Match) {
-        const pemContents = pkcs8Match[1].replace(/\s/g, "");
-        const binaryDer = Buffer.from(pemContents, "base64");
-        return await crypto3.subtle.importKey(
-          "pkcs8",
-          binaryDer,
-          {
-            name: "RSASSA-PKCS1-v1_5",
-            hash: getAlgorithmName(algorithm)
-          },
-          true,
-          ["sign"]
-        );
-      } else if (rsaMatch) {
-        const keyObject = nodeCrypto.createPrivateKey(pemKey);
-        const pkcs8Pem = keyObject.export({ type: "pkcs8", format: "pem" });
-        const pemContents = pkcs8Pem.replace(/-----BEGIN PRIVATE KEY-----/, "").replace(/-----END PRIVATE KEY-----/, "").replace(/\s/g, "");
-        const binaryDer = Buffer.from(pemContents, "base64");
-        return await crypto3.subtle.importKey(
-          "pkcs8",
-          binaryDer,
-          {
-            name: "RSASSA-PKCS1-v1_5",
-            hash: getAlgorithmName(algorithm)
-          },
-          true,
-          ["sign"]
-        );
-      } else {
-        throw new Error("Unsupported private key format. Expected PKCS#8 or PKCS#1 RSA key.");
-      }
+    function normalizeECCurve(curveName) {
+      const curveMap = {
+        "prime256v1": "P-256",
+        "secp384r1": "P-384",
+        "secp521r1": "P-521",
+        "P-256": "P-256",
+        "P-384": "P-384",
+        "P-521": "P-521"
+      };
+      return curveMap[curveName] || curveName;
     }
-    async function importPublicKey(pemKey, algorithm) {
+    function getECCurve(keyObject) {
+      const details = keyObject.asymmetricKeyDetails;
+      if (details && details.namedCurve) {
+        return normalizeECCurve(details.namedCurve);
+      }
+      return "P-256";
+    }
+    async function importPrivateKey(pemKey, algorithm, keyType) {
+      const keyObject = nodeCrypto.createPrivateKey(pemKey);
+      const detectedKeyType = keyObject.asymmetricKeyType;
+      const actualKeyType = keyType || detectedKeyType;
+      const pkcs8Pem = keyObject.export({ type: "pkcs8", format: "pem" });
+      const pemContents = pkcs8Pem.replace(/-----BEGIN PRIVATE KEY-----/, "").replace(/-----END PRIVATE KEY-----/, "").replace(/\s/g, "");
+      const binaryDer = Buffer.from(pemContents, "base64");
+      let importAlgorithm;
+      if (actualKeyType === "ec") {
+        const curve = getECCurve(keyObject);
+        importAlgorithm = {
+          name: "ECDSA",
+          namedCurve: curve
+        };
+      } else {
+        importAlgorithm = {
+          name: "RSASSA-PKCS1-v1_5",
+          hash: getAlgorithmName(algorithm)
+        };
+      }
+      return await crypto3.subtle.importKey(
+        "pkcs8",
+        binaryDer,
+        importAlgorithm,
+        true,
+        ["sign"]
+      );
+    }
+    async function importPublicKey(pemKey, algorithm, keyType, curve) {
       const pemContents = pemKey.replace(/-----BEGIN PUBLIC KEY-----/, "").replace(/-----END PUBLIC KEY-----/, "").replace(/\s/g, "");
       const binaryDer = Buffer.from(pemContents, "base64");
+      let importAlgorithm;
+      if (keyType === "ec") {
+        importAlgorithm = {
+          name: "ECDSA",
+          namedCurve: curve || "P-256"
+        };
+      } else {
+        importAlgorithm = {
+          name: "RSASSA-PKCS1-v1_5",
+          hash: getAlgorithmName(algorithm)
+        };
+      }
       return await crypto3.subtle.importKey(
         "spki",
         binaryDer,
-        {
-          name: "RSASSA-PKCS1-v1_5",
-          hash: getAlgorithmName(algorithm)
-        },
+        importAlgorithm,
         true,
         ["verify"]
       );
@@ -46147,22 +46262,15 @@ var require_selfsigned = __commonJS({
         }
       ];
       const subjectName = convertAttributes(attrs);
-      const signingAlg = getSigningAlgorithm(options.algorithm);
+      const keyType = options.keyType || "rsa";
+      const signingAlg = getSigningAlgorithm(options.algorithm, keyType);
       const commonNameAttr = attrs.find((attr) => attr.name === "commonName" || attr.shortName === "CN");
       const commonName = commonNameAttr ? commonNameAttr.value : "localhost";
-      const extensions2 = [
-        new BasicConstraintsExtension(false, void 0, true),
-        new KeyUsagesExtension(KeyUsageFlags.digitalSignature | KeyUsageFlags.keyEncipherment, true),
-        new ExtendedKeyUsageExtension([ExtendedKeyUsage.serverAuth, ExtendedKeyUsage.clientAuth], false),
-        new SubjectAlternativeNameExtension([
-          { type: "dns", value: commonName },
-          ...commonName === "localhost" ? [{ type: "ip", value: "127.0.0.1" }] : []
-        ], false)
-      ];
+      const extensions2 = buildExtensions(options.extensions, commonName);
       let cert;
       if (ca) {
         const caCert = new X509Certificate(ca.cert);
-        const caPrivateKey = await importPrivateKey(ca.key, options.algorithm || "sha256");
+        const caPrivateKey = await importPrivateKey(ca.key, options.algorithm || "sha256", keyType);
         cert = await X509CertificateGenerator.create({
           serialNumber: serialHex,
           subject: subjectName,
@@ -46222,13 +46330,16 @@ var require_selfsigned = __commonJS({
         const clientKeySize = clientOpts.keySize || options.clientCertificateKeySize || 2048;
         const clientAlgorithm = clientOpts.algorithm || options.algorithm || "sha1";
         const clientCN = clientOpts.cn || options.clientCertificateCN || "John Doe jdoe123";
+        const clientKeyType = clientOpts.keyType || keyType;
+        const clientCurve = clientOpts.curve || options.curve || "P-256";
+        const clientKeyAlg = getKeyAlgorithm({
+          keyType: clientKeyType,
+          keySize: clientKeySize,
+          algorithm: clientAlgorithm,
+          curve: clientCurve
+        });
         const clientKeyPair = await crypto3.subtle.generateKey(
-          {
-            name: "RSASSA-PKCS1-v1_5",
-            modulusLength: clientKeySize,
-            publicExponent: new Uint8Array([1, 0, 1]),
-            hash: getAlgorithmName(clientAlgorithm)
-          },
+          clientKeyAlg,
           true,
           ["sign", "verify"]
         );
@@ -46253,7 +46364,7 @@ var require_selfsigned = __commonJS({
         }
         const clientSubjectName = convertAttributes(clientAttrs);
         const issuerName = convertAttributes(attrs);
-        const clientSigningAlg = getSigningAlgorithm(clientAlgorithm);
+        const clientSigningAlg = getSigningAlgorithm(clientAlgorithm, keyType);
         const clientCertRaw = await X509CertificateGenerator.create({
           serialNumber: clientSerialHex,
           subject: clientSubjectName,
@@ -46289,21 +46400,18 @@ var require_selfsigned = __commonJS({
     exports2.generate = async function generate(attrs, options) {
       attrs = attrs || void 0;
       options = options || {};
-      const keySize = options.keySize || 2048;
+      const keyType = options.keyType || "rsa";
+      const curve = options.curve || "P-256";
       let keyPair;
       if (options.keyPair) {
         keyPair = {
-          privateKey: await importPrivateKey(options.keyPair.privateKey, options.algorithm || "sha1"),
-          publicKey: await importPublicKey(options.keyPair.publicKey, options.algorithm || "sha1")
+          privateKey: await importPrivateKey(options.keyPair.privateKey, options.algorithm || "sha1", keyType),
+          publicKey: await importPublicKey(options.keyPair.publicKey, options.algorithm || "sha1", keyType, curve)
         };
       } else {
+        const keyAlg = getKeyAlgorithm(options);
         keyPair = await crypto3.subtle.generateKey(
-          {
-            name: "RSASSA-PKCS1-v1_5",
-            modulusLength: keySize,
-            publicExponent: new Uint8Array([1, 0, 1]),
-            hash: getAlgorithmName(options.algorithm || "sha1")
-          },
+          keyAlg,
           true,
           ["sign", "verify"]
         );
@@ -46322,6 +46430,7 @@ var require_constants = __commonJS({
     if (hasBlob) BINARY_TYPES.push("blob");
     module2.exports = {
       BINARY_TYPES,
+      CLOSE_TIMEOUT: 3e4,
       EMPTY_BUFFER: Buffer.alloc(0),
       GUID: "258EAFA5-E914-47DA-95CA-C5AB0DC85B11",
       hasBlob,
@@ -48524,6 +48633,7 @@ var require_websocket = __commonJS({
     var { isBlob } = require_validation3();
     var {
       BINARY_TYPES,
+      CLOSE_TIMEOUT,
       EMPTY_BUFFER,
       GUID,
       kForOnEventAttribute,
@@ -48537,7 +48647,6 @@ var require_websocket = __commonJS({
     } = require_event_target();
     var { format, parse: parse3 } = require_extension2();
     var { toBuffer } = require_buffer_util();
-    var closeTimeout = 30 * 1e3;
     var kAborted = /* @__PURE__ */ Symbol("kAborted");
     var protocolVersions = [8, 13];
     var readyStates = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
@@ -48583,6 +48692,7 @@ var require_websocket = __commonJS({
           initAsClient(this, address, protocols, options);
         } else {
           this._autoPong = options.autoPong;
+          this._closeTimeout = options.closeTimeout;
           this._isServer = true;
         }
       }
@@ -48984,6 +49094,7 @@ var require_websocket = __commonJS({
       const opts = {
         allowSynchronousEvents: true,
         autoPong: true,
+        closeTimeout: CLOSE_TIMEOUT,
         protocolVersion: protocolVersions[1],
         maxPayload: 100 * 1024 * 1024,
         skipUTF8Validation: false,
@@ -49001,6 +49112,7 @@ var require_websocket = __commonJS({
         port: void 0
       };
       websocket._autoPong = opts.autoPong;
+      websocket._closeTimeout = opts.closeTimeout;
       if (!protocolVersions.includes(opts.protocolVersion)) {
         throw new RangeError(
           `Unsupported protocol version: ${opts.protocolVersion} (supported versions: ${protocolVersions.join(", ")})`
@@ -49343,7 +49455,7 @@ var require_websocket = __commonJS({
     function setCloseTimer(websocket) {
       websocket._closeTimer = setTimeout(
         websocket._socket.destroy.bind(websocket._socket),
-        closeTimeout
+        websocket._closeTimeout
       );
     }
     function socketOnClose() {
@@ -49352,8 +49464,8 @@ var require_websocket = __commonJS({
       this.removeListener("data", socketOnData);
       this.removeListener("end", socketOnEnd);
       websocket._readyState = WebSocket2.CLOSING;
-      let chunk;
-      if (!this._readableState.endEmitted && !websocket._closeFrameReceived && !websocket._receiver._writableState.errorEmitted && (chunk = websocket._socket.read()) !== null) {
+      if (!this._readableState.endEmitted && !websocket._closeFrameReceived && !websocket._receiver._writableState.errorEmitted && this._readableState.length !== 0) {
+        const chunk = this.read(this._readableState.length);
         websocket._receiver.write(chunk);
       }
       websocket._receiver.end();
@@ -49544,7 +49656,7 @@ var require_websocket_server = __commonJS({
     var PerMessageDeflate = require_permessage_deflate();
     var subprotocol = require_subprotocol();
     var WebSocket2 = require_websocket();
-    var { GUID, kWebSocket } = require_constants();
+    var { CLOSE_TIMEOUT, GUID, kWebSocket } = require_constants();
     var keyRegex = /^[+/0-9A-Za-z]{22}==$/;
     var RUNNING = 0;
     var CLOSING = 1;
@@ -49563,6 +49675,9 @@ var require_websocket_server = __commonJS({
        *     pending connections
        * @param {Boolean} [options.clientTracking=true] Specifies whether or not to
        *     track clients
+       * @param {Number} [options.closeTimeout=30000] Duration in milliseconds to
+       *     wait for the closing handshake to finish after `websocket.close()` is
+       *     called
        * @param {Function} [options.handleProtocols] A hook to handle protocols
        * @param {String} [options.host] The hostname where to bind the server
        * @param {Number} [options.maxPayload=104857600] The maximum allowed message
@@ -49591,6 +49706,7 @@ var require_websocket_server = __commonJS({
           perMessageDeflate: false,
           handleProtocols: null,
           clientTracking: true,
+          closeTimeout: CLOSE_TIMEOUT,
           verifyClient: null,
           noServer: false,
           backlog: null,
@@ -51482,6 +51598,301 @@ ${inputs.schema}`;
         content: response,
         language: "sql",
         sections: [{ title: "SQL Query", content: response }]
+      })
+    };
+  }
+});
+
+// src/apps/implementations/gitCommitWriter.ts
+var gitCommitWriter_exports = {};
+__export(gitCommitWriter_exports, {
+  gitCommitWriterApp: () => gitCommitWriterApp
+});
+var gitCommitWriterApp;
+var init_gitCommitWriter = __esm({
+  "src/apps/implementations/gitCommitWriter.ts"() {
+    "use strict";
+    gitCommitWriterApp = {
+      id: "git-commit-writer",
+      name: "Git Commit Writer",
+      description: "Generate professional git commit messages from your changes",
+      icon: "\u{1F4DD}",
+      category: "developer",
+      primaryAction: "\u2728 Write Commit Message",
+      helpDocumentation: `### What is this?
+The **Git Commit Writer** generates professional, conventional commit messages from your code changes.
+
+### How to use it
+1. Paste your git diff or describe your changes
+2. Select your preferred commit style (Conventional, Gitmoji, etc.)
+3. Click **Write Commit Message** to get a perfect commit
+
+### Commit formats supported
+- **Conventional Commits** - feat:, fix:, docs:, refactor:, etc.
+- **Gitmoji** - \u{1F3A8} \u2728 \u{1F41B} \u{1F4DD} \u{1F525} etc.
+- **Angular** - type(scope): subject`,
+      inputs: [
+        {
+          id: "changes",
+          label: "Your Changes",
+          type: "textarea",
+          placeholder: "Paste your git diff or describe what you changed...",
+          required: true,
+          rows: 8,
+          hint: "You can paste `git diff --staged` output or just describe the changes"
+        },
+        {
+          id: "style",
+          label: "Commit Style",
+          type: "select",
+          options: [
+            { value: "conventional", label: "Conventional Commits" },
+            { value: "gitmoji", label: "Gitmoji" },
+            { value: "angular", label: "Angular Style" },
+            { value: "simple", label: "Simple (Just a message)" }
+          ],
+          defaultValue: "conventional"
+        },
+        {
+          id: "scope",
+          label: "Scope (optional)",
+          type: "text",
+          placeholder: "e.g., auth, api, ui",
+          hint: "Component or area affected"
+        }
+      ],
+      systemPrompt: `You are an expert at writing git commit messages. Generate clean, professional commit messages following best practices.
+
+Rules:
+1. Subject line max 50 characters, body lines max 72 characters
+2. Use imperative mood ("Add feature" not "Added feature")
+3. Explain WHAT and WHY, not HOW
+4. Include breaking changes if any
+
+Output format:
+1. **Commit Message** - The full commit message (subject + body if needed)
+2. **Type** - The commit type (feat, fix, docs, etc.)
+3. **Why this message** - Brief explanation of your choice`,
+      buildUserPrompt: (inputs) => {
+        let prompt = `Generate a ${inputs.style} style git commit message for these changes:
+
+${inputs.changes}`;
+        if (inputs.scope?.trim()) {
+          prompt += `
+
+Scope: ${inputs.scope}`;
+        }
+        return prompt;
+      },
+      parseResponse: (response) => ({
+        type: "markdown",
+        content: response,
+        sections: [{ title: "Commit Message", content: response }]
+      })
+    };
+  }
+});
+
+// src/apps/implementations/jsonTools.ts
+var jsonTools_exports = {};
+__export(jsonTools_exports, {
+  jsonToolsApp: () => jsonToolsApp
+});
+var jsonToolsApp;
+var init_jsonTools = __esm({
+  "src/apps/implementations/jsonTools.ts"() {
+    "use strict";
+    jsonToolsApp = {
+      id: "json-tools",
+      name: "JSON Tools",
+      description: "Format, validate, transform, and generate types from JSON",
+      icon: "\u{1F527}",
+      category: "developer",
+      primaryAction: "\u{1F504} Process JSON",
+      helpDocumentation: `### What is this?
+**JSON Tools** is a Swiss Army knife for working with JSON data.
+
+### Features
+- **Format** - Pretty print with proper indentation
+- **Minify** - Remove whitespace for production
+- **Validate** - Check for syntax errors
+- **To TypeScript** - Generate TypeScript interfaces
+- **To Schema** - Generate JSON Schema
+- **Query** - Extract data using JSONPath`,
+      inputs: [
+        {
+          id: "json",
+          label: "Your JSON",
+          type: "textarea",
+          placeholder: '{"name": "example", "value": 123}',
+          required: true,
+          rows: 10,
+          hint: "Paste your JSON here"
+        },
+        {
+          id: "action",
+          label: "Action",
+          type: "select",
+          options: [
+            { value: "format", label: "\u{1F3A8} Format (Pretty Print)" },
+            { value: "minify", label: "\u{1F4E6} Minify" },
+            { value: "validate", label: "\u2705 Validate" },
+            { value: "typescript", label: "\u{1F4D8} Generate TypeScript Types" },
+            { value: "schema", label: "\u{1F4CB} Generate JSON Schema" },
+            { value: "query", label: "\u{1F50D} Query with JSONPath" }
+          ],
+          defaultValue: "format"
+        },
+        {
+          id: "query",
+          label: "JSONPath Query (if querying)",
+          type: "text",
+          placeholder: "$.store.book[*].author",
+          hint: "Only used when action is Query"
+        },
+        {
+          id: "typeName",
+          label: "Type Name (for TypeScript)",
+          type: "text",
+          placeholder: "MyDataType",
+          defaultValue: "RootObject",
+          hint: "Name for the generated TypeScript interface"
+        }
+      ],
+      systemPrompt: `You are a JSON processing expert. Perform the requested action on the provided JSON.
+
+For each action:
+- **format**: Pretty print with 2-space indentation
+- **minify**: Remove all unnecessary whitespace
+- **validate**: Check for errors and report line/column if any
+- **typescript**: Generate accurate TypeScript interfaces with proper types
+- **schema**: Generate a complete JSON Schema (draft-07)
+- **query**: Execute the JSONPath query and return results
+
+Always show the result in a code block with the appropriate language.`,
+      buildUserPrompt: (inputs) => {
+        let prompt = `Action: ${inputs.action}
+
+JSON:
+\`\`\`json
+${inputs.json}
+\`\`\``;
+        if (inputs.action === "query" && inputs.query?.trim()) {
+          prompt += `
+
+JSONPath Query: ${inputs.query}`;
+        }
+        if (inputs.action === "typescript" && inputs.typeName?.trim()) {
+          prompt += `
+
+Root type name: ${inputs.typeName}`;
+        }
+        return prompt;
+      },
+      parseResponse: (response) => ({
+        type: "markdown",
+        content: response,
+        sections: [{ title: "Result", content: response }]
+      })
+    };
+  }
+});
+
+// src/apps/implementations/codeExplainer.ts
+var codeExplainer_exports = {};
+__export(codeExplainer_exports, {
+  codeExplainerApp: () => codeExplainerApp
+});
+var codeExplainerApp;
+var init_codeExplainer = __esm({
+  "src/apps/implementations/codeExplainer.ts"() {
+    "use strict";
+    codeExplainerApp = {
+      id: "code-explainer",
+      name: "Code Explainer",
+      description: "Understand any code with line-by-line explanations",
+      icon: "\u{1F393}",
+      category: "developer",
+      primaryAction: "\u{1F4A1} Explain Code",
+      helpDocumentation: `### What is this?
+The **Code Explainer** helps you understand unfamiliar code by providing clear, detailed explanations.
+
+### Perfect for
+- Learning a new codebase
+- Understanding legacy code
+- Code reviews
+- Teaching others
+
+### Explanation levels
+- **Beginner** - Assumes no prior knowledge
+- **Intermediate** - Standard developer explanations
+- **Expert** - Deep dive into implementation details`,
+      inputs: [
+        {
+          id: "code",
+          label: "Code to Explain",
+          type: "textarea",
+          placeholder: "Paste any code here...",
+          required: true,
+          rows: 12,
+          hint: "Works with any programming language"
+        },
+        {
+          id: "language",
+          label: "Language (auto-detected if empty)",
+          type: "text",
+          placeholder: "e.g., TypeScript, Python, Rust",
+          hint: "Leave empty for auto-detection"
+        },
+        {
+          id: "level",
+          label: "Explanation Level",
+          type: "select",
+          options: [
+            { value: "beginner", label: "\u{1F331} Beginner - Explain everything" },
+            { value: "intermediate", label: "\u{1F33F} Intermediate - Standard explanations" },
+            { value: "expert", label: "\u{1F333} Expert - Deep technical dive" }
+          ],
+          defaultValue: "intermediate"
+        },
+        {
+          id: "focus",
+          label: "Focus Area (optional)",
+          type: "text",
+          placeholder: "e.g., error handling, performance, security",
+          hint: "Emphasize specific aspects"
+        }
+      ],
+      systemPrompt: `You are an expert code educator. Explain code clearly and thoroughly based on the requested level.
+
+Structure your explanation:
+1. **Overview** - What does this code do at a high level?
+2. **Key Concepts** - Important patterns, algorithms, or techniques used
+3. **Line-by-Line** - Walk through important sections
+4. **Potential Issues** - Any bugs, anti-patterns, or improvements
+5. **Related Concepts** - What to learn next
+
+Adjust depth based on level:
+- Beginner: Define all terms, explain syntax, use analogies
+- Intermediate: Focus on logic and patterns
+- Expert: Discuss performance, edge cases, alternatives`,
+      buildUserPrompt: (inputs) => {
+        let prompt = `Explain this code at the ${inputs.level} level:
+
+\`\`\`${inputs.language || ""}
+${inputs.code}
+\`\`\``;
+        if (inputs.focus?.trim()) {
+          prompt += `
+
+Focus especially on: ${inputs.focus}`;
+        }
+        return prompt;
+      },
+      parseResponse: (response) => ({
+        type: "markdown",
+        content: response,
+        sections: [{ title: "Explanation", content: response }]
       })
     };
   }
@@ -56177,7 +56588,9 @@ var CopilotApiGateway = class {
       this.logRequest(requestId, req.method || "UNKNOWN", url2.pathname, 429, Date.now() - requestStart, {
         requestHeaders: req.headers
       });
-      throw new ApiError(429, "Rate limit exceeded. Please try again later.", "rate_limit_error", "rate_limit_exceeded");
+      const oldestRequest = this.rateLimitBucket.length > 0 ? this.rateLimitBucket[0] : Date.now();
+      const waitTime = Math.ceil((oldestRequest + 6e4 - Date.now()) / 1e3);
+      throw new ApiError(429, `Rate limit exceeded (${this.config.rateLimitPerMinute} requests/min). Please wait ${waitTime > 0 ? waitTime : 1} seconds before retrying.`, "rate_limit_error", "rate_limit_exceeded");
     }
     if (!this.checkIpAllowlist(req)) {
       this.logRequest(requestId, req.method || "UNKNOWN", url2.pathname, 403, Date.now() - requestStart, {
@@ -56219,16 +56632,8 @@ var CopilotApiGateway = class {
       this.sendJson(res, 200, this.getOpenApiSpec());
       return;
     }
-    if (req.method === "GET" && url2.pathname === "/debug-paths") {
-      this.sendDebugPaths(res);
-      return;
-    }
     if (req.method === "GET" && url2.pathname === "/docs") {
       this.sendSwaggerUi(res);
-      return;
-    }
-    if (req.method === "GET" && url2.pathname.startsWith("/swagger-ui/")) {
-      this.serveStaticFile(req, res, url2.pathname);
       return;
     }
     if (req.method === "GET" && url2.pathname === "/v1/usage") {
@@ -57330,17 +57735,17 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
   async invokeCopilotWithTools(chatMessages, tools, toolChoice) {
     const health = await this.getCopilotHealth();
     if (!health.installed) {
-      throw new ApiError(503, "GitHub Copilot extension is not installed.", "service_unavailable", "copilot_not_installed");
+      throw new ApiError(503, "GitHub Copilot extension is not installed. Install it from the VS Code Marketplace: https://marketplace.visualstudio.com/items?itemName=GitHub.copilot", "service_unavailable", "copilot_not_installed");
     }
     if (!health.chatInstalled) {
-      throw new ApiError(503, "GitHub Copilot Chat extension is not installed.", "service_unavailable", "copilot_chat_not_installed");
+      throw new ApiError(503, "GitHub Copilot Chat extension is not installed. Install it from the VS Code Marketplace: https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat", "service_unavailable", "copilot_chat_not_installed");
     }
     if (!health.signedIn) {
-      throw new ApiError(401, "Not signed in to GitHub Copilot. Please sign in in VS Code.", "unauthorized", "copilot_not_signed_in");
+      throw new ApiError(401, 'Not signed in to GitHub Copilot. Open VS Code Command Palette (Cmd+Shift+P) and run "GitHub Copilot: Sign In".', "unauthorized", "copilot_not_signed_in");
     }
     const copilotModels = await vscode4.lm.selectChatModels({ vendor: "copilot" });
     if (!copilotModels || copilotModels.length === 0) {
-      throw new ApiError(503, "No Copilot language model available.", "service_unavailable", "copilot_unavailable");
+      throw new ApiError(503, "No Copilot language model available. Ensure you have an active GitHub Copilot subscription and VS Code is connected to the internet.", "service_unavailable", "copilot_unavailable");
     }
     const model = copilotModels[0];
     const lmMessages = [];
@@ -57388,7 +57793,7 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
       const toolCalls = [];
       for await (const part of response.stream) {
         if (cts.token.isCancellationRequested) {
-          throw new ApiError(504, "Request timed out waiting for Copilot response.", "gateway_timeout", "request_timeout");
+          throw new ApiError(504, `Request timed out after ${this.config.requestTimeoutSeconds}s. Try a shorter prompt or check your network connection.`, "gateway_timeout", "request_timeout");
         }
         if (part instanceof vscode4.LanguageModelTextPart) {
           textContent += part.value;
@@ -57555,7 +57960,7 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
   }
   async runWithConcurrency(task) {
     if (this.activeRequests >= this.config.maxConcurrentRequests) {
-      throw new ApiError(429, "Too many concurrent requests. Try again shortly.", "rate_limit_exceeded", "concurrency_limit");
+      throw new ApiError(429, `Too many concurrent requests (max ${this.config.maxConcurrentRequests}). Your request has been queued. Try again in a moment.`, "rate_limit_exceeded", "concurrency_limit");
     }
     this.activeRequests += 1;
     try {
@@ -57767,7 +58172,7 @@ ${text} `;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Copilot API - Swagger UI</title>
-    <link rel="stylesheet" href="/swagger-ui/swagger-ui.css">
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
     <style>
         body { margin: 0; background: #fafafa; }
         .swagger-ui .topbar { display: none; }
@@ -57777,8 +58182,8 @@ ${text} `;
 </head>
 <body>
     <div id="swagger-ui"></div>
-    <script src="/swagger-ui/swagger-ui-bundle.js"></script>
-    <script src="/swagger-ui/swagger-ui-standalone-preset.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
     <script>
         window.onload = function() {
             SwaggerUIBundle({
@@ -57797,102 +58202,6 @@ ${text} `;
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html");
     res.end(html);
-  }
-  serveStaticFile(req, res, urlValue) {
-    const fileName = path2.basename(urlValue);
-    const candidates = [];
-    if (this.context) {
-      try {
-        candidates.push(this.context.asAbsolutePath(path2.join("dist", "swagger-ui", fileName)));
-      } catch (err) {
-      }
-    }
-    candidates.push(
-      path2.join(__dirname, "swagger-ui", fileName),
-      path2.join(__dirname, "..", "swagger-ui", fileName),
-      path2.join(__dirname, "dist", "swagger-ui", fileName)
-    );
-    let filePath = "";
-    for (const candidate of candidates) {
-      if (fs2.existsSync(candidate)) {
-        filePath = candidate;
-        break;
-      }
-    }
-    if (filePath) {
-      const stat = fs2.statSync(filePath);
-      const ext = path2.extname(filePath);
-      let contentType = "text/plain";
-      if (ext === ".css") {
-        contentType = "text/css";
-      } else if (ext === ".js") {
-        contentType = "application/javascript";
-      }
-      res.writeHead(200, {
-        "Content-Type": contentType,
-        "Content-Length": stat.size
-      });
-      const readStream = fs2.createReadStream(filePath);
-      readStream.pipe(res);
-    } else {
-      const msg = `[Static] File not found: ${fileName}. Checked: ${JSON.stringify(candidates)}`;
-      console.error(msg);
-      this.output.appendLine(`[${(/* @__PURE__ */ new Date()).toISOString()}] ERROR ${msg}`);
-      if (this.context) {
-        try {
-          const dir = this.context.asAbsolutePath(path2.join("dist", "swagger-ui"));
-          if (fs2.existsSync(dir)) {
-            this.output.appendLine(`Contents of ${dir}: ${fs2.readdirSync(dir).join(", ")}`);
-          } else {
-            this.output.appendLine(`Directory not found: ${dir}`);
-          }
-        } catch (e) {
-          this.output.appendLine(`Error listing directory: ${e}`);
-        }
-      }
-      res.statusCode = 404;
-      res.end("Not found");
-    }
-  }
-  sendDebugPaths(res) {
-    const debugInfo = {
-      dirname: __dirname,
-      cwd: process.cwd(),
-      contextExtensionUri: this.context?.extensionUri.fsPath ?? "undefined",
-      candidates_css: [],
-      dist_swagger_contents: "N/A"
-    };
-    const testFile = "swagger-ui.css";
-    const candidates = [];
-    if (this.context) {
-      try {
-        const p = this.context.asAbsolutePath(path2.join("dist", "swagger-ui", testFile));
-        const dir = path2.dirname(p);
-        let contents = "N/A";
-        if (fs2.existsSync(dir)) {
-          contents = fs2.readdirSync(dir).join(", ");
-        }
-        candidates.push({
-          type: "context.asAbsolutePath",
-          path: p,
-          exists: fs2.existsSync(p),
-          dir_exists: fs2.existsSync(dir),
-          dir_contents: contents
-        });
-        debugInfo.dist_swagger_contents = contents;
-      } catch (e) {
-        candidates.push({ error: String(e) });
-      }
-    }
-    candidates.push({
-      type: "fallback_dirname",
-      path: path2.join(__dirname, "swagger-ui", testFile),
-      exists: fs2.existsSync(path2.join(__dirname, "swagger-ui", testFile))
-    });
-    debugInfo.candidates_css = candidates;
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify(debugInfo, null, 2));
   }
   getOpenApiSpec() {
     const url2 = "/";
@@ -59625,6 +59934,16 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
         </div>
     </div>
 
+    <!-- Quick Copy Section -->
+    <div class="section">
+        <div class="section-title">\u{1F4CB} Quick Copy</div>
+        <div class="btn-row">
+            <button id="btn-copy-url" class="secondary" title="Copy API URL">URL</button>
+            <button id="btn-copy-curl" class="secondary" title="Copy curl command">curl</button>
+            <button id="btn-copy-python" class="secondary" title="Copy Python code">Python</button>
+        </div>
+    </div>
+
     <!-- Actions Section -->
     <div class="section">
         <div class="section-title">\u26A1 Actions</div>
@@ -59703,6 +60022,36 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
 
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
+        const serverUrl = '${url2}';
+        const curlCommand = \`curl -X POST ${url2}/v1/chat/completions \\\\
+  -H "Content-Type: application/json" \\\\
+  -d '{"model": "gpt-4o", "messages": [{"role": "user", "content": "Hello!"}]}'\`;
+        const pythonCode = \`from openai import OpenAI
+
+client = OpenAI(base_url="${url2}/v1", api_key="optional")
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)\`;
+
+        function copyWithFeedback(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.textContent;
+                btn.textContent = '\u2713 Copied!';
+                btn.style.background = 'var(--vscode-testing-iconPassed)';
+                btn.style.color = 'var(--vscode-editor-background)';
+                setTimeout(() => {
+                    btn.textContent = original;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 1500);
+            });
+        }
+
+        document.getElementById('btn-copy-url').addEventListener('click', (e) => copyWithFeedback(e.target, serverUrl));
+        document.getElementById('btn-copy-curl').addEventListener('click', (e) => copyWithFeedback(e.target, curlCommand));
+        document.getElementById('btn-copy-python').addEventListener('click', (e) => copyWithFeedback(e.target, pythonCode));
         document.getElementById('btn-dashboard').addEventListener('click', () => vscode.postMessage({ type: 'openDashboard' }));
         document.getElementById('btn-apps').addEventListener('click', () => vscode.postMessage({ type: 'openAppsHub' }));
         document.getElementById('btn-toggle').addEventListener('click', () => vscode.postMessage({ type: '${isRunning ? "stopServer" : "startServer"}' }));
@@ -61776,6 +62125,9 @@ var appLoaders = {
   "regex-generator": () => Promise.resolve().then(() => (init_regexGenerator(), regexGenerator_exports)).then((m) => m.regexGeneratorApp),
   "api-doc-writer": () => Promise.resolve().then(() => (init_apiDocWriter(), apiDocWriter_exports)).then((m) => m.apiDocWriterApp),
   "sql-query-builder": () => Promise.resolve().then(() => (init_sqlQueryBuilder(), sqlQueryBuilder_exports)).then((m) => m.sqlQueryBuilderApp),
+  "git-commit-writer": () => Promise.resolve().then(() => (init_gitCommitWriter(), gitCommitWriter_exports)).then((m) => m.gitCommitWriterApp),
+  "json-tools": () => Promise.resolve().then(() => (init_jsonTools(), jsonTools_exports)).then((m) => m.jsonToolsApp),
+  "code-explainer": () => Promise.resolve().then(() => (init_codeExplainer(), codeExplainer_exports)).then((m) => m.codeExplainerApp),
   // Productivity
   "meeting-notes-to-actions": () => Promise.resolve().then(() => (init_meetingNotesToActions(), meetingNotesToActions_exports)).then((m) => m.meetingNotesToActionsApp),
   "standup-summary": () => Promise.resolve().then(() => (init_standupSummary(), standupSummary_exports)).then((m) => m.standupSummaryApp),
@@ -61829,6 +62181,9 @@ var appMetadataList = [
   { id: "regex-generator", name: "Regex Generator", description: "Generate and explain regex patterns", icon: "\u{1F523}", category: "developer" },
   { id: "api-doc-writer", name: "API Doc Writer", description: "Generate API documentation", icon: "\u{1F4DA}", category: "developer" },
   { id: "sql-query-builder", name: "SQL Query Builder", description: "Build complex SQL queries", icon: "\u{1F5C3}\uFE0F", category: "developer" },
+  { id: "git-commit-writer", name: "Git Commit Writer", description: "Generate professional commit messages", icon: "\u{1F4DD}", category: "developer" },
+  { id: "json-tools", name: "JSON Tools", description: "Format, validate, and transform JSON", icon: "\u{1F527}", category: "developer" },
+  { id: "code-explainer", name: "Code Explainer", description: "Understand any code with explanations", icon: "\u{1F393}", category: "developer" },
   // Productivity
   { id: "meeting-notes-to-actions", name: "Meeting Notes to Actions", description: "Convert meeting notes to action items", icon: "\u{1F4CB}", category: "productivity" },
   { id: "standup-summary", name: "Standup Summary", description: "Generate standup updates", icon: "\u{1F3AF}", category: "productivity" },
@@ -67651,12 +68006,16 @@ function activate(context) {
     if (status.running) {
       const rpm = status.stats.requestsPerMinute;
       const latency = status.stats.avgLatencyMs;
+      const errorRate = status.stats.errorRate || 0;
       let text = `$(broadcast) Copilot API: ON`;
       if (rpm > 0 || status.activeRequests > 0) {
         text += `  $(graph) ${rpm} RPM`;
       }
       if (latency > 0) {
         text += `  $(pulse) ${latency}ms`;
+      }
+      if (errorRate >= 5) {
+        text += `  $(warning) ${errorRate}%`;
       }
       if (status.activeRequests > 0) {
         statusItem.text = `$(sync~spin) Processing (${status.activeRequests}) | ${rpm} RPM`;
@@ -67665,18 +68024,35 @@ function activate(context) {
         statusItem.text = text;
         statusItem.backgroundColor = void 0;
       }
+      const protocol = status.isHttps ? "https" : "http";
+      const displayHost = status.config.host === "0.0.0.0" && status.networkInfo?.localIPs?.length ? status.networkInfo.localIPs[0] : status.config.host;
+      const url2 = `${protocol}://${displayHost}:${status.config.port}`;
       statusItem.tooltip = new vscode10.MarkdownString(`
-**Copilot API Gateway**
-- **Status**: Active
-- **Host**: ${status.config.host}:${status.config.port}
-- **Requests/min**: ${rpm}
-- **Avg Latency**: ${latency}ms
-- **Total Requests**: ${status.stats.totalRequests}
+**$(broadcast) Copilot API Gateway**
+
+| Metric | Value |
+|--------|-------|
+| Status | \u{1F7E2} Active |
+| Endpoint | \`${url2}\` |
+| Requests/min | ${rpm} |
+| Avg Latency | ${latency}ms |
+| Error Rate | ${errorRate}% |
+| Total Requests | ${status.stats.totalRequests.toLocaleString()} |
+| Tokens In/Out | ${(status.stats.totalTokensIn || 0).toLocaleString()} / ${(status.stats.totalTokensOut || 0).toLocaleString()} |
+
+*Click to open controls*
 			`);
+      statusItem.tooltip.isTrusted = true;
       statusItem.show();
     } else {
       statusItem.text = "$(circle-slash) Copilot API: OFF";
-      statusItem.tooltip = "Copilot API server is stopped. Click to manage.";
+      statusItem.tooltip = new vscode10.MarkdownString(`
+**$(circle-slash) Copilot API Gateway**
+
+Server is stopped. Click to start or manage.
+
+*Tip: Enable auto-start in settings for convenience*
+			`);
       statusItem.backgroundColor = new vscode10.ThemeColor("statusBarItem.errorBackground");
       statusItem.show();
     }

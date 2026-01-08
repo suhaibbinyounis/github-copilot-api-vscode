@@ -45,32 +45,6 @@ async function main() {
 		plugins: [
 			/* add to the end of plugins array */
 			esbuildProblemMatcherPlugin,
-			{
-				name: 'copy-swagger-ui',
-				setup(build) {
-					build.onEnd(async () => {
-						const fs = require('fs');
-						const path = require('path');
-						const srcDir = path.resolve(__dirname, 'node_modules/swagger-ui-dist');
-						const destDir = path.resolve(__dirname, 'dist/swagger-ui');
-
-						if (!fs.existsSync(destDir)) {
-							fs.mkdirSync(destDir, { recursive: true });
-						}
-
-						const filesToCopy = [
-							'swagger-ui.css',
-							'swagger-ui-bundle.js',
-							'swagger-ui-standalone-preset.js'
-						];
-
-						for (const file of filesToCopy) {
-							fs.copyFileSync(path.join(srcDir, file), path.join(destDir, file));
-						}
-						console.log('[build] copied swagger-ui assets');
-					});
-				}
-			}
 		],
 	});
 	if (watch) {
