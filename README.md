@@ -173,6 +173,9 @@ Power resource-intensive agent loops without breaking the bank:
 
 ## 🚀 Getting Started
 
+> **📘 Comprehensive Documentation:**  
+> For detailed setup guides, advanced configurations, and use-case tutorials (Cursor, LangChain, Agents), please visit our **[Official Documentation](https://notes.suhaib.in/docs/vscode/extensions/github-copilot-api-gateway/)**.
+
 ### 1. Installation
 Install **GitHub Copilot API Gateway** from the VS Code Marketplace.
 *Requirements: VS Code 1.95+ and GitHub Copilot Chat extension.*
@@ -274,8 +277,6 @@ A: Yes. It runs entirely locally on your machine. No data is sent to any third-p
 </p>
 
 ---
-
-## 🌐 Universal API Gateway
 
 **GitHub Copilot API Gateway** acts as a bridge between your local development environment and GitHub Copilot. It starts a local HTTP server that standardizes communication, allowing you to use Copilot with **any AI SDK or tool**.
 
