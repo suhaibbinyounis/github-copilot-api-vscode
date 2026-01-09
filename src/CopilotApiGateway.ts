@@ -36,20 +36,20 @@ export interface RedactionPattern {
 	isBuiltin: boolean;
 }
 
-// Default redaction patterns - enabled by default
+// Default redaction patterns - disabled by default (opt-in)
 export const DEFAULT_REDACTION_PATTERNS: RedactionPattern[] = [
-	{ id: 'ssn', name: 'US Social Security', pattern: '\\b\\d{3}-\\d{2}-\\d{4}\\b', enabled: true, isBuiltin: true },
-	{ id: 'credit-card', name: 'Credit/Debit Card', pattern: '\\b(?:\\d{4}[- ]?){3}\\d{4}\\b', enabled: true, isBuiltin: true },
-	{ id: 'aadhaar', name: 'Aadhaar Number', pattern: '\\b\\d{4}\\s?\\d{4}\\s?\\d{4}\\b', enabled: true, isBuiltin: true },
-	{ id: 'passport-in', name: 'Indian Passport', pattern: '\\b[A-Z]\\d{7}\\b', enabled: true, isBuiltin: true },
-	{ id: 'passport-us', name: 'US Passport', pattern: '\\b\\d{9}\\b', enabled: true, isBuiltin: true },
-	{ id: 'email', name: 'Email Address', pattern: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}', enabled: true, isBuiltin: true },
-	{ id: 'url', name: 'URLs', pattern: 'https?://[^\\s]+', enabled: true, isBuiltin: true },
-	{ id: 'phone-us', name: 'US Phone Number', pattern: '\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b', enabled: true, isBuiltin: true },
-	{ id: 'phone-in', name: 'Indian Phone', pattern: '\\b[6-9]\\d{9}\\b', enabled: true, isBuiltin: true },
-	{ id: 'api-key', name: 'API Keys', pattern: '(sk-[a-zA-Z0-9]{20,})|(api[_-]?key[=:]\\s*[\\w-]+)', enabled: true, isBuiltin: true },
-	{ id: 'password-json', name: 'Passwords in JSON', pattern: '"password"\\s*:\\s*"[^"]*"', enabled: true, isBuiltin: true },
-	{ id: 'bearer-token', name: 'Bearer Tokens', pattern: 'Bearer\\s+[A-Za-z0-9\\-._~+/]+=*', enabled: true, isBuiltin: true },
+	{ id: 'ssn', name: 'US Social Security', pattern: '\\b\\d{3}-\\d{2}-\\d{4}\\b', enabled: false, isBuiltin: true },
+	{ id: 'credit-card', name: 'Credit/Debit Card', pattern: '\\b(?:\\d{4}[- ]?){3}\\d{4}\\b', enabled: false, isBuiltin: true },
+	{ id: 'aadhaar', name: 'Aadhaar Number', pattern: '\\b\\d{4}\\s?\\d{4}\\s?\\d{4}\\b', enabled: false, isBuiltin: true },
+	{ id: 'passport-in', name: 'Indian Passport', pattern: '\\b[A-Z]\\d{7}\\b', enabled: false, isBuiltin: true },
+	{ id: 'passport-us', name: 'US Passport', pattern: '\\b\\d{9}\\b', enabled: false, isBuiltin: true },
+	{ id: 'email', name: 'Email Address', pattern: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}', enabled: false, isBuiltin: true },
+	{ id: 'url', name: 'URLs', pattern: 'https?://[^\\s]+', enabled: false, isBuiltin: true },
+	{ id: 'phone-us', name: 'US Phone Number', pattern: '\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b', enabled: false, isBuiltin: true },
+	{ id: 'phone-in', name: 'Indian Phone', pattern: '\\b[6-9]\\d{9}\\b', enabled: false, isBuiltin: true },
+	{ id: 'api-key', name: 'API Keys', pattern: '(sk-[a-zA-Z0-9]{20,})|(api[_-]?key[=:]\\s*[\\w-]+)', enabled: false, isBuiltin: true },
+	{ id: 'password-json', name: 'Passwords in JSON', pattern: '"password"\\s*:\\s*"[^"]*"', enabled: false, isBuiltin: true },
+	{ id: 'bearer-token', name: 'Bearer Tokens', pattern: 'Bearer\\s+[A-Za-z0-9\\-._~+/]+=*', enabled: false, isBuiltin: true },
 ];
 
 export interface ApiServerConfig {
@@ -1254,49 +1254,6 @@ export class CopilotApiGateway implements vscode.Disposable {
 				uptime_seconds: uptime,
 				active_requests: this.activeRequests
 			});
-			return;
-		}
-
-		// Prometheus metrics endpoint
-		if (req.method === 'GET' && url.pathname === '/metrics') {
-			const uptime = Math.floor((Date.now() - this.usageStats.startTime) / 1000);
-			const metrics = [
-				'# HELP copilot_api_requests_total Total number of API requests',
-				'# TYPE copilot_api_requests_total counter',
-				`copilot_api_requests_total ${this.usageStats.totalRequests}`,
-				'',
-				'# HELP copilot_api_active_requests Current number of active requests',
-				'# TYPE copilot_api_active_requests gauge',
-				`copilot_api_active_requests ${this.activeRequests}`,
-				'',
-				'# HELP copilot_api_tokens_input_total Total input tokens consumed',
-				'# TYPE copilot_api_tokens_input_total counter',
-				`copilot_api_tokens_input_total ${this.usageStats.totalTokensIn}`,
-				'',
-				'# HELP copilot_api_tokens_output_total Total output tokens generated',
-				'# TYPE copilot_api_tokens_output_total counter',
-				`copilot_api_tokens_output_total ${this.usageStats.totalTokensOut}`,
-				'',
-				'# HELP copilot_api_uptime_seconds Server uptime in seconds',
-				'# TYPE copilot_api_uptime_seconds gauge',
-				`copilot_api_uptime_seconds ${uptime}`,
-				'',
-				'# HELP copilot_api_requests_per_minute Rate of requests per minute',
-				'# TYPE copilot_api_requests_per_minute gauge',
-				`copilot_api_requests_per_minute ${this.realtimeStats.requestsPerMinute}`,
-				'',
-				'# HELP copilot_api_latency_avg_ms Average request latency in milliseconds',
-				'# TYPE copilot_api_latency_avg_ms gauge',
-				`copilot_api_latency_avg_ms ${this.realtimeStats.avgLatencyMs}`,
-				'',
-				'# HELP copilot_api_error_rate_percent Error rate percentage',
-				'# TYPE copilot_api_error_rate_percent gauge',
-				`copilot_api_error_rate_percent ${this.realtimeStats.errorRate}`,
-				''
-			].join('\n');
-
-			res.writeHead(200, { 'Content-Type': 'text/plain; version=0.0.4; charset=utf-8' });
-			res.end(metrics);
 			return;
 		}
 

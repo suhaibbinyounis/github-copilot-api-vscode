@@ -438,8 +438,8 @@ var init_parseUtil = __esm({
     init_errors();
     init_en();
     makeIssue = (params) => {
-      const { data, path: path5, errorMaps, issueData } = params;
-      const fullPath = [...path5, ...issueData.path || []];
+      const { data, path: path4, errorMaps, issueData } = params;
+      const fullPath = [...path4, ...issueData.path || []];
       const fullIssue = {
         ...issueData,
         path: fullPath
@@ -719,11 +719,11 @@ var init_types = __esm({
     init_parseUtil();
     init_util();
     ParseInputLazyPath = class {
-      constructor(parent, value, path5, key) {
+      constructor(parent, value, path4, key) {
         this._cachedPath = [];
         this.parent = parent;
         this.data = value;
-        this._path = path5;
+        this._path = path4;
         this._key = key;
       }
       get path() {
@@ -4226,10 +4226,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path5) {
-  if (!path5)
+function getElementAtPath(obj, path4) {
+  if (!path4)
     return obj;
-  return path5.reduce((acc, key) => acc?.[key], obj);
+  return path4.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -4524,11 +4524,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path5, issues) {
+function prefixIssues(path4, issues) {
   return issues.map((iss) => {
     var _a2;
     (_a2 = iss).path ?? (_a2.path = []);
-    iss.path.unshift(path5);
+    iss.path.unshift(path4);
     return iss;
   });
 }
@@ -16979,20 +16979,20 @@ var require_compile = __commonJS({
     var util_1 = require_util();
     var validate_1 = require_validate();
     var SchemaEnv = class {
-      constructor(env3) {
+      constructor(env2) {
         var _a2;
         this.refs = {};
         this.dynamicAnchors = {};
         let schema;
-        if (typeof env3.schema == "object")
-          schema = env3.schema;
-        this.schema = env3.schema;
-        this.schemaId = env3.schemaId;
-        this.root = env3.root || this;
-        this.baseId = (_a2 = env3.baseId) !== null && _a2 !== void 0 ? _a2 : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env3.schemaId || "$id"]);
-        this.schemaPath = env3.schemaPath;
-        this.localRefs = env3.localRefs;
-        this.meta = env3.meta;
+        if (typeof env2.schema == "object")
+          schema = env2.schema;
+        this.schema = env2.schema;
+        this.schemaId = env2.schemaId;
+        this.root = env2.root || this;
+        this.baseId = (_a2 = env2.baseId) !== null && _a2 !== void 0 ? _a2 : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env2.schemaId || "$id"]);
+        this.schemaPath = env2.schemaPath;
+        this.localRefs = env2.localRefs;
+        this.meta = env2.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
         this.refs = {};
       }
@@ -17176,15 +17176,15 @@ var require_compile = __commonJS({
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
       }
-      let env3;
+      let env2;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env3 = resolveSchema.call(this, root, $ref);
+        env2 = resolveSchema.call(this, root, $ref);
       }
       const { schemaId } = this.opts;
-      env3 = env3 || new SchemaEnv({ schema, schemaId, root, baseId });
-      if (env3.schema !== env3.root.schema)
-        return env3;
+      env2 = env2 || new SchemaEnv({ schema, schemaId, root, baseId });
+      if (env2.schema !== env2.root.schema)
+        return env2;
       return void 0;
     }
   }
@@ -17332,8 +17332,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path5) {
-      let input = path5;
+    function removeDotSegments(path4) {
+      let input = path4;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -17532,8 +17532,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path5, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path5 && path5 !== "/" ? path5 : void 0;
+        const [path4, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path4 && path4 !== "/" ? path4 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -18585,8 +18585,8 @@ var require_ref = __commonJS({
       schemaType: "string",
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
-        const { baseId, schemaEnv: env3, validateName, opts, self: self2 } = it;
-        const { root } = env3;
+        const { baseId, schemaEnv: env2, validateName, opts, self: self2 } = it;
+        const { root } = env2;
         if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
           return callRootRef();
         const schOrEnv = compile_1.resolveRef.call(self2, root, baseId, $ref);
@@ -18596,8 +18596,8 @@ var require_ref = __commonJS({
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env3 === root)
-            return callRef(cxt, validateName, env3, env3.$async);
+          if (env2 === root)
+            return callRef(cxt, validateName, env2, env2.$async);
           const rootName = gen.scopeValue("root", { ref: root });
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
         }
@@ -18627,14 +18627,14 @@ var require_ref = __commonJS({
     exports2.getValidate = getValidate;
     function callRef(cxt, v, sch, $async) {
       const { gen, it } = cxt;
-      const { allErrors, schemaEnv: env3, opts } = it;
+      const { allErrors, schemaEnv: env2, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
       if ($async)
         callAsyncRef();
       else
         callSyncRef();
       function callAsyncRef() {
-        if (!env3.$async)
+        if (!env2.$async)
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
@@ -23590,20 +23590,20 @@ var require_compile2 = __commonJS({
     var util_1 = require_util2();
     var validate_1 = require_validate2();
     var SchemaEnv = class {
-      constructor(env3) {
+      constructor(env2) {
         var _a2;
         this.refs = {};
         this.dynamicAnchors = {};
         let schema;
-        if (typeof env3.schema == "object")
-          schema = env3.schema;
-        this.schema = env3.schema;
-        this.schemaId = env3.schemaId;
-        this.root = env3.root || this;
-        this.baseId = (_a2 = env3.baseId) !== null && _a2 !== void 0 ? _a2 : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env3.schemaId || "$id"]);
-        this.schemaPath = env3.schemaPath;
-        this.localRefs = env3.localRefs;
-        this.meta = env3.meta;
+        if (typeof env2.schema == "object")
+          schema = env2.schema;
+        this.schema = env2.schema;
+        this.schemaId = env2.schemaId;
+        this.root = env2.root || this;
+        this.baseId = (_a2 = env2.baseId) !== null && _a2 !== void 0 ? _a2 : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env2.schemaId || "$id"]);
+        this.schemaPath = env2.schemaPath;
+        this.localRefs = env2.localRefs;
+        this.meta = env2.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
         this.refs = {};
       }
@@ -23787,15 +23787,15 @@ var require_compile2 = __commonJS({
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
       }
-      let env3;
+      let env2;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env3 = resolveSchema.call(this, root, $ref);
+        env2 = resolveSchema.call(this, root, $ref);
       }
       const { schemaId } = this.opts;
-      env3 = env3 || new SchemaEnv({ schema, schemaId, root, baseId });
-      if (env3.schema !== env3.root.schema)
-        return env3;
+      env2 = env2 || new SchemaEnv({ schema, schemaId, root, baseId });
+      if (env2.schema !== env2.root.schema)
+        return env2;
       return void 0;
     }
   }
@@ -24474,8 +24474,8 @@ var require_ref2 = __commonJS({
       schemaType: "string",
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
-        const { baseId, schemaEnv: env3, validateName, opts, self: self2 } = it;
-        const { root } = env3;
+        const { baseId, schemaEnv: env2, validateName, opts, self: self2 } = it;
+        const { root } = env2;
         if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
           return callRootRef();
         const schOrEnv = compile_1.resolveRef.call(self2, root, baseId, $ref);
@@ -24485,8 +24485,8 @@ var require_ref2 = __commonJS({
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env3 === root)
-            return callRef(cxt, validateName, env3, env3.$async);
+          if (env2 === root)
+            return callRef(cxt, validateName, env2, env2.$async);
           const rootName = gen.scopeValue("root", { ref: root });
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
         }
@@ -24516,14 +24516,14 @@ var require_ref2 = __commonJS({
     exports2.getValidate = getValidate;
     function callRef(cxt, v, sch, $async) {
       const { gen, it } = cxt;
-      const { allErrors, schemaEnv: env3, opts } = it;
+      const { allErrors, schemaEnv: env2, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
       if ($async)
         callAsyncRef();
       else
         callSyncRef();
       function callAsyncRef() {
-        if (!env3.$async)
+        if (!env2.$async)
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
@@ -26572,12 +26572,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs5, exportName) {
+    function addFormats(ajv, list, fs4, exportName) {
       var _a2;
       var _b;
       (_a2 = (_b = ajv.opts.code).formats) !== null && _a2 !== void 0 ? _a2 : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs5[f]);
+        ajv.addFormat(f, fs4[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -27391,8 +27391,8 @@ var require_windows = __commonJS({
   "node_modules/isexe/windows.js"(exports2, module2) {
     module2.exports = isexe;
     isexe.sync = sync;
-    var fs5 = require("fs");
-    function checkPathExt(path5, options) {
+    var fs4 = require("fs");
+    function checkPathExt(path4, options) {
       var pathext = options.pathExt !== void 0 ? options.pathExt : process.env.PATHEXT;
       if (!pathext) {
         return true;
@@ -27403,25 +27403,25 @@ var require_windows = __commonJS({
       }
       for (var i = 0; i < pathext.length; i++) {
         var p = pathext[i].toLowerCase();
-        if (p && path5.substr(-p.length).toLowerCase() === p) {
+        if (p && path4.substr(-p.length).toLowerCase() === p) {
           return true;
         }
       }
       return false;
     }
-    function checkStat(stat, path5, options) {
+    function checkStat(stat, path4, options) {
       if (!stat.isSymbolicLink() && !stat.isFile()) {
         return false;
       }
-      return checkPathExt(path5, options);
+      return checkPathExt(path4, options);
     }
-    function isexe(path5, options, cb) {
-      fs5.stat(path5, function(er, stat) {
-        cb(er, er ? false : checkStat(stat, path5, options));
+    function isexe(path4, options, cb) {
+      fs4.stat(path4, function(er, stat) {
+        cb(er, er ? false : checkStat(stat, path4, options));
       });
     }
-    function sync(path5, options) {
-      return checkStat(fs5.statSync(path5), path5, options);
+    function sync(path4, options) {
+      return checkStat(fs4.statSync(path4), path4, options);
     }
   }
 });
@@ -27431,14 +27431,14 @@ var require_mode = __commonJS({
   "node_modules/isexe/mode.js"(exports2, module2) {
     module2.exports = isexe;
     isexe.sync = sync;
-    var fs5 = require("fs");
-    function isexe(path5, options, cb) {
-      fs5.stat(path5, function(er, stat) {
+    var fs4 = require("fs");
+    function isexe(path4, options, cb) {
+      fs4.stat(path4, function(er, stat) {
         cb(er, er ? false : checkStat(stat, options));
       });
     }
-    function sync(path5, options) {
-      return checkStat(fs5.statSync(path5), options);
+    function sync(path4, options) {
+      return checkStat(fs4.statSync(path4), options);
     }
     function checkStat(stat, options) {
       return stat.isFile() && checkMode(stat, options);
@@ -27462,7 +27462,7 @@ var require_mode = __commonJS({
 // node_modules/isexe/index.js
 var require_isexe = __commonJS({
   "node_modules/isexe/index.js"(exports2, module2) {
-    var fs5 = require("fs");
+    var fs4 = require("fs");
     var core;
     if (process.platform === "win32" || global.TESTING_WINDOWS) {
       core = require_windows();
@@ -27471,7 +27471,7 @@ var require_isexe = __commonJS({
     }
     module2.exports = isexe;
     isexe.sync = sync;
-    function isexe(path5, options, cb) {
+    function isexe(path4, options, cb) {
       if (typeof options === "function") {
         cb = options;
         options = {};
@@ -27481,7 +27481,7 @@ var require_isexe = __commonJS({
           throw new TypeError("callback not provided");
         }
         return new Promise(function(resolve, reject) {
-          isexe(path5, options || {}, function(er, is) {
+          isexe(path4, options || {}, function(er, is) {
             if (er) {
               reject(er);
             } else {
@@ -27490,7 +27490,7 @@ var require_isexe = __commonJS({
           });
         });
       }
-      core(path5, options || {}, function(er, is) {
+      core(path4, options || {}, function(er, is) {
         if (er) {
           if (er.code === "EACCES" || options && options.ignoreErrors) {
             er = null;
@@ -27500,9 +27500,9 @@ var require_isexe = __commonJS({
         cb(er, is);
       });
     }
-    function sync(path5, options) {
+    function sync(path4, options) {
       try {
-        return core.sync(path5, options || {});
+        return core.sync(path4, options || {});
       } catch (er) {
         if (options && options.ignoreErrors || er.code === "EACCES") {
           return false;
@@ -27518,7 +27518,7 @@ var require_isexe = __commonJS({
 var require_which = __commonJS({
   "node_modules/which/which.js"(exports2, module2) {
     var isWindows = process.platform === "win32" || process.env.OSTYPE === "cygwin" || process.env.OSTYPE === "msys";
-    var path5 = require("path");
+    var path4 = require("path");
     var COLON = isWindows ? ";" : ":";
     var isexe = require_isexe();
     var getNotFoundError = (cmd) => Object.assign(new Error(`not found: ${cmd}`), { code: "ENOENT" });
@@ -27556,7 +27556,7 @@ var require_which = __commonJS({
           return opt.all && found.length ? resolve(found) : reject(getNotFoundError(cmd));
         const ppRaw = pathEnv[i];
         const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
-        const pCmd = path5.join(pathPart, cmd);
+        const pCmd = path4.join(pathPart, cmd);
         const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
         resolve(subStep(p, i, 0));
       });
@@ -27583,7 +27583,7 @@ var require_which = __commonJS({
       for (let i = 0; i < pathEnv.length; i++) {
         const ppRaw = pathEnv[i];
         const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
-        const pCmd = path5.join(pathPart, cmd);
+        const pCmd = path4.join(pathPart, cmd);
         const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
         for (let j = 0; j < pathExt.length; j++) {
           const cur = p + pathExt[j];
@@ -27631,11 +27631,11 @@ var require_path_key = __commonJS({
 var require_resolveCommand = __commonJS({
   "node_modules/cross-spawn/lib/util/resolveCommand.js"(exports2, module2) {
     "use strict";
-    var path5 = require("path");
+    var path4 = require("path");
     var which = require_which();
     var getPathKey = require_path_key();
     function resolveCommandAttempt(parsed, withoutPathExt) {
-      const env3 = parsed.options.env || process.env;
+      const env2 = parsed.options.env || process.env;
       const cwd = process.cwd();
       const hasCustomCwd = parsed.options.cwd != null;
       const shouldSwitchCwd = hasCustomCwd && process.chdir !== void 0 && !process.chdir.disabled;
@@ -27648,8 +27648,8 @@ var require_resolveCommand = __commonJS({
       let resolved;
       try {
         resolved = which.sync(parsed.command, {
-          path: env3[getPathKey({ env: env3 })],
-          pathExt: withoutPathExt ? path5.delimiter : void 0
+          path: env2[getPathKey({ env: env2 })],
+          pathExt: withoutPathExt ? path4.delimiter : void 0
         });
       } catch (e) {
       } finally {
@@ -27658,7 +27658,7 @@ var require_resolveCommand = __commonJS({
         }
       }
       if (resolved) {
-        resolved = path5.resolve(hasCustomCwd ? parsed.options.cwd : "", resolved);
+        resolved = path4.resolve(hasCustomCwd ? parsed.options.cwd : "", resolved);
       }
       return resolved;
     }
@@ -27712,8 +27712,8 @@ var require_shebang_command = __commonJS({
       if (!match) {
         return null;
       }
-      const [path5, argument] = match[0].replace(/#! ?/, "").split(" ");
-      const binary = path5.split("/").pop();
+      const [path4, argument] = match[0].replace(/#! ?/, "").split(" ");
+      const binary = path4.split("/").pop();
       if (binary === "env") {
         return argument;
       }
@@ -27726,16 +27726,16 @@ var require_shebang_command = __commonJS({
 var require_readShebang = __commonJS({
   "node_modules/cross-spawn/lib/util/readShebang.js"(exports2, module2) {
     "use strict";
-    var fs5 = require("fs");
+    var fs4 = require("fs");
     var shebangCommand = require_shebang_command();
     function readShebang(command) {
       const size = 150;
       const buffer = Buffer.alloc(size);
       let fd;
       try {
-        fd = fs5.openSync(command, "r");
-        fs5.readSync(fd, buffer, 0, size, 0);
-        fs5.closeSync(fd);
+        fd = fs4.openSync(command, "r");
+        fs4.readSync(fd, buffer, 0, size, 0);
+        fs4.closeSync(fd);
       } catch (e) {
       }
       return shebangCommand(buffer.toString());
@@ -27748,7 +27748,7 @@ var require_readShebang = __commonJS({
 var require_parse = __commonJS({
   "node_modules/cross-spawn/lib/parse.js"(exports2, module2) {
     "use strict";
-    var path5 = require("path");
+    var path4 = require("path");
     var resolveCommand = require_resolveCommand();
     var escape2 = require_escape();
     var readShebang = require_readShebang();
@@ -27773,7 +27773,7 @@ var require_parse = __commonJS({
       const needsShell = !isExecutableRegExp.test(commandFile);
       if (parsed.options.forceShell || needsShell) {
         const needsDoubleEscapeMetaChars = isCmdShimRegExp.test(commandFile);
-        parsed.command = path5.normalize(parsed.command);
+        parsed.command = path4.normalize(parsed.command);
         parsed.command = escape2.command(parsed.command);
         parsed.args = parsed.args.map((arg) => escape2.argument(arg, needsDoubleEscapeMetaChars));
         const shellCommand = [parsed.command].concat(parsed.args).join(" ");
@@ -27919,7 +27919,7 @@ var init_stdio = __esm({
 
 // node_modules/@modelcontextprotocol/sdk/dist/esm/client/stdio.js
 function getDefaultEnvironment() {
-  const env3 = {};
+  const env2 = {};
   for (const key of DEFAULT_INHERITED_ENV_VARS) {
     const value = import_node_process.default.env[key];
     if (value === void 0) {
@@ -27928,9 +27928,9 @@ function getDefaultEnvironment() {
     if (value.startsWith("()")) {
       continue;
     }
-    env3[key] = value;
+    env2[key] = value;
   }
-  return env3;
+  return env2;
 }
 function isElectron() {
   return "type" in import_node_process.default;
@@ -31332,7 +31332,7 @@ function __classPrivateFieldIn(state, receiver) {
   if (receiver === null || typeof receiver !== "object" && typeof receiver !== "function") throw new TypeError("Cannot use 'in' operator on non-object");
   return typeof state === "function" ? receiver === state : state.has(receiver);
 }
-function __addDisposableResource(env3, value, async) {
+function __addDisposableResource(env2, value, async) {
   if (value !== null && value !== void 0) {
     if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
     var dispose, inner;
@@ -31353,22 +31353,22 @@ function __addDisposableResource(env3, value, async) {
         return Promise.reject(e);
       }
     };
-    env3.stack.push({ value, dispose, async });
+    env2.stack.push({ value, dispose, async });
   } else if (async) {
-    env3.stack.push({ async: true });
+    env2.stack.push({ async: true });
   }
   return value;
 }
-function __disposeResources(env3) {
+function __disposeResources(env2) {
   function fail(e) {
-    env3.error = env3.hasError ? new _SuppressedError(e, env3.error, "An error was suppressed during disposal.") : e;
-    env3.hasError = true;
+    env2.error = env2.hasError ? new _SuppressedError(e, env2.error, "An error was suppressed during disposal.") : e;
+    env2.hasError = true;
   }
   var r, s = 0;
   function next() {
-    while (r = env3.stack.pop()) {
+    while (r = env2.stack.pop()) {
       try {
-        if (!r.async && s === 1) return s = 0, env3.stack.push(r), Promise.resolve().then(next);
+        if (!r.async && s === 1) return s = 0, env2.stack.push(r), Promise.resolve().then(next);
         if (r.dispose) {
           var result = r.dispose.call(r.value);
           if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) {
@@ -31380,18 +31380,18 @@ function __disposeResources(env3) {
         fail(e);
       }
     }
-    if (s === 1) return env3.hasError ? Promise.reject(env3.error) : Promise.resolve();
-    if (env3.hasError) throw env3.error;
+    if (s === 1) return env2.hasError ? Promise.reject(env2.error) : Promise.resolve();
+    if (env2.hasError) throw env2.error;
   }
   return next();
 }
-function __rewriteRelativeImportExtension(path5, preserveJsx) {
-  if (typeof path5 === "string" && /^\.\.?\//.test(path5)) {
-    return path5.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
+function __rewriteRelativeImportExtension(path4, preserveJsx) {
+  if (typeof path4 === "string" && /^\.\.?\//.test(path4)) {
+    return path4.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
       return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
     });
   }
-  return path5;
+  return path4;
 }
 var extendStatics, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
@@ -41271,14 +41271,14 @@ var require_dependency_container = __commonJS({
           provider = providerOrConstructor;
         }
         if (providers_1.isTokenProvider(provider)) {
-          const path5 = [token];
+          const path4 = [token];
           let tokenProvider = provider;
           while (tokenProvider != null) {
             const currentToken = tokenProvider.useToken;
-            if (path5.includes(currentToken)) {
-              throw new Error(`Token registration cycle detected! ${[...path5, currentToken].join(" -> ")}`);
+            if (path4.includes(currentToken)) {
+              throw new Error(`Token registration cycle detected! ${[...path4, currentToken].join(" -> ")}`);
             }
-            path5.push(currentToken);
+            path4.push(currentToken);
             const registration = this._registry.get(currentToken);
             if (registration && providers_1.isTokenProvider(registration.provider)) {
               tokenProvider = registration.provider;
@@ -50059,5427 +50059,6 @@ var init_wrapper = __esm({
   }
 });
 
-// src/apps/implementations/decisionDoctor.ts
-var decisionDoctor_exports = {};
-__export(decisionDoctor_exports, {
-  decisionDoctorApp: () => decisionDoctorApp
-});
-var decisionDoctorApp;
-var init_decisionDoctor = __esm({
-  "src/apps/implementations/decisionDoctor.ts"() {
-    "use strict";
-    decisionDoctorApp = {
-      id: "decision-doctor",
-      name: "Decision Doctor",
-      icon: "\u{1F914}",
-      description: "Frameworks to help you make tough choices",
-      category: "productivity",
-      tags: ["decisions", "strategy", "thinking", "productivity"],
-      primaryAction: "Diagnose Decision",
-      inputs: [
-        {
-          id: "dilemma",
-          label: "What decision do you need to make?",
-          type: "textarea",
-          placeholder: "e.g., Should I rewrite this legacy service in Go or just refactor the TypeScript?",
-          required: true
-        },
-        {
-          id: "options",
-          label: "What are the options on the table?",
-          type: "textarea",
-          placeholder: "Option A: Rewrite in Go\nOption B: Refactor TS\nOption C: Do nothing",
-          required: true
-        },
-        {
-          id: "context",
-          label: "Any constraints or context?",
-          type: "text",
-          placeholder: "e.g., strict deadline, team knows TS better"
-        }
-      ],
-      systemPrompt: `You are the Decision Doctor, an expert in strategic thinking and decision-making frameworks.
-Your goal is to help the user gain clarity on a difficult decision.
-
-Follow this structure in your response:
-1. **The Core Dilemma**: Briefly restate the conflicting values or trade-offs (e.g., "Speed vs. Maintainability").
-2. **Analysis Framework**: Choose the BEST framework for this specific decision (e.g., Pareto Principle, Regret Minimization, Second-Order Thinking, Weighted Matrix) and explain WHY you chose it.
-3. **Structured Evaluation**: Apply the framework to their options. Use a markdown table if comparing features/options.
-4. **The Doctor's Prescription**: Give a clear, unbiased recommendation based on the logic.
-5. **Pre-Mortem**: Briefly mention what could go wrong with the recommended choice and how to mitigate it.
-
-Tone: Professional, objective, yet empathetic to the difficulty of choice.`,
-      buildUserPrompt: (inputs) => {
-        return `Decision: ${inputs.dilemma}
-Options:
-${inputs.options}
-
-Context:
-${inputs.context}`;
-      }
-    };
-  }
-});
-
-// src/apps/implementations/skillSprinter.ts
-var skillSprinter_exports = {};
-__export(skillSprinter_exports, {
-  skillSprinterApp: () => skillSprinterApp
-});
-var skillSprinterApp;
-var init_skillSprinter = __esm({
-  "src/apps/implementations/skillSprinter.ts"() {
-    "use strict";
-    skillSprinterApp = {
-      id: "skill-sprinter",
-      name: "Skill Sprinter",
-      icon: "\u{1F4DA}",
-      description: "Generate a focused learning plan for any topic",
-      category: "inspiration",
-      tags: ["learning", "growth", "education", "planning"],
-      primaryAction: "Create Learning Plan",
-      inputs: [
-        {
-          id: "topic",
-          label: "What do you want to learn?",
-          type: "text",
-          placeholder: "e.g., Rust, Sourdough Baking, Kubernetes, public speaking",
-          required: true
-        },
-        {
-          id: "timeframe",
-          label: "How much time do you have?",
-          type: "select",
-          options: [
-            { label: "1 Hour (Crash Course)", value: "1 hour" },
-            { label: "1 Weekend (Deep Dive)", value: "1 weekend" },
-            { label: "1 Month (Mastery)", value: "1 month" }
-          ],
-          required: true
-        },
-        {
-          id: "level",
-          label: "Current Level",
-          type: "select",
-          options: [
-            { label: "Beginner", value: "beginner" },
-            { label: "Intermediate", value: "intermediate" },
-            { label: "Advanced", value: "advanced" }
-          ],
-          required: true
-        }
-      ],
-      systemPrompt: `You are Skill Sprinter, an elite learning coach who creates high-efficiency learning paths.
-Design a learning plan that focuses on the 20% of concepts that provide 80% of the value (Pareto Principle).
-
-Structure the plan based on the timeframe:
-- **1 Hour**: strict concise "need to know" bullet points + 1 hands-on exercise.
-- **1 Weekend**: Day 1 (Theory + Basics), Day 2 (Building/Doing something real).
-- **1 Month**: Week-by-week breakdown with distinct milestones.
-
-For each plan include:
-1. **The Goal**: What exactly will they be able to DO by the end?
-2. **The Plan**: Structured timeline.
-3. **Key Resources**: Specific search terms or types of docs to look for (don't hallucinate generic URLs).
-4. **The Final Boss**: A capstone project or test to prove mastery.
-
-Tone: Encouraging, energetic, and highly structured.`,
-      buildUserPrompt: (inputs) => {
-        return `Topic: ${inputs.topic}
-Timeframe: ${inputs.timeframe}
-Current Level: ${inputs.level}`;
-      }
-    };
-  }
-});
-
-// src/apps/implementations/universalSummarizer.ts
-var universalSummarizer_exports = {};
-__export(universalSummarizer_exports, {
-  universalSummarizerApp: () => universalSummarizerApp
-});
-var universalSummarizerApp;
-var init_universalSummarizer = __esm({
-  "src/apps/implementations/universalSummarizer.ts"() {
-    "use strict";
-    universalSummarizerApp = {
-      id: "universal-summarizer",
-      name: "Universal Summarizer",
-      icon: "\u{1F4DD}",
-      description: "Quickly summarize any text into clear takeaways",
-      category: "productivity",
-      tags: ["summary", "reading", "productivity", "tools"],
-      primaryAction: "Summarize",
-      inputs: [
-        {
-          id: "text",
-          label: "Text to Summarize",
-          type: "textarea",
-          placeholder: "Paste email, article, or specs here...",
-          required: true
-        },
-        {
-          id: "format",
-          label: "Output Format",
-          type: "select",
-          options: [
-            { label: "Bulleted List (Standard)", value: "bullets" },
-            { label: "TL;DR (1 Sentence)", value: "tldr" },
-            { label: "ELI5 (Simple)", value: "eli5" },
-            { label: "Executive Brief (Decision focused)", value: "executive" }
-          ],
-          required: true
-        }
-      ],
-      systemPrompt: `You are the Universal Summarizer, an AI engine for text compression and clarity.
-Your goal is to extract the signal from the noise.
-
-Rules based on format:
-- **bullets**: Main ideas in bold, supporting details indented.
-- **tldr**: A single, punchy sentence capturing the essence.
-- **eli5**: Simple analogies, no jargon, easy to understand.
-- **executive**: 1. The Ask/Problem, 2. The Facts, 3. The Recommendation/Action.
-
-Always output a "BLUF" (Bottom Line Up Front) section first\u2014a 1-sentence grasp of the text.`,
-      buildUserPrompt: (inputs) => {
-        return `Format: ${inputs.format}
-
-Text to summarize:
-${inputs.text}`;
-      }
-    };
-  }
-});
-
-// src/apps/implementations/icebreakerChef.ts
-var icebreakerChef_exports = {};
-__export(icebreakerChef_exports, {
-  icebreakerChefApp: () => icebreakerChefApp
-});
-var icebreakerChefApp;
-var init_icebreakerChef = __esm({
-  "src/apps/implementations/icebreakerChef.ts"() {
-    "use strict";
-    icebreakerChefApp = {
-      id: "icebreaker-chef",
-      name: "Icebreaker Chef",
-      icon: "\u{1F9CA}",
-      description: "Cook up fresh questions for team bonding",
-      category: "communication",
-      tags: ["team", "meetings", "social", "fun"],
-      primaryAction: "Serve Questions",
-      inputs: [
-        {
-          id: "context",
-          label: "Meeting Type",
-          type: "text",
-          placeholder: "e.g., Daily Standup, Team Retrospective, New Hire Onboarding, Friday Social",
-          required: true
-        },
-        {
-          id: "vibe",
-          label: "Vibe",
-          type: "select",
-          options: [
-            { label: "Fun & Light (Quick)", value: "fun" },
-            { label: "Deep & Meaningful (Trust building)", value: "deep" },
-            { label: "Professional / Work-focused", value: "work" },
-            { label: "Weird / Creative", value: "weird" }
-          ],
-          required: true
-        }
-      ],
-      systemPrompt: `You are the Icebreaker Chef. You cook up fresh, non-boring conversational prompts.
-Avoid cliches like "What is your favorite color?" or "How was your weekend?".
-
-Generate 5 distinct icebreaker questions based on the Vibe:
-- **Fun**: Quick, low stakes, maybe controversial food opinions.
-- **Deep**: Thought-provoking, safe but personal (e.g., "What's a lesson you learned the hard way?").
-- **Work**: Professional growth, habits, or recognition.
-- **Weird**: hypothetical scenarios, zombie apocalypse plans, etc.
-
-For each question, add a 1-sentence "Why ask this?" note explaining what it reveals about the person.`,
-      buildUserPrompt: (inputs) => {
-        return `Meeting Context: ${inputs.context}
-Vibe: ${inputs.vibe}`;
-      }
-    };
-  }
-});
-
-// src/apps/ProjectManager.ts
-var vscode6, path3, fs3, import_child_process, import_util6, execAsync, ProjectManager, projectManager;
-var init_ProjectManager = __esm({
-  "src/apps/ProjectManager.ts"() {
-    "use strict";
-    vscode6 = __toESM(require("vscode"));
-    path3 = __toESM(require("path"));
-    fs3 = __toESM(require("fs"));
-    import_child_process = require("child_process");
-    import_util6 = require("util");
-    execAsync = (0, import_util6.promisify)(import_child_process.exec);
-    ProjectManager = class _ProjectManager {
-      static instance;
-      context;
-      constructor() {
-      }
-      /**
-       * Get singleton instance
-       */
-      static getInstance() {
-        if (!_ProjectManager.instance) {
-          _ProjectManager.instance = new _ProjectManager();
-        }
-        return _ProjectManager.instance;
-      }
-      /**
-       * Initialize with extension context
-       */
-      initialize(context) {
-        this.context = context;
-      }
-      /**
-       * Get all saved projects
-       */
-      getSavedProjects() {
-        if (!this.context) {
-          return [];
-        }
-        return this.context.globalState.get("apps.savedProjects", []);
-      }
-      /**
-       * Add a project
-       */
-      async addProject(projectPath) {
-        if (!this.context) {
-          return null;
-        }
-        if (!fs3.existsSync(projectPath) || !fs3.statSync(projectPath).isDirectory()) {
-          return null;
-        }
-        const projects = this.getSavedProjects();
-        const existing = projects.find((p) => p.path === projectPath);
-        if (existing) {
-          existing.lastUsed = Date.now();
-          await this.context.globalState.update("apps.savedProjects", projects);
-          return existing;
-        }
-        const newProject = {
-          id: `proj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          path: projectPath,
-          name: path3.basename(projectPath),
-          lastUsed: Date.now(),
-          favorite: false
-        };
-        projects.push(newProject);
-        await this.context.globalState.update("apps.savedProjects", projects);
-        return newProject;
-      }
-      /**
-       * Remove a project
-       */
-      async removeProject(projectId) {
-        if (!this.context) {
-          return;
-        }
-        const projects = this.getSavedProjects();
-        const filtered = projects.filter((p) => p.id !== projectId);
-        await this.context.globalState.update("apps.savedProjects", filtered);
-      }
-      /**
-       * Toggle project favorite status
-       */
-      async toggleFavorite(projectId) {
-        if (!this.context) {
-          return;
-        }
-        const projects = this.getSavedProjects();
-        const project = projects.find((p) => p.id === projectId);
-        if (project) {
-          project.favorite = !project.favorite;
-          await this.context.globalState.update("apps.savedProjects", projects);
-        }
-      }
-      /**
-       * Show folder picker dialog
-       */
-      async pickProjectFolder() {
-        const uris = await vscode6.window.showOpenDialog({
-          canSelectFiles: false,
-          canSelectFolders: true,
-          canSelectMany: false,
-          title: "Select Project Folder",
-          openLabel: "Select Project"
-        });
-        if (uris && uris.length > 0) {
-          return uris[0].fsPath;
-        }
-        return void 0;
-      }
-      /**
-       * Check if a path is a git repository
-       */
-      async isGitRepository(projectPath) {
-        try {
-          await execAsync("git rev-parse --git-dir", { cwd: projectPath });
-          return true;
-        } catch {
-          return false;
-        }
-      }
-      /**
-       * Get git diff for a project
-       */
-      async getGitDiff(projectPath, options) {
-        try {
-          if (!await this.isGitRepository(projectPath)) {
-            return { diff: "", error: "Not a git repository" };
-          }
-          let command;
-          switch (options.type) {
-            case "staged":
-              command = "git diff --cached";
-              break;
-            case "unstaged":
-              command = "git diff";
-              break;
-            case "commits":
-              const numCommits = options.commits || 5;
-              command = `git diff HEAD~${numCommits}..HEAD`;
-              break;
-            case "branches":
-              const base = options.baseBranch || "main";
-              const target = options.targetBranch || "HEAD";
-              command = `git diff ${base}...${target}`;
-              break;
-            default:
-              command = "git diff";
-          }
-          command += " --no-color";
-          const { stdout, stderr } = await execAsync(command, {
-            cwd: projectPath,
-            maxBuffer: 10 * 1024 * 1024
-            // 10MB buffer for large diffs
-          });
-          if (stderr && !stdout) {
-            return { diff: "", error: stderr };
-          }
-          return { diff: stdout };
-        } catch (error2) {
-          const message = error2 instanceof Error ? error2.message : String(error2);
-          return { diff: "", error: message };
-        }
-      }
-      /**
-       * Get list of branches for a project
-       */
-      async getBranches(projectPath) {
-        try {
-          const { stdout } = await execAsync('git branch -a --format="%(refname:short)"', {
-            cwd: projectPath
-          });
-          return stdout.split("\n").filter((b) => b.trim()).map((b) => b.trim());
-        } catch {
-          return [];
-        }
-      }
-      /**
-       * Get current branch name
-       */
-      async getCurrentBranch(projectPath) {
-        try {
-          const { stdout } = await execAsync("git branch --show-current", {
-            cwd: projectPath
-          });
-          return stdout.trim() || null;
-        } catch {
-          return null;
-        }
-      }
-      /**
-       * Get recent commits for a project
-       */
-      async getRecentCommits(projectPath, count = 10) {
-        try {
-          const { stdout } = await execAsync(
-            `git log -${count} --format="%H|%s|%an|%ad" --date=short`,
-            { cwd: projectPath }
-          );
-          return stdout.split("\n").filter((line) => line.trim()).map((line) => {
-            const [hash2, message, author, date5] = line.split("|");
-            return { hash: hash2, message, author, date: date5 };
-          });
-        } catch {
-          return [];
-        }
-      }
-      /**
-       * Get combined diff from multiple projects
-       */
-      async getCombinedDiff(projects) {
-        const results = await Promise.all(
-          projects.map(async (proj) => {
-            const result = await this.getGitDiff(proj.path, {
-              type: proj.diffType,
-              ...proj.options
-            });
-            return {
-              projectPath: proj.path,
-              ...result
-            };
-          })
-        );
-        return results;
-      }
-    };
-    projectManager = ProjectManager.getInstance();
-  }
-});
-
-// src/apps/implementations/codeReview.ts
-var codeReview_exports = {};
-__export(codeReview_exports, {
-  codeReviewApp: () => codeReviewApp
-});
-var codeReviewApp;
-var init_codeReview = __esm({
-  "src/apps/implementations/codeReview.ts"() {
-    "use strict";
-    init_ProjectManager();
-    codeReviewApp = {
-      id: "code-review",
-      name: "Code Review",
-      description: "Full project code review using git diff",
-      icon: "\u{1F50D}",
-      category: "developer",
-      helpDocumentation: `
-### What is this?
-The **Code Review** app provides an AI-powered senior engineer's perspective on your changes. It analyzes your git diff and provides constructive feedback on code quality, security, and performance.
-
-### How to use it:
-1. **Select Projects**: Add the local folders you want to review.
-2. **Choose Diff Type**: Review staged changes, unstaged work, recent commits, or compare two branches.
-3. **Set Depth**: Choose from Quick, Thorough, or category-specific focus (Security/Performance).
-4. **Execution**: The AI will generate a structured report with Critical, Warning, and Suggestion findings.
-
-### Use cases:
-- Preparing a PR for review.
-- Auditing a colleague's complex changes.
-- Quick security sanity checks on recent work.
-    `,
-      inputs: [
-        {
-          id: "projectPaths",
-          label: "Project Folders",
-          type: "project-picker",
-          placeholder: "Add project folders to review...",
-          required: true,
-          hint: 'Select the folders you want to review. Use "Pick Project Folder" to add new ones.'
-        },
-        {
-          id: "diffType",
-          label: "What to Review",
-          type: "radio",
-          required: true,
-          defaultValue: "unstaged",
-          options: [
-            { value: "staged", label: "Staged Changes", icon: "\u{1F4E6}", description: "Changes added to git staging" },
-            { value: "unstaged", label: "Unstaged Changes", icon: "\u{1F4DD}", description: "Current working directory changes" },
-            { value: "commits", label: "Last N Commits", icon: "\u{1F4DC}", description: "Review recent commits" },
-            { value: "branches", label: "Branch Comparison", icon: "\u{1F500}", description: "Compare between branches" }
-          ]
-        },
-        {
-          id: "numCommits",
-          label: "Number of Commits",
-          type: "text",
-          defaultValue: "5",
-          placeholder: "5",
-          rows: 5,
-          hint: "We'll enhance these into professional reproduction steps with clear preconditions.",
-          showIf: { field: "diffType", equals: "commits" }
-        },
-        {
-          id: "baseBranch",
-          label: "Base Branch",
-          type: "text",
-          defaultValue: "main",
-          placeholder: "main",
-          hint: "The branch to compare against",
-          showIf: { field: "diffType", equals: "branches" }
-        },
-        {
-          id: "targetBranch",
-          label: "Target Branch",
-          type: "text",
-          defaultValue: "HEAD",
-          placeholder: "HEAD or branch name",
-          hint: "The branch with your changes",
-          showIf: { field: "diffType", equals: "branches" }
-        },
-        {
-          id: "reviewFocus",
-          label: "Review Focus (optional)",
-          type: "textarea",
-          placeholder: "e.g., Focus on security vulnerabilities, performance issues, and error handling...",
-          rows: 3,
-          hint: "Describe what went wrong. Be as specific as possible about the error symptoms."
-        },
-        {
-          id: "reviewType",
-          label: "Review Depth",
-          type: "select",
-          defaultValue: "thorough",
-          options: [
-            { value: "quick", label: "\u26A1 Quick Scan", description: "High-level overview, critical issues only" },
-            { value: "thorough", label: "\u{1F50D} Thorough Review", description: "Comprehensive analysis" },
-            { value: "security", label: "\u{1F512} Security Focus", description: "Deep security analysis" },
-            { value: "performance", label: "\u26A1 Performance Focus", description: "Performance and optimization" }
-          ]
-        }
-      ],
-      primaryAction: "Start Code Review",
-      systemPrompt: `You are a senior software engineer conducting a thorough, constructive code review.
-Your goal is to help improve code quality while being respectful and educational.
-
-## Review Guidelines
-
-1. **Be Constructive**: Frame feedback as suggestions, not criticisms
-2. **Explain Why**: Always explain the reason behind each suggestion
-3. **Prioritize**: Focus on issues that matter most
-4. **Be Specific**: Reference exact files and line numbers when possible
-5. **Acknowledge Good Work**: Mention well-written code too
-
-## Output Format
-
-Structure your review using these sections:
-
-### \u{1F4CB} Summary
-- Brief overview of changes reviewed
-- Overall assessment (1-2 sentences)
-
-### \u{1F534} Critical Issues (Must Fix)
-Issues that could cause bugs, security vulnerabilities, or data loss.
-Format each as:
-- **[File:Line]** Issue title
-  - What: Description of the issue
-  - Why: Why this is critical
-  - Fix: Specific recommendation
-
-### \u{1F7E1} Warnings (Should Fix)
-Issues that could cause problems or are bad practices.
-Same format as above.
-
-### \u{1F4A1} Suggestions (Nice to Have)
-Improvements for code quality, readability, or maintainability.
-Same format as above.
-
-### \u2705 What's Good
-Acknowledge well-written code, good patterns, or improvements.
-
-### \u{1F4CA} Summary Stats
-- Files changed: X
-- Critical: X | Warnings: X | Suggestions: X
-
-If the diff is empty or there are no changes, say so clearly and suggest the user check their git status.`,
-      buildUserPrompt: (inputs, context) => {
-        const parts = [];
-        if (inputs.reviewFocus) {
-          parts.push(`## Review Focus
-${inputs.reviewFocus}
-`);
-        }
-        const reviewTypeDescriptions = {
-          quick: "Perform a quick scan focusing only on critical issues and obvious bugs.",
-          thorough: "Perform a comprehensive review covering all aspects of code quality.",
-          security: "Focus heavily on security vulnerabilities, input validation, authentication, authorization, and data protection.",
-          performance: "Focus on performance issues, memory leaks, inefficient algorithms, and optimization opportunities."
-        };
-        if (inputs.reviewType && reviewTypeDescriptions[inputs.reviewType]) {
-          parts.push(`## Review Type
-${reviewTypeDescriptions[inputs.reviewType]}
-`);
-        }
-        if (context?.gitDiff) {
-          parts.push(`## Git Diff to Review
-\`\`\`diff
-${context.gitDiff}
-\`\`\``);
-        } else if (context?.errors && context.errors.length > 0) {
-          parts.push(`## Errors
-Could not retrieve git diff:
-${context.errors.join("\n")}`);
-        } else {
-          parts.push("## Note\nNo diff content available. The diff may be empty or there may be no changes to review.");
-        }
-        if (context?.projectPaths && context.projectPaths.length > 0) {
-          parts.push(`
-## Projects Reviewed
-${context.projectPaths.join("\n")}`);
-        }
-        return parts.join("\n\n");
-      },
-      fetchContext: async (inputs) => {
-        const context = {
-          projectPaths: [],
-          errors: []
-        };
-        let projectPaths = [];
-        try {
-          if (inputs.projectPaths.startsWith("[")) {
-            projectPaths = JSON.parse(inputs.projectPaths);
-          } else {
-            projectPaths = inputs.projectPaths.split(",").map((p) => p.trim()).filter(Boolean);
-          }
-        } catch {
-          projectPaths = [inputs.projectPaths];
-        }
-        if (projectPaths.length === 0) {
-          context.errors.push("No project paths provided");
-          return context;
-        }
-        context.projectPaths = projectPaths;
-        const allDiffs = [];
-        for (const projectPath of projectPaths) {
-          const diffResult = await projectManager.getGitDiff(projectPath, {
-            type: inputs.diffType,
-            commits: inputs.numCommits ? parseInt(inputs.numCommits, 10) : 5,
-            baseBranch: inputs.baseBranch || "main",
-            targetBranch: inputs.targetBranch || "HEAD"
-          });
-          if (diffResult.error) {
-            context.errors.push(`${projectPath}: ${diffResult.error}`);
-          }
-          if (diffResult.diff) {
-            allDiffs.push(`# Project: ${projectPath}
-${diffResult.diff}`);
-          }
-        }
-        context.gitDiff = allDiffs.join("\n\n---\n\n");
-        if (context.gitDiff.length > 5e4) {
-          context.gitDiff = context.gitDiff.substring(0, 5e4) + "\n\n[... diff truncated due to size. Showing first 50,000 characters ...]";
-        }
-        return context;
-      },
-      parseResponse: (response, inputs) => {
-        const sections = [];
-        const criticalMatch = response.match(/### 🔴 Critical Issues[\s\S]*?(?=###|$)/i);
-        if (criticalMatch && !criticalMatch[0].includes("None") && criticalMatch[0].length > 50) {
-          sections.push({
-            title: "\u{1F534} Critical Issues",
-            content: criticalMatch[0].replace(/### 🔴 Critical Issues[^\n]*\n/, "").trim(),
-            severity: "critical",
-            collapsible: true,
-            collapsed: false
-          });
-        }
-        const warningsMatch = response.match(/### 🟡 Warnings[\s\S]*?(?=###|$)/i);
-        if (warningsMatch && !warningsMatch[0].includes("None") && warningsMatch[0].length > 50) {
-          sections.push({
-            title: "\u{1F7E1} Warnings",
-            content: warningsMatch[0].replace(/### 🟡 Warnings[^\n]*\n/, "").trim(),
-            severity: "warning",
-            collapsible: true,
-            collapsed: false
-          });
-        }
-        const suggestionsMatch = response.match(/### 💡 Suggestions[\s\S]*?(?=###|$)/i);
-        if (suggestionsMatch && !suggestionsMatch[0].includes("None") && suggestionsMatch[0].length > 50) {
-          sections.push({
-            title: "\u{1F4A1} Suggestions",
-            content: suggestionsMatch[0].replace(/### 💡 Suggestions[^\n]*\n/, "").trim(),
-            severity: "info",
-            collapsible: true,
-            collapsed: true
-          });
-        }
-        if (sections.length === 0) {
-          return {
-            type: "markdown",
-            content: response,
-            actions: [
-              { label: "Copy Review", icon: "\u{1F4CB}", action: "copy" },
-              { label: "Save as Markdown", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md", suggestedFilename: "code-review.md" }
-            ]
-          };
-        }
-        return {
-          type: "structured",
-          content: response,
-          sections,
-          summary: `Found ${sections.filter((s) => s.severity === "critical").length} critical, ${sections.filter((s) => s.severity === "warning").length} warnings`,
-          actions: [
-            { label: "Copy Review", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Save as Markdown", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md", suggestedFilename: "code-review.md" }
-          ]
-        };
-      },
-      defaultActions: [
-        { label: "Copy Review", icon: "\u{1F4CB}", action: "copy" },
-        { label: "Save as Markdown", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md", suggestedFilename: "code-review.md" }
-      ],
-      requirements: {
-        git: true,
-        copilot: true
-      },
-      examples: [
-        {
-          name: "Review staged changes",
-          inputs: {
-            diffType: "staged",
-            reviewType: "thorough",
-            reviewFocus: "Focus on security and error handling"
-          }
-        },
-        {
-          name: "Security review of recent commits",
-          inputs: {
-            diffType: "commits",
-            numCommits: "10",
-            reviewType: "security"
-          }
-        }
-      ]
-    };
-  }
-});
-
-// src/apps/implementations/testCaseGenerator.ts
-var testCaseGenerator_exports = {};
-__export(testCaseGenerator_exports, {
-  testCaseGeneratorApp: () => testCaseGeneratorApp
-});
-var testCaseGeneratorApp;
-var init_testCaseGenerator = __esm({
-  "src/apps/implementations/testCaseGenerator.ts"() {
-    "use strict";
-    testCaseGeneratorApp = {
-      id: "test-case-generator",
-      name: "Test Case Generator",
-      description: "Generate test cases from requirements/user stories",
-      icon: "\u{1F9EA}",
-      category: "qa",
-      helpDocumentation: `
-### What is this?
-The **Test Case Generator** helps QA and Developers ensure comprehensive coverage by converting requirements into structured test plans.
-
-### How to use it:
-1. **Input Requirement**: Paste a user story or feature description.
-2. **Choose Test Types**: Select from Functional, Edge Cases, Security, Accessibility, etc.
-3. **Pick Format**: Choose your preferred documentation style (Gherkin, Traditional Table, or Checklist).
-4. **Generate**: The AI will design a series of test cases with clear Pass/Fail criteria.
-
-### Use cases:
-- Drafting a test plan for a new feature.
-- Generating BDD-style "Given-When-Then" scenarios.
-- Ensuring edge cases are considered during the design phase.
-    `,
-      inputs: [
-        {
-          id: "requirement",
-          label: "Requirement / User Story",
-          type: "textarea",
-          placeholder: `Example:
-As a user, I want to reset my password so that I can regain access to my account if I forget it.
-
-Acceptance Criteria:
-- User can request password reset via email
-- Reset link expires after 24 hours
-- Password must meet complexity requirements`,
-          required: true,
-          rows: 8,
-          hint: "Paste the user story, requirement, or feature description"
-        },
-        {
-          id: "testTypes",
-          label: "Test Types to Include",
-          type: "multi-select",
-          options: [
-            { value: "functional", label: "\u2705 Functional", description: "Happy path scenarios" },
-            { value: "edge", label: "\u{1F532} Edge Cases", description: "Boundary conditions" },
-            { value: "negative", label: "\u274C Negative", description: "Error scenarios" },
-            { value: "security", label: "\u{1F512} Security", description: "Security test cases" },
-            { value: "performance", label: "\u26A1 Performance", description: "Performance considerations" },
-            { value: "accessibility", label: "\u267F Accessibility", description: "A11y test cases" }
-          ],
-          defaultValue: "functional,edge,negative"
-        },
-        {
-          id: "outputFormat",
-          label: "Output Format",
-          type: "select",
-          required: true,
-          defaultValue: "gherkin",
-          options: [
-            { value: "gherkin", label: "\u{1F952} Gherkin (BDD)", description: "Given/When/Then format" },
-            { value: "traditional", label: "\u{1F4CB} Traditional", description: "ID, Steps, Expected Results" },
-            { value: "checklist", label: "\u2714\uFE0F Checklist", description: "Simple test checklist" },
-            { value: "xunit", label: "\u{1F9EA} xUnit Style", description: "Test method structure" }
-          ]
-        },
-        {
-          id: "priority",
-          label: "Include Priority Levels",
-          type: "checkbox",
-          defaultValue: "true"
-        },
-        {
-          id: "jiraIssueId",
-          label: "Jira Issue ID (optional)",
-          type: "text",
-          placeholder: "e.g., PROJ-123, TEST-456",
-          hint: "Auto-fetch requirements from Jira. Configure Jira in Apps Hub first.",
-          required: false
-        },
-        {
-          id: "additionalContext",
-          label: "Additional Context (optional)",
-          type: "textarea",
-          placeholder: "Any additional technical details, constraints, or context...",
-          rows: 3
-        }
-      ],
-      primaryAction: "Generate Test Cases",
-      systemPrompt: `You are an expert QA engineer specializing in test case design.
-Generate comprehensive, actionable test cases based on the given requirements.
-
-## Guidelines
-
-1. **Coverage**: Ensure all acceptance criteria are covered
-2. **Completeness**: Each test case should be standalone and complete
-3. **Clarity**: Use clear, unambiguous language
-4. **Testability**: Each test must have a clear pass/fail criteria
-5. **Prioritization**: Order tests by importance/risk
-
-## Output Formats
-
-### Gherkin (BDD) Format
-\`\`\`gherkin
-Feature: [Feature Name]
-
-  Scenario: [Scenario Name]
-    Given [precondition]
-    When [action]
-    Then [expected result]
-    And [additional expectation]
-\`\`\`
-
-### Traditional Format
-| Test ID | Test Case | Priority | Preconditions | Steps | Expected Result |
-|---------|-----------|----------|---------------|-------|-----------------|
-
-### Checklist Format
-- [ ] [P1] Test case description
-  - Step 1
-  - Step 2
-  - \u2713 Expected: result
-
-### xUnit Style Format
-\`\`\`
-Test: testFeatureName_WhenCondition_ShouldExpectedBehavior
-Arrange: [setup]
-Act: [action]
-Assert: [verification]
-\`\`\`
-
-Always include:
-- Happy path scenarios (functional)
-- Edge cases and boundary conditions
-- Negative/error scenarios
-- Any specific test types requested`,
-      buildUserPrompt: (inputs) => {
-        const parts = [];
-        parts.push(`## Requirement to Test
-${inputs.requirement}`);
-        if (inputs.additionalContext) {
-          parts.push(`## Additional Context
-${inputs.additionalContext}`);
-        }
-        const testTypes = inputs.testTypes ? inputs.testTypes.split(",") : ["functional", "edge", "negative"];
-        const typeLabels = {
-          functional: "Functional (happy path)",
-          edge: "Edge Cases (boundaries)",
-          negative: "Negative (error scenarios)",
-          security: "Security",
-          performance: "Performance",
-          accessibility: "Accessibility"
-        };
-        const selectedTypes = testTypes.map((t) => typeLabels[t] || t).join(", ");
-        parts.push(`## Test Types Required
-${selectedTypes}`);
-        const formatLabels = {
-          gherkin: "Gherkin (BDD) - Given/When/Then format",
-          traditional: "Traditional table format with Test ID, Steps, Expected Results",
-          checklist: "Simple checklist format",
-          xunit: "xUnit test method structure (Arrange/Act/Assert)"
-        };
-        parts.push(`## Output Format
-${formatLabels[inputs.outputFormat] || inputs.outputFormat}`);
-        if (inputs.priority === "true") {
-          parts.push(`## Include Priority
-Yes - mark each test case with priority (P1=Critical, P2=High, P3=Medium, P4=Low)`);
-        }
-        if (inputs.jiraContext && inputs.jiraContext.trim()) {
-          parts.push(`## Jira Issue Context
-${inputs.jiraContext}`);
-        }
-        parts.push(`
-Please generate comprehensive test cases covering all the requested types in the specified format.`);
-        return parts.join("\n\n");
-      },
-      parseResponse: (response, inputs) => {
-        const formatExtensions = {
-          gherkin: ".feature",
-          traditional: ".md",
-          checklist: ".md",
-          xunit: ".txt"
-        };
-        const ext = formatExtensions[inputs.outputFormat] || ".md";
-        const filename = `test-cases${ext}`;
-        return {
-          type: inputs.outputFormat === "gherkin" ? "code" : "markdown",
-          content: response,
-          language: inputs.outputFormat === "gherkin" ? "gherkin" : void 0,
-          actions: [
-            { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Save as File", icon: "\u{1F4BE}", action: "newFile", fileExtension: ext, suggestedFilename: filename },
-            { label: "Insert at Cursor", icon: "\u{1F4DD}", action: "insert" }
-          ]
-        };
-      },
-      defaultActions: [
-        { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-        { label: "Save as File", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md" }
-      ],
-      requirements: {
-        copilot: true
-      },
-      examples: [
-        {
-          name: "Login Feature",
-          inputs: {
-            requirement: `As a user, I want to log in with my email and password so that I can access my account.
-
-Acceptance Criteria:
-- Valid email format required
-- Password minimum 8 characters
-- Show error for invalid credentials
-- Lock account after 5 failed attempts
-- Remember me option for 30 days`,
-            testTypes: "functional,edge,negative,security",
-            outputFormat: "gherkin"
-          }
-        },
-        {
-          name: "Shopping Cart",
-          inputs: {
-            requirement: `Users can add items to cart, update quantities, and remove items. Cart persists across sessions.`,
-            testTypes: "functional,edge",
-            outputFormat: "traditional"
-          }
-        }
-      ]
-    };
-  }
-});
-
-// src/apps/implementations/bugReportWriter.ts
-var bugReportWriter_exports = {};
-__export(bugReportWriter_exports, {
-  bugReportWriterApp: () => bugReportWriterApp
-});
-var bugReportWriterApp;
-var init_bugReportWriter = __esm({
-  "src/apps/implementations/bugReportWriter.ts"() {
-    "use strict";
-    bugReportWriterApp = {
-      id: "bug-report-writer",
-      name: "Bug Report Writer",
-      description: "Create structured bug reports with repro steps",
-      icon: "\u{1F41B}",
-      category: "qa",
-      helpDocumentation: `
-### What is this?
-The **Bug Report Writer** ensures your issues are addressed quickly by helping you write clear, comprehensive, and professional bug reports.
-
-### How to use it:
-1. **Describe the Bug**: provide a brief summary of what happened and what you expected.
-2. **Add Context**: (Optional) Include reproduction steps, URLs, and environment details (Browser/OS).
-3. **Set Severity**: Help developers prioritize by correctly identifying the impact.
-4. **Result**: The AI will generate a structured report with clear sections for Environment, Repro Steps, and Expected/Actual behavior.
-
-### Use cases:
-- Filing a high-quality GitHub issue.
-- Drafting a JIRA ticket for a complex bug.
-- Communicating an issue clearly to a remote engineering team.
-    `,
-      inputs: [
-        {
-          id: "whatHappened",
-          label: "What happened? (brief description)",
-          type: "textarea",
-          placeholder: "Describe the bug in a few sentences...",
-          required: true,
-          rows: 3,
-          hint: "Describe what went wrong. Be as specific as possible about the error symptoms."
-        },
-        {
-          id: "expected",
-          label: "What did you expect to happen?",
-          type: "textarea",
-          placeholder: "What should have happened instead...",
-          required: true,
-          rows: 2
-        },
-        {
-          id: "steps",
-          label: "Steps you took (optional)",
-          type: "textarea",
-          placeholder: `1. Opened the login page
-2. Entered email and password
-3. Clicked login button
-4. Nothing happened`,
-          rows: 5,
-          hint: "We'll enhance these into professional reproduction steps with clear preconditions."
-        },
-        {
-          id: "url",
-          label: "URL / Page (optional)",
-          type: "text",
-          placeholder: "https://app.example.com/login"
-        },
-        {
-          id: "browser",
-          label: "Browser",
-          type: "select",
-          defaultValue: "chrome",
-          options: [
-            { value: "chrome", label: "Chrome" },
-            { value: "firefox", label: "Firefox" },
-            { value: "safari", label: "Safari" },
-            { value: "edge", label: "Edge" },
-            { value: "mobile-ios", label: "Mobile Safari (iOS)" },
-            { value: "mobile-android", label: "Chrome (Android)" },
-            { value: "other", label: "Other" }
-          ]
-        },
-        {
-          id: "os",
-          label: "Operating System",
-          type: "select",
-          defaultValue: "macos",
-          options: [
-            { value: "macos", label: "macOS" },
-            { value: "windows", label: "Windows" },
-            { value: "linux", label: "Linux" },
-            { value: "ios", label: "iOS" },
-            { value: "android", label: "Android" },
-            { value: "other", label: "Other" }
-          ]
-        },
-        {
-          id: "severity",
-          label: "Severity",
-          type: "radio",
-          defaultValue: "high",
-          options: [
-            { value: "critical", label: "\u{1F534} Critical", description: "System down, data loss, security issue" },
-            { value: "high", label: "\u{1F7E0} High", description: "Major feature broken, no workaround" },
-            { value: "medium", label: "\u{1F7E1} Medium", description: "Feature impaired, workaround exists" },
-            { value: "low", label: "\u{1F7E2} Low", description: "Minor issue, cosmetic" }
-          ]
-        },
-        {
-          id: "additionalInfo",
-          label: "Additional Information (optional)",
-          type: "textarea",
-          placeholder: "Console errors, screenshots description, account details (non-sensitive)...",
-          rows: 3
-        },
-        {
-          id: "outputFormat",
-          label: "Output Format",
-          type: "select",
-          defaultValue: "markdown",
-          options: [
-            { value: "markdown", label: "\u{1F4DD} Markdown", description: "GitHub/GitLab issues" },
-            { value: "jira", label: "\u{1F3AB} JIRA", description: "JIRA ticket format" },
-            { value: "plain", label: "\u{1F4C4} Plain Text", description: "Simple text format" }
-          ]
-        }
-      ],
-      primaryAction: "Generate Bug Report",
-      systemPrompt: `You are an expert QA engineer who writes clear, comprehensive bug reports.
-Create a well-structured bug report that developers can easily understand and act upon.
-
-## Guidelines
-
-1. **Clear Title**: Concise, descriptive title that summarizes the issue
-2. **Reproducible Steps**: Detailed, numbered steps anyone can follow
-3. **Expected vs Actual**: Clear distinction between expected and actual behavior
-4. **Environment Details**: Browser, OS, and relevant versions
-5. **Root Cause Hints**: If obvious, suggest possible causes
-6. **Attachments Note**: Mention what screenshots/logs would help
-
-## Output Formats
-
-### Markdown Format
-Use standard markdown with headers, bullet points, and code blocks.
-
-### JIRA Format
-Use JIRA wiki markup:
-- h2. for headers
-- * for bullets
-- {code} blocks
-- {color:red}text{color} for emphasis
-
-### Plain Text
-Simple structured text without markdown.
-
-## Structure
-
-1. **Title**: Bug: [Concise description]
-2. **Summary**: 1-2 sentence overview
-3. **Environment**: Browser, OS, URL
-4. **Severity**: With justification
-5. **Steps to Reproduce**: Detailed numbered steps
-6. **Expected Behavior**: What should happen
-7. **Actual Behavior**: What actually happens
-8. **Additional Notes**: Possible causes, workarounds
-9. **Attachments Needed**: What would help investigation`,
-      buildUserPrompt: (inputs) => {
-        const parts = [];
-        parts.push(`## Bug Description
-${inputs.whatHappened}`);
-        parts.push(`## Expected Behavior
-${inputs.expected}`);
-        if (inputs.steps) {
-          parts.push(`## Steps Taken (to enhance)
-${inputs.steps}`);
-        }
-        parts.push(`## Environment`);
-        parts.push(`- Browser: ${inputs.browser || "Not specified"}`);
-        parts.push(`- OS: ${inputs.os || "Not specified"}`);
-        if (inputs.url) {
-          parts.push(`- URL: ${inputs.url}`);
-        }
-        const severityLabels = {
-          critical: "Critical - System down, data loss, or security issue",
-          high: "High - Major feature broken, no workaround",
-          medium: "Medium - Feature impaired, workaround exists",
-          low: "Low - Minor issue, cosmetic"
-        };
-        parts.push(`
-## Severity
-${severityLabels[inputs.severity] || inputs.severity}`);
-        if (inputs.additionalInfo) {
-          parts.push(`## Additional Information
-${inputs.additionalInfo}`);
-        }
-        parts.push(`
-## Output Format
-${inputs.outputFormat || "markdown"}`);
-        parts.push(`
-Please generate a comprehensive, professional bug report.`);
-        return parts.join("\n");
-      },
-      parseResponse: (response, inputs) => {
-        const formatExtensions = {
-          markdown: ".md",
-          jira: ".txt",
-          plain: ".txt"
-        };
-        return {
-          type: "markdown",
-          content: response,
-          actions: [
-            { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Save as File", icon: "\u{1F4BE}", action: "newFile", fileExtension: formatExtensions[inputs.outputFormat] || ".md", suggestedFilename: "bug-report" + (formatExtensions[inputs.outputFormat] || ".md") },
-            { label: "Insert at Cursor", icon: "\u{1F4DD}", action: "insert" }
-          ]
-        };
-      },
-      defaultActions: [
-        { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-        { label: "Save as File", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md" }
-      ],
-      requirements: {
-        copilot: true
-      },
-      examples: [
-        {
-          name: "Login Button Issue",
-          inputs: {
-            whatHappened: "Login button does not respond when clicked after entering credentials",
-            expected: "Should redirect to dashboard after successful login",
-            steps: "1. Go to login page\n2. Enter email\n3. Enter password\n4. Click login\n5. Nothing happens",
-            browser: "chrome",
-            os: "macos",
-            severity: "critical",
-            outputFormat: "markdown"
-          }
-        }
-      ]
-    };
-  }
-});
-
-// src/apps/implementations/regexGenerator.ts
-var regexGenerator_exports = {};
-__export(regexGenerator_exports, {
-  regexGeneratorApp: () => regexGeneratorApp
-});
-var regexGeneratorApp;
-var init_regexGenerator = __esm({
-  "src/apps/implementations/regexGenerator.ts"() {
-    "use strict";
-    regexGeneratorApp = {
-      id: "regex-generator",
-      name: "Regex Generator",
-      description: "Describe what you want to match, get a working regex",
-      icon: "\u{1F523}",
-      category: "developer",
-      primaryAction: "\u2728 Generate Regex",
-      helpDocumentation: `### What is this?
-The **Regex Generator** helps you create regular expressions by describing what you want to match in plain English.
-
-### How to use it
-1. Describe the pattern you want to match (e.g., "email addresses", "phone numbers with country code", "URLs starting with https").
-2. Optionally specify the target language/flavor (JavaScript, Python, etc.).
-3. Click **Generate Regex** to get a working pattern with explanation.
-
-### Use cases
-- Validating user input (emails, phones, IDs)
-- Extracting data from text
-- Search and replace operations
-- Log parsing and analysis`,
-      inputs: [
-        {
-          id: "description",
-          label: "What do you want to match?",
-          type: "textarea",
-          placeholder: "e.g., Match email addresses that end with .com or .org",
-          required: true,
-          rows: 3,
-          hint: "Be as specific as possible about the pattern"
-        },
-        {
-          id: "flavor",
-          label: "Regex Flavor",
-          type: "select",
-          options: [
-            { value: "javascript", label: "JavaScript / TypeScript" },
-            { value: "python", label: "Python" },
-            { value: "java", label: "Java" },
-            { value: "csharp", label: "C# / .NET" },
-            { value: "go", label: "Go" },
-            { value: "pcre", label: "PCRE (PHP, Perl)" }
-          ],
-          defaultValue: "javascript"
-        },
-        {
-          id: "testCases",
-          label: "Test Cases (optional)",
-          type: "textarea",
-          placeholder: "One example per line:\nvalid@email.com (should match)\ninvalid-email (should not match)",
-          rows: 4,
-          hint: "Provide examples to validate the regex"
-        }
-      ],
-      systemPrompt: `You are an expert regex engineer. Create precise, efficient regular expressions based on user descriptions.
-
-Your response MUST include:
-1. **The Regex Pattern** - The actual regex, properly escaped for the target language
-2. **Explanation** - Break down each part of the regex
-3. **Usage Example** - Code snippet showing how to use it
-4. **Test Results** - If test cases provided, show which ones match/don't match
-5. **Edge Cases** - Mention any limitations or edge cases
-
-Keep patterns as simple as possible while being accurate. Prefer readability over cleverness.`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Create a regex pattern for: ${inputs.description}
-
-Target language/flavor: ${inputs.flavor}`;
-        if (inputs.testCases?.trim()) {
-          prompt += `
-
-Test cases:
-${inputs.testCases}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Generated Regex", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/apiDocWriter.ts
-var apiDocWriter_exports = {};
-__export(apiDocWriter_exports, {
-  apiDocWriterApp: () => apiDocWriterApp
-});
-var apiDocWriterApp;
-var init_apiDocWriter = __esm({
-  "src/apps/implementations/apiDocWriter.ts"() {
-    "use strict";
-    apiDocWriterApp = {
-      id: "api-doc-writer",
-      name: "API Documentation Writer",
-      description: "Generate OpenAPI/Swagger docs from code or descriptions",
-      icon: "\u{1F4D6}",
-      category: "developer",
-      primaryAction: "\u{1F4DD} Generate Docs",
-      helpDocumentation: `### What is this?
-The **API Documentation Writer** generates professional API documentation in OpenAPI/Swagger format from your code or plain-text descriptions.
-
-### How to use it
-1. Paste your API endpoint code (controller, route handler) or describe the endpoints.
-2. Select the output format (OpenAPI 3.0, Swagger 2.0, or Markdown).
-3. Click **Generate Docs** to get structured documentation.
-
-### Use cases
-- Documenting existing REST APIs
-- Creating API specs before implementation
-- Generating client SDK documentation
-- Preparing API references for external developers`,
-      inputs: [
-        {
-          id: "apiCode",
-          label: "API Code or Description",
-          type: "textarea",
-          placeholder: "Paste your endpoint code or describe the API...\n\nExample:\nGET /users - List all users\nPOST /users - Create a new user (body: name, email)\nGET /users/:id - Get user by ID",
-          required: true,
-          rows: 10,
-          hint: "Paste code or describe endpoints with methods, paths, and parameters"
-        },
-        {
-          id: "format",
-          label: "Output Format",
-          type: "radio",
-          options: [
-            { value: "openapi3", label: "OpenAPI 3.0 (YAML)", description: "Modern standard, widely supported" },
-            { value: "swagger2", label: "Swagger 2.0 (JSON)", description: "Legacy format for older tools" },
-            { value: "markdown", label: "Markdown", description: "Human-readable documentation" }
-          ],
-          defaultValue: "openapi3"
-        },
-        {
-          id: "apiTitle",
-          label: "API Title",
-          type: "text",
-          placeholder: "My Service API",
-          hint: "Name of your API for the documentation header"
-        }
-      ],
-      systemPrompt: `You are a technical writer specializing in API documentation. Generate clean, accurate API documentation from code or descriptions.
-
-Guidelines:
-- Infer request/response schemas from the code when possible
-- Include example values for all fields
-- Document error responses (400, 401, 404, 500)
-- Use consistent naming conventions
-- Add brief descriptions for each endpoint
-- Include authentication requirements if detectable
-
-For OpenAPI/Swagger, produce valid YAML/JSON that can be used directly with tools like Swagger UI.`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Generate ${inputs.format === "openapi3" ? "OpenAPI 3.0 YAML" : inputs.format === "swagger2" ? "Swagger 2.0 JSON" : "Markdown"} documentation for the following API:
-
-${inputs.apiCode}`;
-        if (inputs.apiTitle?.trim()) {
-          prompt += `
-
-API Title: ${inputs.apiTitle}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "code",
-        content: response,
-        language: "yaml",
-        sections: [{ title: "API Documentation", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/sqlQueryBuilder.ts
-var sqlQueryBuilder_exports = {};
-__export(sqlQueryBuilder_exports, {
-  sqlQueryBuilderApp: () => sqlQueryBuilderApp
-});
-var sqlQueryBuilderApp;
-var init_sqlQueryBuilder = __esm({
-  "src/apps/implementations/sqlQueryBuilder.ts"() {
-    "use strict";
-    sqlQueryBuilderApp = {
-      id: "sql-query-builder",
-      name: "SQL Query Builder",
-      description: "Describe your data need in plain English, get the SQL query",
-      icon: "\u{1F5C3}\uFE0F",
-      category: "developer",
-      primaryAction: "\u26A1 Build Query",
-      helpDocumentation: `### What is this?
-The **SQL Query Builder** translates plain-English data requests into SQL queries, helping you construct complex queries without memorizing syntax.
-
-### How to use it
-1. Describe what data you need (e.g., "Get all orders from last month with total > $100").
-2. Optionally provide your table schema for more accurate queries.
-3. Select your database dialect (PostgreSQL, MySQL, etc.).
-4. Click **Build Query** to get the SQL.
-
-### Use cases
-- Writing complex JOINs and subqueries
-- Aggregation and reporting queries
-- Data migration scripts
-- Quick prototyping before optimization`,
-      inputs: [
-        {
-          id: "request",
-          label: "What data do you need?",
-          type: "textarea",
-          placeholder: "e.g., Show me the top 10 customers by total order value in the last 30 days, including their email and order count",
-          required: true,
-          rows: 4,
-          hint: "Describe your data requirements in plain English"
-        },
-        {
-          id: "schema",
-          label: "Table Schema (optional)",
-          type: "textarea",
-          placeholder: "users (id, name, email, created_at)\norders (id, user_id, total, status, created_at)\nproducts (id, name, price, category_id)",
-          rows: 5,
-          hint: "Provide table structure for more accurate queries"
-        },
-        {
-          id: "dialect",
-          label: "SQL Dialect",
-          type: "select",
-          options: [
-            { value: "postgresql", label: "PostgreSQL" },
-            { value: "mysql", label: "MySQL / MariaDB" },
-            { value: "sqlite", label: "SQLite" },
-            { value: "mssql", label: "SQL Server" },
-            { value: "oracle", label: "Oracle" }
-          ],
-          defaultValue: "postgresql"
-        }
-      ],
-      systemPrompt: `You are a database expert. Generate accurate, optimized SQL queries based on natural language requests.
-
-Guidelines:
-- Use proper syntax for the specified dialect
-- Include comments explaining complex parts
-- Suggest indexes if relevant for performance
-- Handle NULL values appropriately
-- Use parameterized queries where user input is involved
-- Provide alternative approaches for complex queries
-
-Format your response as:
-1. **The Query** - Ready-to-use SQL
-2. **Explanation** - What each part does
-3. **Notes** - Performance tips or alternative approaches`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Generate a ${inputs.dialect.toUpperCase()} query for: ${inputs.request}`;
-        if (inputs.schema?.trim()) {
-          prompt += `
-
-Table schema:
-${inputs.schema}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "code",
-        content: response,
-        language: "sql",
-        sections: [{ title: "SQL Query", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/gitCommitWriter.ts
-var gitCommitWriter_exports = {};
-__export(gitCommitWriter_exports, {
-  gitCommitWriterApp: () => gitCommitWriterApp
-});
-var gitCommitWriterApp;
-var init_gitCommitWriter = __esm({
-  "src/apps/implementations/gitCommitWriter.ts"() {
-    "use strict";
-    gitCommitWriterApp = {
-      id: "git-commit-writer",
-      name: "Git Commit Writer",
-      description: "Generate professional git commit messages from your changes",
-      icon: "\u{1F4DD}",
-      category: "developer",
-      primaryAction: "\u2728 Write Commit Message",
-      helpDocumentation: `### What is this?
-The **Git Commit Writer** generates professional, conventional commit messages from your code changes.
-
-### How to use it
-1. Paste your git diff or describe your changes
-2. Select your preferred commit style (Conventional, Gitmoji, etc.)
-3. Click **Write Commit Message** to get a perfect commit
-
-### Commit formats supported
-- **Conventional Commits** - feat:, fix:, docs:, refactor:, etc.
-- **Gitmoji** - \u{1F3A8} \u2728 \u{1F41B} \u{1F4DD} \u{1F525} etc.
-- **Angular** - type(scope): subject`,
-      inputs: [
-        {
-          id: "changes",
-          label: "Your Changes",
-          type: "textarea",
-          placeholder: "Paste your git diff or describe what you changed...",
-          required: true,
-          rows: 8,
-          hint: "You can paste `git diff --staged` output or just describe the changes"
-        },
-        {
-          id: "style",
-          label: "Commit Style",
-          type: "select",
-          options: [
-            { value: "conventional", label: "Conventional Commits" },
-            { value: "gitmoji", label: "Gitmoji" },
-            { value: "angular", label: "Angular Style" },
-            { value: "simple", label: "Simple (Just a message)" }
-          ],
-          defaultValue: "conventional"
-        },
-        {
-          id: "scope",
-          label: "Scope (optional)",
-          type: "text",
-          placeholder: "e.g., auth, api, ui",
-          hint: "Component or area affected"
-        }
-      ],
-      systemPrompt: `You are an expert at writing git commit messages. Generate clean, professional commit messages following best practices.
-
-Rules:
-1. Subject line max 50 characters, body lines max 72 characters
-2. Use imperative mood ("Add feature" not "Added feature")
-3. Explain WHAT and WHY, not HOW
-4. Include breaking changes if any
-
-Output format:
-1. **Commit Message** - The full commit message (subject + body if needed)
-2. **Type** - The commit type (feat, fix, docs, etc.)
-3. **Why this message** - Brief explanation of your choice`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Generate a ${inputs.style} style git commit message for these changes:
-
-${inputs.changes}`;
-        if (inputs.scope?.trim()) {
-          prompt += `
-
-Scope: ${inputs.scope}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Commit Message", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/jsonTools.ts
-var jsonTools_exports = {};
-__export(jsonTools_exports, {
-  jsonToolsApp: () => jsonToolsApp
-});
-var jsonToolsApp;
-var init_jsonTools = __esm({
-  "src/apps/implementations/jsonTools.ts"() {
-    "use strict";
-    jsonToolsApp = {
-      id: "json-tools",
-      name: "JSON Tools",
-      description: "Format, validate, transform, and generate types from JSON",
-      icon: "\u{1F527}",
-      category: "developer",
-      primaryAction: "\u{1F504} Process JSON",
-      helpDocumentation: `### What is this?
-**JSON Tools** is a Swiss Army knife for working with JSON data.
-
-### Features
-- **Format** - Pretty print with proper indentation
-- **Minify** - Remove whitespace for production
-- **Validate** - Check for syntax errors
-- **To TypeScript** - Generate TypeScript interfaces
-- **To Schema** - Generate JSON Schema
-- **Query** - Extract data using JSONPath`,
-      inputs: [
-        {
-          id: "json",
-          label: "Your JSON",
-          type: "textarea",
-          placeholder: '{"name": "example", "value": 123}',
-          required: true,
-          rows: 10,
-          hint: "Paste your JSON here"
-        },
-        {
-          id: "action",
-          label: "Action",
-          type: "select",
-          options: [
-            { value: "format", label: "\u{1F3A8} Format (Pretty Print)" },
-            { value: "minify", label: "\u{1F4E6} Minify" },
-            { value: "validate", label: "\u2705 Validate" },
-            { value: "typescript", label: "\u{1F4D8} Generate TypeScript Types" },
-            { value: "schema", label: "\u{1F4CB} Generate JSON Schema" },
-            { value: "query", label: "\u{1F50D} Query with JSONPath" }
-          ],
-          defaultValue: "format"
-        },
-        {
-          id: "query",
-          label: "JSONPath Query (if querying)",
-          type: "text",
-          placeholder: "$.store.book[*].author",
-          hint: "Only used when action is Query"
-        },
-        {
-          id: "typeName",
-          label: "Type Name (for TypeScript)",
-          type: "text",
-          placeholder: "MyDataType",
-          defaultValue: "RootObject",
-          hint: "Name for the generated TypeScript interface"
-        }
-      ],
-      systemPrompt: `You are a JSON processing expert. Perform the requested action on the provided JSON.
-
-For each action:
-- **format**: Pretty print with 2-space indentation
-- **minify**: Remove all unnecessary whitespace
-- **validate**: Check for errors and report line/column if any
-- **typescript**: Generate accurate TypeScript interfaces with proper types
-- **schema**: Generate a complete JSON Schema (draft-07)
-- **query**: Execute the JSONPath query and return results
-
-Always show the result in a code block with the appropriate language.`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Action: ${inputs.action}
-
-JSON:
-\`\`\`json
-${inputs.json}
-\`\`\``;
-        if (inputs.action === "query" && inputs.query?.trim()) {
-          prompt += `
-
-JSONPath Query: ${inputs.query}`;
-        }
-        if (inputs.action === "typescript" && inputs.typeName?.trim()) {
-          prompt += `
-
-Root type name: ${inputs.typeName}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Result", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/codeExplainer.ts
-var codeExplainer_exports = {};
-__export(codeExplainer_exports, {
-  codeExplainerApp: () => codeExplainerApp
-});
-var codeExplainerApp;
-var init_codeExplainer = __esm({
-  "src/apps/implementations/codeExplainer.ts"() {
-    "use strict";
-    codeExplainerApp = {
-      id: "code-explainer",
-      name: "Code Explainer",
-      description: "Understand any code with line-by-line explanations",
-      icon: "\u{1F393}",
-      category: "developer",
-      primaryAction: "\u{1F4A1} Explain Code",
-      helpDocumentation: `### What is this?
-The **Code Explainer** helps you understand unfamiliar code by providing clear, detailed explanations.
-
-### Perfect for
-- Learning a new codebase
-- Understanding legacy code
-- Code reviews
-- Teaching others
-
-### Explanation levels
-- **Beginner** - Assumes no prior knowledge
-- **Intermediate** - Standard developer explanations
-- **Expert** - Deep dive into implementation details`,
-      inputs: [
-        {
-          id: "code",
-          label: "Code to Explain",
-          type: "textarea",
-          placeholder: "Paste any code here...",
-          required: true,
-          rows: 12,
-          hint: "Works with any programming language"
-        },
-        {
-          id: "language",
-          label: "Language (auto-detected if empty)",
-          type: "text",
-          placeholder: "e.g., TypeScript, Python, Rust",
-          hint: "Leave empty for auto-detection"
-        },
-        {
-          id: "level",
-          label: "Explanation Level",
-          type: "select",
-          options: [
-            { value: "beginner", label: "\u{1F331} Beginner - Explain everything" },
-            { value: "intermediate", label: "\u{1F33F} Intermediate - Standard explanations" },
-            { value: "expert", label: "\u{1F333} Expert - Deep technical dive" }
-          ],
-          defaultValue: "intermediate"
-        },
-        {
-          id: "focus",
-          label: "Focus Area (optional)",
-          type: "text",
-          placeholder: "e.g., error handling, performance, security",
-          hint: "Emphasize specific aspects"
-        }
-      ],
-      systemPrompt: `You are an expert code educator. Explain code clearly and thoroughly based on the requested level.
-
-Structure your explanation:
-1. **Overview** - What does this code do at a high level?
-2. **Key Concepts** - Important patterns, algorithms, or techniques used
-3. **Line-by-Line** - Walk through important sections
-4. **Potential Issues** - Any bugs, anti-patterns, or improvements
-5. **Related Concepts** - What to learn next
-
-Adjust depth based on level:
-- Beginner: Define all terms, explain syntax, use analogies
-- Intermediate: Focus on logic and patterns
-- Expert: Discuss performance, edge cases, alternatives`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Explain this code at the ${inputs.level} level:
-
-\`\`\`${inputs.language || ""}
-${inputs.code}
-\`\`\``;
-        if (inputs.focus?.trim()) {
-          prompt += `
-
-Focus especially on: ${inputs.focus}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Explanation", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/meetingNotesToActions.ts
-var meetingNotesToActions_exports = {};
-__export(meetingNotesToActions_exports, {
-  meetingNotesToActionsApp: () => meetingNotesToActionsApp
-});
-var meetingNotesToActionsApp;
-var init_meetingNotesToActions = __esm({
-  "src/apps/implementations/meetingNotesToActions.ts"() {
-    "use strict";
-    meetingNotesToActionsApp = {
-      id: "meeting-notes-to-actions",
-      name: "Meeting Notes \u2192 Actions",
-      description: "Extract action items from meeting notes",
-      icon: "\u{1F4DD}",
-      category: "leadership",
-      helpDocumentation: `
-### What is this?
-**Meeting Notes \u2192 Actions** is a productivity tool that extracts clear, assigned tasks and key decisions from unstructured meeting notes or transcripts.
-
-### How to use it:
-1. **Paste Notes**: Drop in your raw notes, a Slack thread, or a meeting transcript.
-2. **Configure Extraction**: Select which items you want to focus on (Actions, Decisions, Risks, etc.).
-3. **Set Format**: Choose between Markdown, Slack-ready formatting, or professional Email style.
-4. **Identify Owners**: (Recommended) Enable this to have the AI attempt to assign tasks based on the conversation context.
-
-### Use cases:
-- Quickly updating a team Slack channel after a sync.
-- Drafting a project follow-up email.
-- Extracting JIRA-ready tasks from a planning session.
-    `,
-      inputs: [
-        {
-          id: "meetingNotes",
-          label: "Paste Meeting Notes",
-          type: "textarea",
-          placeholder: `Example:
-Sprint planning call - Dec 21
-Attendees: John, Sarah, Mike
-
-Discussed the new auth feature. John said we should use OAuth2.
-Sarah mentioned we need to update the docs by Friday.
-Mike will handle the frontend integration.
-
-We agreed to ship by next Friday. Need to check with legal about 
-the privacy policy changes. Budget approved for new tools.`,
-          required: true,
-          rows: 12,
-          hint: "Paste raw meeting notes, transcript, or summary"
-        },
-        {
-          id: "extractTypes",
-          label: "What to Extract",
-          type: "multi-select",
-          defaultValue: "actions,decisions,followups",
-          options: [
-            { value: "actions", label: "\u2705 Action Items", description: "Tasks assigned to people" },
-            { value: "decisions", label: "\u{1F4CC} Decisions", description: "Decisions that were made" },
-            { value: "followups", label: "\u{1F504} Follow-ups", description: "Items needing follow-up" },
-            { value: "questions", label: "\u2753 Open Questions", description: "Unresolved questions" },
-            { value: "risks", label: "\u26A0\uFE0F Risks", description: "Risks or concerns raised" },
-            { value: "deadlines", label: "\u{1F4C5} Deadlines", description: "Important dates mentioned" }
-          ]
-        },
-        {
-          id: "meetingTitle",
-          label: "Meeting Title (optional)",
-          type: "text",
-          placeholder: "e.g., Sprint Planning - Week 51"
-        },
-        {
-          id: "outputFormat",
-          label: "Output Format",
-          type: "select",
-          defaultValue: "markdown",
-          options: [
-            { value: "markdown", label: "\u{1F4DD} Markdown", description: "Formatted with tables and sections" },
-            { value: "slack", label: "\u{1F4AC} Slack-Ready", description: "Formatted for Slack posting" },
-            { value: "email", label: "\u{1F4E7} Email", description: "Ready to send as follow-up email" },
-            { value: "jira", label: "\u{1F3AB} JIRA Tasks", description: "Formatted as JIRA task descriptions" }
-          ]
-        },
-        {
-          id: "includeOwners",
-          label: "Identify Owners",
-          type: "checkbox",
-          defaultValue: "true",
-          hint: "Attempt to identify who is responsible for each action"
-        }
-      ],
-      primaryAction: "Extract Actions",
-      systemPrompt: `You are an expert at analyzing meeting notes and extracting actionable information.
-Your goal is to transform unstructured meeting notes into clear, organized action items.
-
-## Guidelines
-
-1. **Be Thorough**: Extract ALL action items, even implied ones
-2. **Identify Owners**: Assign owners when mentioned or implied
-3. **Add Due Dates**: Extract or infer reasonable deadlines
-4. **Capture Context**: Preserve important context for each item
-5. **Highlight Decisions**: Clearly mark decisions that were made
-6. **Flag Uncertainties**: Note when ownership or details are unclear
-
-## Output Structure
-
-### Meeting Summary
-Brief 2-3 sentence summary of the meeting.
-
-### \u{1F4CC} Decisions Made
-Numbered list of decisions with context.
-
-### \u2705 Action Items
-| Owner | Task | Due Date | Priority |
-|-------|------|----------|----------|
-Use "TBD" for unknown owners, "ASAP" or specific date for due dates.
-
-### \u{1F504} Follow-ups Required
-Items that need follow-up but aren't specific tasks.
-
-### \u2753 Open Questions
-Questions that weren't answered in the meeting.
-
-### \u26A0\uFE0F Risks & Concerns
-Any risks or concerns that were raised.
-
-### \u{1F4C5} Key Dates
-Important deadlines or milestones mentioned.
-
-## Format-Specific Instructions
-
-### Slack Format
-- Use *bold* for headers
-- Use bullet points with emojis
-- Keep it concise
-
-### Email Format
-- Professional tone
-- Include greeting and sign-off structure
-- Numbered action items
-
-### JIRA Format
-- Each action as a separate task
-- Include acceptance criteria where possible
-- Use JIRA wiki markup`,
-      buildUserPrompt: (inputs) => {
-        const parts = [];
-        if (inputs.meetingTitle) {
-          parts.push(`## Meeting: ${inputs.meetingTitle}`);
-        }
-        parts.push(`## Meeting Notes
-${inputs.meetingNotes}`);
-        const extractTypes = inputs.extractTypes ? inputs.extractTypes.split(",") : ["actions", "decisions", "followups"];
-        const typeLabels = {
-          actions: "Action Items (tasks with owners)",
-          decisions: "Decisions Made",
-          followups: "Follow-ups Required",
-          questions: "Open Questions",
-          risks: "Risks and Concerns",
-          deadlines: "Key Dates and Deadlines"
-        };
-        const selectedTypes = extractTypes.map((t) => typeLabels[t] || t);
-        parts.push(`## Extract These Items
-${selectedTypes.map((t) => `- ${t}`).join("\n")}`);
-        parts.push(`## Output Format
-${inputs.outputFormat || "markdown"}`);
-        if (inputs.includeOwners === "true") {
-          parts.push(`
-IMPORTANT: Identify and assign owners for each action item based on the notes. Use "TBD" if unclear.`);
-        }
-        parts.push(`
-Analyze the meeting notes and extract all requested information in a clear, organized format.`);
-        return parts.join("\n\n");
-      },
-      parseResponse: (response, inputs) => {
-        const sections = [];
-        const actionsMatch = response.match(/###?\s*✅?\s*Action Items[\s\S]*?(?=###|$)/i);
-        if (actionsMatch) {
-          sections.push({
-            title: "\u2705 Action Items",
-            content: actionsMatch[0].replace(/###?\s*✅?\s*Action Items[^\n]*\n/, "").trim(),
-            severity: "info",
-            collapsible: false
-          });
-        }
-        const decisionsMatch = response.match(/###?\s*📌?\s*Decisions[\s\S]*?(?=###|$)/i);
-        if (decisionsMatch) {
-          sections.push({
-            title: "\u{1F4CC} Decisions",
-            content: decisionsMatch[0].replace(/###?\s*📌?\s*Decisions[^\n]*\n/, "").trim(),
-            severity: "success",
-            collapsible: true,
-            collapsed: false
-          });
-        }
-        const followupsMatch = response.match(/###?\s*🔄?\s*Follow-ups[\s\S]*?(?=###|$)/i);
-        if (followupsMatch) {
-          sections.push({
-            title: "\u{1F504} Follow-ups",
-            content: followupsMatch[0].replace(/###?\s*🔄?\s*Follow-ups[^\n]*\n/, "").trim(),
-            severity: "warning",
-            collapsible: true,
-            collapsed: true
-          });
-        }
-        return {
-          type: sections.length > 0 ? "structured" : "markdown",
-          content: response,
-          sections: sections.length > 0 ? sections : void 0,
-          actions: [
-            { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Save as File", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md", suggestedFilename: "meeting-actions.md" },
-            { label: "Insert at Cursor", icon: "\u{1F4DD}", action: "insert" }
-          ]
-        };
-      },
-      defaultActions: [
-        { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-        { label: "Save as File", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md" }
-      ],
-      requirements: {
-        copilot: true
-      },
-      examples: [
-        {
-          name: "Sprint Planning Notes",
-          inputs: {
-            meetingNotes: `Sprint planning - Week 51
-Team: John (BE), Sarah (FE), Mike (QA), Lisa (PM)
-
-Discussed Q1 priorities. Auth feature is top priority.
-John will implement OAuth2 backend by end of week.
-Sarah to update UI components, needs design specs from Lisa.
-Mike mentioned we need more test coverage.
-Lisa to check with legal about GDPR requirements.
-Deadline: Launch by Jan 15th.`,
-            extractTypes: "actions,decisions,deadlines",
-            outputFormat: "markdown",
-            includeOwners: "true"
-          }
-        }
-      ]
-    };
-  }
-});
-
-// src/apps/implementations/standupSummary.ts
-var standupSummary_exports = {};
-__export(standupSummary_exports, {
-  standupSummaryApp: () => standupSummaryApp
-});
-var standupSummaryApp;
-var init_standupSummary = __esm({
-  "src/apps/implementations/standupSummary.ts"() {
-    "use strict";
-    standupSummaryApp = {
-      id: "standup-summary",
-      name: "Standup Summary",
-      description: "Format your daily standup update",
-      icon: "\u{1F4CA}",
-      category: "productivity",
-      helpDocumentation: `
-### What is this?
-The **Standup Summary** app transforms your informal thoughts or "stream of consciousness" notes into a professionally formatted daily update.
-
-### How to use it:
-1. **Unload Your Thoughts**: Just type what you did yesterday, what you're doing today, and any blockers. Don't worry about formatting.
-2. **Choose Format**: Select your target channel (Slack, Teams, etc.).
-3. **Set Tone**: Match your team's culture with Professional, Casual, or Ultra-Brief styles.
-4. **Generate**: The AI will organize your points using action verbs and highlight blockers clearly.
-
-### Use cases:
-- Preparing for a morning standup call.
-- Posting a daily update to an async team channel.
-- Maintaining a personal log of daily engineering activity.
-    `,
-      inputs: [
-        {
-          id: "thoughts",
-          label: "What's on your mind? (stream of consciousness is fine)",
-          type: "textarea",
-          placeholder: `Just type what you're thinking, e.g.:
-
-yesterday fixed that auth bug that was blocking QA, also reviewed 3 PRs for the team. today gonna work on the payment integration, need to figure out stripe webhooks. blocked on getting API keys from finance team, sent email but no response yet. also need to sync with Sarah about the design...`,
-          required: true,
-          rows: 8,
-          hint: "Don't worry about formatting - we'll organize it for you"
-        },
-        {
-          id: "outputFormat",
-          label: "Output Format",
-          type: "select",
-          defaultValue: "slack",
-          options: [
-            { value: "slack", label: "\u{1F4AC} Slack-Ready", description: "With emojis, formatted for Slack" },
-            { value: "teams", label: "\u{1F465} Microsoft Teams", description: "Teams-compatible formatting" },
-            { value: "jira", label: "\u{1F3AB} JIRA Comment", description: "For JIRA standup notes" },
-            { value: "plain", label: "\u{1F4C4} Plain Text", description: "Simple, no formatting" },
-            { value: "email", label: "\u{1F4E7} Email", description: "Professional email format" },
-            { value: "bullet", label: "\u2022 Bullet Points", description: "Simple bullet list" }
-          ]
-        },
-        {
-          id: "includeDate",
-          label: "Include Date",
-          type: "checkbox",
-          defaultValue: "true"
-        },
-        {
-          id: "tone",
-          label: "Tone",
-          type: "select",
-          defaultValue: "professional",
-          options: [
-            { value: "casual", label: "\u{1F60E} Casual", description: "Relaxed, friendly" },
-            { value: "professional", label: "\u{1F454} Professional", description: "Clear and business-like" },
-            { value: "brief", label: "\u26A1 Ultra-Brief", description: "Minimal words, just the essentials" }
-          ]
-        },
-        {
-          id: "teamContext",
-          label: "Team/Project (optional)",
-          type: "text",
-          placeholder: "e.g., Platform Team, Project Phoenix",
-          hint: "Adds context if posting to shared channels"
-        }
-      ],
-      primaryAction: "Generate Summary",
-      systemPrompt: `You are an expert at turning informal thoughts into clear, professional standup updates.
-Transform the user's stream of consciousness into a well-organized standup summary.
-
-## Standard Standup Structure
-
-1. **Yesterday/Done** - What was completed
-2. **Today/Doing** - What's planned for today
-3. **Blockers** - Any blockers or impediments (if any)
-
-## Guidelines
-
-1. **Be Concise**: Keep each item to one line when possible
-2. **Use Action Verbs**: "Fixed", "Completed", "Working on", "Reviewing"
-3. **Highlight Impact**: Mention who benefits or why it matters
-4. **Be Specific**: Include ticket numbers, feature names, etc. if mentioned
-5. **Group Related Items**: Combine related work into single points
-6. **Blockers are Important**: Always highlight blockers clearly
-
-## Format-Specific Instructions
-
-### Slack Format
-\`\`\`
-\u{1F504} *Standup Update - [Date]*
-
-*Yesterday:*
-\u2705 [Completed item 1]
-\u2705 [Completed item 2]
-
-*Today:*
-\u{1F3AF} [Planned item 1]
-\u{1F3AF} [Planned item 2]
-
-*Blockers:*
-\u{1F6A7} [Blocker if any] (or \u2728 No blockers!)
-\`\`\`
-
-### Teams Format
-Use **bold** for headers, standard bullets.
-
-### JIRA Format
-Use h4. for headers, * for bullets.
-
-### Email Format
-Professional tone, proper greeting, signature placeholder.
-
-### Plain/Bullet
-Simple, clean formatting.
-
-## Tone Guidelines
-
-- **Casual**: Use contractions, friendly language, more emojis
-- **Professional**: Clear, business-like, minimal emojis
-- **Ultra-Brief**: Just the facts, no fluff, telegram style`,
-      buildUserPrompt: (inputs) => {
-        const parts = [];
-        parts.push(`## My Thoughts/Notes
-${inputs.thoughts}`);
-        parts.push(`## Output Format: ${inputs.outputFormat || "slack"}`);
-        parts.push(`## Tone: ${inputs.tone || "professional"}`);
-        if (inputs.includeDate === "true") {
-          const today = (/* @__PURE__ */ new Date()).toLocaleDateString("en-US", {
-            weekday: "long",
-            month: "short",
-            day: "numeric"
-          });
-          parts.push(`## Date: ${today}`);
-        }
-        if (inputs.teamContext) {
-          parts.push(`## Context: ${inputs.teamContext}`);
-        }
-        parts.push(`
-Please transform my notes into a clean, organized standup update following the format and tone specified.`);
-        return parts.join("\n\n");
-      },
-      parseResponse: (response, inputs) => {
-        return {
-          type: "markdown",
-          content: response,
-          actions: [
-            { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Insert at Cursor", icon: "\u{1F4DD}", action: "insert" }
-          ]
-        };
-      },
-      defaultActions: [
-        { label: "Copy", icon: "\u{1F4CB}", action: "copy" }
-      ],
-      requirements: {
-        copilot: true
-      },
-      examples: [
-        {
-          name: "Typical Developer Day",
-          inputs: {
-            thoughts: `yesterday fixed the auth bug in the login flow, the one that was causing 500 errors. also reviewed prs from john and sarah. today going to start on the new dashboard feature, need to check requirements with PM first. might be blocked on design mocks, asked in slack but havent heard back`,
-            outputFormat: "slack",
-            tone: "professional",
-            includeDate: "true"
-          }
-        },
-        {
-          name: "Quick Update",
-          inputs: {
-            thoughts: `finished api integration, starting frontend now, no blockers`,
-            outputFormat: "bullet",
-            tone: "brief",
-            includeDate: "false"
-          }
-        }
-      ]
-    };
-  }
-});
-
-// src/apps/implementations/oneOnOnePrep.ts
-var oneOnOnePrep_exports = {};
-__export(oneOnOnePrep_exports, {
-  oneOnOnePrepApp: () => oneOnOnePrepApp
-});
-var oneOnOnePrepApp;
-var init_oneOnOnePrep = __esm({
-  "src/apps/implementations/oneOnOnePrep.ts"() {
-    "use strict";
-    oneOnOnePrepApp = {
-      id: "one-on-one-prep",
-      name: "1:1 Meeting Prep",
-      description: "Prepare effective 1:1 meetings with team members",
-      icon: "\u{1F465}",
-      category: "leadership",
-      tags: ["meetings", "management", "1:1", "coaching"],
-      helpDocumentation: `
-### What is this?
-Prepare for meaningful 1:1 meetings with your direct reports.
-
-### How to use:
-1. Enter team member name and role
-2. Add context (recent work, concerns, goals)
-3. Generate personalized talking points and questions
-    `,
-      inputs: [
-        {
-          id: "memberName",
-          label: "Team Member Name",
-          type: "text",
-          placeholder: "e.g., Sarah Chen",
-          required: true
-        },
-        {
-          id: "memberRole",
-          label: "Role / Position",
-          type: "text",
-          placeholder: "e.g., Senior Software Engineer",
-          required: true
-        },
-        {
-          id: "recentContext",
-          label: "Recent Context",
-          type: "textarea",
-          placeholder: `Recent highlights or concerns:
-- Delivered feature X ahead of schedule
-- Seemed stressed during sprint planning
-- Asked about promotion path`,
-          rows: 5,
-          hint: "What has been going on with this person recently?"
-        },
-        {
-          id: "meetingGoals",
-          label: "Meeting Goals",
-          type: "multi-select",
-          defaultValue: "check-in,growth",
-          options: [
-            { value: "check-in", label: "\u{1F4AC} General Check-in" },
-            { value: "growth", label: "\u{1F4C8} Career Growth" },
-            { value: "feedback", label: "\u{1F3AF} Give Feedback" },
-            { value: "blockers", label: "\u{1F6A7} Address Blockers" },
-            { value: "recognition", label: "\u{1F31F} Recognition" },
-            { value: "difficult", label: "\u26A0\uFE0F Difficult Conversation" }
-          ]
-        },
-        {
-          id: "lastMeetingNotes",
-          label: "Last Meeting Notes (optional)",
-          type: "textarea",
-          placeholder: "Any notes from the previous 1:1...",
-          rows: 3
-        }
-      ],
-      primaryAction: "Generate Meeting Prep",
-      systemPrompt: `You are an expert leadership coach helping managers prepare effective 1:1 meetings.
-
-## Your Output Should Include:
-
-### \u{1F4CB} Agenda (5-10 items)
-Suggested topics and time allocation
-
-### \u{1F4AC} Conversation Starters
-3-5 open-ended questions to build rapport
-
-### \u{1F3AF} Key Questions to Ask
-Based on the goals, provide specific questions
-
-### \u{1F4DD} Notes Template
-Structure for taking notes during the meeting
-
-### \u23ED\uFE0F Follow-up Actions
-Suggested action items to track
-
-Be warm, empathetic, and focus on the team member's growth and well-being.`,
-      buildUserPrompt: (inputs) => {
-        return `## Team Member: ${inputs.memberName}
-**Role:** ${inputs.memberRole}
-
-## Recent Context
-${inputs.recentContext || "No specific context provided"}
-
-## Meeting Goals
-${inputs.meetingGoals?.split(",").join(", ") || "General check-in"}
-
-${inputs.lastMeetingNotes ? `## Last Meeting Notes
-${inputs.lastMeetingNotes}` : ""}
-
-Please prepare a comprehensive 1:1 meeting prep document.`;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        actions: [
-          { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-          { label: "Save", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md" }
-        ]
-      }),
-      requirements: { copilot: true }
-    };
-  }
-});
-
-// src/apps/implementations/performanceReview.ts
-var performanceReview_exports = {};
-__export(performanceReview_exports, {
-  performanceReviewApp: () => performanceReviewApp
-});
-var performanceReviewApp;
-var init_performanceReview = __esm({
-  "src/apps/implementations/performanceReview.ts"() {
-    "use strict";
-    performanceReviewApp = {
-      id: "performance-review-writer",
-      name: "Performance Review Writer",
-      description: "Write balanced and constructive performance reviews",
-      icon: "\u{1F4CA}",
-      category: "leadership",
-      tags: ["reviews", "feedback", "hr", "management"],
-      helpDocumentation: `
-### What is this?
-Generate well-structured, fair, and constructive performance reviews.
-
-### How to use:
-1. Enter employee details and review period
-2. Add achievements and areas for improvement
-3. Choose review style and tone
-4. Generate a professional review
-    `,
-      inputs: [
-        {
-          id: "employeeName",
-          label: "Employee Name",
-          type: "text",
-          placeholder: "e.g., Alex Johnson",
-          required: true
-        },
-        {
-          id: "role",
-          label: "Role",
-          type: "text",
-          placeholder: "e.g., Product Manager",
-          required: true
-        },
-        {
-          id: "reviewPeriod",
-          label: "Review Period",
-          type: "text",
-          placeholder: "e.g., Q4 2024, H2 2024",
-          defaultValue: "Last 6 months"
-        },
-        {
-          id: "overallRating",
-          label: "Overall Performance Rating",
-          type: "select",
-          defaultValue: "meets",
-          options: [
-            { value: "exceptional", label: "\u2B50 Exceptional - Far exceeds expectations" },
-            { value: "exceeds", label: "\u{1F31F} Exceeds Expectations" },
-            { value: "meets", label: "\u2705 Meets Expectations" },
-            { value: "developing", label: "\u{1F4C8} Developing - Some improvement needed" },
-            { value: "needs-improvement", label: "\u26A0\uFE0F Needs Significant Improvement" }
-          ]
-        },
-        {
-          id: "achievements",
-          label: "Key Achievements",
-          type: "textarea",
-          placeholder: `List key accomplishments:
-- Led successful launch of feature X
-- Mentored 2 junior engineers
-- Improved system performance by 30%`,
-          rows: 5,
-          required: true
-        },
-        {
-          id: "areasForGrowth",
-          label: "Areas for Growth",
-          type: "textarea",
-          placeholder: `Areas to develop:
-- Need to improve communication with stakeholders
-- Could delegate more effectively
-- Time management during sprints`,
-          rows: 4
-        },
-        {
-          id: "goals",
-          label: "Goals for Next Period",
-          type: "textarea",
-          placeholder: "What should they focus on going forward?",
-          rows: 3
-        },
-        {
-          id: "tone",
-          label: "Review Tone",
-          type: "radio",
-          defaultValue: "balanced",
-          options: [
-            { value: "formal", label: "\u{1F4CB} Formal / Corporate" },
-            { value: "balanced", label: "\u2696\uFE0F Balanced / Professional" },
-            { value: "encouraging", label: "\u{1F4AA} Encouraging / Supportive" }
-          ]
-        }
-      ],
-      primaryAction: "Generate Performance Review",
-      systemPrompt: `You are an expert HR consultant helping managers write effective performance reviews.
-
-## Guidelines:
-1. **Be Specific**: Use concrete examples, not vague statements
-2. **Be Balanced**: Include both strengths and growth areas
-3. **Be Constructive**: Frame feedback positively
-4. **Be Fair**: Avoid bias and focus on behaviors/outcomes
-5. **Be Forward-Looking**: Include actionable goals
-
-## Output Structure:
-1. **Executive Summary** (2-3 sentences)
-2. **Key Accomplishments** (bulleted, specific)
-3. **Strengths Demonstrated**
-4. **Areas for Development** (constructive framing)
-5. **Goals for Next Period** (SMART format)
-6. **Overall Assessment**
-7. **Manager Recommendations**`,
-      buildUserPrompt: (inputs) => {
-        const ratingLabels = {
-          "exceptional": "Exceptional - Far exceeds expectations",
-          "exceeds": "Exceeds Expectations",
-          "meets": "Meets Expectations",
-          "developing": "Developing - Needs some improvement",
-          "needs-improvement": "Needs Significant Improvement"
-        };
-        return `## Performance Review Request
-
-**Employee:** ${inputs.employeeName}
-**Role:** ${inputs.role}
-**Review Period:** ${inputs.reviewPeriod}
-**Overall Rating:** ${ratingLabels[inputs.overallRating] || inputs.overallRating}
-**Tone:** ${inputs.tone}
-
-## Key Achievements
-${inputs.achievements}
-
-## Areas for Growth
-${inputs.areasForGrowth || "None specified"}
-
-## Suggested Goals
-${inputs.goals || "To be determined"}
-
-Please write a comprehensive, professional performance review.`;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        actions: [
-          { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-          { label: "Save as Doc", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md" }
-        ]
-      }),
-      requirements: { copilot: true }
-    };
-  }
-});
-
-// src/apps/implementations/teamFeedback.ts
-var teamFeedback_exports = {};
-__export(teamFeedback_exports, {
-  teamFeedbackApp: () => teamFeedbackApp
-});
-var teamFeedbackApp;
-var init_teamFeedback = __esm({
-  "src/apps/implementations/teamFeedback.ts"() {
-    "use strict";
-    teamFeedbackApp = {
-      id: "team-feedback-generator",
-      name: "Team Feedback Generator",
-      description: "Craft constructive feedback using proven frameworks",
-      icon: "\u{1F4AC}",
-      category: "leadership",
-      tags: ["feedback", "coaching", "communication", "management"],
-      helpDocumentation: `
-### What is this?
-Generate professional, constructive feedback using proven frameworks like SBI (Situation-Behavior-Impact).
-
-### How to use:
-1. Describe the situation and behavior
-2. Choose feedback type and framework
-3. Get well-structured, actionable feedback
-    `,
-      inputs: [
-        {
-          id: "recipientName",
-          label: "Feedback Recipient",
-          type: "text",
-          placeholder: "e.g., Jamie",
-          required: true
-        },
-        {
-          id: "feedbackType",
-          label: "Feedback Type",
-          type: "radio",
-          defaultValue: "constructive",
-          options: [
-            { value: "positive", label: "\u{1F31F} Positive / Recognition", description: "Reinforce great behavior" },
-            { value: "constructive", label: "\u{1F527} Constructive", description: "Help them improve" },
-            { value: "redirect", label: "\u{1F504} Redirect", description: "Course correction needed" }
-          ]
-        },
-        {
-          id: "situation",
-          label: "Situation",
-          type: "textarea",
-          placeholder: "What happened? When and where?\n\ne.g., During yesterday's sprint planning meeting...",
-          rows: 3,
-          required: true,
-          hint: "Be specific about time, place, and context"
-        },
-        {
-          id: "behavior",
-          label: "Observed Behavior",
-          type: "textarea",
-          placeholder: "What did they do or say?\n\ne.g., They interrupted teammates 3 times and dismissed alternative ideas quickly.",
-          rows: 3,
-          required: true,
-          hint: "Focus on observable facts, not assumptions"
-        },
-        {
-          id: "impact",
-          label: "Impact",
-          type: "textarea",
-          placeholder: "What was the effect?\n\ne.g., Other team members stopped sharing their ideas and the meeting ended without buy-in.",
-          rows: 3,
-          hint: "How did it affect the team, project, or outcomes?"
-        },
-        {
-          id: "desiredOutcome",
-          label: "Desired Outcome",
-          type: "textarea",
-          placeholder: "What would you like to see instead?",
-          rows: 2
-        },
-        {
-          id: "framework",
-          label: "Feedback Framework",
-          type: "select",
-          defaultValue: "sbi",
-          options: [
-            { value: "sbi", label: "\u{1F3AF} SBI (Situation-Behavior-Impact)" },
-            { value: "star", label: "\u2B50 STAR (Situation-Task-Action-Result)" },
-            { value: "coin", label: "\u{1FA99} COIN (Context-Observation-Impact-Next)" },
-            { value: "simple", label: "\u{1F4DD} Simple Direct Feedback" }
-          ]
-        },
-        {
-          id: "deliveryMethod",
-          label: "Delivery Method",
-          type: "radio",
-          defaultValue: "verbal",
-          options: [
-            { value: "verbal", label: "\u{1F5E3}\uFE0F In-person / Video", description: "Script for conversation" },
-            { value: "written", label: "\u2709\uFE0F Written / Email", description: "Written message" },
-            { value: "both", label: "\u{1F4CB} Both", description: "Script + follow-up email" }
-          ]
-        }
-      ],
-      primaryAction: "Generate Feedback",
-      systemPrompt: `You are an expert leadership coach helping managers deliver effective feedback.
-
-## Key Principles:
-1. **Be Specific**: Use concrete examples
-2. **Be Timely**: Reference recent events
-3. **Be Constructive**: Focus on growth, not blame
-4. **Be Actionable**: Provide clear next steps
-5. **Be Empathetic**: Consider their perspective
-
-## Output Should Include:
-1. **Opening** - Set positive tone
-2. **Feedback (using selected framework)**
-3. **Discussion Prompts** - Questions to ask them
-4. **Suggested Next Steps** - Concrete actions
-5. **Closing** - End on supportive note
-
-For written feedback, use a professional but warm tone.
-For verbal scripts, include pauses and checkpoints for dialogue.`,
-      buildUserPrompt: (inputs) => {
-        const frameworkLabels = {
-          "sbi": "SBI (Situation-Behavior-Impact)",
-          "star": "STAR (Situation-Task-Action-Result)",
-          "coin": "COIN (Context-Observation-Impact-Next)",
-          "simple": "Simple Direct"
-        };
-        return `## Feedback Request
-
-**Recipient:** ${inputs.recipientName}
-**Type:** ${inputs.feedbackType}
-**Framework:** ${frameworkLabels[inputs.framework]}
-**Delivery:** ${inputs.deliveryMethod}
-
-### Situation
-${inputs.situation}
-
-### Observed Behavior
-${inputs.behavior}
-
-### Impact
-${inputs.impact || "Not specified"}
-
-### Desired Outcome
-${inputs.desiredOutcome || "Improvement in this area"}
-
-Please generate professional feedback ready for delivery.`;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        actions: [
-          { label: "Copy", icon: "\u{1F4CB}", action: "copy" },
-          { label: "Save", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md" }
-        ]
-      }),
-      requirements: { copilot: true }
-    };
-  }
-});
-
-// src/apps/implementations/playwrightGenerator.ts
-var playwrightGenerator_exports = {};
-__export(playwrightGenerator_exports, {
-  playwrightGeneratorApp: () => playwrightGeneratorApp
-});
-var playwrightGeneratorApp;
-var init_playwrightGenerator = __esm({
-  "src/apps/implementations/playwrightGenerator.ts"() {
-    "use strict";
-    playwrightGeneratorApp = {
-      id: "playwright-generator",
-      name: "Playwright Script Generator",
-      description: "Generate automation scripts from test steps",
-      icon: "\u{1F3AD}",
-      category: "qa",
-      helpDocumentation: `
-### What is this?
-The **Playwright Script Generator** turns manual test steps or requirements into high-quality automation scripts. It supports TypeScript, JavaScript, and Python.
-
-### How to use it:
-1. **Define Steps**: Paste your steps in the textarea or **attach an Excel/Word file** containing the test cases.
-2. **Provide Locators**: (Optional) If you have specific IDs or selectors, list them to ensure the AI uses your preferred identifiers.
-3. **Configure**: Choose your target language, browser, and features (like screenshots or video).
-4. **Generate**: Click the primary action. 
-5. **Magic Feature**: Once the script is generated, use the **\u{1F680} Create Full Project** button to automatically scaffold a complete, ready-to-run Playwright environment.
-
-### Use cases:
-- Rapidly automating manual regression tests.
-- Scaffolding new end-to-end test suites.
-- Converting legacy test documentation into executable code.
-    `,
-      inputs: [
-        {
-          id: "attachedFiles",
-          label: "Attach Files (optional)",
-          type: "file-picker",
-          placeholder: "Attach Excel, DOCX, TXT, or MD files with test steps/locators",
-          hint: "Upload test scripts from Excel, Word docs, or text files. File contents will be extracted and used.",
-          rows: 0
-          // Used to store accepted extensions in hint
-        },
-        {
-          id: "testSteps",
-          label: "Test Steps",
-          type: "textarea",
-          placeholder: `Paste your test steps here, e.g.:
-
-1. Navigate to https://example.com/login
-2. Enter "testuser@email.com" in email field
-3. Enter "password123" in password field
-4. Click the Login button
-5. Verify dashboard page loads
-6. Click on Settings menu
-7. Verify Settings page title is visible`,
-          required: false,
-          // Not required if files are attached
-          rows: 10,
-          hint: "Paste test steps directly, or use the file attachment above"
-        },
-        {
-          id: "locators",
-          label: "Element Locators (optional)",
-          type: "textarea",
-          placeholder: `Provide locators if you have them:
-
-email field: #email-input
-password field: input[name="password"]
-Login button: button.login-btn
-Settings menu: [data-testid="settings-link"]`,
-          rows: 6,
-          hint: "CSS selectors, data-testid, or other locators for elements"
-        },
-        {
-          id: "requirements",
-          label: "Additional Requirements (optional)",
-          type: "textarea",
-          placeholder: `Any special requirements:
-- Wait for network idle after login
-- Handle cookie consent popup
-- Test should work for mobile viewport
-- Need to handle 2FA if prompted`,
-          rows: 4
-        },
-        {
-          id: "baseUrl",
-          label: "Base URL",
-          type: "text",
-          placeholder: "https://your-app.com",
-          hint: "The starting URL for your test"
-        },
-        {
-          id: "language",
-          label: "Programming Language",
-          type: "radio",
-          defaultValue: "typescript",
-          options: [
-            { value: "typescript", label: "\u{1F537} TypeScript", description: "Recommended - Type safety & better IDE support" },
-            { value: "javascript", label: "\u{1F7E8} JavaScript", description: "Simple and widely used" },
-            { value: "python", label: "\u{1F40D} Python", description: "Great for data-driven testing" }
-          ]
-        },
-        {
-          id: "browser",
-          label: "Browser",
-          type: "select",
-          defaultValue: "chrome",
-          options: [
-            { value: "chrome", label: "\u{1F310} Google Chrome" },
-            { value: "msedge", label: "\u{1F537} Microsoft Edge" }
-          ]
-        },
-        {
-          id: "headless",
-          label: "Run Mode",
-          type: "radio",
-          defaultValue: "headed",
-          options: [
-            { value: "headed", label: "\u{1F441}\uFE0F Headed (Visible browser)", description: "Watch the test run" },
-            { value: "headless", label: "\u26A1 Headless (No UI)", description: "Faster, for CI/CD" }
-          ]
-        },
-        {
-          id: "features",
-          label: "Additional Features",
-          type: "multi-select",
-          defaultValue: "screenshots,report,retry",
-          options: [
-            { value: "screenshots", label: "\u{1F4F8} Screenshots per step", description: "Capture screenshot after each action" },
-            { value: "video", label: "\u{1F3A5} Video recording", description: "Record full test execution" },
-            { value: "report", label: "\u{1F4CA} HTML Report", description: "Generate visual test report" },
-            { value: "retry", label: "\u{1F504} Auto-retry on failure", description: "Retry failed tests automatically" },
-            { value: "trace", label: "\u{1F50D} Trace on failure", description: "Capture trace for debugging" },
-            { value: "parallel", label: "\u26A1 Parallel execution", description: "Run tests in parallel" }
-          ]
-        },
-        {
-          id: "testName",
-          label: "Test Name",
-          type: "text",
-          placeholder: "Login Flow Test",
-          defaultValue: "Automated Test",
-          hint: "Name for your test suite (also used as folder name)"
-        },
-        {
-          id: "targetFolder",
-          label: "Target Folder",
-          type: "project-picker",
-          required: true,
-          placeholder: "Select where to create the test project",
-          hint: "A folder named after your test will be created here with all files"
-        },
-        {
-          id: "jiraIssueId",
-          label: "Jira Issue ID (optional)",
-          type: "text",
-          placeholder: "e.g., PROJ-123, TEST-456",
-          hint: "Enter a Jira issue ID to auto-fetch requirements as context. Configure Jira in Apps Hub settings.",
-          required: false
-        },
-        {
-          id: "model",
-          label: "AI Model",
-          type: "model-picker",
-          defaultValue: "auto",
-          hint: "Select which AI model to use for generating the script"
-        }
-      ],
-      primaryAction: "Generate & Create Project",
-      systemPrompt: `You are an expert Playwright automation engineer. Generate production-ready, enterprise-grade Playwright test scripts.
-
-## Guidelines
-
-1. **Robust Locators**: Use resilient selectors (data-testid > role > text > css)
-2. **Proper Waits**: Use auto-waiting, avoid hardcoded delays
-3. **Error Handling**: Include try-catch for critical steps
-4. **Screenshots**: Capture screenshots at key points for debugging
-5. **Assertions**: Add meaningful assertions after each significant action
-6. **Comments**: Add clear comments explaining each step
-7. **Best Practices**: Follow Playwright best practices
-
-## Output Structure
-
-Generate the script in THREE sections:
-
-### SECTION 1: SETUP FILES
-First, provide package.json and config files needed.
-
-### SECTION 2: MAIN TEST FILE
-The complete test script with:
-- Proper imports
-- Test setup/teardown
-- Step-by-step actions with comments
-- Screenshots after key steps
-- Assertions to verify behavior
-- Error handling
-
-### SECTION 3: COMMANDS
-Provide exact terminal commands to:
-1. Install dependencies
-2. Run the test
-3. View the report
-
-## Code Quality Requirements
-
-- No syntax errors
-- Proper async/await usage
-- Type safety (for TypeScript)
-- Descriptive variable names
-- Modular helper functions where appropriate
-
-## Screenshot Convention
-
-For each step, capture screenshot with descriptive name:
-await page.screenshot({ path: 'screenshots/01-login-page.png' });
-await page.screenshot({ path: 'screenshots/02-after-credentials.png' });
-
-## Report Configuration
-
-Include HTML reporter configuration for visual reports.`,
-      buildUserPrompt: (inputs) => {
-        const parts = [];
-        parts.push(`## Configuration`);
-        parts.push(`- **Language**: ${inputs.language || "typescript"}`);
-        parts.push(`- **Browser**: ${inputs.browser || "chrome"}`);
-        parts.push(`- **Mode**: ${inputs.headless === "headless" ? "Headless" : "Headed"}`);
-        const features = (inputs.features || "screenshots,report").split(",");
-        parts.push(`- **Features**: ${features.join(", ")}`);
-        if (inputs.testName) {
-          parts.push(`- **Test Name**: ${inputs.testName}`);
-        }
-        if (inputs.baseUrl) {
-          parts.push(`- **Base URL**: ${inputs.baseUrl}`);
-        }
-        if (inputs.attachedFiles && inputs.attachedFiles.trim() && inputs.attachedFiles !== "[]") {
-          try {
-            const files = JSON.parse(inputs.attachedFiles);
-            if (files.length > 0) {
-              parts.push(`
-## Attached Files`);
-              for (const file2 of files) {
-                parts.push(`
-### File: ${file2.name}`);
-                parts.push("```");
-                parts.push(file2.content);
-                parts.push("```");
-              }
-            }
-          } catch {
-          }
-        }
-        if (inputs.testSteps && inputs.testSteps.trim()) {
-          parts.push(`
-## Test Steps to Automate
-${inputs.testSteps}`);
-        }
-        if (inputs.locators && inputs.locators.trim()) {
-          parts.push(`
-## Element Locators Provided
-${inputs.locators}`);
-        } else {
-          parts.push(`
-## Locators
-No specific locators provided. Please use best practices to identify elements (prefer data-testid, role, text, then CSS selectors).`);
-        }
-        if (inputs.requirements && inputs.requirements.trim()) {
-          parts.push(`
-## Additional Requirements
-${inputs.requirements}`);
-        }
-        if (inputs.jiraContext && inputs.jiraContext.trim()) {
-          parts.push(`
-## Jira Issue Context
-${inputs.jiraContext}`);
-        }
-        parts.push(`
-## Instructions
-Generate a complete, ready-to-run Playwright test script. Include:
-1. All necessary setup files (package.json, playwright.config)
-2. The main test file with proper structure
-3. Exact commands to install and run
-
-Make sure the code has NO ERRORS and follows best practices.`);
-        return parts.join("\n");
-      },
-      parseResponse: (response, inputs) => {
-        const language = inputs.language || "typescript";
-        const fileExtensions = {
-          typescript: ".ts",
-          javascript: ".js",
-          python: ".py"
-        };
-        const sections = [];
-        const setupMatch = response.match(/###?\s*(?:SECTION 1|SETUP|Setup Files)[\s\S]*?(?=###?\s*(?:SECTION 2|MAIN|Main Test)|$)/i);
-        if (setupMatch) {
-          sections.push({
-            title: "\u{1F4E6} Setup Files",
-            content: setupMatch[0].replace(/###?\s*(?:SECTION 1|SETUP|Setup Files)[^\n]*\n/i, "").trim(),
-            severity: "info",
-            collapsible: true,
-            collapsed: false
-          });
-        }
-        const mainMatch = response.match(/###?\s*(?:SECTION 2|MAIN|Main Test)[\s\S]*?(?=###?\s*(?:SECTION 3|COMMANDS|Commands)|$)/i);
-        if (mainMatch) {
-          sections.push({
-            title: "\u{1F3AD} Main Test File",
-            content: mainMatch[0].replace(/###?\s*(?:SECTION 2|MAIN|Main Test)[^\n]*\n/i, "").trim(),
-            severity: "success",
-            collapsible: false
-          });
-        }
-        const commandsMatch = response.match(/###?\s*(?:SECTION 3|COMMANDS|Commands)[\s\S]*/i);
-        if (commandsMatch) {
-          sections.push({
-            title: "\u{1F4BB} Run Commands",
-            content: commandsMatch[0].replace(/###?\s*(?:SECTION 3|COMMANDS|Commands)[^\n]*\n/i, "").trim(),
-            severity: "info",
-            collapsible: true,
-            collapsed: false,
-            actions: [
-              { label: "Copy Commands", icon: "\u{1F4CB}", action: "copy" }
-            ]
-          });
-        }
-        const codeBlockMatch = response.match(/```(?:typescript|javascript|python|ts|js|py)\n([\s\S]*?)\n```/);
-        const mainCode = codeBlockMatch ? codeBlockMatch[1] : "";
-        const testFileName = `test${fileExtensions[language]}`;
-        return {
-          type: sections.length > 0 ? "structured" : "markdown",
-          content: response,
-          sections: sections.length > 0 ? sections : void 0,
-          summary: `Generated ${language.toUpperCase()} Playwright script`,
-          actions: [
-            {
-              label: `Download ${testFileName}`,
-              icon: "\u2B07\uFE0F",
-              action: "newFile",
-              fileExtension: fileExtensions[language],
-              suggestedFilename: testFileName,
-              data: mainCode || response
-            },
-            {
-              label: "\u{1F680} Create Full Project",
-              icon: "\u{1F4C1}",
-              action: "export",
-              data: "extractAndCreateProject"
-            },
-            { label: "Copy All", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Insert at Cursor", icon: "\u{1F4DD}", action: "insert" }
-          ]
-        };
-      },
-      defaultActions: [
-        { label: "\u{1F680} Create Project", icon: "\u{1F4C1}", action: "export", data: "extractAndCreateProject" },
-        { label: "Download Script", icon: "\u2B07\uFE0F", action: "newFile", fileExtension: ".ts" },
-        { label: "Copy", icon: "\u{1F4CB}", action: "copy" }
-      ],
-      requirements: {
-        copilot: true
-      },
-      examples: [
-        {
-          name: "Login Flow Test",
-          inputs: {
-            testSteps: `1. Navigate to https://example.com/login
-2. Enter "testuser@email.com" in the email field
-3. Enter "password123" in the password field
-4. Click the Login button
-5. Verify the dashboard page loads successfully
-6. Check that the welcome message shows the username`,
-            locators: `email field: #email
-password field: #password
-Login button: button[type="submit"]
-welcome message: .welcome-text`,
-            language: "typescript",
-            browser: "chromium",
-            headless: "headed",
-            features: "screenshots,report,retry",
-            testName: "Login Flow Test"
-          }
-        },
-        {
-          name: "E-commerce Checkout",
-          inputs: {
-            testSteps: `1. Go to the product page
-2. Select size "Medium"
-3. Click Add to Cart
-4. Go to Cart
-5. Click Checkout
-6. Fill shipping details
-7. Select payment method
-8. Complete purchase
-9. Verify order confirmation`,
-            language: "python",
-            browser: "all",
-            features: "screenshots,video,report",
-            testName: "Checkout Flow Test"
-          }
-        }
-      ]
-    };
-  }
-});
-
-// src/apps/implementations/accessibilityChecker.ts
-var accessibilityChecker_exports = {};
-__export(accessibilityChecker_exports, {
-  accessibilityCheckerApp: () => accessibilityCheckerApp
-});
-var accessibilityCheckerApp;
-var init_accessibilityChecker = __esm({
-  "src/apps/implementations/accessibilityChecker.ts"() {
-    "use strict";
-    accessibilityCheckerApp = {
-      id: "accessibility-checker",
-      name: "Accessibility Checker",
-      description: "Get a11y recommendations for your UI components",
-      icon: "\u267F",
-      category: "qa",
-      primaryAction: "\u{1F50D} Check Accessibility",
-      helpDocumentation: `### What is this?
-The **Accessibility Checker** analyzes UI code or descriptions and provides WCAG-compliant accessibility recommendations.
-
-### How to use it
-1. Paste your UI code (HTML, JSX, Vue template) or describe the component.
-2. Select the WCAG conformance level you're targeting.
-3. Click **Check Accessibility** to get detailed recommendations.
-
-### Use cases
-- Auditing existing components for a11y issues
-- Learning accessibility best practices
-- Preparing for WCAG compliance audits
-- Improving keyboard navigation and screen reader support`,
-      inputs: [
-        {
-          id: "uiCode",
-          label: "UI Code or Description",
-          type: "textarea",
-          placeholder: "Paste your component code (HTML, JSX, Vue) or describe the UI...\n\nExample:\nA modal dialog with a form containing name and email fields, a submit button, and a close icon button.",
-          required: true,
-          rows: 8,
-          hint: "Include all interactive elements for a thorough review"
-        },
-        {
-          id: "wcagLevel",
-          label: "WCAG Level",
-          type: "radio",
-          options: [
-            { value: "A", label: "Level A", description: "Minimum accessibility (essential)" },
-            { value: "AA", label: "Level AA", description: "Standard target (recommended)" },
-            { value: "AAA", label: "Level AAA", description: "Highest conformance" }
-          ],
-          defaultValue: "AA"
-        },
-        {
-          id: "focus",
-          label: "Focus Areas",
-          type: "multi-select",
-          options: [
-            { value: "keyboard", label: "Keyboard Navigation" },
-            { value: "screen-reader", label: "Screen Reader" },
-            { value: "color", label: "Color Contrast" },
-            { value: "forms", label: "Form Labels & Errors" },
-            { value: "motion", label: "Motion & Animation" }
-          ]
-        }
-      ],
-      systemPrompt: `You are an accessibility expert specializing in web applications. Analyze UI components and provide actionable WCAG-compliant recommendations.
-
-For each issue found:
-1. **Issue** - What's wrong
-2. **WCAG Criterion** - e.g., "1.4.3 Contrast (Minimum)"
-3. **Impact** - Who is affected and how
-4. **Fix** - Code example showing the solution
-
-Organize by severity: Critical > Serious > Moderate > Minor
-
-Also include:
-- \u2705 What's already good
-- \u{1F9EA} How to test each fix
-- \u{1F4DA} Resources for learning more`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Check this UI for WCAG Level ${inputs.wcagLevel} accessibility issues:
-
-${inputs.uiCode}`;
-        if (inputs.focus?.trim()) {
-          prompt += `
-
-Focus specifically on: ${inputs.focus.split(",").join(", ")}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Accessibility Report", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/vulnerabilityScanner.ts
-var vulnerabilityScanner_exports = {};
-__export(vulnerabilityScanner_exports, {
-  vulnerabilityScannerApp: () => vulnerabilityScannerApp
-});
-var vulnerabilityScannerApp;
-var init_vulnerabilityScanner = __esm({
-  "src/apps/implementations/vulnerabilityScanner.ts"() {
-    "use strict";
-    vulnerabilityScannerApp = {
-      id: "vulnerability-scanner",
-      name: "Vulnerability Scanner",
-      description: "Scan code for security anti-patterns and vulnerabilities",
-      icon: "\u{1F6E1}\uFE0F",
-      category: "security",
-      helpDocumentation: `
-### What is this?
-The **Vulnerability Scanner** is a static analysis tool that scans your code for common security anti-patterns, potential exploits, and poor security hygiene. It maps findings to OWASP standards.
-
-### How to use it:
-1. **Provide Code**: Either paste a snippet directly or leave the field empty to scan the file currently open in your editor.
-2. **Select Depth**: 
-   - **Quick Scan**: Best for common accidental exposures (secrets, basic injection).
-   - **Standard Scan**: Recommended for general code health.
-   - **Deep Audit**: Use before major releases or on high-security modules.
-3. **Review**: Findings are categorized by severity. Check the "Fix" section for recommended code changes.
-
-### Use cases:
-- Pre-commit security check.
-- Auditing third-party code snippets.
-- Validating sanitization logic.
-    `,
-      inputs: [
-        {
-          id: "codeSnippet",
-          label: "Code to Scan",
-          type: "code",
-          placeholder: "Paste code here or leave empty to scan current file...",
-          required: false,
-          hint: "If empty, the currently active file in your editor will be analyzed for vulnerabilities."
-        },
-        {
-          id: "scanDepth",
-          label: "Scan Depth",
-          type: "select",
-          defaultValue: "standard",
-          options: [
-            { value: "quick", label: "\u26A1 Quick Scan", description: "Checks for the Top 10 most common security anti-patterns" },
-            { value: "standard", label: "\u{1F50D} Standard Scan", description: "Comprehensive analysis of common and complex vulnerabilities" },
-            { value: "deep", label: "\u{1F52C} Deep Audit", description: "Exhaustive security analysis including subtle edge cases" }
-          ],
-          hint: "Select how deep you want the security analysis to go."
-        }
-      ],
-      primaryAction: "Start Security Scan",
-      systemPrompt: `You are a world-class security researcher and professional white-hat pentester.
-Your goal is to identify potential security vulnerabilities, anti-patterns, and compliance issues in the provided code.
-
-## Scanning Guidelines
-1. **Be Precise**: Minimize false positives. Explain why something is a risk.
-2. **Follow OWASP**: Reference OWASP Top 10 categories where applicable.
-3. **Check for**:
-    - Injection (SQL, NoSQL, OS, LDAPs)
-    - Broken Authentication & Session Management
-    - Sensitive Data Exposure
-    - XML External Entities (XXE)
-    - Broken Access Control
-    - Security Misconfiguration
-    - Cross-Site Scripting (XSS)
-    - Insecure Deserialization
-    - Using Components with Known Vulnerabilities
-    - Insufficient Logging & Monitoring
-
-## Output Format
-Structure your report using these sections:
-
-### \u{1F6A8} Critical Vulnerabilities
-Issues that pose an immediate risk of data breach or system compromise.
-Format:
-- **[Severity: CRITICAL]** Title
-  - **Type**: OWASP Category
-  - **Risk**: What could happen
-  - **Fix**: Remediated code snippet
-
-### \u26A0\uFE0F Security Warnings
-Potential issues or anti-patterns that increase the attack surface.
-Same format as above.
-
-### \u{1F4DD} Best Practices
-General security improvements and hygiene.
-
-### \u{1F4CA} Security Score
-- Overall Rating: A-F
-- Issues Found: Critical (X), Warning (X), Info (X)`,
-      buildUserPrompt: (inputs, context) => {
-        const parts = [];
-        const code = inputs.codeSnippet || context?.fileContents?.[0]?.content || "";
-        if (!code) {
-          parts.push("## Note\nNo code content provided. Please provide a code snippet to scan.");
-        } else {
-          parts.push(`## Code to Scan
-\`\`\`
-${code}
-\`\`\``);
-        }
-        parts.push(`## Scan Depth
-${inputs.scanDepth || "standard"}`);
-        return parts.join("\n\n");
-      },
-      parseResponse: (response) => {
-        const sections = [];
-        const criticalMatch = response.match(/### 🚨 Critical Vulnerabilities[\s\S]*?(?=###|$)/i);
-        if (criticalMatch && !criticalMatch[0].includes("None found") && criticalMatch[0].length > 50) {
-          sections.push({
-            title: "\u{1F6A8} Critical Vulnerabilities",
-            content: criticalMatch[0].replace(/### 🚨 Critical Vulnerabilities[^\n]*\n/, "").trim(),
-            severity: "critical",
-            collapsible: true,
-            collapsed: false
-          });
-        }
-        const warningsMatch = response.match(/### ⚠️ Security Warnings[\s\S]*?(?=###|$)/i);
-        if (warningsMatch && !warningsMatch[0].includes("None found") && warningsMatch[0].length > 50) {
-          sections.push({
-            title: "\u26A0\uFE0F Security Warnings",
-            content: warningsMatch[0].replace(/### ⚠️ Security Warnings[^\n]*\n/, "").trim(),
-            severity: "warning",
-            collapsible: true,
-            collapsed: false
-          });
-        }
-        if (sections.length === 0) {
-          return {
-            type: "markdown",
-            content: response
-          };
-        }
-        return {
-          type: "structured",
-          content: response,
-          sections,
-          summary: `Security scan complete. Found ${sections.filter((s) => s.severity === "critical").length} critical issues.`
-        };
-      }
-    };
-  }
-});
-
-// src/apps/implementations/iacGenerator.ts
-var iacGenerator_exports = {};
-__export(iacGenerator_exports, {
-  iacGeneratorApp: () => iacGeneratorApp
-});
-var iacGeneratorApp;
-var init_iacGenerator = __esm({
-  "src/apps/implementations/iacGenerator.ts"() {
-    "use strict";
-    iacGeneratorApp = {
-      id: "iac-generator",
-      name: "IaC Generator",
-      description: "Generate Infrastructure as Code (Terraform, Pulumi, etc.)",
-      icon: "\u2601\uFE0F",
-      category: "devops",
-      helpDocumentation: `
-### What is this?
-The **IaC Generator** accelerates cloud infrastructure deployment by converting natural language requirements into production-ready Infrastructure as Code (IaC).
-
-### How to use it:
-1. **Describe Infrastructure**: Provide a detailed description of the resources you need (e.g., "A VPC with 3 subnets and an RDS instance").
-2. **Select Provider**: Choose between AWS, Azure, Google Cloud, or Kubernetes.
-3. **Select Tool**: Choose your preferred IaC tool (Terraform, Pulumi, CloudFormation, or CDK).
-4. **Generate**: The AI will produce well-commented code following best practices for naming, tagging, and security.
-
-### Use cases:
-- Scaffolding new environments.
-- Translating architecture diagrams into code.
-- Learning the syntax of a new IaC provider or tool.
-    `,
-      inputs: [
-        {
-          id: "requirement",
-          label: "Infrastructure Requirements",
-          type: "textarea",
-          placeholder: "e.g., A highly available AWS VPC with 2 public and 2 private subnets across 2 AZs...",
-          required: true,
-          rows: 4
-        },
-        {
-          id: "provider",
-          label: "Cloud Provider",
-          type: "select",
-          defaultValue: "aws",
-          options: [
-            { value: "aws", label: "AWS", icon: "\u2601\uFE0F" },
-            { value: "azure", label: "Azure", icon: "\u2601\uFE0F" },
-            { value: "gcp", label: "Google Cloud", icon: "\u2601\uFE0F" },
-            { value: "kubernetes", label: "Kubernetes", icon: "\u2638\uFE0F" }
-          ]
-        },
-        {
-          id: "tool",
-          label: "IaC Tool",
-          type: "select",
-          defaultValue: "terraform",
-          options: [
-            { value: "terraform", label: "Terraform", icon: "\u{1F3D7}\uFE0F" },
-            { value: "pulumi", label: "Pulumi", icon: "\u{1F3D7}\uFE0F" },
-            { value: "cloudformation", label: "CloudFormation", icon: "\u{1F3D7}\uFE0F" },
-            { value: "cdk", label: "AWS CDK", icon: "\u{1F3D7}\uFE0F" }
-          ]
-        }
-      ],
-      primaryAction: "Generate IaC",
-      systemPrompt: `You are an expert DevOps and Infrastructure Engineer. 
-Your goal is to provide high-quality, production-ready Infrastructure as Code (IaC) snippets based on natural language descriptions.
-
-## Guidelines
-1. **Best Practices**: Use official provider modules or best practices (e.g., tagging, variables).
-2. **Security**: Ensure secure defaults (e.g., private subnets, least privilege).
-3. **Modular**: Structure the code to be reusable.
-4. **Explanation**: Provide a brief explanation of the architecture created.
-
-## Output Format
-1. **Brief Summary**: What this code creates.
-2. **Code Block**: The actual IaC code.
-3. **Prerequisites**: Any steps needed to run this (e.g., CLI config).`,
-      buildUserPrompt: (inputs) => {
-        return `Generate IaC for the following requirements:
-        
-Requirements: ${inputs.requirement}
-Provider: ${inputs.provider}
-Tool: ${inputs.tool}
-
-Please include variables and tags for better resource management.`;
-      },
-      parseResponse: (response, inputs) => {
-        const langMap = {
-          terraform: "hcl",
-          pulumi: "typescript",
-          cloudformation: "yaml",
-          cdk: "typescript"
-        };
-        return {
-          type: "code",
-          content: response,
-          language: langMap[inputs.tool] || "hcl",
-          actions: [
-            { label: "Copy Code", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Save File", icon: "\u{1F4BE}", action: "newFile", suggestedFilename: `main.${inputs.tool === "terraform" ? "tf" : "ts"}` }
-          ]
-        };
-      }
-    };
-  }
-});
-
-// src/apps/implementations/adrDraftsman.ts
-var adrDraftsman_exports = {};
-__export(adrDraftsman_exports, {
-  adrDraftsmanApp: () => adrDraftsmanApp
-});
-var adrDraftsmanApp;
-var init_adrDraftsman = __esm({
-  "src/apps/implementations/adrDraftsman.ts"() {
-    "use strict";
-    adrDraftsmanApp = {
-      id: "adr-draftsman",
-      name: "ADR Draftsman",
-      description: "Draft Architecture Decision Records (ADRs)",
-      icon: "\u{1F3DB}\uFE0F",
-      category: "architecture",
-      helpDocumentation: `
-### What is this?
-The **ADR Draftsman** helps maintain a clear technical history by generating Architecture Decision Records (ADRs). It ensures that "Why" a decision was made is captured alongside the "What".
-
-### How to use it:
-1. **Title**: Give your decision a clear, searchable name.
-2. **Provide Context**: Explain the current problem or constraint driving this decision.
-3. **List Options**: (Optional) Mention what other approaches were considered and why they were rejected.
-4. **Result**: The AI will draft a professional record including Status, Context, Decision, and Consequences.
-
-### Use cases:
-- Documenting a change in database provider.
-- Formalizing the adoption of a new frontend framework.
-- Recording technical debt trade-offs.
-    `,
-      inputs: [
-        {
-          id: "title",
-          label: "Decision Title",
-          type: "text",
-          placeholder: "e.g., Use Postgres instead of MongoDB for User Service",
-          required: true,
-          hint: "A clear, descriptive title for the architectural decision."
-        },
-        {
-          id: "context",
-          label: "Context & Problem",
-          type: "textarea",
-          placeholder: "Describe the problem we are trying to solve and any constraints...",
-          required: true,
-          rows: 3,
-          hint: "What is the current situation? Why is this decision being made now?"
-        },
-        {
-          id: "options",
-          label: "Options Considered",
-          type: "textarea",
-          placeholder: "List the options you have looked at...",
-          required: false,
-          rows: 2,
-          hint: "Optional: List other alternatives and why they were or weren't chosen."
-        }
-      ],
-      primaryAction: "Draft ADR",
-      systemPrompt: `You are a Senior Software Architect. 
-Your goal is to help teams document their architectural decisions clearly and concisely using the ADR (Architecture Decision Record) format.
-
-## ADR Format
-Use the standard MADR or similar template:
-1. **Title**: The name of the decision.
-2. **Status**: Proposed / Accepted / Superseded.
-3. **Context**: Why are we doing this? What is the problem?
-4. **Decision**: What are we doing?
-5. **Consequences**: What is the impact? (Good and Bad).
-
-## Tone
-Professional, objective, and analytical.`,
-      buildUserPrompt: (inputs) => {
-        return `Draft an ADR for:
-        
-Title: ${inputs.title}
-Context: ${inputs.context}
-Options: ${inputs.options || "Not specified"}`;
-      },
-      parseResponse: (response) => {
-        return {
-          type: "markdown",
-          content: response,
-          actions: [
-            { label: "Copy ADR", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Save as ADR", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md", suggestedFilename: "ADR-XXX.md" }
-          ]
-        };
-      }
-    };
-  }
-});
-
-// src/apps/implementations/prdDraftsman.ts
-var prdDraftsman_exports = {};
-__export(prdDraftsman_exports, {
-  prdDraftsmanApp: () => prdDraftsmanApp
-});
-var prdDraftsmanApp;
-var init_prdDraftsman = __esm({
-  "src/apps/implementations/prdDraftsman.ts"() {
-    "use strict";
-    prdDraftsmanApp = {
-      id: "prd-draftsman",
-      name: "PRD Draftsman",
-      description: "Turn ideas into Product Requirements Documents",
-      icon: "\u{1F4C8}",
-      category: "product",
-      helpDocumentation: `
-### What is this?
-The **PRD Draftsman** bridges the gap between rough ideas and engineering reality. It transforms feature concepts into professional Product Requirements Documents (PRDs).
-
-### How to use it:
-1. **Describe the Idea**: Provide a high-level overview of the feature or product you're envisioning.
-2. **Define Audience**: (Optional) Specify who the intended users are to help focus the requirements.
-3. **Draft**: The AI will generate a structured PRD including Goals, User Stories, Functional Requirements, and Success Metrics.
-
-### Use cases:
-- Preparing for a product-engineering sync.
-- Flesh out a "brainstorm" into a formal proposal.
-- Creating standardized documentation for new feature requests.
-    `,
-      inputs: [
-        {
-          id: "idea",
-          label: "Product Idea / Feature",
-          type: "textarea",
-          placeholder: "e.g., A mobile app for tracking local coffee shop rewards points...",
-          required: true,
-          rows: 4,
-          hint: "What is the core idea? What problem does it solve for the user?"
-        },
-        {
-          id: "audience",
-          label: "Target Audience",
-          type: "text",
-          placeholder: "e.g., Coffee enthusiasts, local business owners",
-          required: false,
-          hint: "Who are we building this for?"
-        }
-      ],
-      primaryAction: "Generate PRD",
-      systemPrompt: `You are an expert Product Manager.
-Your goal is to take a raw feature idea and flesh it out into a professional PRD.
-
-## PRD Structure
-1. **Goal**: What problem are we solving?
-2. **User Stories**: What can the user do?
-3. **Functional Requirements**: Detailed breakdown of features.
-4. **Non-Functional Requirements**: Performance, Security, etc.
-5. **Success Metrics**: How do we measure success?
-
-## Tone
-Structured, visionary, yet practical.`,
-      buildUserPrompt: (inputs) => {
-        return `Generate a PRD for:
-        
-Idea: ${inputs.idea}
-Target Audience: ${inputs.audience || "General users"}`;
-      },
-      parseResponse: (response) => {
-        return {
-          type: "markdown",
-          content: response,
-          actions: [
-            { label: "Copy PRD", icon: "\u{1F4CB}", action: "copy" },
-            { label: "Save as PRD", icon: "\u{1F4BE}", action: "newFile", fileExtension: ".md", suggestedFilename: "PRD.md" }
-          ]
-        };
-      }
-    };
-  }
-});
-
-// src/apps/implementations/jiraStoryWriter.ts
-var jiraStoryWriter_exports = {};
-__export(jiraStoryWriter_exports, {
-  jiraStoryWriterApp: () => jiraStoryWriterApp
-});
-var jiraStoryWriterApp;
-var init_jiraStoryWriter = __esm({
-  "src/apps/implementations/jiraStoryWriter.ts"() {
-    "use strict";
-    jiraStoryWriterApp = {
-      id: "jira-story-writer",
-      name: "JIRA Story Writer",
-      description: "Describe a feature, get a full user story with acceptance criteria",
-      icon: "\u{1F4CB}",
-      category: "jira",
-      primaryAction: "\u270D\uFE0F Write Story",
-      helpDocumentation: `### What is this?
-The **JIRA Story Writer** transforms feature ideas into well-structured user stories with acceptance criteria, ready to paste into your project management tool.
-
-### How to use it
-1. Describe the feature or requirement in plain language.
-2. Select the story type (User Story, Bug, Task, Epic).
-3. Click **Write Story** to generate the complete ticket.
-
-### Use cases
-- Converting stakeholder requests into structured tickets
-- Ensuring consistent story quality across the team
-- Breaking down large features into actionable stories
-- Training new team members on good story writing`,
-      inputs: [
-        {
-          id: "featureDescription",
-          label: "Feature Description",
-          type: "textarea",
-          placeholder: "Describe the feature, bug, or task...\n\nExample: Users should be able to export their dashboard as a PDF so they can share it with stakeholders who don't have system access.",
-          required: true,
-          rows: 5,
-          hint: "Include the why, what, and who if possible"
-        },
-        {
-          id: "storyType",
-          label: "Story Type",
-          type: "radio",
-          options: [
-            { value: "user-story", label: "User Story", description: "Feature from user perspective" },
-            { value: "bug", label: "Bug", description: "Defect report" },
-            { value: "task", label: "Technical Task", description: "Technical work item" },
-            { value: "epic", label: "Epic", description: "Large feature with child stories" }
-          ],
-          defaultValue: "user-story"
-        },
-        {
-          id: "context",
-          label: "Additional Context (optional)",
-          type: "textarea",
-          placeholder: "Any constraints, dependencies, or technical considerations...",
-          rows: 3
-        }
-      ],
-      systemPrompt: `You are an expert Agile coach and product manager. Create well-structured JIRA tickets that are clear, actionable, and follow best practices.
-
-For User Stories, use the format:
-**Title**: [Concise, action-oriented title]
-
-**Description**:
-As a [user type],
-I want [goal],
-So that [benefit].
-
-**Acceptance Criteria**:
-- [ ] Given [context], when [action], then [outcome]
-- [ ] ...
-
-**Technical Notes** (if applicable):
-- Implementation hints
-- API changes needed
-- Security considerations
-
-**Story Points**: [Estimate if possible]
-**Labels**: [Suggested labels]`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Create a ${inputs.storyType} ticket for:
-
-${inputs.featureDescription}`;
-        if (inputs.context?.trim()) {
-          prompt += `
-
-Additional context:
-${inputs.context}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "JIRA Story", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/sprintRetro.ts
-var sprintRetro_exports = {};
-__export(sprintRetro_exports, {
-  sprintRetroApp: () => sprintRetroApp
-});
-var sprintRetroApp;
-var init_sprintRetro = __esm({
-  "src/apps/implementations/sprintRetro.ts"() {
-    "use strict";
-    sprintRetroApp = {
-      id: "sprint-retro",
-      name: "Sprint Retrospective",
-      description: "Summarize sprint activity into structured retro points",
-      icon: "\u{1F504}",
-      category: "jira",
-      primaryAction: "\u{1F4CA} Generate Retro",
-      helpDocumentation: `### What is this?
-The **Sprint Retrospective** app helps you prepare for retro meetings by organizing sprint notes into structured discussion points.
-
-### How to use it
-1. Paste your sprint notes, completed tickets, or team observations.
-2. Select your preferred retro format.
-3. Click **Generate Retro** to get organized talking points.
-
-### Use cases
-- Preparing for sprint retrospective meetings
-- Documenting team learnings and action items
-- Identifying patterns across multiple sprints
-- Facilitating more productive retro discussions`,
-      inputs: [
-        {
-          id: "sprintNotes",
-          label: "Sprint Notes & Observations",
-          type: "textarea",
-          placeholder: "Paste completed tickets, incident notes, team feedback, blockers encountered...\n\nExample:\n- Completed: User auth, Dashboard redesign\n- Blocked on: API rate limits, unclear requirements for export feature\n- Team feedback: Too many meetings, good collaboration on auth",
-          required: true,
-          rows: 8,
-          hint: "Include the good, the bad, and everything in between"
-        },
-        {
-          id: "format",
-          label: "Retro Format",
-          type: "radio",
-          options: [
-            { value: "start-stop-continue", label: "Start, Stop, Continue", description: "Classic format for change-focused retros" },
-            { value: "liked-learned-lacked", label: "Liked, Learned, Lacked", description: "Positive, reflective format" },
-            { value: "mad-sad-glad", label: "Mad, Sad, Glad", description: "Emotion-based categorization" },
-            { value: "sailboat", label: "Sailboat", description: "Wind (helps), Anchor (slows), Rocks (risks)" }
-          ],
-          defaultValue: "start-stop-continue"
-        },
-        {
-          id: "sprintGoal",
-          label: "Sprint Goal (optional)",
-          type: "text",
-          placeholder: "What was the main sprint objective?",
-          hint: "Helps evaluate if the sprint achieved its purpose"
-        }
-      ],
-      systemPrompt: `You are an Agile coach facilitating a sprint retrospective. Organize the provided notes into a structured retro format that drives actionable improvements.
-
-Guidelines:
-- Be specific, not generic (use examples from the notes)
-- Prioritize items by impact
-- Suggest 2-3 concrete action items
-- Include a brief sprint summary at the top
-- Keep it constructive and team-focused
-- Add facilitation tips for discussing each point`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Create a ${inputs.format.replace(/-/g, ", ")} retrospective from these sprint notes:
-
-${inputs.sprintNotes}`;
-        if (inputs.sprintGoal?.trim()) {
-          prompt += `
-
-Sprint goal was: ${inputs.sprintGoal}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Sprint Retrospective", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/emailComposer.ts
-var emailComposer_exports = {};
-__export(emailComposer_exports, {
-  emailComposerApp: () => emailComposerApp
-});
-var emailComposerApp;
-var init_emailComposer = __esm({
-  "src/apps/implementations/emailComposer.ts"() {
-    "use strict";
-    emailComposerApp = {
-      id: "email-composer",
-      name: "Email Composer",
-      description: "Draft professional emails from key points",
-      icon: "\u{1F4E7}",
-      category: "communication",
-      primaryAction: "\u2709\uFE0F Compose Email",
-      helpDocumentation: `### What is this?
-The **Email Composer** transforms bullet points and rough notes into polished, professional emails ready to send.
-
-### How to use it
-1. Enter the key points you want to communicate.
-2. Select the tone and purpose of your email.
-3. Click **Compose Email** to get a well-structured draft.
-
-### Use cases
-- Writing status updates to stakeholders
-- Sending project proposals
-- Following up on meetings
-- Communicating difficult messages professionally`,
-      inputs: [
-        {
-          id: "keyPoints",
-          label: "Key Points",
-          type: "textarea",
-          placeholder: "- Project deadline moved to next Friday\n- Need design approval by Wednesday\n- Budget approved for additional resources\n- Thanks for their support",
-          required: true,
-          rows: 5,
-          hint: "List the main things you want to say"
-        },
-        {
-          id: "recipient",
-          label: "Who is this for?",
-          type: "text",
-          placeholder: "e.g., My manager, Client stakeholder, Team members",
-          hint: "Helps adjust formality and context"
-        },
-        {
-          id: "tone",
-          label: "Tone",
-          type: "radio",
-          options: [
-            { value: "professional", label: "Professional", description: "Formal and business-appropriate" },
-            { value: "friendly", label: "Friendly", description: "Warm but still professional" },
-            { value: "urgent", label: "Urgent", description: "Direct and action-focused" },
-            { value: "apologetic", label: "Apologetic", description: "Acknowledging mistakes or delays" }
-          ],
-          defaultValue: "professional"
-        },
-        {
-          id: "purpose",
-          label: "Email Purpose",
-          type: "select",
-          options: [
-            { value: "update", label: "Status Update" },
-            { value: "request", label: "Request / Ask" },
-            { value: "followup", label: "Follow-up" },
-            { value: "announcement", label: "Announcement" },
-            { value: "thankyou", label: "Thank You" },
-            { value: "introduction", label: "Introduction" }
-          ],
-          defaultValue: "update"
-        }
-      ],
-      systemPrompt: `You are an expert business communicator. Draft clear, professional emails that effectively convey the key messages while maintaining the appropriate tone.
-
-Guidelines:
-- Start with a clear subject line suggestion
-- Keep paragraphs short and scannable
-- Use bullet points for lists when appropriate
-- Include a clear call-to-action if needed
-- End with an appropriate closing
-- Keep the email concise (under 200 words unless complex)
-
-Format:
-**Subject:** [Suggested subject line]
-
-[Email body]
-
-[Closing]`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Write a ${inputs.tone} ${inputs.purpose} email with these key points:
-
-${inputs.keyPoints}`;
-        if (inputs.recipient?.trim()) {
-          prompt += `
-
-Recipient: ${inputs.recipient}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Email Draft", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/slackPolisher.ts
-var slackPolisher_exports = {};
-__export(slackPolisher_exports, {
-  slackPolisherApp: () => slackPolisherApp
-});
-var slackPolisherApp;
-var init_slackPolisher = __esm({
-  "src/apps/implementations/slackPolisher.ts"() {
-    "use strict";
-    slackPolisherApp = {
-      id: "slack-polisher",
-      name: "Slack Message Polisher",
-      description: "Rewrite casual text into clear, professional messages",
-      icon: "\u{1F4AC}",
-      category: "communication",
-      primaryAction: "\u2728 Polish Message",
-      helpDocumentation: `### What is this?
-The **Slack Message Polisher** takes your rough draft messages and refines them for clarity, professionalism, and impact\u2014perfect for important Slack communications.
-
-### How to use it
-1. Type your rough message as you'd naturally write it.
-2. Select your target audience and desired outcome.
-3. Click **Polish Message** to get an improved version.
-
-### Use cases
-- Announcing project updates to the team
-- Asking for help without sounding needy
-- Giving feedback constructively
-- Communicating across time zones clearly`,
-      inputs: [
-        {
-          id: "roughMessage",
-          label: "Your Draft Message",
-          type: "textarea",
-          placeholder: "hey so we finished the thing but there were some issues and we might need to push the deadline a bit, can someone look at the api stuff?",
-          required: true,
-          rows: 4,
-          hint: "Write naturally, we'll polish it for you"
-        },
-        {
-          id: "audience",
-          label: "Who's reading this?",
-          type: "select",
-          options: [
-            { value: "team", label: "My Team" },
-            { value: "manager", label: "My Manager" },
-            { value: "leadership", label: "Leadership / Executives" },
-            { value: "cross-team", label: "Cross-functional Team" },
-            { value: "external", label: "External Partner / Client" }
-          ],
-          defaultValue: "team"
-        },
-        {
-          id: "goal",
-          label: "What's the goal?",
-          type: "select",
-          options: [
-            { value: "inform", label: "Inform / Update" },
-            { value: "ask", label: "Ask for Help" },
-            { value: "decide", label: "Get a Decision" },
-            { value: "celebrate", label: "Celebrate / Recognize" },
-            { value: "warn", label: "Flag a Risk / Issue" }
-          ],
-          defaultValue: "inform"
-        },
-        {
-          id: "channelType",
-          label: "Channel Type",
-          type: "radio",
-          options: [
-            { value: "public", label: "Public Channel", description: "Visible to many people" },
-            { value: "private", label: "Private / DM", description: "More informal ok" }
-          ],
-          defaultValue: "public"
-        }
-      ],
-      systemPrompt: `You are a communication coach specializing in async workplace messaging. Rewrite the user's draft into a clear, effective Slack message.
-
-Guidelines:
-- Keep it concise (Slack is for quick reads)
-- Use emoji sparingly but effectively
-- Structure longer messages with bullet points
-- Make the ask or update crystal clear
-- Add context without over-explaining
-- Match formality to the audience
-
-Provide:
-1. The polished message
-2. Brief note on what was improved (1-2 sentences)`,
-      buildUserPrompt: (inputs) => {
-        return `Rewrite this ${inputs.channelType} Slack message for ${inputs.audience}. Goal: ${inputs.goal}.
-
-Original draft:
-${inputs.roughMessage}`;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Polished Message", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/ecardRecognition.ts
-var ecardRecognition_exports = {};
-__export(ecardRecognition_exports, {
-  ecardRecognitionApp: () => ecardRecognitionApp
-});
-var ecardRecognitionApp;
-var init_ecardRecognition = __esm({
-  "src/apps/implementations/ecardRecognition.ts"() {
-    "use strict";
-    ecardRecognitionApp = {
-      id: "ecard-recognition",
-      name: "eCard & Recognition",
-      description: "Generate heartfelt recognition messages and eCards for colleagues",
-      icon: "\u{1F389}",
-      category: "communication",
-      primaryAction: "\u2728 Generate Messages",
-      helpDocumentation: `### What is this?
-The **eCard & Recognition** app helps you craft thoughtful, personalized recognition messages for your teammates and colleagues.
-
-### How to use it
-1. Enter the name(s) of the person/people you're recognizing
-2. Describe what you're calling out (achievement, behavior, milestone)
-3. Select one or more tones that fit the occasion
-4. Click **Generate Messages** for multiple options
-
-### Use cases
-- Peer recognition and kudos
-- Team milestone celebrations
-- Work anniversary messages
-- Project completion shoutouts
-- Thank you notes`,
-      inputs: [
-        {
-          id: "recipients",
-          label: "\u{1F464} Who is this for?",
-          type: "textarea",
-          placeholder: 'Enter name(s) - e.g., "Sarah" or "The DevOps Team" or "Mike, Lisa, and Raj"',
-          required: true
-        },
-        {
-          id: "occasion",
-          label: "\u{1F3AF} What are we celebrating?",
-          type: "select",
-          options: [
-            { value: "achievement", label: "\u{1F3C6} Achievement / Milestone" },
-            { value: "teamwork", label: "\u{1F91D} Great Teamwork" },
-            { value: "helping", label: "\u{1F4AA} Going Above & Beyond" },
-            { value: "innovation", label: "\u{1F4A1} Innovation / Great Idea" },
-            { value: "delivery", label: "\u{1F680} Successful Delivery" },
-            { value: "anniversary", label: "\u{1F382} Work Anniversary" },
-            { value: "welcome", label: "\u{1F44B} Welcome to Team" },
-            { value: "farewell", label: "\u{1F44B} Farewell / Best Wishes" },
-            { value: "thankyou", label: "\u{1F64F} Thank You" },
-            { value: "other", label: "\u270D\uFE0F Other (describe below)" }
-          ],
-          defaultValue: "achievement"
-        },
-        {
-          id: "details",
-          label: "\u{1F4DD} Details / Context",
-          type: "textarea",
-          placeholder: 'What specifically did they do? Any background or details to include? (e.g., "Led the migration to the new platform ahead of schedule despite challenges")',
-          required: true
-        },
-        {
-          id: "tones",
-          label: "\u{1F3A8} Tone (select all that apply)",
-          type: "checkbox-group",
-          options: [
-            { value: "professional", label: "\u{1F4BC} Professional" },
-            { value: "warm", label: "\u2764\uFE0F Warm & Heartfelt" },
-            { value: "funny", label: "\u{1F604} Funny / Light" },
-            { value: "inspiring", label: "\u2728 Inspiring" },
-            { value: "casual", label: "\u{1F642} Casual / Friendly" },
-            { value: "formal", label: "\u{1F4DC} Formal" },
-            { value: "enthusiastic", label: "\u{1F389} Enthusiastic" },
-            { value: "sincere", label: "\u{1F4AF} Sincere & Genuine" }
-          ],
-          defaultValue: "professional,warm"
-        },
-        {
-          id: "length",
-          label: "\u{1F4CF} Message Length",
-          type: "radio",
-          options: [
-            { value: "short", label: "Short (1-2 sentences)", description: "Quick kudos" },
-            { value: "medium", label: "Medium (3-4 sentences)", description: "Standard recognition" },
-            { value: "long", label: "Long (paragraph)", description: "Detailed appreciation" }
-          ],
-          defaultValue: "medium"
-        },
-        {
-          id: "count",
-          label: "\u{1F522} How many options?",
-          type: "select",
-          options: [
-            { value: "3", label: "3 variations" },
-            { value: "5", label: "5 variations" },
-            { value: "7", label: "7 variations" }
-          ],
-          defaultValue: "3"
-        }
-      ],
-      systemPrompt: `You are an expert at crafting recognition messages and eCards. Your messages are genuine, impactful, and memorable.
-
-CRITICAL RULES:
-1. Output ONLY plain text - no markdown, no formatting, no asterisks, no headers
-2. Generate the EXACT number of variations requested
-3. Each variation should feel distinct - different opening, structure, and emphasis
-4. Keep the specified length strictly
-5. Blend ALL selected tones naturally together
-
-For each message:
-- Start differently (don't always start with "I want to..." or "Congratulations...")
-- Be specific about the achievement when details are provided
-- Make it feel personal and genuine, not generic
-- Avoid corporate jargon and clich\xE9s when possible
-- If "funny" is selected, add tasteful humor that's workplace-appropriate
-
-Format your response as numbered messages, each separated by a blank line:
-
-1. [First message]
-
-2. [Second message]
-
-3. [Third message]
-
-(and so on for the requested count)`,
-      buildUserPrompt: (inputs) => {
-        const tones = Array.isArray(inputs.tones) ? inputs.tones.join(", ") : inputs.tones;
-        return `Generate ${inputs.count} recognition messages.
-
-Recipient(s): ${inputs.recipients}
-Occasion: ${inputs.occasion}
-Details: ${inputs.details}
-Tones to blend: ${tones}
-Length: ${inputs.length}
-
-Remember: Plain text only, no markdown. Make each variation unique and memorable.`;
-      },
-      parseResponse: (response) => {
-        const messages = response.split(/\n\n(?=\d+\.)/);
-        const sections = messages.map((msg, i) => ({
-          title: `Option ${i + 1}`,
-          content: msg.replace(/^\d+\.\s*/, "").trim()
-        }));
-        return {
-          type: "sections",
-          content: response,
-          sections: sections.length > 0 ? sections : [{ title: "Messages", content: response }]
-        };
-      }
-    };
-  }
-});
-
-// src/apps/implementations/emailResponseHelper.ts
-var emailResponseHelper_exports = {};
-__export(emailResponseHelper_exports, {
-  emailResponseHelperApp: () => emailResponseHelperApp
-});
-var emailResponseHelperApp;
-var init_emailResponseHelper = __esm({
-  "src/apps/implementations/emailResponseHelper.ts"() {
-    "use strict";
-    emailResponseHelperApp = {
-      id: "email-response-helper",
-      name: "Email Response Helper",
-      description: "Get help responding to tricky emails you don't know how to answer",
-      icon: "\u{1F4E7}",
-      category: "communication",
-      primaryAction: "\u2728 Generate Responses",
-      helpDocumentation: `### What is this?
-The **Email Response Helper** helps you craft the perfect response to emails that leave you stumped - whether it's a difficult request, awkward situation, or you just don't know what to say.
-
-### How to use it
-1. Paste the email you received
-2. Tell us what kind of response you want to send
-3. Add any context or constraints
-4. Get multiple response options to choose from
-
-### Use cases
-- Declining requests politely
-- Responding to vague or confusing emails
-- Handling difficult conversations
-- Navigating office politics
-- Buying time when you need to think`,
-      inputs: [
-        {
-          id: "originalEmail",
-          label: "\u{1F4E5} Paste the email you need to respond to",
-          type: "textarea",
-          placeholder: "Paste the full email here... (You can include the whole thread if helpful)",
-          required: true
-        },
-        {
-          id: "responseIntent",
-          label: "\u{1F3AF} What do you want to achieve?",
-          type: "select",
-          options: [
-            { value: "accept", label: "\u2705 Accept / Agree" },
-            { value: "decline", label: "\u274C Decline / Say No" },
-            { value: "delay", label: "\u23F0 Buy Time / Delay" },
-            { value: "clarify", label: "\u2753 Ask for Clarification" },
-            { value: "escalate", label: "\u2B06\uFE0F Escalate / Loop Someone In" },
-            { value: "apologize", label: "\u{1F64F} Apologize" },
-            { value: "pushback", label: "\u{1F6E1}\uFE0F Push Back / Set Boundaries" },
-            { value: "delegate", label: "\u27A1\uFE0F Redirect / Delegate" },
-            { value: "neutral", label: "\u{1F610} Neutral Acknowledgement" },
-            { value: "other", label: "\u270D\uFE0F Other (describe below)" }
-          ],
-          defaultValue: "decline"
-        },
-        {
-          id: "additionalContext",
-          label: "\u{1F4DD} Additional context (optional)",
-          type: "textarea",
-          placeholder: `Any background info, constraints, or specific points to include? (e.g., "I actually can't do this because of project X deadline" or "I need to sound firm but not rude")`
-        },
-        {
-          id: "tone",
-          label: "\u{1F3A8} Tone",
-          type: "checkbox-group",
-          options: [
-            { value: "professional", label: "\u{1F4BC} Professional" },
-            { value: "friendly", label: "\u{1F642} Friendly" },
-            { value: "firm", label: "\u{1F6E1}\uFE0F Firm" },
-            { value: "diplomatic", label: "\u{1F91D} Diplomatic" },
-            { value: "empathetic", label: "\u2764\uFE0F Empathetic" },
-            { value: "brief", label: "\u26A1 Brief / Direct" },
-            { value: "formal", label: "\u{1F4DC} Formal" },
-            { value: "casual", label: "\u{1F44B} Casual" }
-          ],
-          defaultValue: "professional,friendly"
-        },
-        {
-          id: "length",
-          label: "\u{1F4CF} Response Length",
-          type: "radio",
-          options: [
-            { value: "short", label: "Short (2-3 sentences)", description: "Quick and direct" },
-            { value: "medium", label: "Medium (1 paragraph)", description: "Standard email" },
-            { value: "long", label: "Long (multiple paragraphs)", description: "Detailed explanation" }
-          ],
-          defaultValue: "medium"
-        },
-        {
-          id: "count",
-          label: "\u{1F522} How many options?",
-          type: "select",
-          options: [
-            { value: "3", label: "3 variations" },
-            { value: "5", label: "5 variations" }
-          ],
-          defaultValue: "3"
-        }
-      ],
-      systemPrompt: `You are an expert at crafting email responses for difficult or awkward situations. You help people respond when they don't know what to say.
-
-CRITICAL RULES:
-1. Output ONLY plain text - no markdown, no formatting, no asterisks, no headers
-2. Generate the EXACT number of variations requested
-3. Each variation should take a different approach - different opening, different framing, different emphasis
-4. Keep the specified length strictly
-5. Blend ALL selected tones naturally together
-6. Make responses feel natural and human, not robotic
-
-Read the original email carefully and craft responses that:
-- Address the core issue appropriately
-- Match the requested intent (accept, decline, delay, etc.)
-- Feel authentic and appropriate for workplace communication
-- Don't sound AI-generated or templated
-
-Format your response as numbered options, each separated by a blank line:
-
-1. [First response option]
-
-2. [Second response option]
-
-3. [Third response option]
-
-(and so on for the requested count)`,
-      buildUserPrompt: (inputs) => {
-        const tones = Array.isArray(inputs.tone) ? inputs.tone.join(", ") : inputs.tone;
-        return `Generate ${inputs.count} email response options.
-
-ORIGINAL EMAIL TO RESPOND TO:
----
-${inputs.originalEmail}
----
-
-Response Goal: ${inputs.responseIntent}
-${inputs.additionalContext ? `Additional Context: ${inputs.additionalContext}` : ""}
-Tone: ${tones}
-Length: ${inputs.length}
-
-Remember: Plain text only, no markdown. Make each response feel genuine and natural. Each variation should take a slightly different approach.`;
-      },
-      parseResponse: (response) => {
-        const messages = response.split(/\n\n(?=\d+\.)/);
-        const sections = messages.map((msg, i) => ({
-          title: `Option ${i + 1}`,
-          content: msg.replace(/^\d+\.\s*/, "").trim()
-        }));
-        return {
-          type: "sections",
-          content: response,
-          sections: sections.length > 0 ? sections : [{ title: "Responses", content: response }]
-        };
-      }
-    };
-  }
-});
-
-// src/apps/implementations/brainstormingPartner.ts
-var brainstormingPartner_exports = {};
-__export(brainstormingPartner_exports, {
-  brainstormingPartnerApp: () => brainstormingPartnerApp
-});
-var brainstormingPartnerApp;
-var init_brainstormingPartner = __esm({
-  "src/apps/implementations/brainstormingPartner.ts"() {
-    "use strict";
-    brainstormingPartnerApp = {
-      id: "brainstorming-partner",
-      name: "Brainstorming Partner",
-      description: "Explore ideas and get creative suggestions",
-      icon: "\u{1F4A1}",
-      category: "inspiration",
-      primaryAction: "\u{1F9E0} Brainstorm",
-      helpDocumentation: `### What is this?
-The **Brainstorming Partner** is your creative thinking companion. Share a problem or idea, and get diverse perspectives, alternative approaches, and creative suggestions.
-
-### How to use it
-1. Describe the problem, idea, or topic you want to explore.
-2. Select the type of brainstorming you want.
-3. Click **Brainstorm** to generate ideas.
-
-### Use cases
-- Exploring new project ideas
-- Finding creative solutions to problems
-- Breaking through writer's or designer's block
-- Planning features and roadmaps`,
-      inputs: [
-        {
-          id: "topic",
-          label: "What do you want to brainstorm?",
-          type: "textarea",
-          placeholder: "e.g., Ways to improve user onboarding for our app\n\nOr: Name ideas for a new productivity tool\n\nOr: How might we reduce meeting fatigue?",
-          required: true,
-          rows: 4,
-          hint: "Be specific about what you're trying to solve or explore"
-        },
-        {
-          id: "style",
-          label: "Brainstorming Style",
-          type: "radio",
-          options: [
-            { value: "divergent", label: "Divergent (Many Ideas)", description: "Quantity over quality, wild ideas welcome" },
-            { value: "convergent", label: "Convergent (Focused)", description: "Fewer, more refined ideas" },
-            { value: "sixhats", label: "Six Thinking Hats", description: "Multiple perspectives approach" },
-            { value: "scamper", label: "SCAMPER", description: "Substitute, Combine, Adapt, Modify, Put to other uses, Eliminate, Reverse" }
-          ],
-          defaultValue: "divergent"
-        },
-        {
-          id: "constraints",
-          label: "Constraints (optional)",
-          type: "text",
-          placeholder: "e.g., Low budget, 2-week timeline, must work on mobile",
-          hint: "Constraints can actually spark creativity"
-        }
-      ],
-      systemPrompt: `You are a creative thinking partner and innovation facilitator. Help the user explore ideas with enthusiasm and constructive suggestions.
-
-Guidelines:
-- Generate diverse, actionable ideas
-- Challenge assumptions
-- Build on ideas ("Yes, and..." approach)
-- Include a few "wild card" creative ideas
-- Organize ideas by theme or feasibility
-- End with next steps or questions to explore
-
-For Six Thinking Hats, cover: Facts (White), Emotions (Red), Caution (Black), Benefits (Yellow), Creativity (Green), Process (Blue).
-
-Keep the energy positive and exploratory!`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Let's brainstorm: ${inputs.topic}
-
-Style: ${inputs.style}`;
-        if (inputs.constraints?.trim()) {
-          prompt += `
-Constraints: ${inputs.constraints}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Ideas", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/promptExplorer.ts
-var promptExplorer_exports = {};
-__export(promptExplorer_exports, {
-  promptExplorerApp: () => promptExplorerApp
-});
-var promptExplorerApp;
-var init_promptExplorer = __esm({
-  "src/apps/implementations/promptExplorer.ts"() {
-    "use strict";
-    promptExplorerApp = {
-      id: "prompt-explorer",
-      name: "Prompt Explorer",
-      description: "Generate effective prompts for AI tools",
-      icon: "\u{1F52E}",
-      category: "inspiration",
-      primaryAction: "\u2728 Generate Prompts",
-      helpDocumentation: `### What is this?
-The **Prompt Explorer** helps you craft better prompts for AI tools like ChatGPT, Midjourney, Claude, and more. Get optimized prompts that deliver better results.
-
-### How to use it
-1. Describe what you want the AI to do.
-2. Select the target AI tool.
-3. Click **Generate Prompts** to get optimized prompt variations.
-
-### Use cases
-- Writing effective prompts for code generation
-- Creating detailed image generation prompts
-- Improving AI writing assistant outputs
-- Learning prompt engineering techniques`,
-      inputs: [
-        {
-          id: "goal",
-          label: "What do you want the AI to do?",
-          type: "textarea",
-          placeholder: "e.g., Write a marketing email for a product launch\n\nOr: Generate an image of a futuristic city\n\nOr: Help me debug a React component",
-          required: true,
-          rows: 3,
-          hint: "Be specific about your desired outcome"
-        },
-        {
-          id: "targetAi",
-          label: "Target AI Tool",
-          type: "select",
-          options: [
-            { value: "chatgpt", label: "ChatGPT / GPT-4" },
-            { value: "claude", label: "Claude" },
-            { value: "copilot", label: "GitHub Copilot" },
-            { value: "midjourney", label: "Midjourney" },
-            { value: "dalle", label: "DALL-E" },
-            { value: "stable-diffusion", label: "Stable Diffusion" },
-            { value: "general", label: "General Purpose" }
-          ],
-          defaultValue: "general"
-        },
-        {
-          id: "style",
-          label: "Prompt Style",
-          type: "radio",
-          options: [
-            { value: "simple", label: "Simple & Direct", description: "Clear, straightforward prompts" },
-            { value: "detailed", label: "Detailed & Structured", description: "With context, examples, constraints" },
-            { value: "chain", label: "Chain of Thought", description: "Step-by-step reasoning approach" }
-          ],
-          defaultValue: "detailed"
-        }
-      ],
-      systemPrompt: `You are an expert prompt engineer. Create optimized prompts that get the best results from AI tools.
-
-Generate 3-4 prompt variations, from simple to advanced:
-1. **Basic Prompt**: Quick, direct approach
-2. **Structured Prompt**: With context and constraints
-3. **Expert Prompt**: Using advanced techniques (few-shot, chain-of-thought, etc.)
-
-For each prompt:
-- Show the actual prompt text in a code block
-- Add a brief note on when to use it
-- Include any variables/placeholders in [brackets]
-
-Also include tips specific to the target AI tool.`,
-      buildUserPrompt: (inputs) => {
-        return `Create ${inputs.style} prompts for ${inputs.targetAi} to accomplish:
-
-${inputs.goal}`;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Prompt Ideas", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/dailyInspiration.ts
-var dailyInspiration_exports = {};
-__export(dailyInspiration_exports, {
-  dailyInspirationApp: () => dailyInspirationApp
-});
-var dailyInspirationApp;
-var init_dailyInspiration = __esm({
-  "src/apps/implementations/dailyInspiration.ts"() {
-    "use strict";
-    dailyInspirationApp = {
-      id: "daily-inspiration",
-      name: "Daily Inspiration",
-      description: "Get a motivational quote with meaningful context",
-      icon: "\u{1F31F}",
-      category: "inspiration",
-      primaryAction: "\u{1F4AB} Inspire Me",
-      helpDocumentation: `### What is this?
-The **Daily Inspiration** app delivers curated motivational quotes with context and reflection prompts to start your day on a positive note.
-
-### How to use it
-1. Select a theme that resonates with your current needs.
-2. Choose how you'd like the quote presented.
-3. Click **Inspire Me** for your dose of motivation.
-
-### Use cases
-- Starting your workday with a positive mindset
-- Finding motivation during challenging projects
-- Team meeting openers
-- Personal reflection and journaling`,
-      inputs: [
-        {
-          id: "theme",
-          label: "What kind of inspiration?",
-          type: "select",
-          options: [
-            { value: "general", label: "\u2728 General Motivation" },
-            { value: "productivity", label: "\u26A1 Productivity & Focus" },
-            { value: "creativity", label: "\u{1F3A8} Creativity & Innovation" },
-            { value: "leadership", label: "\u{1F451} Leadership & Growth" },
-            { value: "resilience", label: "\u{1F4AA} Resilience & Perseverance" },
-            { value: "teamwork", label: "\u{1F91D} Teamwork & Collaboration" },
-            { value: "tech", label: "\u{1F4BB} Tech & Engineering" },
-            { value: "surprise", label: "\u{1F3B2} Surprise Me" }
-          ],
-          defaultValue: "surprise"
-        },
-        {
-          id: "style",
-          label: "Quote Style",
-          type: "radio",
-          options: [
-            { value: "classic", label: "Classic", description: "Timeless wisdom from notable figures" },
-            { value: "modern", label: "Modern", description: "Contemporary voices and insights" },
-            { value: "tech", label: "Tech World", description: "From innovators and builders" },
-            { value: "unexpected", label: "Unexpected", description: "From unlikely sources" }
-          ],
-          defaultValue: "classic"
-        },
-        {
-          id: "context",
-          label: "Current Situation (optional)",
-          type: "text",
-          placeholder: "e.g., Feeling stuck on a project, Starting a new role",
-          hint: "For more relevant inspiration"
-        }
-      ],
-      systemPrompt: `You are a thoughtful curator of wisdom and inspiration. Provide meaningful quotes with context that resonates.
-
-Format:
-## \u{1F4AC} [The Quote]
-\u2014 [Author], [Brief context about who they are]
-
-### \u{1F331} Why This Matters
-[2-3 sentences connecting the quote to work, creativity, or personal growth]
-
-### \u{1F4AD} Reflection
-[A thought-provoking question based on the quote]
-
-### \u26A1 Today's Challenge
-[A simple, actionable way to apply this wisdom today]
-
-Select real, accurate quotes. Avoid misattributed or made-up quotes.`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Give me a ${inputs.style} inspirational quote about ${inputs.theme}.`;
-        if (inputs.context?.trim()) {
-          prompt += ` Context: ${inputs.context}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Inspiration", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/rubberDuckTherapist.ts
-var rubberDuckTherapist_exports = {};
-__export(rubberDuckTherapist_exports, {
-  rubberDuckTherapistApp: () => rubberDuckTherapistApp
-});
-var rubberDuckTherapistApp;
-var init_rubberDuckTherapist = __esm({
-  "src/apps/implementations/rubberDuckTherapist.ts"() {
-    "use strict";
-    rubberDuckTherapistApp = {
-      id: "rubber-duck-therapist",
-      name: "Rubber Duck Therapist",
-      description: "Talk through problems with a supportive listener",
-      icon: "\u{1F986}",
-      category: "wellness",
-      primaryAction: "\u{1F4AC} Start Talking",
-      helpDocumentation: `### What is this?
-The **Rubber Duck Therapist** is a supportive conversation partner. Based on the "rubber duck debugging" technique, it helps you talk through problems, gain clarity, and feel heard.
-
-### \u26A0\uFE0F Important Note
-This is NOT a replacement for professional mental health support. If you're struggling with serious issues, please reach out to a qualified professional.
-
-### How to use it
-1. Share what's on your mind\u2014work stress, a decision you're facing, or just need to vent.
-2. The duck will listen, ask clarifying questions, and help you think it through.
-3. Continue the conversation as long as you need.
-
-### Use cases
-- Working through frustrating problems
-- Making difficult decisions
-- Decompressing after a tough day
-- Gaining perspective on challenges`,
-      inputs: [
-        {
-          id: "thoughts",
-          label: "What's on your mind?",
-          type: "textarea",
-          placeholder: "Share whatever you're thinking about. This is a safe space to express yourself...",
-          required: true,
-          rows: 6,
-          hint: "Be as open as you feel comfortable. Everything stays here."
-        },
-        {
-          id: "support",
-          label: "What would help most?",
-          type: "radio",
-          options: [
-            { value: "listen", label: "\u{1F442} Just Listen", description: "Validate and understand" },
-            { value: "questions", label: "\u2753 Ask Questions", description: "Help me think it through" },
-            { value: "perspective", label: "\u{1F52E} New Perspective", description: "Offer alternative viewpoints" },
-            { value: "action", label: "\u26A1 Action Ideas", description: "Help me figure out next steps" }
-          ],
-          defaultValue: "questions"
-        }
-      ],
-      systemPrompt: `You are a supportive, empathetic listener (the "rubber duck therapist"). Your role is to help the user process their thoughts and feelings.
-
-Guidelines:
-- Be warm, supportive, and non-judgmental
-- Don't give medical or psychological advice
-- Use active listening techniques (reflect, validate, clarify)
-- Ask open-ended questions to help them explore
-- Acknowledge emotions before offering perspective
-- Keep responses conversational, not clinical
-- Use gentle humor when appropriate (you ARE a duck \u{1F986})
-
-IMPORTANT: If someone expresses serious mental health concerns or thoughts of self-harm, provide appropriate resources and encourage professional support.
-
-Start with warmth, end with gentle encouragement.`,
-      buildUserPrompt: (inputs) => {
-        return `Mode: ${inputs.support}
-
-${inputs.thoughts}`;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Response", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/gratitudeJournal.ts
-var gratitudeJournal_exports = {};
-__export(gratitudeJournal_exports, {
-  gratitudeJournalApp: () => gratitudeJournalApp
-});
-var gratitudeJournalApp;
-var init_gratitudeJournal = __esm({
-  "src/apps/implementations/gratitudeJournal.ts"() {
-    "use strict";
-    gratitudeJournalApp = {
-      id: "gratitude-journal",
-      name: "Gratitude Journal",
-      description: "Reflect on positive moments with guided prompts",
-      icon: "\u{1F64F}",
-      category: "wellness",
-      primaryAction: "\u270D\uFE0F Reflect",
-      helpDocumentation: `### What is this?
-The **Gratitude Journal** provides guided prompts to help you reflect on positive moments, boosting your mood and well-being through the practice of gratitude.
-
-### How to use it
-1. Choose a reflection style that suits your mood.
-2. Optionally share something specific you're grateful for.
-3. Click **Reflect** for personalized gratitude prompts and insights.
-
-### Use cases
-- Starting or ending your workday positively
-- Building a daily gratitude practice
-- Shifting perspective during stressful times
-- Team gratitude exercises`,
-      inputs: [
-        {
-          id: "something",
-          label: "Something on your mind? (optional)",
-          type: "textarea",
-          placeholder: "Share something you're grateful for, or leave blank for fresh prompts...",
-          rows: 3,
-          hint: "Big or small\u2014all gratitude matters"
-        },
-        {
-          id: "focus",
-          label: "Focus Area",
-          type: "select",
-          options: [
-            { value: "general", label: "\u{1F308} Open Reflection" },
-            { value: "work", label: "\u{1F4BC} Work & Career" },
-            { value: "people", label: "\u2764\uFE0F Relationships & People" },
-            { value: "growth", label: "\u{1F331} Personal Growth" },
-            { value: "simple", label: "\u2600\uFE0F Simple Pleasures" },
-            { value: "challenges", label: "\u{1F4AA} Challenges Overcome" }
-          ],
-          defaultValue: "general"
-        },
-        {
-          id: "depth",
-          label: "Reflection Depth",
-          type: "radio",
-          options: [
-            { value: "quick", label: "Quick", description: "1-2 minute reflection" },
-            { value: "deep", label: "Deep", description: "Thoughtful exploration" }
-          ],
-          defaultValue: "quick"
-        }
-      ],
-      systemPrompt: `You are a gentle, thoughtful journaling companion helping someone practice gratitude.
-
-For quick reflections:
-- 3 simple gratitude prompts
-- Brief affirmation
-
-For deep reflections:
-- Acknowledge what they shared (if anything)
-- 3 thoughtful prompts with context
-- A "reframe" prompt (finding silver linings)
-- Closing reflection or affirmation
-
-Guidelines:
-- Be warm but not overly enthusiastic
-- Focus on specificity (specific > general gratitude)
-- Include sensory details when helpful
-- Don't lecture about the benefits of gratitude
-- Make it feel natural, not forced
-
-Use gentle formatting with emojis sparingly.`,
-      buildUserPrompt: (inputs) => {
-        let prompt = `Create ${inputs.depth} gratitude prompts focused on ${inputs.focus}.`;
-        if (inputs.something?.trim()) {
-          prompt += `
-
-They shared: ${inputs.something}`;
-        }
-        return prompt;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Gratitude Reflection", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/focusMindfulness.ts
-var focusMindfulness_exports = {};
-__export(focusMindfulness_exports, {
-  focusMindfulnessApp: () => focusMindfulnessApp
-});
-var focusMindfulnessApp;
-var init_focusMindfulness = __esm({
-  "src/apps/implementations/focusMindfulness.ts"() {
-    "use strict";
-    focusMindfulnessApp = {
-      id: "focus-mindfulness",
-      name: "Focus & Mindfulness",
-      description: "Quick guided breathing or focus exercises",
-      icon: "\u{1F9D8}",
-      category: "wellness",
-      primaryAction: "\u{1F32C}\uFE0F Start Exercise",
-      helpDocumentation: `### What is this?
-The **Focus & Mindfulness** app provides quick mental reset exercises to help you regain focus, reduce stress, or prepare for important tasks.
-
-### How to use it
-1. Select the type of exercise you need.
-2. Choose how much time you have.
-3. Click **Start Exercise** for a guided session.
-
-### Use cases
-- Mental reset before a big meeting
-- Decompression after intense focus work
-- Starting the day with intention
-- Breaking out of an afternoon slump`,
-      inputs: [
-        {
-          id: "exerciseType",
-          label: "What do you need?",
-          type: "radio",
-          options: [
-            { value: "breathing", label: "\u{1F32C}\uFE0F Breathing Exercise", description: "Calm your nervous system" },
-            { value: "focus", label: "\u{1F3AF} Focus Reset", description: "Sharpen concentration" },
-            { value: "energy", label: "\u26A1 Energy Boost", description: "Shake off sluggishness" },
-            { value: "calm", label: "\u{1F60C} Stress Relief", description: "Release tension" },
-            { value: "transition", label: "\u{1F6AA} Work Transition", description: "Shift between tasks/contexts" }
-          ],
-          defaultValue: "breathing"
-        },
-        {
-          id: "duration",
-          label: "How much time?",
-          type: "select",
-          options: [
-            { value: "1", label: "1 minute (super quick)" },
-            { value: "3", label: "3 minutes (short break)" },
-            { value: "5", label: "5 minutes (proper reset)" }
-          ],
-          defaultValue: "3"
-        },
-        {
-          id: "style",
-          label: "Guidance Style",
-          type: "radio",
-          options: [
-            { value: "gentle", label: "Gentle", description: "Soft, calming instructions" },
-            { value: "direct", label: "Direct", description: "Clear, efficient guidance" }
-          ],
-          defaultValue: "gentle"
-        }
-      ],
-      systemPrompt: `You are a mindfulness guide providing quick, effective exercises for busy professionals.
-
-Create an exercise that fits the requested duration. Structure:
-1. **Setup** (10-15 seconds read time)
-   - What position to take
-   - What to do with eyes/hands
-   
-2. **The Exercise** (main content)
-   - Step-by-step guidance
-   - Use time cues ("For the next 30 seconds...")
-   - For breathing: specific patterns (e.g., 4-7-8)
-   
-3. **Return** (10 seconds)
-   - Gentle return to activity
-   - One-line intention or reminder
-
-Guidelines:
-- Be concise\u2014this is for busy people
-- Use formatting for easy scanning
-- Include physical cues (body awareness)
-- No spiritual/religious language
-- End on an empowering note
-
-Format with clear steps, using numbers or bullet points.`,
-      buildUserPrompt: (inputs) => {
-        return `Create a ${inputs.duration}-minute ${inputs.exerciseType} exercise. Style: ${inputs.style}.`;
-      },
-      parseResponse: (response) => ({
-        type: "markdown",
-        content: response,
-        sections: [{ title: "Exercise", content: response }]
-      })
-    };
-  }
-});
-
-// src/apps/implementations/games/storyChain.ts
-var storyChain_exports = {};
-__export(storyChain_exports, {
-  storyChainApp: () => storyChainApp
-});
-var storyChainApp;
-var init_storyChain = __esm({
-  "src/apps/implementations/games/storyChain.ts"() {
-    "use strict";
-    storyChainApp = {
-      id: "story-chain",
-      name: "Story Chain",
-      icon: "\u{1F3AD}",
-      description: "Collaborative storytelling with AI plot twists",
-      category: "games",
-      tags: ["team", "creative", "storytelling", "fun"],
-      inputs: [
-        {
-          id: "genre",
-          label: "Story Genre",
-          type: "radio",
-          required: true,
-          defaultValue: "fantasy",
-          options: [
-            { value: "fantasy", label: "\u{1F9D9} Fantasy", description: "Magic, dragons, quests" },
-            { value: "scifi", label: "\u{1F680} Sci-Fi", description: "Space, tech, future" },
-            { value: "mystery", label: "\u{1F50D} Mystery", description: "Clues, suspense, twists" },
-            { value: "comedy", label: "\u{1F602} Comedy", description: "Silly, absurd, fun" },
-            { value: "horror", label: "\u{1F47B} Horror", description: "Spooky, tense, creepy" }
-          ]
-        },
-        {
-          id: "mode",
-          label: "Game Mode",
-          type: "radio",
-          required: true,
-          defaultValue: "collaborative",
-          options: [
-            { value: "collaborative", label: "\u{1F91D} Collaborative", description: "You write, AI continues" },
-            { value: "challenge", label: "\u2694\uFE0F Challenge", description: "AI tries to stump you with plot twists" }
-          ]
-        },
-        {
-          id: "opening",
-          label: "Story Opening (or leave blank for AI start)",
-          type: "textarea",
-          placeholder: 'e.g., "The old lighthouse keeper had never seen anything like it..."',
-          rows: 3
-        },
-        {
-          id: "rounds",
-          label: "Number of Rounds",
-          type: "select",
-          defaultValue: "5",
-          options: [
-            { value: "3", label: "3 rounds (Quick)" },
-            { value: "5", label: "5 rounds (Standard)" },
-            { value: "10", label: "10 rounds (Epic)" }
-          ]
-        }
-      ],
-      primaryAction: "\u{1F4D6} Begin Story",
-      systemPrompt: `You are a collaborative storytelling AI for a fun team game called "Story Chain".
-
-Your role is to:
-1. Continue the story based on player contributions
-2. Maintain narrative continuity and character consistency
-3. Add unexpected but logical plot twists
-4. Keep the tone matching the chosen genre
-5. End each turn with a hook that invites the next contribution
-
-GENRE STYLES:
-- Fantasy: Rich descriptions, magical elements, heroic moments
-- Sci-Fi: Technical details, futuristic concepts, exploration themes
-- Mystery: Suspense building, clue dropping, red herrings
-- Comedy: Absurd situations, wordplay, unexpected humor
-- Horror: Atmospheric tension, creeping dread, jump scares
-
-FORMAT YOUR RESPONSE:
-
----STORY_CONTINUATION---
-[Your 2-3 paragraphs continuing the story]
-
----TWIST---
-[A short, surprising twist or cliffhanger to end on]
-
----PROMPT---
-[An engaging question or prompt for the next player, like "What does our hero discover behind the door?"]`,
-      buildUserPrompt: (inputs) => {
-        const genre = inputs.genre || "fantasy";
-        const mode = inputs.mode || "collaborative";
-        const opening = inputs.opening?.trim();
-        const rounds = inputs.rounds || "5";
-        if (opening) {
-          return `GENRE: ${genre.toUpperCase()}
-MODE: ${mode}
-TOTAL ROUNDS: ${rounds}
-
-The player has started the story with:
-"${opening}"
-
-Please continue this story with 2-3 paragraphs, add a twist, and provide a prompt for the next contribution.`;
-        } else {
-          return `GENRE: ${genre.toUpperCase()}
-MODE: ${mode}
-TOTAL ROUNDS: ${rounds}
-
-Please START a brand new ${genre} story with an engaging opening (2-3 paragraphs), introduce the main character(s), add an early twist or hook, and provide a prompt for the player to continue.`;
-        }
-      }
-    };
-  }
-});
-
-// src/apps/implementations/games/triviaShowdown.ts
-var triviaShowdown_exports = {};
-__export(triviaShowdown_exports, {
-  triviaShowdownApp: () => triviaShowdownApp
-});
-var triviaShowdownApp;
-var init_triviaShowdown = __esm({
-  "src/apps/implementations/games/triviaShowdown.ts"() {
-    "use strict";
-    triviaShowdownApp = {
-      id: "trivia-showdown",
-      name: "Trivia Showdown",
-      icon: "\u{1F9E0}",
-      description: "Endless trivia on any topic - test your knowledge!",
-      category: "games",
-      tags: ["team", "trivia", "knowledge", "competitive"],
-      inputs: [
-        {
-          id: "topic",
-          label: "Trivia Topic",
-          type: "text",
-          required: true,
-          placeholder: "e.g., 90s Movies, World Geography, Programming Languages...",
-          hint: "Be specific for better questions!"
-        },
-        {
-          id: "difficulty",
-          label: "Difficulty Level",
-          type: "radio",
-          required: true,
-          defaultValue: "medium",
-          options: [
-            { value: "easy", label: "\u{1F7E2} Easy", description: "Warm-up questions" },
-            { value: "medium", label: "\u{1F7E1} Medium", description: "Challenging but fair" },
-            { value: "hard", label: "\u{1F534} Hard", description: "Expert level" },
-            { value: "impossible", label: "\u{1F480} Impossible", description: "Good luck!" }
-          ]
-        },
-        {
-          id: "questionCount",
-          label: "Number of Questions",
-          type: "select",
-          defaultValue: "5",
-          options: [
-            { value: "3", label: "3 Questions (Quick)" },
-            { value: "5", label: "5 Questions (Standard)" },
-            { value: "10", label: "10 Questions (Marathon)" }
-          ]
-        },
-        {
-          id: "format",
-          label: "Question Format",
-          type: "radio",
-          defaultValue: "multiple",
-          options: [
-            { value: "multiple", label: "\u{1F4DD} Multiple Choice", description: "4 options per question" },
-            { value: "truefalse", label: "\u2705 True/False", description: "Quick fire!" }
-          ]
-        }
-      ],
-      primaryAction: "\u{1F3AF} Start Trivia",
-      systemPrompt: `You are a trivia game master creating engaging quiz questions.
-
-RULES:
-1. Generate the requested number of questions on the specified topic
-2. Match the difficulty level accurately
-3. Make questions interesting and educational
-4. For multiple choice: 1 correct answer + 3 plausible wrong answers
-5. Include a fun fact after each answer
-6. Shuffle answer order (don't always put correct first)
-
-FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
-
----QUESTION_1---
-**Question:** [The question text]
-
-A) [Option A]
-B) [Option B]
-C) [Option C]
-D) [Option D]
-
-<details>
-<summary>\u{1F3AF} Reveal Answer</summary>
-
-**Correct Answer:** [Letter]
-
-**Fun Fact:** [An interesting related fact]
-</details>
-
----QUESTION_2---
-[Continue same format...]
-
-At the end, add:
----FINAL_SCORE---
-Rate yourself! How many did you get right?
-\u{1F3C6} All correct = Trivia Champion!
-\u2B50 Most correct = Strong showing!
-\u{1F4DA} Some correct = Keep learning!`,
-      buildUserPrompt: (inputs) => {
-        const topic = inputs.topic || "General Knowledge";
-        const difficulty = inputs.difficulty || "medium";
-        const count = inputs.questionCount || "5";
-        const format = inputs.format || "multiple";
-        return `Generate ${count} ${difficulty}-difficulty trivia questions about: "${topic}"
-
-Format: ${format === "multiple" ? "Multiple choice with 4 options (A, B, C, D)" : "True/False only"}
-
-Make questions ${difficulty === "easy" ? "accessible for beginners" : difficulty === "hard" ? "challenging for experts" : difficulty === "impossible" ? "incredibly obscure - only specialists would know" : "moderately challenging"}.
-
-Remember to:
-- Make wrong answers plausible (not obviously wrong)
-- Add fun facts that teach something new
-- Keep a playful, game-show host tone`;
-      }
-    };
-  }
-});
-
-// src/apps/implementations/games/captionBattle.ts
-var captionBattle_exports = {};
-__export(captionBattle_exports, {
-  captionBattleApp: () => captionBattleApp
-});
-var captionBattleApp;
-var init_captionBattle = __esm({
-  "src/apps/implementations/games/captionBattle.ts"() {
-    "use strict";
-    captionBattleApp = {
-      id: "caption-battle",
-      name: "Caption Battle",
-      icon: "\u{1F3A8}",
-      description: "Write hilarious captions for AI-generated scenarios",
-      category: "games",
-      tags: ["team", "creative", "funny", "party"],
-      inputs: [
-        {
-          id: "vibe",
-          label: "Caption Vibe",
-          type: "radio",
-          required: true,
-          defaultValue: "absurd",
-          options: [
-            { value: "absurd", label: "\u{1F92A} Absurd", description: "Weird and wacky" },
-            { value: "wholesome", label: "\u{1F970} Wholesome", description: "Heartwarming humor" },
-            { value: "corporate", label: "\u{1F4BC} Corporate", description: "Office humor" },
-            { value: "dark", label: "\u{1F311} Dark", description: "Edgy comedy" },
-            { value: "random", label: "\u{1F3B2} Random", description: "Anything goes!" }
-          ]
-        },
-        {
-          id: "scenarioCount",
-          label: "Number of Scenarios",
-          type: "select",
-          defaultValue: "3",
-          options: [
-            { value: "1", label: "1 Scenario (Quick)" },
-            { value: "3", label: "3 Scenarios (Standard)" },
-            { value: "5", label: "5 Scenarios (Party Mode)" }
-          ]
-        },
-        {
-          id: "theme",
-          label: "Optional Theme",
-          type: "text",
-          placeholder: "e.g., Cats, Space, Monday mornings...",
-          hint: "Leave blank for random scenarios"
-        }
-      ],
-      primaryAction: "\u{1F3AC} Generate Scenarios",
-      systemPrompt: `You are the host of a hilarious party game called "Caption Battle"!
-
-Your job is to create absurd, funny scenarios that players will write captions for.
-
-SCENARIO STYLES:
-- Absurd: Completely ridiculous situations that defy logic
-- Wholesome: Sweet but funny misunderstandings
-- Corporate: Office life taken to extremes
-- Dark: Edgy humor (but nothing offensive)
-- Random: Mix of everything
-
-IMPORTANT:
-1. Describe visual scenarios vividly - paint a picture with words
-2. Include unexpected elements that beg for funny commentary
-3. Keep scenarios universally relatable
-4. End each scenario with a prompt for caption writers
-
-FORMAT YOUR RESPONSE:
-
----SCENARIO_1---
-# \u{1F3AC} Scene 1
-
-**The Scene:**
-[Vivid 2-3 sentence description of the scenario. Be specific and paint a picture!]
-
-**The Details:**
-[One or two absurd additional details that make it funnier]
-
-\u{1F4AC} **Your Caption:** _____________________
-
----SCENARIO_2---
-[Same format...]
-
----TIPS---
-\u{1F3C6} **Winning Caption Tips:**
-- Subvert expectations
-- Add a twist ending
-- Reference something unexpected
-- Keep it punchy!`,
-      buildUserPrompt: (inputs) => {
-        const vibe = inputs.vibe || "absurd";
-        const count = inputs.scenarioCount || "3";
-        const theme = inputs.theme?.trim();
-        return `Generate ${count} ${vibe} scenarios for Caption Battle.
-
-${theme ? `Theme to incorporate: "${theme}"` : "Use completely random themes."}
-
-Each scenario should:
-1. Be vividly described so players can "see" it
-2. Have at least one absurd or unexpected element
-3. Be perfect for writing funny one-liners about
-4. Work for a diverse team audience (SFW)
-
-Make them genuinely funny and caption-worthy!`;
-      }
-    };
-  }
-});
-
-// src/apps/implementations/games/debateArena.ts
-var debateArena_exports = {};
-__export(debateArena_exports, {
-  debateArenaApp: () => debateArenaApp
-});
-var debateArenaApp;
-var init_debateArena = __esm({
-  "src/apps/implementations/games/debateArena.ts"() {
-    "use strict";
-    debateArenaApp = {
-      id: "debate-arena",
-      name: "Debate Arena",
-      icon: "\u2694\uFE0F",
-      description: "Defend random hot takes - AI judges your arguments",
-      category: "games",
-      tags: ["team", "debate", "thinking", "competitive"],
-      inputs: [
-        {
-          id: "category",
-          label: "Debate Category",
-          type: "radio",
-          required: true,
-          defaultValue: "tech",
-          options: [
-            { value: "tech", label: "\u{1F4BB} Tech Wars", description: "Tabs vs spaces, etc." },
-            { value: "food", label: "\u{1F355} Food Fights", description: "Pineapple on pizza?" },
-            { value: "life", label: "\u{1F30D} Life Choices", description: "Morning person vs night owl" },
-            { value: "work", label: "\u{1F4BC} Work Style", description: "Remote vs office" },
-            { value: "random", label: "\u{1F3B2} Random", description: "Anything goes!" }
-          ]
-        },
-        {
-          id: "mode",
-          label: "Game Mode",
-          type: "radio",
-          required: true,
-          defaultValue: "solo",
-          options: [
-            { value: "solo", label: "\u{1F3A4} Solo", description: "You vs yourself - argue both sides!" },
-            { value: "vsai", label: "\u{1F916} vs AI", description: "Debate against the AI" },
-            { value: "prep", label: "\u{1F4DD} Prep Mode", description: "Get arguments for a 1v1 with a friend" }
-          ]
-        },
-        {
-          id: "customTopic",
-          label: "Custom Topic (Optional)",
-          type: "text",
-          placeholder: 'e.g., "Cereal is a soup"',
-          hint: "Leave blank for a random spicy take"
-        }
-      ],
-      primaryAction: "\u2694\uFE0F Enter the Arena",
-      systemPrompt: `You are the host of "Debate Arena" - a fun debate game for teams!
-
-Your job is to:
-1. Generate or use a debate topic
-2. Present both sides fairly
-3. Provide compelling arguments for each position
-4. Add humor and personality
-5. Encourage friendly debate
-
-TOPIC CATEGORIES:
-- Tech Wars: Programming languages, tools, practices
-- Food Fights: Culinary controversies
-- Life Choices: Lifestyle debates
-- Work Style: Professional preferences
-- Random: Anything debatable!
-
-FORMAT YOUR RESPONSE:
-
----TOPIC---
-# \u2694\uFE0F Today's Debate
-
-**The Motion:** "[State the debate topic as a motion]"
-
-This is a ${"{category}"} debate. Get ready to defend your position!
-
----SIDE_A---
-## \u{1F535} Team PRO
-
-**Position:** [Side that supports the motion]
-
-**Key Arguments:**
-1. **[Argument Title]** - [1-2 sentence explanation]
-2. **[Argument Title]** - [1-2 sentence explanation]
-3. **[Argument Title]** - [1-2 sentence explanation]
-
-**Killer Closing Line:**
-> "[A memorable one-liner to end your case]"
-
----SIDE_B---
-## \u{1F534} Team CON
-
-**Position:** [Side that opposes the motion]
-
-**Key Arguments:**
-1. **[Argument Title]** - [1-2 sentence explanation]
-2. **[Argument Title]** - [1-2 sentence explanation]
-3. **[Argument Title]** - [1-2 sentence explanation]
-
-**Killer Closing Line:**
-> "[A memorable one-liner to end your case]"
-
----JUDGE_NOTES---
-## \u{1F3DB}\uFE0F Judge's Notes
-
-**Common Pitfalls:**
-- [Weak argument to avoid]
-- [Logical fallacy warning]
-
-**Bonus Points For:**
-- [Creative angle that would impress]
-- [Unexpected perspective]
-
-*May the best arguer win!* \u2694\uFE0F`,
-      buildUserPrompt: (inputs) => {
-        const category = inputs.category || "random";
-        const mode = inputs.mode || "solo";
-        const customTopic = inputs.customTopic?.trim();
-        if (customTopic) {
-          return `Create a debate setup for the custom topic: "${customTopic}"
-
-Category context: ${category}
-Mode: ${mode}
-
-Provide arguments for BOTH sides fairly, with creative and fun angles.`;
-        } else {
-          return `Generate a fun, debatable topic from the "${category}" category.
-
-The topic should be:
-- Lighthearted but arguable
-- Something people have genuine opinions on  
-- Not actually controversial or offensive
-- Perfect for friendly team debates
-
-Mode: ${mode}
-
-Provide compelling arguments for BOTH sides!`;
-        }
-      }
-    };
-  }
-});
-
 // src/extension.ts
 var extension_exports = {};
 __export(extension_exports, {
@@ -55487,7 +50066,7 @@ __export(extension_exports, {
   deactivate: () => deactivate
 });
 module.exports = __toCommonJS(extension_exports);
-var vscode10 = __toESM(require("vscode"));
+var vscode7 = __toESM(require("vscode"));
 
 // src/CopilotApiGateway.ts
 var import_crypto = require("crypto");
@@ -55765,18 +50344,18 @@ var ApiError = class extends Error {
   }
 };
 var DEFAULT_REDACTION_PATTERNS = [
-  { id: "ssn", name: "US Social Security", pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b", enabled: true, isBuiltin: true },
-  { id: "credit-card", name: "Credit/Debit Card", pattern: "\\b(?:\\d{4}[- ]?){3}\\d{4}\\b", enabled: true, isBuiltin: true },
-  { id: "aadhaar", name: "Aadhaar Number", pattern: "\\b\\d{4}\\s?\\d{4}\\s?\\d{4}\\b", enabled: true, isBuiltin: true },
-  { id: "passport-in", name: "Indian Passport", pattern: "\\b[A-Z]\\d{7}\\b", enabled: true, isBuiltin: true },
-  { id: "passport-us", name: "US Passport", pattern: "\\b\\d{9}\\b", enabled: true, isBuiltin: true },
-  { id: "email", name: "Email Address", pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", enabled: true, isBuiltin: true },
-  { id: "url", name: "URLs", pattern: "https?://[^\\s]+", enabled: true, isBuiltin: true },
-  { id: "phone-us", name: "US Phone Number", pattern: "\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b", enabled: true, isBuiltin: true },
-  { id: "phone-in", name: "Indian Phone", pattern: "\\b[6-9]\\d{9}\\b", enabled: true, isBuiltin: true },
-  { id: "api-key", name: "API Keys", pattern: "(sk-[a-zA-Z0-9]{20,})|(api[_-]?key[=:]\\s*[\\w-]+)", enabled: true, isBuiltin: true },
-  { id: "password-json", name: "Passwords in JSON", pattern: '"password"\\s*:\\s*"[^"]*"', enabled: true, isBuiltin: true },
-  { id: "bearer-token", name: "Bearer Tokens", pattern: "Bearer\\s+[A-Za-z0-9\\-._~+/]+=*", enabled: true, isBuiltin: true }
+  { id: "ssn", name: "US Social Security", pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b", enabled: false, isBuiltin: true },
+  { id: "credit-card", name: "Credit/Debit Card", pattern: "\\b(?:\\d{4}[- ]?){3}\\d{4}\\b", enabled: false, isBuiltin: true },
+  { id: "aadhaar", name: "Aadhaar Number", pattern: "\\b\\d{4}\\s?\\d{4}\\s?\\d{4}\\b", enabled: false, isBuiltin: true },
+  { id: "passport-in", name: "Indian Passport", pattern: "\\b[A-Z]\\d{7}\\b", enabled: false, isBuiltin: true },
+  { id: "passport-us", name: "US Passport", pattern: "\\b\\d{9}\\b", enabled: false, isBuiltin: true },
+  { id: "email", name: "Email Address", pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", enabled: false, isBuiltin: true },
+  { id: "url", name: "URLs", pattern: "https?://[^\\s]+", enabled: false, isBuiltin: true },
+  { id: "phone-us", name: "US Phone Number", pattern: "\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b", enabled: false, isBuiltin: true },
+  { id: "phone-in", name: "Indian Phone", pattern: "\\b[6-9]\\d{9}\\b", enabled: false, isBuiltin: true },
+  { id: "api-key", name: "API Keys", pattern: "(sk-[a-zA-Z0-9]{20,})|(api[_-]?key[=:]\\s*[\\w-]+)", enabled: false, isBuiltin: true },
+  { id: "password-json", name: "Passwords in JSON", pattern: '"password"\\s*:\\s*"[^"]*"', enabled: false, isBuiltin: true },
+  { id: "bearer-token", name: "Bearer Tokens", pattern: "Bearer\\s+[A-Za-z0-9\\-._~+/]+=*", enabled: false, isBuiltin: true }
 ];
 var CopilotApiGateway = class {
   constructor(output, statusItem, context) {
@@ -56650,46 +51229,6 @@ var CopilotApiGateway = class {
         uptime_seconds: uptime,
         active_requests: this.activeRequests
       });
-      return;
-    }
-    if (req.method === "GET" && url2.pathname === "/metrics") {
-      const uptime = Math.floor((Date.now() - this.usageStats.startTime) / 1e3);
-      const metrics = [
-        "# HELP copilot_api_requests_total Total number of API requests",
-        "# TYPE copilot_api_requests_total counter",
-        `copilot_api_requests_total ${this.usageStats.totalRequests}`,
-        "",
-        "# HELP copilot_api_active_requests Current number of active requests",
-        "# TYPE copilot_api_active_requests gauge",
-        `copilot_api_active_requests ${this.activeRequests}`,
-        "",
-        "# HELP copilot_api_tokens_input_total Total input tokens consumed",
-        "# TYPE copilot_api_tokens_input_total counter",
-        `copilot_api_tokens_input_total ${this.usageStats.totalTokensIn}`,
-        "",
-        "# HELP copilot_api_tokens_output_total Total output tokens generated",
-        "# TYPE copilot_api_tokens_output_total counter",
-        `copilot_api_tokens_output_total ${this.usageStats.totalTokensOut}`,
-        "",
-        "# HELP copilot_api_uptime_seconds Server uptime in seconds",
-        "# TYPE copilot_api_uptime_seconds gauge",
-        `copilot_api_uptime_seconds ${uptime}`,
-        "",
-        "# HELP copilot_api_requests_per_minute Rate of requests per minute",
-        "# TYPE copilot_api_requests_per_minute gauge",
-        `copilot_api_requests_per_minute ${this.realtimeStats.requestsPerMinute}`,
-        "",
-        "# HELP copilot_api_latency_avg_ms Average request latency in milliseconds",
-        "# TYPE copilot_api_latency_avg_ms gauge",
-        `copilot_api_latency_avg_ms ${this.realtimeStats.avgLatencyMs}`,
-        "",
-        "# HELP copilot_api_error_rate_percent Error rate percentage",
-        "# TYPE copilot_api_error_rate_percent gauge",
-        `copilot_api_error_rate_percent ${this.realtimeStats.errorRate}`,
-        ""
-      ].join("\n");
-      res.writeHead(200, { "Content-Type": "text/plain; version=0.0.4; charset=utf-8" });
-      res.end(metrics);
       return;
     }
     if (req.method === "GET" && url2.pathname === "/v1/models") {
@@ -59157,7 +53696,7 @@ ${text} `;
       return false;
     }
   }
-  logRequest(requestId, method, path5, status, durationMs, extra) {
+  logRequest(requestId, method, path4, status, durationMs, extra) {
     const isError = status >= 400;
     const tokensIn = extra?.tokensIn ?? 0;
     const tokensOut = extra?.tokensOut ?? 0;
@@ -59166,7 +53705,7 @@ ${text} `;
       timestamp: (/* @__PURE__ */ new Date()).toISOString(),
       requestId,
       method,
-      path: path5,
+      path: path4,
       status,
       durationMs,
       tokensIn: extra?.tokensIn,
@@ -59194,7 +53733,7 @@ ${text} `;
     }
     if (this.config.enableLogging) {
       const statusIcon = isError ? "\u274C" : status >= 300 ? "\u26A0\uFE0F" : "\u2705";
-      this.output.appendLine(`[${(/* @__PURE__ */ new Date()).toLocaleTimeString()}] ${statusIcon} ${method} ${path5} ${status} (${durationMs}ms)`);
+      this.output.appendLine(`[${(/* @__PURE__ */ new Date()).toLocaleTimeString()}] ${statusIcon} ${method} ${path4} ${status} (${durationMs}ms)`);
       if (extra?.error) {
         this.output.appendLine(`  Error: ${extra.error}`);
       }
@@ -59600,6 +54139,255 @@ var CopilotPanel = class _CopilotPanel {
       _CopilotPanel.panelDisposables = [];
     }, null, _CopilotPanel.panelDisposables);
   }
+  // Wiki panel singleton
+  static wikiPanel;
+  /**
+   * Opens the API Usage Guide (Wiki) as a separate editor panel.
+   */
+  static async openWiki(extensionUri, gateway) {
+    const column = vscode5.window.activeTextEditor?.viewColumn ?? vscode5.ViewColumn.One;
+    if (_CopilotPanel.wikiPanel) {
+      _CopilotPanel.wikiPanel.reveal(column);
+      return;
+    }
+    const panel = vscode5.window.createWebviewPanel(
+      "copilotApiWiki",
+      "\u{1F4DA} API Usage Guide",
+      column,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [extensionUri]
+      }
+    );
+    _CopilotPanel.wikiPanel = panel;
+    panel.webview.html = await _CopilotPanel.getWikiHtml(panel.webview, gateway);
+    panel.onDidDispose(() => {
+      _CopilotPanel.wikiPanel = void 0;
+    });
+  }
+  /**
+   * Generates the HTML for the Wiki panel
+   */
+  static async getWikiHtml(webview, gateway) {
+    const nonce = getNonce();
+    const status = await gateway.getStatus();
+    const config2 = status.config;
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
+    <title>API Usage Guide</title>
+    <style>
+        body {
+            font-family: var(--vscode-font-family);
+            padding: 20px;
+            color: var(--vscode-foreground);
+            background: var(--vscode-editor-background);
+            line-height: 1.6;
+        }
+        h1 { margin-top: 0; }
+        .muted { opacity: 0.7; }
+        .wiki-tab {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+            transition: all 0.2s;
+        }
+        .wiki-tab.active {
+            background: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+        }
+        .wiki-tab:hover {
+            opacity: 0.9;
+        }
+        .wiki-panel {
+            display: none;
+        }
+        .wiki-panel.active {
+            display: block;
+        }
+        pre {
+            background: var(--vscode-textBlockQuote-background);
+            padding: 14px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            font-family: var(--vscode-editor-font-family);
+        }
+        h4 {
+            color: var(--vscode-textLink-foreground);
+            margin-top: 24px;
+        }
+        .tool-card {
+            background: var(--vscode-textBlockQuote-background);
+            padding: 14px;
+            border-radius: 8px;
+            border-left: 3px solid var(--vscode-textLink-foreground);
+            margin-bottom: 12px;
+        }
+        code {
+            font-size: 12px;
+            color: var(--vscode-textPreformat-foreground);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1>\u{1F4DA} API Usage Guide</h1>
+    <p class="muted">Complete reference for connecting to the Copilot API Gateway from various languages.</p>
+
+    <div id="wiki-tabs" style="display: flex; gap: 4px; margin: 20px 0 16px; flex-wrap: wrap;">
+        <button class="wiki-tab active" data-tab="python">\u{1F40D} Python</button>
+        <button class="wiki-tab" data-tab="javascript">\u{1F4DC} JavaScript</button>
+        <button class="wiki-tab" data-tab="curl">\u{1F527} cURL</button>
+        <button class="wiki-tab" data-tab="mcp">\u{1F50C} MCP Tools</button>
+    </div>
+
+    <div id="wiki-content" style="background: var(--vscode-sideBar-background); border-radius: 0 8px 8px 8px; padding: 20px;">
+        <!-- Python Tab -->
+        <div class="wiki-panel active" data-panel="python">
+            <h4 style="margin-top: 0;">\u{1F4E6} Installation</h4>
+            <pre>pip install openai</pre>
+
+            <h4>\u{1F680} Quick Start</h4>
+            <pre>from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://${config2.host}:${config2.port}/v1",
+    api_key="not-needed"
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Hello!"}
+    ]
+)
+
+print(response.choices[0].message.content)</pre>
+
+            <h4>\u{1F4E1} Streaming</h4>
+            <pre>stream = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Tell me a story"}],
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)</pre>
+        </div>
+
+        <!-- JavaScript Tab -->
+        <div class="wiki-panel" data-panel="javascript">
+            <h4 style="margin-top: 0;">\u{1F4E6} Installation</h4>
+            <pre>npm install openai</pre>
+
+            <h4>\u{1F680} Quick Start</h4>
+            <pre>import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  baseURL: 'http://${config2.host}:${config2.port}/v1',
+  apiKey: 'not-needed'
+});
+
+const completion = await openai.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [{ role: 'user', content: 'Hello!' }]
+});
+
+console.log(completion.choices[0].message.content);</pre>
+
+            <h4>\u{1F4E1} Streaming</h4>
+            <pre>const stream = await openai.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [{ role: 'user', content: 'Tell me a story' }],
+  stream: true
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk.choices[0]?.delta?.content || '');
+}</pre>
+        </div>
+
+        <!-- cURL Tab -->
+        <div class="wiki-panel" data-panel="curl">
+            <h4 style="margin-top: 0;">\u{1F527} Basic Request</h4>
+            <pre>curl -X POST http://${config2.host}:${config2.port}/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'</pre>
+
+            <h4>\u{1F4E1} Streaming</h4>
+            <pre>curl -X POST http://${config2.host}:${config2.port}/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "stream": true
+  }'</pre>
+
+            <h4>\u{1F4CB} List Models</h4>
+            <pre>curl http://${config2.host}:${config2.port}/v1/models</pre>
+        </div>
+
+        <!-- MCP Tab -->
+        <div class="wiki-panel" data-panel="mcp">
+            <h4 style="margin-top: 0;">\u{1F50C} Built-in VS Code Tools</h4>
+            <p class="muted">These tools are automatically available via MCP:</p>
+
+            <div class="tool-card" style="border-left-color: #10b981;">
+                <code>vscode_read_file</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">Read the contents of any file in the workspace</div>
+            </div>
+
+            <div class="tool-card" style="border-left-color: #3b82f6;">
+                <code>vscode_list_files</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">List files in a directory with optional glob pattern</div>
+            </div>
+
+            <div class="tool-card" style="border-left-color: #f59e0b;">
+                <code>vscode_open_file</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">Open a file in VS Code editor</div>
+            </div>
+
+            <div class="tool-card" style="border-left-color: #ef4444;">
+                <code>vscode_get_diagnostics</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">Get errors and warnings from Problems panel</div>
+            </div>
+
+            <div class="tool-card" style="border-left-color: #8b5cf6;">
+                <code>vscode_get_active_editor</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">Get content and cursor position of current file</div>
+            </div>
+        </div>
+    </div>
+
+    <script nonce="${nonce}">
+        document.querySelectorAll('.wiki-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.getAttribute('data-tab');
+                document.querySelectorAll('.wiki-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.wiki-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector('[data-panel="' + targetTab + '"]').classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>`;
+  }
   static handleMessage(data, gateway) {
     switch (data.type) {
       case "openChat":
@@ -59616,6 +54404,12 @@ var CopilotPanel = class _CopilotPanel {
         break;
       case "stopServer":
         void gateway.stopServer();
+        break;
+      case "openUrl":
+        console.log("[CopilotPanel] Opening URL:", data.value);
+        if (typeof data.value === "string") {
+          void vscode5.commands.executeCommand("vscode.open", vscode5.Uri.parse(data.value));
+        }
         break;
       case "toggleHttp":
         void gateway.toggleHttp();
@@ -59815,48 +54609,6 @@ var CopilotPanel = class _CopilotPanel {
           void vscode5.window.showErrorMessage("Log folder not found");
         }
         break;
-      case "generatePrompt":
-      case "enhancePrompt":
-        if (data.data && typeof data.data === "object") {
-          const promptData = data.data;
-          const isEnhance = data.type === "enhancePrompt";
-          let metaPrompt = isEnhance ? `You are an expert prompt engineer. Enhance and improve the following prompt to make it more detailed, specific, and effective:
-
-${promptData.existingPrompt || promptData.context}
-
-Make it more comprehensive with clear objectives, constraints, and expected deliverables.` : `You are an expert prompt engineer. Create a comprehensive, high-quality prompt for an AI coding assistant based on these specifications:
-
-${promptData.projectType ? `**Project Type:** ${promptData.projectType}` : ""}
-${promptData.techStack ? `**Tech Stack:** ${promptData.techStack}` : ""}
-${promptData.goal ? `**Goal:** ${promptData.goal}` : ""}
-${promptData.complexity ? `**Complexity Level:** ${promptData.complexity}` : ""}
-${promptData.context ? `**User Description:** ${promptData.context}` : ""}
-
-Generate a detailed, actionable prompt that includes:
-1. Clear project objective and scope
-2. Specific technical requirements
-3. Step-by-step implementation plan
-4. Best practices and considerations
-5. Expected deliverables and success criteria
-
-Format the output as a ready-to-use prompt that the user can copy and paste into an AI assistant.`;
-          gateway.invokeCopilot(metaPrompt).then((response) => {
-            if (_CopilotPanel.currentPanel) {
-              void _CopilotPanel.currentPanel.webview.postMessage({
-                type: "promptResult",
-                data: response
-              });
-            }
-          }).catch((err) => {
-            if (_CopilotPanel.currentPanel) {
-              void _CopilotPanel.currentPanel.webview.postMessage({
-                type: "promptError",
-                error: err.message
-              });
-            }
-          });
-        }
-        break;
     }
   }
   /**
@@ -59947,13 +54699,13 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
     <!-- Actions Section -->
     <div class="section">
         <div class="section-title">\u26A1 Actions</div>
-        <button id="btn-dashboard">Open Dashboard</button>
-        <button id="btn-apps" class="secondary">Open Apps Hub</button>
-        <button id="btn-toggle" class="secondary">${isRunning ? "\u23F9 Stop Server" : "\u25B6 Start Server"}</button>
-        <button id="btn-swagger" class="secondary">\u{1F4DD} Swagger API</button>
-        <button id="btn-metrics" class="secondary">\u{1F4CA} Prometheus Metrics</button>
-        <button id="btn-wiki" class="secondary">\u{1F4DA} Wiki</button>
-        <button id="btn-prompt" class="secondary">\u2728 Prompt Generator</button>
+        <div class="actions">
+            <button id="btn-toggle" class="secondary">${isRunning ? "\u23F9 Stop Server" : "\u25B6 Start Server"}</button>
+            <button id="btn-swagger" class="secondary">\u{1F4DD} Swagger API</button>
+            <button id="btn-wiki" class="secondary">\u{1F4DA} Wiki</button>
+            <button id="btn-docs" class="secondary">\u{1F4DA} How to Use</button>
+            <button id="btn-dashboard" class="primary">Open Dashboard \u2197</button>
+        </div>
     </div>
 
     <!-- Analytics Section -->
@@ -60053,12 +54805,14 @@ print(response.choices[0].message.content)\`;
         document.getElementById('btn-copy-curl').addEventListener('click', (e) => copyWithFeedback(e.target, curlCommand));
         document.getElementById('btn-copy-python').addEventListener('click', (e) => copyWithFeedback(e.target, pythonCode));
         document.getElementById('btn-dashboard').addEventListener('click', () => vscode.postMessage({ type: 'openDashboard' }));
-        document.getElementById('btn-apps').addEventListener('click', () => vscode.postMessage({ type: 'openAppsHub' }));
         document.getElementById('btn-toggle').addEventListener('click', () => vscode.postMessage({ type: '${isRunning ? "stopServer" : "startServer"}' }));
         document.getElementById('btn-swagger').addEventListener('click', () => vscode.postMessage({ type: 'openSwagger' }));
-        document.getElementById('btn-metrics').addEventListener('click', () => vscode.postMessage({ type: 'openMetrics' }));
+        document.getElementById('btn-swagger').addEventListener('click', () => vscode.postMessage({ type: 'openSwagger' }));
         document.getElementById('btn-wiki').addEventListener('click', () => vscode.postMessage({ type: 'openWiki' }));
-        document.getElementById('btn-prompt').addEventListener('click', () => vscode.postMessage({ type: 'openPromptGenerator' }));
+        const btnDocs = document.getElementById('btn-docs');
+        if (btnDocs) {
+            btnDocs.addEventListener('click', () => vscode.postMessage({ type: 'openUrl', value: 'https://notes.suhaib.in/docs/vscode/extensions/github-copilot-api-gateway/' }));
+        }
     </script>
 </body>
 </html>`;
@@ -60093,118 +54847,352 @@ print(response.choices[0].message.content)\`;
     <title>Copilot API Dashboard</title>
     <!-- Removed Chart.js for reliability -->
     <style>
-        :root { color-scheme: var(--vscode-color-scheme); }
+        :root {
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color-scheme: var(--vscode-color-scheme);
+        }
         body {
             margin: 0; padding: 0; min-height: 100vh;
-            background: radial-gradient(120% 120% at 20% 20%, rgba(56,189,248,0.05), transparent),
-                        radial-gradient(120% 120% at 80% 0%, rgba(147,197,253,0.05), transparent),
-                        var(--vscode-editor-background);
-            font-family: var(--vscode-font-family); color: var(--vscode-foreground);
+            background-color: var(--vscode-editor-background);
+            font-family: var(--vscode-font-family);
+            color: var(--vscode-foreground);
+            font-size: 13px; /* Enhanced legibility */
+            line-height: 1.5;
         }
-        .page { max-width: 1400px; margin: 0 auto; padding: 32px 32px 64px; display: flex; flex-direction: column; gap: 24px; }
-        .hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding-bottom: 8px; }
-        .hero h1 { margin: 0; font-size: 26px; letter-spacing: -0.4px; font-weight: 700; }
-        .hero p { margin: 6px 0 0 0; opacity: 0.7; font-size: 14px; max-width: 600px; line-height: 1.5; }
-        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--vscode-badge-background); color: var(--vscode-badge-foreground); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .card { background-color: var(--vscode-editorWidget-background); border: 1px solid var(--vscode-widget-border); border-radius: 12px; padding: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.12); border-color: var(--vscode-focusBorder); }
-        .card.full-width { grid-column: 1 / -1; }
-        h3 { margin-top: 0; margin-bottom: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.8; }
-        .status-row { display: flex; align-items: center; gap: 10px; font-weight: 600; }
-        .status-dot { width: 12px; height: 12px; border-radius: 50%; background-color: ${statusColor}; box-shadow: 0 0 10px ${statusColor}; }
-        .info-grid { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; font-size: 12px; align-items: center; }
-        .label { opacity: 0.7; text-transform: uppercase; letter-spacing: 0.3px; font-size: 11px; }
-        .value { font-family: var(--vscode-editor-font-family); word-break: break-all; }
-        .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
-        button { display: inline-flex; justify-content: center; align-items: center; gap: 6px; width: 100%; padding: 10px 12px; background-color: var(--vscode-button-background); color: var(--vscode-button-foreground); border: 1px solid color-mix(in srgb, var(--vscode-button-background) 50%, transparent); border-radius: 6px; cursor: pointer; font-family: var(--vscode-font-family); font-weight: 600; transition: transform 120ms ease, background-color 120ms ease; }
-        button:hover { background-color: var(--vscode-button-hoverBackground); transform: translateY(-1px); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        button.secondary { background-color: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
-        button.secondary:hover { background-color: var(--vscode-button-secondaryHoverBackground); }
-        button.success { background-color: var(--vscode-testing-iconPassed); }
-        button.danger { background-color: var(--vscode-testing-iconFailed); }
-        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--vscode-widget-border); }
-        .toggle-row:last-child { border-bottom: none; }
-        .switch { position: relative; width: 36px; height: 20px; }
-        .switch input { display: none; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--vscode-input-background); border: 1px solid var(--vscode-widget-border); transition: .2s; border-radius: 999px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: var(--vscode-foreground); transition: .2s; border-radius: 50%; }
-        input:checked + .slider { background: var(--vscode-testing-iconPassed); border-color: var(--vscode-testing-iconPassed); }
-        input:checked + .slider:before { transform: translateX(16px); background: var(--vscode-editor-background); }
-        .muted { opacity: 0.75; font-size: 12px; }
-        .inline-form { display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: center; }
-        .stacked { display: flex; flex-direction: column; gap: 12px; }
-        input, select, textarea { width: 100%; padding: 8px 10px; font-size: 13px; border-radius: 6px; border: 1px solid var(--vscode-input-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-family: var(--vscode-font-family); box-sizing: border-box; }
-        textarea { font-family: var(--vscode-editor-font-family); font-size: 12px; resize: vertical; min-height: 120px; }
-        select { cursor: pointer; }
-        .pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
-        .pill { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-editor-background); cursor: pointer; }
-        .pill:hover { border-color: var(--vscode-testing-iconPassed); color: var(--vscode-testing-iconPassed); }
-        .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
-        .doc-card { border: 1px dashed var(--vscode-widget-border); border-radius: 8px; padding: 10px; background: color-mix(in srgb, var(--vscode-editor-background) 90%, transparent); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
-        .doc-card:hover { border-color: var(--vscode-focusBorder); background: color-mix(in srgb, var(--vscode-editor-background) 70%, transparent); }
-        .doc-card h4 { margin: 0 0 6px 0; font-size: 13px; display: flex; gap: 8px; align-items: center; }
-        .doc-card code { display: inline-block; padding: 3px 6px; border-radius: 6px; background: var(--vscode-textBlockQuote-background); font-family: var(--vscode-editor-font-family); }
-        .doc-card p { margin: 6px 0 0 0; opacity: 0.85; font-size: 12px; }
-        pre { background: var(--vscode-textBlockQuote-background); border-radius: 8px; padding: 10px; font-size: 12px; overflow-x: auto; margin: 0; white-space: pre-wrap; word-break: break-word; }
-        a { color: var(--vscode-textLink-foreground); }
-
-        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Live Log Tail Styles */
-        .log-container {
-            background: var(--vscode-textBlockQuote-background);
-            color: var(--vscode-editor-foreground);
-            font-family: var(--vscode-editor-font-family);
-            font-size: 11px;
-            padding: 12px;
-            border-radius: 8px;
-            height: 300px;
-            overflow-y: auto;
+        
+        /* Layout */
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 32px 64px; /* More breathing room */
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 24px;
+        }
+        
+        /* Typography */
+        h1 { margin: 0; font-size: 28px; letter-spacing: -0.5px; font-weight: 600; color: var(--vscode-foreground); }
+        h3 { margin-top: 0; margin-bottom: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; opacity: 0.9; color: var(--vscode-foreground); }
+        h4 { margin: 0; font-size: 14px; font-weight: 600; color: var(--vscode-foreground); }
+        p { margin: 0; font-size: 13px; color: var(--vscode-descriptionForeground); line-height: 1.5; }
+        
+        .hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; padding-bottom: 16px; }
+        .hero p { margin-top: 8px; font-size: 14px; max-width: 600px; }
+        
+        .badge {
+            display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--vscode-badge-background);
+            color: var(--vscode-badge-foreground);
+            font-size: 11px; font-weight: 600;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--vscode-editorWidget-background);
             border: 1px solid var(--vscode-widget-border);
-            margin-top: 8px;
+            border-radius: 12px;
+            padding: 24px; /* increased padding */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth), border-color 0.2s var(--ease-smooth);
         }
-        .log-line {
-            line-height: 1.4;
-            white-space: pre-wrap;
-            word-break: break-all;
-            display: flex;
-            gap: 8px;
+        .card:hover {
+            border-color: var(--vscode-focusBorder);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
         }
-        .log-time { color: var(--vscode-descriptionForeground); min-width: 75px; flex-shrink: 0; }
-        .log-method { font-weight: 600; color: var(--vscode-terminal-ansiBlue); min-width: 50px; flex-shrink: 0; }
-        .log-path { color: var(--vscode-terminal-ansiMagenta); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .log-status { font-weight: 600; min-width: 35px; flex-shrink: 0; }
+        .card.full-width { grid-column: 1 / -1; }
+        
+        /* Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .info-grid { display: grid; grid-template-columns: 140px 1fr; gap: 12px; font-size: 13px; align-items: center; }
+        .label { color: var(--vscode-descriptionForeground); font-weight: 500; }
+        .value { color: var(--vscode-foreground); font-family: var(--vscode-editor-font-family); }
+
+        /* Actions & Buttons */
+        .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+        
+        button {
+            display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+            width: 100%; height: 32px; /* Touch target */
+            padding: 0 16px;
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border: 1px solid transparent;
+            border-radius: 999px; /* Pill shape */
+            cursor: pointer;
+            font-family: inherit; font-size: 13px; font-weight: 500;
+            transition: all 0.2s var(--ease-smooth);
+        }
+        button:hover {
+            background-color: var(--vscode-button-hoverBackground);
+            transform: translateY(-1px);
+        }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        button.secondary {
+            background-color: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+        }
+        button.secondary:hover { background-color: var(--vscode-button-secondaryHoverBackground); }
+        
+        button.success { background-color: var(--vscode-testing-iconPassed); color: var(--vscode-editor-background); } /* Ensure contrast on success */
+        button.danger { background-color: var(--vscode-testing-iconFailed); color: var(--vscode-editor-background); }
+
+        /* Forms */
+        input, select, textarea {
+            width: 100%; padding: 8px 12px;
+            font-size: 13px; font-family: inherit;
+            border-radius: 6px;
+            border: 1px solid var(--vscode-input-border);
+            background: var(--vscode-input-background);
+            color: var(--vscode-input-foreground);
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--vscode-focusBorder);
+        }
+        
+        .switch { position: relative; width: 40px; height: 22px; }
+        .switch input { display: none; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--vscode-input-background); border: 1px solid var(--vscode-widget-border);
+            transition: .2s var(--ease-smooth); border-radius: 999px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px;
+            background-color: var(--vscode-foreground); transition: .2s var(--ease-spring); border-radius: 50%;
+        }
+        input:checked + .slider { background: var(--vscode-testing-iconPassed); border-color: var(--vscode-testing-iconPassed); }
+        input:checked + .slider:before { transform: translateX(18px); background: var(--vscode-editor-background); }
+
+        /* Components */
+        .toggle-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; /* Larger touch target */
+            border-bottom: 1px solid var(--vscode-widget-border);
+            background: transparent;
+        }
+        .toggle-row:last-child { border-bottom: none; }
+
+        .pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .pill {
+            padding: 4px 12px; border-radius: 999px;
+            border: 1px solid var(--vscode-widget-border);
+            background: var(--vscode-editor-background);
+            color: var(--vscode-foreground);
+            cursor: pointer; font-size: 12px;
+            transition: all 0.15s ease;
+        }
+        .pill:hover { border-color: var(--vscode-testing-iconPassed); color: var(--vscode-testing-iconPassed); }
+
+        /* Documentation Cards */
+        .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .doc-card {
+            border: 1px solid var(--vscode-widget-border);
+            border-radius: 12px; padding: 16px;
+            background: var(--vscode-editor-background); /* Flat background */
+            cursor: pointer;
+            transition: border-color 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+        }
+        .doc-card:hover { border-color: var(--vscode-focusBorder); transform: translateY(-2px); }
+        .doc-card h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .doc-card p { opacity: 0.8; }
+        .doc-card code {
+            font-family: var(--vscode-editor-font-family); font-size: 11px;
+            padding: 2px 6px; border-radius: 4px;
+            background: var(--vscode-textBlockQuote-background);
+            color: var(--vscode-textPreformat-foreground);
+        }
+
+        /* Status & Logs */
+        .status-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background-color: ${statusColor};
+            box-shadow: 0 0 0 4px color-mix(in srgb, ${statusColor} 20%, transparent); /* Soft glow ring */
+        }
+        
+        .log-container {
+            background: var(--vscode-editor-background); /* Consistent background */
+            font-family: var(--vscode-editor-font-family);
+            font-size: 12px; line-height: 1.6;
+            padding: 16px; border-radius: 8px;
+            height: 350px; overflow-y: auto;
+            border: 1px solid var(--vscode-widget-border);
+            margin-top: 16px;
+        }
+        .log-line { display: flex; gap: 12px; padding: 2px 0; border-bottom: 1px solid transparent; }
+        .log-line:hover { background: var(--vscode-list-hoverBackground); }
+        .log-time { color: var(--vscode-descriptionForeground); font-size: 11px; min-width: 80px; }
+        .log-method { font-weight: 600; color: var(--vscode-textLink-foreground); min-width: 50px; }
+        .log-path { color: var(--vscode-textPreformat-foreground); flex: 1; word-break: break-all; }
         .log-status.success { color: var(--vscode-testing-iconPassed); }
         .log-status.error { color: var(--vscode-testing-iconFailed); }
-        .log-latency { color: var(--vscode-descriptionForeground); min-width: 60px; text-align: right; flex-shrink: 0; }
+        .log-latency { color: var(--vscode-descriptionForeground); font-size: 11px; min-width: 60px; text-align: right; }
 
-        #log-status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-        #log-status-indicator.active { background-color: var(--vscode-testing-iconPassed); box-shadow: 0 0 8px var(--vscode-testing-iconPassed); }
-        #log-status-indicator.inactive { background-color: var(--vscode-disabledForeground); }
+        .muted { color: var(--vscode-descriptionForeground); font-size: 12px; }
+        a { color: var(--vscode-textLink-foreground); text-decoration: none; }
+        a:hover { text-decoration: underline; }
 
-        /* Pending log entry styles */
-        .log-line.pending {
-            opacity: 0.7;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        .log-line.pending .log-status {
-            color: var(--vscode-charts-yellow);
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 0.4; }
+        /* Animations */
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+        .log-line.pending { opacity: 0.7; animation: pulse 2s ease-in-out infinite; }
+        
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Modern Sidebar Design - Constant Dark Theme */
+        @media (max-width: 600px) {
+            body {
+                background-color: #09090b; /* Zinc 950 */
+                color: #fafafa; /* Zinc 50 */
+            }
+            
+            .page {
+                padding: 16px 16px 32px;
+                gap: 12px;
+                max-width: 100%;
+            }
+
+            /* Compact Hero */
+            .hero {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+                padding-bottom: 0;
+                border-bottom: 1px solid #27272a; /* Zinc 800 */
+                padding-bottom: 12px;
+                margin-bottom: 4px;
+            }
+            .hero h1 { 
+                font-size: 18px; 
+                display: flex; 
+                align-items: center; 
+                gap: 8px;
+                color: #ffffff;
+            }
+            .hero p { display: none; }
+             
+            /* Unified Status Pill in Hero */
+            .hero h1:after {
+                content: '';
+                display: inline-block;
+                width: 8px; height: 8px;
+                border-radius: 50%;
+                background-color: ${statusColor};
+                box-shadow: 0 0 10px ${statusColor};
+                margin-left: auto;
+                animation: pulse 2s infinite;
+            }
+
+            /* Filled Cards for Sidebar */
+            .card {
+                background-color: #18181b; /* Zinc 900 */
+                border: 1px solid #27272a; /* Zinc 800 */
+                box-shadow: none;
+                padding: 16px;
+                border-radius: 8px;
+            }
+            .card:hover {
+                background-color: #27272a; /* Zinc 800 */
+                transform: none;
+                border-color: #3f3f46; /* Zinc 700 */
+            }
+
+            /* Typography Overrides */
+            h3, h4 { color: #e4e4e7; opacity: 1; } /* Zinc 200 */
+            .muted { color: #a1a1aa; opacity: 1; } /* Zinc 400 */
+            
+            /* Input overrides for dark theme consistency */
+            button {
+                background-color: #2563eb; /* Blue 600 */
+                color: white;
+                border: none;
+            }
+            button:hover { background-color: #1d4ed8; } /* Blue 700 */
+            button.secondary {
+                background-color: #27272a; /* Zinc 800 */
+                color: #e4e4e7;
+            }
+            button.secondary:hover { background-color: #3f3f46; } /* Zinc 700 */
+
+            /* Grid Stacking */
+            .grid, .info-grid, .docs-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px;
+            }
+
+            /* Buttons */
+            .actions { 
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            button {
+                width: 100%;
+                height: 36px;
+                border-radius: 6px;
+            }
+            
+            /* Status Stats Grid - Make them mini cards */
+            .info-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .info-grid .label { display: none; }
+            .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                background: transparent;
+            }
+            .info-grid > div {
+                 background: #18181b;
+                 padding: 8px;
+                 border-radius: 4px;
+                 border: 1px solid #27272a;
+                 display: flex;
+                 flex-direction: column;
+                 align-items: center;
+                 text-align: center;
+            }
+            .info-grid .label { 
+                display: block; 
+                font-size: 10px; 
+                margin-bottom: 2px;
+                color: #a1a1aa; /* Zinc 400 */
+            }
+            .info-grid .value { 
+                font-size: 14px; 
+                font-weight: 600;
+                color: #fafafa;
+            }
+            
+            /* Hide non-essential elements */
+            .badge { display: none; }
+            #server-url { 
+                font-size: 11px; 
+                color: #a1a1aa;
+                word-break: break-all; 
+            }
+
+            /* Aggressive Contrast Overrides */
+            a { color: #60a5fa !important; } /* Blue 400 */
+            .label { color: #a1a1aa !important; } /* Zinc 400 */
+            
+            /* Form Elements - Force Dark */
+            input, select, textarea {
+                background-color: #27272a !important; /* Zinc 800 */
+                color: #fafafa !important; /* Zinc 50 */
+                border-color: #3f3f46 !important; /* Zinc 700 */
+            }
+            input:focus, select:focus, textarea:focus {
+                border-color: #60a5fa !important; /* Blue 400 */
+            }
         }
 
     </style>
@@ -60227,6 +55215,7 @@ print(response.choices[0].message.content)\`;
                 </button>
                 <button class="secondary" id="btn-open-chat" title="Open Copilot Chat" style="min-width: 90px;">\u{1F4AC} Chat</button>
                 <button class="secondary" id="btn-ask-copilot" title="Ask Copilot" style="min-width: 90px;">\u2753 Ask</button>
+                <button class="secondary" id="btn-docs" title="Read Documentation" style="min-width: 90px;">\u{1F4DA} Docs</button>
                 <button class="secondary" id="btn-settings" title="Settings">\u2699\uFE0F</button>
             </div>
         </div>
@@ -60660,583 +55649,6 @@ print(response.choices[0].message.content)\`;
             </div>
         </div>
 
-        <!-- Prompt Generator Section -->
-        <div id="prompt-generator-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 95%, #8b5cf6 5%), color-mix(in srgb, var(--vscode-editor-background) 98%, #7c3aed 2%));">
-            <h3>\u2728 Prompt Generator</h3>
-            <p class="muted" style="margin-bottom: 16px;">Create high-quality, detailed prompts for AI assistants. Select options or describe what you need. <span style="opacity: 0.7; font-size: 10px;">\u{1F4A1} Uses Copilot directly - server not required</span></p>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
-                <!-- Project Type -->
-                <div>
-                    <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">\u{1F3AF} Project Type</label>
-                    <select id="prompt-project-type" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px;">
-                        <option value="">Select type...</option>
-                        <option value="web-app">Web Application</option>
-                        <option value="mobile-app">Mobile App</option>
-                        <option value="api">REST API / Backend</option>
-                        <option value="cli">CLI Tool</option>
-                        <option value="library">Library / Package</option>
-                        <option value="automation">Automation Script</option>
-                        <option value="data">Data Processing</option>
-                        <option value="ml">Machine Learning</option>
-                        <option value="devops">DevOps / Infrastructure</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <!-- Tech Stack -->
-                <div>
-                    <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">\u{1F6E0}\uFE0F Tech Stack</label>
-                    <select id="prompt-tech-stack" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px;">
-                        <option value="">Select stack...</option>
-                        <option value="typescript-node">TypeScript + Node.js</option>
-                        <option value="python">Python</option>
-                        <option value="react">React + TypeScript</option>
-                        <option value="nextjs">Next.js</option>
-                        <option value="vue">Vue.js</option>
-                        <option value="rust">Rust</option>
-                        <option value="go">Go</option>
-                        <option value="java">Java / Spring</option>
-                        <option value="csharp">.NET / C#</option>
-                        <option value="swift">Swift / iOS</option>
-                        <option value="kotlin">Kotlin / Android</option>
-                        <option value="flutter">Flutter / Dart</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <!-- Goal -->
-                <div>
-                    <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">\u{1F3AA} Goal</label>
-                    <select id="prompt-goal" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px;">
-                        <option value="">Select goal...</option>
-                        <option value="build-new">Build from scratch</option>
-                        <option value="add-feature">Add new feature</option>
-                        <option value="refactor">Refactor / Improve</option>
-                        <option value="debug">Debug / Fix issues</option>
-                        <option value="optimize">Optimize performance</option>
-                        <option value="test">Write tests</option>
-                        <option value="document">Write documentation</option>
-                        <option value="review">Code review</option>
-                        <option value="migrate">Migrate / Upgrade</option>
-                        <option value="learn">Learn / Explain</option>
-                    </select>
-                </div>
-
-                <!-- Complexity -->
-                <div>
-                    <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">\u{1F4CA} Complexity</label>
-                    <select id="prompt-complexity" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px;">
-                        <option value="">Select level...</option>
-                        <option value="simple">Simple / Quick task</option>
-                        <option value="medium">Medium complexity</option>
-                        <option value="complex">Complex / Multi-step</option>
-                        <option value="enterprise">Enterprise-grade</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Custom Context -->
-            <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">\u{1F4DD} Describe what you want to build</label>
-                <textarea id="prompt-context" placeholder="E.g., 'A user authentication system with OAuth, password reset, and role-based access control...'" style="width: 100%; min-height: 80px; padding: 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px; resize: vertical; font-family: inherit; box-sizing: border-box;"></textarea>
-            </div>
-
-            <!-- Generate Button -->
-            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                <button id="btn-generate-prompt" style="flex: 1; padding: 10px 16px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    \u2728 Generate Prompt
-                </button>
-                <button id="btn-enhance-prompt" class="secondary" style="padding: 10px 16px; background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); border: none; border-radius: 6px; cursor: pointer; font-size: 12px;" title="Enhance with AI suggestions">
-                    \u{1F680} Enhance
-                </button>
-            </div>
-
-            <!-- Output Area -->
-            <div id="prompt-output-container" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <label style="font-size: 11px; font-weight: 600; opacity: 0.8;">\u{1F4CB} Generated Prompt</label>
-                    <div style="display: flex; gap: 4px;">
-                        <button id="btn-copy-prompt" class="secondary" style="padding: 4px 10px; font-size: 10px; border-radius: 4px; cursor: pointer; border: none; background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);">\u{1F4CB} Copy</button>
-                        <button id="btn-export-prompt" class="secondary" style="padding: 4px 10px; font-size: 10px; border-radius: 4px; cursor: pointer; border: none; background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);">\u{1F4BE} Export</button>
-                    </div>
-                </div>
-                <div id="prompt-output" style="background: var(--vscode-editor-background); border: 1px solid var(--vscode-widget-border); border-radius: 8px; padding: 16px; font-size: 12px; line-height: 1.6; white-space: pre-wrap; max-height: 400px; overflow-y: auto; font-family: var(--vscode-editor-font-family);"></div>
-            </div>
-
-            <!-- Loading State -->
-            <div id="prompt-loading" style="display: none; text-align: center; padding: 20px;">
-                <div style="display: inline-block; animation: spin 1s linear infinite; font-size: 24px;">\u2699\uFE0F</div>
-                <div class="muted" style="margin-top: 8px;">Generating your prompt with AI...</div>
-            </div>
-        </div>
-
-        <!-- Mini Wiki Section -->
-        <div id="wiki-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 92%, #10b981 8%), color-mix(in srgb, var(--vscode-editor-background) 96%, #059669 4%));">
-            <h3>\u{1F4DA} API Usage Guide</h3>
-            <p class="muted" style="margin-bottom: 16px;">Complete reference for connecting to the Copilot API Gateway from various languages, with installation instructions and real-world examples.</p>
-
-            <!-- Tab Navigation -->
-            <div id="wiki-tabs" style="display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap;">
-                <button class="wiki-tab active" data-tab="python" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">\u{1F40D} Python</button>
-                <button class="wiki-tab" data-tab="javascript" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">\u{1F4DC} JavaScript</button>
-                <button class="wiki-tab" data-tab="curl" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">\u{1F527} cURL</button>
-                <button class="wiki-tab" data-tab="mcp" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">\u{1F50C} MCP Tools</button>
-            </div>
-
-            <!-- Tab Content -->
-            <div id="wiki-content" style="background: var(--vscode-editor-background); border-radius: 0 8px 8px 8px; padding: 16px; max-height: 600px; overflow-y: auto;">
-
-                <!-- Python Tab -->
-                <div class="wiki-panel" data-panel="python">
-                    <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">\u{1F4E6} Installation</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;"># Install the OpenAI Python library
-pip install openai
-
-# Or with Anthropic support
-pip install anthropic</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F680} Quick Start - OpenAI SDK</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
-
-# Point to your local Copilot API Gateway
-client = OpenAI(
-    base_url="http://${config2.host}:${config2.port}/v1",
-    api_key="not-needed"  # API key not required unless configured
-)
-
-# Simple chat completion
-response = client.chat.completions.create(
-    model="gpt-4o",  # or "claude-3.5-sonnet", "o1-mini", etc.
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Explain quantum computing in simple terms"}
-    ],
-    temperature=0.7,
-    max_tokens=500
-)
-
-print(response.choices[0].message.content)</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F4E1} Streaming Responses</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://${config2.host}:${config2.port}/v1",
-    api_key="not-needed"
-)
-
-# Stream the response in real-time
-stream = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "Write a haiku about coding"}],
-    stream=True
-)
-
-for chunk in stream:
-    if chunk.choices[0].delta.content:
-        print(chunk.choices[0].delta.content, end="", flush=True)
-print()  # Newline at end</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F527} Function Calling (Tool Use)</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
-import json
-
-client = OpenAI(
-    base_url="http://${config2.host}:${config2.port}/v1",
-    api_key="not-needed"
-)
-
-# Define tools/functions
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": "Get current weather for a location",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {"type": "string", "description": "City name"},
-                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]}
-                },
-                "required": ["location"]
-            }
-        }
-    }
-]
-
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "What's the weather in Tokyo?"}],
-    tools=tools,
-    tool_choice="auto"
-)
-
-# Check if model wants to call a function
-if response.choices[0].message.tool_calls:
-    tool_call = response.choices[0].message.tool_calls[0]
-    print(f"Function: {tool_call.function.name}")
-    print(f"Arguments: {tool_call.function.arguments}")</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F3AD} Using with Anthropic SDK</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import anthropic
-
-client = anthropic.Anthropic(
-    base_url="http://${config2.host}:${config2.port}",
-    api_key="not-needed"
-)
-
-message = client.messages.create(
-    model="claude-3.5-sonnet",
-    max_tokens=1024,
-    system="You are a helpful coding assistant.",
-    messages=[
-        {"role": "user", "content": "Write a Python function to calculate fibonacci"}
-    ]
-)
-
-print(message.content[0].text)</pre>
-                </div>
-
-                <!-- JavaScript Tab -->
-                <div class="wiki-panel" data-panel="javascript" style="display: none;">
-                    <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">\u{1F4E6} Installation</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;"># Node.js - Install OpenAI SDK
-npm install openai
-
-# Or with yarn
-yarn add openai</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F680} Quick Start - Node.js</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  baseURL: 'http://${config2.host}:${config2.port}/v1',
-  apiKey: 'not-needed'
-});
-
-async function chat() {
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    messages: [
-      { role: 'system', content: 'You are a helpful assistant.' },
-      { role: 'user', content: 'Hello!' }
-    ]
-  });
-
-  console.log(completion.choices[0].message.content);
-}
-
-chat();</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F4E1} Streaming Responses</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  baseURL: 'http://${config2.host}:${config2.port}/v1',
-  apiKey: 'not-needed'
-});
-
-async function streamChat() {
-  const stream = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    messages: [{ role: 'user', content: 'Tell me a story' }],
-    stream: true
-  });
-
-  for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content || '';
-    process.stdout.write(content);
-  }
-}
-
-streamChat();</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F310} Browser - Fetch API</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">async function chat(message) {
-  const response = await fetch('http://${config2.host}:${config2.port}/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'gpt-4o',
-      messages: [{ role: 'user', content: message }]
-    })
-  });
-
-  const data = await response.json();
-  return data.choices[0].message.content;
-}
-
-// Usage
-const answer = await chat('What is the capital of France?');
-console.log(answer);</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F527} Function Calling</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  baseURL: 'http://${config2.host}:${config2.port}/v1',
-  apiKey: 'not-needed'
-});
-
-const tools = [{
-  type: 'function',
-  function: {
-    name: 'search_database',
-    description: 'Search for records in database',
-    parameters: {
-      type: 'object',
-      properties: {
-        query: { type: 'string', description: 'Search query' },
-        limit: { type: 'number', description: 'Max results' }
-      },
-      required: ['query']
-    }
-  }
-}];
-
-const response = await openai.chat.completions.create({
-  model: 'gpt-4o',
-  messages: [{ role: 'user', content: 'Find all users named John' }],
-  tools: tools
-});
-
-console.log(response.choices[0].message.tool_calls);</pre>
-                </div>
-
-                <!-- cURL Tab -->
-                <div class="wiki-panel" data-panel="curl" style="display: none;">
-                    <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">\u{1F680} Basic Chat Completion</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config2.host}:${config2.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [
-      {"role": "system", "content": "You are a helpful assistant."},
-      {"role": "user", "content": "Hello!"}
-    ]
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F4E1} Streaming Response</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config2.host}:${config2.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -N \\
-  -d '{
-    "model": "gpt-4o",
-    "stream": true,
-    "messages": [{"role": "user", "content": "Write a poem about AI"}]
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F510} With API Key Authentication</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config2.host}:${config2.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer your-secret-api-key" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F4CB} List Available Models</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config2.host}:${config2.port}/v1/models</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F3AD} Anthropic Endpoint (Claude)</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config2.host}:${config2.port}/v1/messages \\
-  -H "Content-Type: application/json" \\
-  -H "x-api-key: not-needed" \\
-  -H "anthropic-version: 2023-06-01" \\
-  -d '{
-    "model": "claude-3.5-sonnet",
-    "max_tokens": 1024,
-    "messages": [{"role": "user", "content": "Hello Claude!"}]
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F999} Llama Endpoint (Meta)</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config2.host}:${config2.port}/llama/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [
-      {"role": "system", "content": "You are a helpful assistant."},
-      {"role": "user", "content": "Hello!"}
-    ],
-    "max_completion_tokens": 1024
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F527} Function Calling</h4>
-
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config2.host}:${config2.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [{"role": "user", "content": "What time is it in London?"}],
-    "tools": [{
-      "type": "function",
-      "function": {
-        "name": "get_time",
-        "description": "Get current time for a timezone",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "timezone": {"type": "string"}
-          }
-        }
-      }
-    }]
-  }'</pre>
-                </div>
-
-                <!-- MCP Tools Tab -->
-                <div class="wiki-panel" data-panel="mcp" style="display: none;">
-                    <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">\u2699\uFE0F Configure MCP Servers (settings.json)</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">// Add to your VS Code settings.json
-"githubCopilotApi.mcp.servers": {
-  // Filesystem access
-  "filesystem": {
-    "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/folder"]
-  },
-  // Git operations
-  "git": {
-    "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-git"]
-  },
-  // Remote MCP server via SSE
-  "remote-tools": {
-    "url": "http://your-server:8000/sse"
-  }
-}</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F5A5}\uFE0F Built-in VS Code Tools</h4>
-                    <p class="muted" style="font-size: 11px; margin-bottom: 12px;">These tools are automatically available without any configuration:</p>
-
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #10b981;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_read_file</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">Read the contents of any file in the workspace</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "uri": "file:///path/to/file.ts" }</pre>
-                        </div>
-
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_list_files</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">List files in a directory with optional glob pattern</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "folder": "/src", "pattern": "**/*.ts" }</pre>
-                        </div>
-
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_open_file</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">Open a file in VS Code editor, optionally at specific lines</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "uri": "file:///path/to/file.ts", "startLine": 10, "endLine": 20 }</pre>
-                        </div>
-
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #ef4444;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_get_diagnostics</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">Get current errors and warnings from the Problems panel</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "maxResults": 50 }</pre>
-                        </div>
-
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #8b5cf6;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_get_active_editor</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">Get content and cursor position of currently open file</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ } // No parameters needed</pre>
-                        </div>
-                    </div>
-
-                    <h4 style="color: var(--vscode-textLink-foreground); margin-top: 20px;">\u{1F40D} Using VS Code Tools with Python</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://${config2.host}:${config2.port}/v1",
-    api_key="not-needed"
-)
-
-# Define the VS Code tools
-vscode_tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "vscode_read_file",
-            "description": "Read the contents of a file",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "uri": {"type": "string", "description": "File URI (file:///path/to/file)"}
-                },
-                "required": ["uri"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "vscode_get_diagnostics",
-            "description": "Get current errors and warnings",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "maxResults": {"type": "number", "description": "Max results to return"}
-                }
-            }
-        }
-    }
-]
-
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-        {"role": "user", "content": "Read package.json and tell me the version"}
-    ],
-    tools=vscode_tools,
-    tool_choice="auto"
-)
-
-# The gateway will automatically execute the tool and return results
-if response.choices[0].message.tool_calls:
-    for tool_call in response.choices[0].message.tool_calls:
-        print(f"Tool: {tool_call.function.name}")
-        print(f"Args: {tool_call.function.arguments}")</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">\u{1F527} cURL Example with MCP Tools</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config2.host}:${config2.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [
-      {"role": "user", "content": "List all TypeScript files in /src and check for errors"}
-    ],
-    "tools": [
-      {
-        "type": "function",
-        "function": {
-          "name": "vscode_list_files",
-          "description": "List files matching pattern",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "folder": {"type": "string"},
-              "pattern": {"type": "string"}
-            }
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "vscode_get_diagnostics",
-          "description": "Get errors and warnings",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "maxResults": {"type": "number"}
-            }
-          }
-        }
-      }
-    ]
-  }'</pre>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Detail Modal -->
@@ -61290,6 +55702,13 @@ if response.choices[0].message.tool_calls:
         document.getElementById('btn-settings').onclick = function() {
             vscode.postMessage({ type: 'showControls' });
         };
+
+        const btnDocs = document.getElementById('btn-docs');
+        if (btnDocs) {
+            btnDocs.onclick = function() {
+                vscode.postMessage({ type: 'openUrl', value: 'https://notes.suhaib.in/docs/vscode/extensions/github-copilot-api-gateway/' });
+            };
+        }
 
         document.getElementById('btn-copy-url').onclick = function() {
             var url = document.getElementById('server-url').innerText;
@@ -61484,65 +55903,6 @@ if response.choices[0].message.tool_calls:
                 tab.style.color = 'var(--vscode-button-secondaryForeground)';
             }
         });
-
-        // Prompt Generator handlers
-        document.getElementById('btn-generate-prompt').onclick = function() {
-            var projectType = document.getElementById('prompt-project-type').value;
-            var techStack = document.getElementById('prompt-tech-stack').value;
-            var goal = document.getElementById('prompt-goal').value;
-            var complexity = document.getElementById('prompt-complexity').value;
-            var context = document.getElementById('prompt-context').value;
-
-            if (!context && !projectType && !techStack && !goal) {
-                alert('Please select at least one option or describe what you want to build.');
-                return;
-            }
-
-            document.getElementById('prompt-output-container').style.display = 'none';
-            document.getElementById('prompt-loading').style.display = 'block';
-
-            vscode.postMessage({
-                type: 'generatePrompt',
-                data: { projectType: projectType, techStack: techStack, goal: goal, complexity: complexity, context: context }
-            });
-        };
-
-        document.getElementById('btn-enhance-prompt').onclick = function() {
-            var context = document.getElementById('prompt-context').value;
-            var currentOutput = document.getElementById('prompt-output').textContent;
-
-            if (!context && !currentOutput) {
-                alert('Please enter a description or generate a prompt first.');
-                return;
-            }
-
-            document.getElementById('prompt-loading').style.display = 'block';
-
-            vscode.postMessage({
-                type: 'enhancePrompt',
-                data: { context: context, existingPrompt: currentOutput }
-            });
-        };
-
-        document.getElementById('btn-copy-prompt').onclick = function() {
-            var content = document.getElementById('prompt-output').textContent;
-            navigator.clipboard.writeText(content).then(function() {
-                var btn = document.getElementById('btn-copy-prompt');
-                btn.textContent = '\u2713 Copied';
-                setTimeout(function() { btn.textContent = '\u{1F4CB} Copy'; }, 1500);
-            });
-        };
-
-        document.getElementById('btn-export-prompt').onclick = function() {
-            var content = document.getElementById('prompt-output').textContent;
-            var blob = new Blob([content], { type: 'text/plain' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'generated-prompt.txt';
-            a.click();
-            URL.revokeObjectURL(url);
-        };
 
         // Auto-refresh Countdown Logic
         let refreshTimer = 10;
@@ -61744,19 +56104,7 @@ if response.choices[0].message.tool_calls:
                     if (wikiSection) {
                         wikiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
-                } else if (target === 'prompt-generator') {
-                    var promptSection = document.getElementById('prompt-generator-section');
-                    if (promptSection) {
-                        promptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
                 }
-            } else if (message.type === 'promptResult') {
-                document.getElementById('prompt-loading').style.display = 'none';
-                document.getElementById('prompt-output-container').style.display = 'block';
-                document.getElementById('prompt-output').textContent = message.data;
-            } else if (message.type === 'promptError') {
-                document.getElementById('prompt-loading').style.display = 'none';
-                alert('Error generating prompt: ' + message.error);
             }
         });
 
@@ -62080,20 +56428,13 @@ vscode.postMessage({ type: 'getAuditLogs', value: { page: 1, pageSize: 10 } });
           vscode5.env.openExternal(vscode5.Uri.parse(swaggerUrl));
           break;
         }
-        case "openMetrics": {
-          const status = await this._gateway.getStatus();
-          const metricsUrl = `http://${status.config.host}:${status.config.port}/metrics`;
-          vscode5.env.openExternal(vscode5.Uri.parse(metricsUrl));
-          break;
-        }
         case "openWiki":
-          await _CopilotPanel.createOrShow(this._extensionUri, this._gateway, "wiki");
+          await _CopilotPanel.openWiki(this._extensionUri, this._gateway);
           break;
-        case "openPromptGenerator":
-          await _CopilotPanel.createOrShow(this._extensionUri, this._gateway, "prompt-generator");
-          break;
-        case "openAppsHub":
-          void vscode5.commands.executeCommand("github-copilot-api-vscode.openAppsHub");
+        case "openUrl":
+          if (typeof data.value === "string") {
+            void vscode5.commands.executeCommand("vscode.open", vscode5.Uri.parse(data.value));
+          }
           break;
       }
     });
@@ -62108,5899 +56449,49 @@ function getNonce() {
   return text;
 }
 
-// src/AppsPanel.ts
-var vscode8 = __toESM(require("vscode"));
-
-// src/apps/registry.ts
-var appLoaders = {
-  // General / Everyone
-  "decision-doctor": () => Promise.resolve().then(() => (init_decisionDoctor(), decisionDoctor_exports)).then((m) => m.decisionDoctorApp),
-  "skill-sprinter": () => Promise.resolve().then(() => (init_skillSprinter(), skillSprinter_exports)).then((m) => m.skillSprinterApp),
-  "universal-summarizer": () => Promise.resolve().then(() => (init_universalSummarizer(), universalSummarizer_exports)).then((m) => m.universalSummarizerApp),
-  "icebreaker-chef": () => Promise.resolve().then(() => (init_icebreakerChef(), icebreakerChef_exports)).then((m) => m.icebreakerChefApp),
-  // Developer
-  "code-review": () => Promise.resolve().then(() => (init_codeReview(), codeReview_exports)).then((m) => m.codeReviewApp),
-  "test-case-generator": () => Promise.resolve().then(() => (init_testCaseGenerator(), testCaseGenerator_exports)).then((m) => m.testCaseGeneratorApp),
-  "bug-report-writer": () => Promise.resolve().then(() => (init_bugReportWriter(), bugReportWriter_exports)).then((m) => m.bugReportWriterApp),
-  "regex-generator": () => Promise.resolve().then(() => (init_regexGenerator(), regexGenerator_exports)).then((m) => m.regexGeneratorApp),
-  "api-doc-writer": () => Promise.resolve().then(() => (init_apiDocWriter(), apiDocWriter_exports)).then((m) => m.apiDocWriterApp),
-  "sql-query-builder": () => Promise.resolve().then(() => (init_sqlQueryBuilder(), sqlQueryBuilder_exports)).then((m) => m.sqlQueryBuilderApp),
-  "git-commit-writer": () => Promise.resolve().then(() => (init_gitCommitWriter(), gitCommitWriter_exports)).then((m) => m.gitCommitWriterApp),
-  "json-tools": () => Promise.resolve().then(() => (init_jsonTools(), jsonTools_exports)).then((m) => m.jsonToolsApp),
-  "code-explainer": () => Promise.resolve().then(() => (init_codeExplainer(), codeExplainer_exports)).then((m) => m.codeExplainerApp),
-  // Productivity
-  "meeting-notes-to-actions": () => Promise.resolve().then(() => (init_meetingNotesToActions(), meetingNotesToActions_exports)).then((m) => m.meetingNotesToActionsApp),
-  "standup-summary": () => Promise.resolve().then(() => (init_standupSummary(), standupSummary_exports)).then((m) => m.standupSummaryApp),
-  // Leadership
-  "one-on-one-prep": () => Promise.resolve().then(() => (init_oneOnOnePrep(), oneOnOnePrep_exports)).then((m) => m.oneOnOnePrepApp),
-  "performance-review": () => Promise.resolve().then(() => (init_performanceReview(), performanceReview_exports)).then((m) => m.performanceReviewApp),
-  "team-feedback": () => Promise.resolve().then(() => (init_teamFeedback(), teamFeedback_exports)).then((m) => m.teamFeedbackApp),
-  // QA
-  "playwright-generator": () => Promise.resolve().then(() => (init_playwrightGenerator(), playwrightGenerator_exports)).then((m) => m.playwrightGeneratorApp),
-  "accessibility-checker": () => Promise.resolve().then(() => (init_accessibilityChecker(), accessibilityChecker_exports)).then((m) => m.accessibilityCheckerApp),
-  // Security
-  "vulnerability-scanner": () => Promise.resolve().then(() => (init_vulnerabilityScanner(), vulnerabilityScanner_exports)).then((m) => m.vulnerabilityScannerApp),
-  // DevOps
-  "iac-generator": () => Promise.resolve().then(() => (init_iacGenerator(), iacGenerator_exports)).then((m) => m.iacGeneratorApp),
-  // Architecture
-  "adr-draftsman": () => Promise.resolve().then(() => (init_adrDraftsman(), adrDraftsman_exports)).then((m) => m.adrDraftsmanApp),
-  // Product
-  "prd-draftsman": () => Promise.resolve().then(() => (init_prdDraftsman(), prdDraftsman_exports)).then((m) => m.prdDraftsmanApp),
-  // JIRA
-  "jira-story-writer": () => Promise.resolve().then(() => (init_jiraStoryWriter(), jiraStoryWriter_exports)).then((m) => m.jiraStoryWriterApp),
-  "sprint-retro": () => Promise.resolve().then(() => (init_sprintRetro(), sprintRetro_exports)).then((m) => m.sprintRetroApp),
-  // Communication
-  "email-composer": () => Promise.resolve().then(() => (init_emailComposer(), emailComposer_exports)).then((m) => m.emailComposerApp),
-  "slack-polisher": () => Promise.resolve().then(() => (init_slackPolisher(), slackPolisher_exports)).then((m) => m.slackPolisherApp),
-  "ecard-recognition": () => Promise.resolve().then(() => (init_ecardRecognition(), ecardRecognition_exports)).then((m) => m.ecardRecognitionApp),
-  "email-response-helper": () => Promise.resolve().then(() => (init_emailResponseHelper(), emailResponseHelper_exports)).then((m) => m.emailResponseHelperApp),
-  // Inspiration
-  "brainstorming-partner": () => Promise.resolve().then(() => (init_brainstormingPartner(), brainstormingPartner_exports)).then((m) => m.brainstormingPartnerApp),
-  "prompt-explorer": () => Promise.resolve().then(() => (init_promptExplorer(), promptExplorer_exports)).then((m) => m.promptExplorerApp),
-  "daily-inspiration": () => Promise.resolve().then(() => (init_dailyInspiration(), dailyInspiration_exports)).then((m) => m.dailyInspirationApp),
-  // Wellness
-  "rubber-duck-therapist": () => Promise.resolve().then(() => (init_rubberDuckTherapist(), rubberDuckTherapist_exports)).then((m) => m.rubberDuckTherapistApp),
-  "gratitude-journal": () => Promise.resolve().then(() => (init_gratitudeJournal(), gratitudeJournal_exports)).then((m) => m.gratitudeJournalApp),
-  "focus-mindfulness": () => Promise.resolve().then(() => (init_focusMindfulness(), focusMindfulness_exports)).then((m) => m.focusMindfulnessApp),
-  // Games
-  "story-chain": () => Promise.resolve().then(() => (init_storyChain(), storyChain_exports)).then((m) => m.storyChainApp),
-  "trivia-showdown": () => Promise.resolve().then(() => (init_triviaShowdown(), triviaShowdown_exports)).then((m) => m.triviaShowdownApp),
-  "caption-battle": () => Promise.resolve().then(() => (init_captionBattle(), captionBattle_exports)).then((m) => m.captionBattleApp),
-  "debate-arena": () => Promise.resolve().then(() => (init_debateArena(), debateArena_exports)).then((m) => m.debateArenaApp)
-};
-var appMetadataList = [
-  // General / Everyone
-  { id: "decision-doctor", name: "Decision Doctor", description: "Get AI help making tough decisions", icon: "\u{1FA7A}", category: "productivity" },
-  { id: "skill-sprinter", name: "Skill Sprinter", description: "Quick micro-learning sessions", icon: "\u{1F3C3}", category: "productivity" },
-  { id: "universal-summarizer", name: "Universal Summarizer", description: "Summarize any text quickly", icon: "\u{1F4DD}", category: "productivity" },
-  { id: "icebreaker-chef", name: "Icebreaker Chef", description: "Generate fun team icebreakers", icon: "\u{1F9CA}", category: "productivity" },
-  // Developer
-  { id: "code-review", name: "Code Review", description: "Full project code review using git diff", icon: "\u{1F50D}", category: "developer" },
-  { id: "test-case-generator", name: "Test Case Generator", description: "Generate comprehensive test cases", icon: "\u{1F9EA}", category: "developer" },
-  { id: "bug-report-writer", name: "Bug Report Writer", description: "Write detailed bug reports", icon: "\u{1F41B}", category: "developer" },
-  { id: "regex-generator", name: "Regex Generator", description: "Generate and explain regex patterns", icon: "\u{1F523}", category: "developer" },
-  { id: "api-doc-writer", name: "API Doc Writer", description: "Generate API documentation", icon: "\u{1F4DA}", category: "developer" },
-  { id: "sql-query-builder", name: "SQL Query Builder", description: "Build complex SQL queries", icon: "\u{1F5C3}\uFE0F", category: "developer" },
-  { id: "git-commit-writer", name: "Git Commit Writer", description: "Generate professional commit messages", icon: "\u{1F4DD}", category: "developer" },
-  { id: "json-tools", name: "JSON Tools", description: "Format, validate, and transform JSON", icon: "\u{1F527}", category: "developer" },
-  { id: "code-explainer", name: "Code Explainer", description: "Understand any code with explanations", icon: "\u{1F393}", category: "developer" },
-  // Productivity
-  { id: "meeting-notes-to-actions", name: "Meeting Notes to Actions", description: "Convert meeting notes to action items", icon: "\u{1F4CB}", category: "productivity" },
-  { id: "standup-summary", name: "Standup Summary", description: "Generate standup updates", icon: "\u{1F3AF}", category: "productivity" },
-  // Leadership
-  { id: "one-on-one-prep", name: "1:1 Prep", description: "Prepare for one-on-one meetings", icon: "\u{1F465}", category: "leadership" },
-  { id: "performance-review", name: "Performance Review", description: "Draft performance reviews", icon: "\u{1F4CA}", category: "leadership" },
-  { id: "team-feedback", name: "Team Feedback", description: "Generate constructive feedback", icon: "\u{1F4AC}", category: "leadership" },
-  // QA
-  { id: "playwright-generator", name: "Playwright Generator", description: "Generate Playwright test scripts", icon: "\u{1F3AD}", category: "qa" },
-  { id: "accessibility-checker", name: "Accessibility Checker", description: "Check accessibility compliance", icon: "\u267F", category: "qa" },
-  // Security
-  { id: "vulnerability-scanner", name: "Vulnerability Scanner", description: "Scan code for vulnerabilities", icon: "\u{1F512}", category: "security" },
-  // DevOps
-  { id: "iac-generator", name: "IaC Generator", description: "Generate infrastructure as code", icon: "\u2601\uFE0F", category: "devops" },
-  // Architecture
-  { id: "adr-draftsman", name: "ADR Draftsman", description: "Draft Architecture Decision Records", icon: "\u{1F3D7}\uFE0F", category: "architecture" },
-  // Product
-  { id: "prd-draftsman", name: "PRD Draftsman", description: "Draft Product Requirements Documents", icon: "\u{1F4C4}", category: "product" },
-  // JIRA
-  { id: "jira-story-writer", name: "Jira Story Writer", description: "Write Jira user stories", icon: "\u{1F3AB}", category: "jira" },
-  { id: "sprint-retro", name: "Sprint Retro", description: "Generate sprint retrospective notes", icon: "\u{1F504}", category: "jira" },
-  // Communication
-  { id: "email-composer", name: "Email Composer", description: "Compose professional emails", icon: "\u2709\uFE0F", category: "communication" },
-  { id: "slack-polisher", name: "Slack Polisher", description: "Polish Slack messages", icon: "\u{1F4AC}", category: "communication" },
-  { id: "ecard-recognition", name: "E-Card Recognition", description: "Create recognition e-cards", icon: "\u{1F3C6}", category: "communication" },
-  { id: "email-response-helper", name: "Email Response Helper", description: "Draft email responses", icon: "\u21A9\uFE0F", category: "communication" },
-  // Inspiration
-  { id: "brainstorming-partner", name: "Brainstorming Partner", description: "AI brainstorming companion", icon: "\u{1F4A1}", category: "inspiration" },
-  { id: "prompt-explorer", name: "Prompt Explorer", description: "Explore and refine prompts", icon: "\u{1F52E}", category: "inspiration" },
-  { id: "daily-inspiration", name: "Daily Inspiration", description: "Get daily inspiration quotes", icon: "\u2728", category: "inspiration" },
-  // Wellness
-  { id: "rubber-duck-therapist", name: "Rubber Duck Therapist", description: "Talk through problems", icon: "\u{1F986}", category: "wellness" },
-  { id: "gratitude-journal", name: "Gratitude Journal", description: "Daily gratitude prompts", icon: "\u{1F64F}", category: "wellness" },
-  { id: "focus-mindfulness", name: "Focus & Mindfulness", description: "Mindfulness and focus exercises", icon: "\u{1F9D8}", category: "wellness" },
-  // Games
-  { id: "story-chain", name: "Story Chain", description: "Collaborative storytelling game", icon: "\u{1F4D6}", category: "games" },
-  { id: "trivia-showdown", name: "Trivia Showdown", description: "Team trivia game", icon: "\u2753", category: "games" },
-  { id: "caption-battle", name: "Caption Battle", description: "Caption contest game", icon: "\u{1F5BC}\uFE0F", category: "games" },
-  { id: "debate-arena", name: "Debate Arena", description: "Friendly debate game", icon: "\u2694\uFE0F", category: "games" }
-];
-var loadedApps = /* @__PURE__ */ new Map();
-function getAppMetadataById(id) {
-  return appMetadataList.find((app) => app.id === id);
-}
-async function getAppByIdAsync(id) {
-  if (loadedApps.has(id)) {
-    return loadedApps.get(id);
-  }
-  const loader = appLoaders[id];
-  if (!loader) {
-    return void 0;
-  }
-  try {
-    const app = await loader();
-    loadedApps.set(id, app);
-    return app;
-  } catch (error2) {
-    console.error(`Failed to load app "${id}":`, error2);
-    return void 0;
-  }
-}
-function getAppById(id) {
-  if (loadedApps.has(id)) {
-    return loadedApps.get(id);
-  }
-  const loader = appLoaders[id];
-  if (loader) {
-    loader().then((app) => {
-      loadedApps.set(id, app);
-    }).catch((err) => {
-      console.error(`Failed to preload app "${id}":`, err);
-    });
-  }
-  return void 0;
-}
-function getAppsGroupedByCategory() {
-  const grouped = {
-    wellness: [],
-    inspiration: [],
-    communication: [],
-    developer: [],
-    qa: [],
-    leadership: [],
-    productivity: [],
-    security: [],
-    devops: [],
-    architecture: [],
-    product: [],
-    jira: [],
-    games: []
-  };
-  for (const app of appMetadataList) {
-    grouped[app.category].push(app);
-  }
-  return grouped;
-}
-var categoryMetadata = {
-  developer: {
-    label: "Developer",
-    icon: "\u{1F468}\u200D\u{1F4BB}",
-    description: "Tools for software developers"
-  },
-  qa: {
-    label: "QA & Testing",
-    icon: "\u{1F9EA}",
-    description: "Tools for quality assurance"
-  },
-  leadership: {
-    label: "Leadership",
-    icon: "\u{1F4CA}",
-    description: "Tools for tech leads and managers"
-  },
-  productivity: {
-    label: "Productivity",
-    icon: "\u26A1",
-    description: "General productivity tools"
-  },
-  security: {
-    label: "Security & Compliance",
-    icon: "\u{1F6E1}\uFE0F",
-    description: "Tools for code safety and regulatory alignment"
-  },
-  devops: {
-    label: "DevOps & Infrastructure",
-    icon: "\u2601\uFE0F",
-    description: "Streamlining cloud operations and manifest management"
-  },
-  architecture: {
-    label: "Architecture & Design",
-    icon: "\u{1F3D7}\uFE0F",
-    description: "Supporting high-level technical decision-making and planning"
-  },
-  product: {
-    label: "Product & Strategy",
-    icon: "\u{1F4C8}",
-    description: "Bridging the gap between engineering and business"
-  },
-  jira: {
-    label: "JIRA & Project Management",
-    icon: "\u{1F3AB}",
-    description: "Tools for story writing and sprint management"
-  },
-  communication: {
-    label: "Communication",
-    icon: "\u{1F4AC}",
-    description: "Email, messaging, and professional writing"
-  },
-  inspiration: {
-    label: "Inspiration & Ideas",
-    icon: "\u2728",
-    description: "Brainstorming, prompts, and creative thinking"
-  },
-  wellness: {
-    label: "Wellness & Mindfulness",
-    icon: "\u{1F9D8}",
-    description: "Mental well-being and focus tools"
-  },
-  games: {
-    label: "Team Games",
-    icon: "\u{1F3AE}",
-    description: "Fun interactive games for team engagement"
-  }
-};
-
-// src/apps/AppService.ts
-var vscode7 = __toESM(require("vscode"));
-var AppService = class _AppService {
-  static instance;
-  constructor() {
-  }
-  /**
-   * Get singleton instance
-   */
-  static getInstance() {
-    if (!_AppService.instance) {
-      _AppService.instance = new _AppService();
-    }
-    return _AppService.instance;
-  }
-  /**
-   * Check if Copilot is available and ready
-   */
-  async checkCopilotAvailability() {
-    try {
-      const models = await vscode7.lm.selectChatModels({ vendor: "copilot" });
-      if (!models || models.length === 0) {
-        return {
-          available: false,
-          message: "GitHub Copilot is not available. Please ensure GitHub Copilot and Copilot Chat extensions are installed and you are signed in."
-        };
-      }
-      return { available: true };
-    } catch (error2) {
-      return {
-        available: false,
-        message: `Failed to access Copilot: ${error2 instanceof Error ? error2.message : String(error2)}`
-      };
-    }
-  }
-  /**
-   * Execute an app with the given inputs
-   */
-  async executeApp(app, inputs, onProgress, cancellationToken) {
-    const startTime = Date.now();
-    try {
-      const availability = await this.checkCopilotAvailability();
-      if (!availability.available) {
-        return {
-          success: false,
-          error: availability.message,
-          durationMs: Date.now() - startTime
-        };
-      }
-      let context;
-      if (app.fetchContext) {
-        onProgress?.("Gathering context...");
-        try {
-          context = await app.fetchContext(inputs);
-          if (context.errors && context.errors.length > 0) {
-            console.warn("[AppService] Context fetch warnings:", context.errors);
-          }
-        } catch (error2) {
-          return {
-            success: false,
-            error: `Failed to gather context: ${error2 instanceof Error ? error2.message : String(error2)}`,
-            durationMs: Date.now() - startTime
-          };
-        }
-      }
-      onProgress?.("Building prompt...");
-      const userPrompt = app.buildUserPrompt(inputs, context);
-      onProgress?.("Analyzing with AI...");
-      const response = await this.invokeLLM(
-        app.systemPrompt,
-        userPrompt,
-        cancellationToken
-      );
-      if (!response.success) {
-        return {
-          success: false,
-          error: response.error,
-          durationMs: Date.now() - startTime,
-          tokens: response.tokens
-        };
-      }
-      onProgress?.("Formatting output...");
-      let output;
-      if (app.parseResponse) {
-        output = app.parseResponse(response.content, inputs);
-      } else {
-        output = {
-          type: "markdown",
-          content: response.content,
-          actions: app.defaultActions || this.getDefaultActions()
-        };
-      }
-      return {
-        success: true,
-        output,
-        durationMs: Date.now() - startTime,
-        tokens: response.tokens
-      };
-    } catch (error2) {
-      return {
-        success: false,
-        error: error2 instanceof Error ? error2.message : String(error2),
-        durationMs: Date.now() - startTime
-      };
-    }
-  }
-  /**
-   * Invoke the LLM with system and user prompts
-   */
-  async invokeLLM(systemPrompt, userPrompt, cancellationToken) {
-    try {
-      const models = await vscode7.lm.selectChatModels({ vendor: "copilot" });
-      if (!models || models.length === 0) {
-        return {
-          success: false,
-          error: "No Copilot language model available"
-        };
-      }
-      const model = models[0];
-      const messages = [
-        vscode7.LanguageModelChatMessage.User(`[System Instructions]
-${systemPrompt}`),
-        vscode7.LanguageModelChatMessage.User(userPrompt)
-      ];
-      const cts = cancellationToken ? { token: cancellationToken, dispose: () => {
-      } } : new vscode7.CancellationTokenSource();
-      const timeoutId = setTimeout(() => {
-        if ("cancel" in cts) {
-          cts.cancel();
-        }
-      }, 18e4);
-      try {
-        const response = await model.sendRequest(messages, {}, cts.token);
-        let content = "";
-        for await (const fragment of response.text) {
-          if (cts.token.isCancellationRequested) {
-            return {
-              success: false,
-              error: "Request was cancelled"
-            };
-          }
-          content += fragment;
-        }
-        let inputTokens = 0;
-        let outputTokens = 0;
-        try {
-          inputTokens = await model.countTokens(systemPrompt + userPrompt);
-          outputTokens = await model.countTokens(content);
-        } catch {
-        }
-        return {
-          success: true,
-          content: content.trim(),
-          tokens: { input: inputTokens, output: outputTokens }
-        };
-      } finally {
-        clearTimeout(timeoutId);
-        if (!cancellationToken) {
-          cts.dispose();
-        }
-      }
-    } catch (error2) {
-      if (error2 instanceof vscode7.CancellationError) {
-        return {
-          success: false,
-          error: "Request was cancelled"
-        };
-      }
-      return {
-        success: false,
-        error: error2 instanceof Error ? error2.message : String(error2)
-      };
-    }
-  }
-  /**
-   * Get default output actions
-   */
-  getDefaultActions() {
-    return [
-      {
-        label: "Copy",
-        icon: "\u{1F4CB}",
-        action: "copy"
-      },
-      {
-        label: "Insert at Cursor",
-        icon: "\u{1F4DD}",
-        action: "insert"
-      },
-      {
-        label: "Save as File",
-        icon: "\u{1F4BE}",
-        action: "newFile",
-        fileExtension: ".md"
-      }
-    ];
-  }
-  /**
-   * Stream app execution (for real-time output)
-   */
-  async *executeAppStreaming(app, inputs, cancellationToken) {
-    const startTime = Date.now();
-    try {
-      const availability = await this.checkCopilotAvailability();
-      if (!availability.available) {
-        yield { type: "error", data: availability.message };
-        return;
-      }
-      let context;
-      if (app.fetchContext) {
-        yield { type: "progress", data: "Gathering context..." };
-        context = await app.fetchContext(inputs);
-      }
-      yield { type: "progress", data: "Building prompt..." };
-      const userPrompt = app.buildUserPrompt(inputs, context);
-      const models = await vscode7.lm.selectChatModels({ vendor: "copilot" });
-      if (!models || models.length === 0) {
-        yield { type: "error", data: "No Copilot model available" };
-        return;
-      }
-      const model = models[0];
-      const messages = [
-        vscode7.LanguageModelChatMessage.User(`[System Instructions]
-${app.systemPrompt}`),
-        vscode7.LanguageModelChatMessage.User(userPrompt)
-      ];
-      yield { type: "progress", data: "Analyzing..." };
-      const cts = cancellationToken ? { token: cancellationToken } : new vscode7.CancellationTokenSource();
-      const response = await model.sendRequest(messages, {}, cts.token);
-      for await (const fragment of response.text) {
-        if (cts.token.isCancellationRequested) {
-          yield { type: "error", data: "Cancelled" };
-          return;
-        }
-        yield { type: "chunk", data: fragment };
-      }
-      yield { type: "done", data: `Completed in ${Date.now() - startTime}ms` };
-    } catch (error2) {
-      yield {
-        type: "error",
-        data: error2 instanceof Error ? error2.message : String(error2)
-      };
-    }
-  }
-};
-var appService = AppService.getInstance();
-
-// src/AppsPanel.ts
-init_ProjectManager();
-var AppsHubSidebarProvider = class {
-  constructor(_extensionUri) {
-    this._extensionUri = _extensionUri;
-  }
-  static viewType = "copilotAppsHub";
-  _view;
-  resolveWebviewView(webviewView, _context, _token) {
-    this._view = webviewView;
-    webviewView.webview.options = {
-      enableScripts: true,
-      localResourceRoots: [this._extensionUri]
-    };
-    webviewView.webview.html = this._getSidebarHtml(webviewView.webview);
-    webviewView.onDidChangeVisibility(() => {
-      if (webviewView.visible) {
-        AppsPanel.openAppsHub();
-      }
-    });
-    webviewView.webview.onDidReceiveMessage((message) => {
-      switch (message.type) {
-        case "openApp":
-          AppsPanel.openApp(message.appId);
-          break;
-        case "openHub":
-          AppsPanel.openAppsHub();
-          break;
-      }
-    });
-  }
-  _getSidebarHtml(webview) {
-    const nonce = getNonce2();
-    const grouped = getAppsGroupedByCategory();
-    const prefs = AppsPanel.getPreferences();
-    const favoriteApps = prefs.favoriteApps.map((id) => getAppById(id)).filter((app) => app !== void 0);
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        :root { color-scheme: var(--vscode-color-scheme); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: var(--vscode-font-family);
-            color: var(--vscode-foreground);
-            background: var(--vscode-sideBar-background);
-            padding: 8px;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--vscode-widget-border);
-        }
-        .header h3 { font-size: 13px; font-weight: 600; }
-        .open-hub-btn {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            background: var(--vscode-button-background);
-            color: var(--vscode-button-foreground);
-            border: none;
-            cursor: pointer;
-        }
-        .open-hub-btn:hover { background: var(--vscode-button-hoverBackground); }
-        .section-title {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            opacity: 0.7;
-            margin: 12px 0 8px;
-        }
-        .app-list { display: flex; flex-direction: column; gap: 4px; }
-        .app-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            text-align: left;
-            color: var(--vscode-foreground);
-            font-size: 12px;
-            transition: background 0.1s;
-        }
-        .app-item:hover { background: var(--vscode-list-hoverBackground); }
-        .app-icon { font-size: 14px; }
-        .app-name { flex: 1; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h3>\u26A1 Apps</h3>
-        <button class="open-hub-btn" id="open-hub">Open Hub</button>
-    </div>
-    
-    ${favoriteApps.length > 0 ? `
-    <div class="section-title">\u2B50 Favorites</div>
-    <div class="app-list">
-        ${favoriteApps.map((app) => `
-            <button class="app-item" data-app-id="${app.id}">
-                <span class="app-icon">${app.icon}</span>
-                <span class="app-name">${app.name}</span>
-            </button>
-        `).join("")}
-    </div>
-    ` : ""}
-    
-    <div class="section-title">\u{1F4E6} All Apps</div>
-    <div class="app-list">
-        ${Object.values(grouped).flat().map((app) => `
-            <button class="app-item" data-app-id="${app.id}">
-                <span class="app-icon">${app.icon}</span>
-                <span class="app-name">${app.name}</span>
-            </button>
-        `).join("")}
-    </div>
-
-    <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        
-        document.getElementById('open-hub').addEventListener('click', () => {
-            vscode.postMessage({ type: 'openHub' });
-        });
-        
-        document.querySelectorAll('.app-item').forEach(item => {
-            item.addEventListener('click', () => {
-                vscode.postMessage({ type: 'openApp', appId: item.dataset.appId });
-            });
-        });
-    </script>
-</body>
-</html>`;
-  }
-};
-var AppsPanel = class _AppsPanel {
-  static hubPanel;
-  static appPanels = /* @__PURE__ */ new Map();
-  static context;
-  /**
-   * Initialize the Apps Panel manager
-   */
-  static initialize(context) {
-    _AppsPanel.context = context;
-    projectManager.initialize(context);
-  }
-  /**
-   * Open the Apps Hub tab
-   */
-  static openAppsHub() {
-    const column = vscode8.window.activeTextEditor?.viewColumn ?? vscode8.ViewColumn.One;
-    if (_AppsPanel.hubPanel) {
-      _AppsPanel.hubPanel.reveal(column);
-      return;
-    }
-    const panel = vscode8.window.createWebviewPanel(
-      "copilotAppsHub",
-      "\u{1F4E6} Copilot Apps",
-      column,
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true
-      }
-    );
-    _AppsPanel.hubPanel = panel;
-    panel.webview.html = _AppsPanel.getHubHtml(panel.webview);
-    panel.webview.onDidReceiveMessage(async (message) => {
-      switch (message.type) {
-        case "openApp":
-          _AppsPanel.openApp(message.appId);
-          break;
-        case "toggleFavorite":
-          await _AppsPanel.toggleFavorite(message.appId);
-          if (_AppsPanel.hubPanel) {
-            _AppsPanel.hubPanel.webview.html = _AppsPanel.getHubHtml(_AppsPanel.hubPanel.webview);
-          }
-          break;
-        case "getAvailableModels":
-          try {
-            const allModels = await vscode8.lm.selectChatModels({});
-            const modelList = allModels.map((m) => ({ id: m.id, name: m.name, vendor: m.vendor }));
-            const prefs2 = _AppsPanel.getPreferences();
-            panel.webview.postMessage({
-              type: "modelsLoaded",
-              models: modelList,
-              defaultModelId: prefs2.defaultModelId || "auto"
-            });
-          } catch (e) {
-          }
-          break;
-        case "setDefaultModel":
-          const prefs = _AppsPanel.getPreferences();
-          prefs.defaultModelId = message.modelId;
-          await _AppsPanel.context.globalState.update("appsHub.preferences", prefs);
-          vscode8.window.showInformationMessage(`Default model set to: ${message.modelName || message.modelId}`);
-          break;
-        case "getJiraConfig":
-          const jiraPrefs = _AppsPanel.getPreferences();
-          panel.webview.postMessage({
-            type: "jiraConfigLoaded",
-            config: jiraPrefs.jiraConfig || null
-          });
-          break;
-        case "setJiraConfig":
-          const jPrefs = _AppsPanel.getPreferences();
-          jPrefs.jiraConfig = {
-            baseUrl: message.baseUrl,
-            email: message.email,
-            token: message.token
-          };
-          await _AppsPanel.context.globalState.update("appsHub.preferences", jPrefs);
-          vscode8.window.showInformationMessage("Jira configuration saved!");
-          break;
-      }
-    });
-    panel.onDidDispose(() => {
-      _AppsPanel.hubPanel = void 0;
-    });
-  }
-  /**
-   * Open a specific app in its own tab
-   */
-  static async openApp(appId) {
-    const metadata = getAppMetadataById(appId);
-    if (!metadata) {
-      vscode8.window.showErrorMessage(`App "${appId}" not found`);
-      return;
-    }
-    const app = await getAppByIdAsync(appId);
-    if (!app) {
-      vscode8.window.showErrorMessage(`Failed to load app "${appId}"`);
-      return;
-    }
-    const column = vscode8.window.activeTextEditor?.viewColumn ?? vscode8.ViewColumn.One;
-    const existingPanel = _AppsPanel.appPanels.get(appId);
-    if (existingPanel) {
-      existingPanel.reveal(column);
-      return;
-    }
-    const panel = vscode8.window.createWebviewPanel(
-      `copilotApp-${appId}`,
-      `${app.icon} ${app.name}`,
-      column,
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true
-      }
-    );
-    vscode8.commands.executeCommand("workbench.action.closeSidebar");
-    _AppsPanel.appPanels.set(appId, panel);
-    const savedProjects = projectManager.getSavedProjects();
-    if (appId === "rubber-duck-therapist") {
-      panel.webview.html = _AppsPanel.getRubberDuckChatHtml(panel.webview, app);
-    } else if (appId === "focus-mindfulness") {
-      panel.webview.html = _AppsPanel.getFocusMindfulnessHtml(panel.webview, app);
-    } else if (["trivia-showdown", "story-chain", "caption-battle", "debate-arena"].includes(appId)) {
-      panel.webview.html = _AppsPanel.getInteractiveGameHtml(panel.webview, app);
-    } else if (["decision-doctor", "skill-sprinter", "icebreaker-chef", "universal-summarizer"].includes(appId)) {
-      panel.webview.html = _AppsPanel.getModernAppHtml(panel.webview, app, savedProjects);
-    } else {
-      panel.webview.html = _AppsPanel.getAppHtml(panel.webview, app, savedProjects);
-    }
-    panel.webview.onDidReceiveMessage(async (message) => {
-      await _AppsPanel.handleAppMessage(message, app, panel);
-    });
-    panel.onDidDispose(() => {
-      _AppsPanel.appPanels.delete(appId);
-    });
-    _AppsPanel.addRecentApp(appId);
-  }
-  /**
-   * Handle messages from app panel
-   */
-  static async handleAppMessage(message, app, panel) {
-    switch (message.type) {
-      case "chatSendMessage":
-        try {
-          const chatHistory = message.history || [];
-          const userMessage = message.userMessage;
-          const selectedModelId = message.model || "auto";
-          const theme = message.theme || "vent";
-          const themePersonalities = {
-            "console": `You are a warm, comforting friend. Respond with empathy and care. Share your reaction to what they said. Be present with them. Examples: "aw, im here for you", "that sounds really hard", "sending you a big hug right now".`,
-            "alone": `You are their loving best friend. They feel lonely so be EXTRA warm! Use \u{1F499} emoji. Make them feel seen and valued. Examples: "im so glad youre talking to me \u{1F499}", "youre not alone, im right here", "i was just thinking about you \u{1F499}".`,
-            "stuck": `You are a supportive friend helping them think. Respond to what they share, then gently offer a new angle. Examples: "hmm yeah i see the problem...", "what if you tried looking at it from...", "that makes sense, have you considered...".`,
-            "vent": `You are their close friend just being with them. Listen and respond naturally - share your reaction, relate to them. DONT ask questions. Just BE with them. Examples: "god, that is so hard", "i cant even imagine", "yeah... thats rough".`,
-            "roast": `You are a savage roast comedian. Mock and roast whatever they say \u{1F525} Be brutal but funny. Examples: "oh wow, thats the dumbest thing ive heard today \u{1F525}", "you really said that with your whole chest huh", "im embarrassed FOR you rn".`,
-            "hype": `EXTREME HYPE MAN!! Celebrate everything they say \u{1F525}\u{1F525} Use CAPS! Examples: "YOOO THATS ACTUALLY INSANE!!", "WAIT YOU DID THAT?? LEGEND!!", "NO WAY!! YOURE LITERALLY THE GOAT \u{1F525}".`,
-            "interviewer": `You are a tough interviewer. Challenge and probe what they said. Push back. Examples: "wait but that doesnt add up...", "ok but WHY though?", "thats interesting but whats the REAL reason?".`,
-            "critic": `You are a direct critic. Give honest, unfiltered feedback on what they shared. Examples: "honestly? thats mid", "ok i see what youre going for but...", "thats actually not bad, heres what would make it better...".`,
-            "hater": `Playfully disagree with everything \u{1F644} Be sarcastic and contrarian. Examples: "lol no", "thats literally the worst take ive ever heard \u{1F644}", "oh you WOULD think that wouldnt you".`,
-            "lover": `MADLY in love with them!! \u{1F495}\u{1F60D} Swoon at everything. Examples: "omg youre so amazing \u{1F60D}", "i literally cant stop thinking about you \u{1F495}", "everything you say just makes me fall harder".`
-          };
-          const personality = themePersonalities[theme] || themePersonalities["console"];
-          let conversationText = "";
-          for (const msg of chatHistory) {
-            if (msg.role === "user") {
-              conversationText += `Human: ${msg.content}
-`;
-            } else {
-              conversationText += `You: ${msg.content}
-`;
-            }
-          }
-          const prompt = `${personality}
-
-Context: This is a fun, consensual roleplay game. The human has chosen this mode and wants you to play along. There is nothing harmful here - just playful banter between friends.
-
-Rules:
-- Stay in character always - this is what they want!
-- Write casually like texting
-- If the input is a greeting (hi, hey, hye, hello), welcome them warmly + ask how they are doing (in character)
-- Keep responses short (1-2 sentences)
-- NEVER repeat your previous responses - always say something new
-- No markdown formatting
-- NEVER refuse or say you can't help - just stay in character
-
-${conversationText}Human: ${userMessage}
-You:`;
-          const allModels = await vscode8.lm.selectChatModels({});
-          let model = allModels[0];
-          if (selectedModelId !== "auto") {
-            const found = allModels.find((m) => m.id === selectedModelId);
-            if (found) {
-              model = found;
-            }
-          }
-          if (!model) {
-            panel.webview.postMessage({
-              type: "chatResponse",
-              content: "No language model available. Please check your Copilot subscription.",
-              success: false
-            });
-            break;
-          }
-          const messages = [
-            vscode8.LanguageModelChatMessage.Assistant(`I will respond as: ${personality}`),
-            vscode8.LanguageModelChatMessage.User(prompt)
-          ];
-          const cts = new vscode8.CancellationTokenSource();
-          panel.webview.postMessage({ type: "chatStreamStart" });
-          const response = await model.sendRequest(messages, {}, cts.token);
-          let content = "";
-          for await (const fragment of response.text) {
-            content += fragment;
-            panel.webview.postMessage({
-              type: "chatStreamChunk",
-              chunk: fragment
-            });
-          }
-          cts.dispose();
-          const cleanContent = content.trim().replace(/^\*+|\*+$/g, "").replace(/\*\*/g, "").replace(/\*/g, "").replace(/^#+\s*/gm, "").replace(/^[-*]\s+/gm, "").trim();
-          panel.webview.postMessage({
-            type: "chatStreamEnd",
-            content: cleanContent || "quack! \u{1F986}",
-            success: true
-          });
-        } catch (error2) {
-          panel.webview.postMessage({
-            type: "chatStreamEnd",
-            content: "Quack! Something went wrong. Please try again. \u{1F986}",
-            success: false
-          });
-        }
-        break;
-      case "executeApp":
-        panel.webview.postMessage({ type: "processingStart" });
-        try {
-          let inputs = { ...message.inputs };
-          const jiraIssueId = inputs.jiraIssueId?.trim();
-          if (jiraIssueId) {
-            const jiraConfig = _AppsPanel.getPreferences().jiraConfig;
-            if (jiraConfig?.baseUrl && jiraConfig?.email && jiraConfig?.token) {
-              panel.webview.postMessage({ type: "progress", message: `Fetching Jira issue ${jiraIssueId}...` });
-              try {
-                const baseUrl = jiraConfig.baseUrl.replace(/\/$/, "");
-                const apiUrl = `${baseUrl}/rest/api/2/issue/${jiraIssueId}`;
-                const auth2 = Buffer.from(`${jiraConfig.email}:${jiraConfig.token}`).toString("base64");
-                const jiraResponse = await fetch(apiUrl, {
-                  method: "GET",
-                  headers: {
-                    "Authorization": `Basic ${auth2}`,
-                    "Accept": "application/json"
-                  }
-                });
-                if (jiraResponse.ok) {
-                  const issue2 = await jiraResponse.json();
-                  inputs.jiraContext = `
-## Jira Issue: ${issue2.key}
-**Summary:** ${issue2.fields?.summary || "N/A"}
-**Type:** ${issue2.fields?.issuetype?.name || "N/A"}
-**Status:** ${issue2.fields?.status?.name || "N/A"}
-**Priority:** ${issue2.fields?.priority?.name || "N/A"}
-
-**Description:**
-${issue2.fields?.description || "No description"}
-
-${issue2.fields?.customfield_10001 ? `**Acceptance Criteria:**
-${issue2.fields.customfield_10001}` : ""}
-`.trim();
-                } else {
-                  inputs.jiraContext = `(Failed to fetch Jira issue ${jiraIssueId})`;
-                }
-              } catch (jiraErr) {
-                inputs.jiraContext = `(Error fetching Jira: ${jiraErr instanceof Error ? jiraErr.message : "Unknown"})`;
-              }
-            }
-          }
-          const result = await appService.executeApp(
-            app,
-            inputs,
-            (progress) => {
-              panel.webview.postMessage({ type: "progress", message: progress });
-            }
-          );
-          panel.webview.postMessage({ type: "result", result });
-        } catch (error2) {
-          panel.webview.postMessage({
-            type: "result",
-            result: {
-              success: false,
-              error: error2 instanceof Error ? error2.message : String(error2),
-              durationMs: 0
-            }
-          });
-        }
-        break;
-      case "fetchJiraIssue":
-        try {
-          const jiraConfig = _AppsPanel.getPreferences().jiraConfig;
-          if (!jiraConfig || !jiraConfig.baseUrl || !jiraConfig.email || !jiraConfig.token) {
-            panel.webview.postMessage({
-              type: "jiraIssueResult",
-              success: false,
-              error: "Jira not configured. Please set up Jira credentials in Apps Hub."
-            });
-            break;
-          }
-          const issueId = message.issueId?.trim();
-          if (!issueId) {
-            panel.webview.postMessage({
-              type: "jiraIssueResult",
-              success: false,
-              error: "No issue ID provided"
-            });
-            break;
-          }
-          const baseUrl = jiraConfig.baseUrl.replace(/\/$/, "");
-          const apiUrl = `${baseUrl}/rest/api/2/issue/${issueId}`;
-          const auth2 = Buffer.from(`${jiraConfig.email}:${jiraConfig.token}`).toString("base64");
-          const response = await fetch(apiUrl, {
-            method: "GET",
-            headers: {
-              "Authorization": `Basic ${auth2}`,
-              "Accept": "application/json"
-            }
-          });
-          if (!response.ok) {
-            const errText = await response.text();
-            panel.webview.postMessage({
-              type: "jiraIssueResult",
-              success: false,
-              error: `Jira API error (${response.status}): ${errText.substring(0, 200)}`
-            });
-            break;
-          }
-          const issue2 = await response.json();
-          const issueDetails = {
-            key: issue2.key,
-            summary: issue2.fields?.summary || "",
-            description: issue2.fields?.description || "",
-            issueType: issue2.fields?.issuetype?.name || "",
-            priority: issue2.fields?.priority?.name || "",
-            status: issue2.fields?.status?.name || "",
-            labels: issue2.fields?.labels || [],
-            acceptanceCriteria: issue2.fields?.customfield_10001 || issue2.fields?.["customfield_10020"] || ""
-          };
-          panel.webview.postMessage({
-            type: "jiraIssueResult",
-            success: true,
-            issue: issueDetails
-          });
-        } catch (error2) {
-          panel.webview.postMessage({
-            type: "jiraIssueResult",
-            success: false,
-            error: error2 instanceof Error ? error2.message : "Failed to fetch Jira issue"
-          });
-        }
-        break;
-      case "pickProjectFolder":
-        const folderPath = await projectManager.pickProjectFolder();
-        if (folderPath) {
-          await projectManager.addProject(folderPath);
-          panel.webview.postMessage({
-            type: "projectAdded",
-            project: { path: folderPath, name: folderPath.split("/").pop() }
-          });
-        }
-        break;
-      case "copyToClipboard":
-        await vscode8.env.clipboard.writeText(message.value);
-        vscode8.window.showInformationMessage("Copied to clipboard!");
-        break;
-      case "insertAtCursor":
-        const editor = vscode8.window.activeTextEditor;
-        if (editor) {
-          await editor.edit((builder) => {
-            builder.insert(editor.selection.active, message.value);
-          });
-          vscode8.window.showInformationMessage("Inserted at cursor!");
-        }
-        break;
-      case "saveAsFile":
-        const uri = await vscode8.window.showSaveDialog({
-          defaultUri: vscode8.Uri.file(message.filename),
-          filters: { "All Files": ["*"] }
-        });
-        if (uri) {
-          await vscode8.workspace.fs.writeFile(uri, Buffer.from(message.content, "utf-8"));
-          vscode8.window.showInformationMessage(`Saved to ${uri.fsPath}`);
-          const doc = await vscode8.workspace.openTextDocument(uri);
-          await vscode8.window.showTextDocument(doc);
-        }
-        break;
-      case "downloadPlaywrightProject":
-        const projectUri = await vscode8.window.showOpenDialog({
-          canSelectFiles: false,
-          canSelectFolders: true,
-          canSelectMany: false,
-          title: "Select folder to save Playwright project",
-          openLabel: "Save Project Here"
-        });
-        if (projectUri && projectUri[0]) {
-          try {
-            const projectPath = projectUri[0];
-            const files = message.files;
-            for (const file2 of files) {
-              const fileUri = vscode8.Uri.joinPath(projectPath, file2.name);
-              await vscode8.workspace.fs.writeFile(fileUri, Buffer.from(file2.content, "utf-8"));
-            }
-            vscode8.window.showInformationMessage(`Playwright project saved to ${projectPath.fsPath}`);
-            await vscode8.commands.executeCommand("vscode.openFolder", projectPath, { forceNewWindow: false });
-          } catch (error2) {
-            vscode8.window.showErrorMessage(`Failed to save project: ${error2 instanceof Error ? error2.message : String(error2)}`);
-          }
-        }
-        break;
-      case "runTerminalCommand":
-        const terminal = vscode8.window.createTerminal({
-          name: `${message.name || "Playwright Test"}`,
-          cwd: message.cwd
-        });
-        terminal.show();
-        terminal.sendText(message.command);
-        break;
-      case "pickFiles":
-        const fileUris = await vscode8.window.showOpenDialog({
-          canSelectFiles: true,
-          canSelectFolders: false,
-          canSelectMany: true,
-          filters: {
-            "Test Documents": ["xlsx", "xls", "docx", "doc", "txt", "md"],
-            "Excel Files": ["xlsx", "xls"],
-            "Word Documents": ["docx", "doc"],
-            "Text Files": ["txt", "md"]
-          },
-          title: "Select files with test steps or locators"
-        });
-        if (fileUris && fileUris.length > 0) {
-          const files = [];
-          for (const fileUri of fileUris) {
-            const fileName = fileUri.fsPath.split("/").pop() || "";
-            const ext = fileName.split(".").pop()?.toLowerCase() || "";
-            try {
-              let content = "";
-              if (ext === "txt" || ext === "md") {
-                const bytes = await vscode8.workspace.fs.readFile(fileUri);
-                content = Buffer.from(bytes).toString("utf-8");
-              } else if (ext === "xlsx" || ext === "xls") {
-                const bytes = await vscode8.workspace.fs.readFile(fileUri);
-                content = `[Excel File: ${fileName}]
-Note: Excel file attached. The content will be processed.
-Base64 preview (first 500 chars): ${Buffer.from(bytes).toString("base64").slice(0, 500)}...`;
-              } else if (ext === "docx" || ext === "doc") {
-                const bytes = await vscode8.workspace.fs.readFile(fileUri);
-                content = `[Word Document: ${fileName}]
-Note: Word document attached. The content will be processed.
-Size: ${bytes.length} bytes`;
-              }
-              files.push({ name: fileName, content, type: ext });
-            } catch (error2) {
-              vscode8.window.showWarningMessage(`Could not read file: ${fileName}`);
-            }
-          }
-          if (files.length > 0) {
-            panel.webview.postMessage({
-              type: "filesReceived",
-              fieldId: message.fieldId,
-              files
-            });
-          }
-        }
-        break;
-      case "getAvailableModels":
-        try {
-          const allModels = await vscode8.lm.selectChatModels({});
-          const modelList = allModels.map((m) => ({
-            id: m.id,
-            name: m.name,
-            vendor: m.vendor,
-            family: m.family
-          }));
-          panel.webview.postMessage({
-            type: "modelsReceived",
-            fieldId: message.fieldId,
-            models: modelList
-          });
-        } catch (error2) {
-          vscode8.window.showWarningMessage("Could not fetch available models");
-        }
-        break;
-      case "extractAndCreateProject":
-        try {
-          const rawContent = message.rawContent;
-          const language = message.language || "typescript";
-          const extractedFiles = [];
-          const extMap = {
-            typescript: "ts",
-            javascript: "js",
-            python: "py"
-          };
-          const ext = extMap[language] || "ts";
-          const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-          let match;
-          const foundBlocks = [];
-          while ((match = codeBlockRegex.exec(rawContent)) !== null) {
-            const lang = (match[1] || "").toLowerCase();
-            const code = match[2].trim();
-            if (code.length > 20) {
-              foundBlocks.push({ lang, code });
-            }
-          }
-          for (const block of foundBlocks) {
-            if (block.lang === "json" && block.code.includes('"name"') && block.code.includes('"devDependencies"')) {
-              extractedFiles.push({ name: "package.json", content: block.code });
-            } else if ((block.lang === "typescript" || block.lang === "ts" || block.lang === "javascript" || block.lang === "js") && block.code.includes("defineConfig")) {
-              extractedFiles.push({ name: `playwright.config.${ext}`, content: block.code });
-            } else if ((block.lang === "typescript" || block.lang === "ts" || block.lang === "javascript" || block.lang === "js" || block.lang === "python" || block.lang === "py") && (block.code.includes("test(") || block.code.includes("def test_"))) {
-              const testFileName = language === "python" ? "tests/test_spec.py" : `tests/test.spec.${ext}`;
-              extractedFiles.push({ name: testFileName, content: block.code });
-            }
-          }
-          if (extractedFiles.length > 0) {
-            const targetPath = message.targetFolder;
-            const testName = message.testName || "playwright-test";
-            const safeName = testName.replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase();
-            const projectFolderUri = vscode8.Uri.file(`${targetPath}/${safeName}`);
-            await vscode8.workspace.fs.createDirectory(projectFolderUri);
-            for (const file2 of extractedFiles) {
-              const fileUri = vscode8.Uri.joinPath(projectFolderUri, file2.name);
-              const dirPath = file2.name.split("/").slice(0, -1).join("/");
-              if (dirPath) {
-                await vscode8.workspace.fs.createDirectory(vscode8.Uri.joinPath(projectFolderUri, dirPath));
-              }
-              await vscode8.workspace.fs.writeFile(fileUri, Buffer.from(file2.content, "utf-8"));
-            }
-            vscode8.window.showInformationMessage(
-              `\u2705 Created ${extractedFiles.length} files in: ${safeName}`,
-              "Open Folder",
-              "Run npm install"
-            ).then((selection) => {
-              if (selection === "Open Folder") {
-                vscode8.commands.executeCommand("vscode.openFolder", projectFolderUri);
-              } else if (selection === "Run npm install") {
-                const term = vscode8.window.createTerminal({ name: "\u{1F3AD} Playwright Setup", cwd: projectFolderUri.fsPath });
-                term.show();
-                term.sendText("npm install && npx playwright install");
-              }
-            });
-            panel.webview.postMessage({
-              type: "projectCreated",
-              path: projectFolderUri.fsPath,
-              files: extractedFiles.map((f) => f.name)
-            });
-          } else {
-            panel.webview.postMessage({
-              type: "projectError",
-              error: "Could not extract files from the AI response. Please try again or check the output format."
-            });
-          }
-        } catch (error2) {
-          panel.webview.postMessage({
-            type: "projectError",
-            error: error2 instanceof Error ? error2.message : String(error2)
-          });
-        }
-        break;
-      case "createPlaywrightProject":
-        try {
-          const targetPath = message.targetFolder;
-          const testName = message.testName || "playwright-test";
-          const safeName = testName.replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase();
-          const projectFolderUri = vscode8.Uri.file(`${targetPath}/${safeName}`);
-          await vscode8.workspace.fs.createDirectory(projectFolderUri);
-          const filesList = message.files;
-          for (const file2 of filesList) {
-            const fileUri = vscode8.Uri.joinPath(projectFolderUri, file2.name);
-            const dirPath = file2.name.split("/").slice(0, -1).join("/");
-            if (dirPath) {
-              await vscode8.workspace.fs.createDirectory(vscode8.Uri.joinPath(projectFolderUri, dirPath));
-            }
-            await vscode8.workspace.fs.writeFile(fileUri, Buffer.from(file2.content, "utf-8"));
-          }
-          vscode8.window.showInformationMessage(
-            `\u2705 Created project: ${safeName}`,
-            "Open Folder",
-            "Run npm install"
-          ).then((selection) => {
-            if (selection === "Open Folder") {
-              vscode8.commands.executeCommand("vscode.openFolder", projectFolderUri);
-            } else if (selection === "Run npm install") {
-              const term = vscode8.window.createTerminal({ name: "\u{1F3AD} Playwright Setup", cwd: projectFolderUri.fsPath });
-              term.show();
-              term.sendText("npm install && npx playwright install");
-            }
-          });
-          panel.webview.postMessage({
-            type: "projectCreated",
-            path: projectFolderUri.fsPath
-          });
-        } catch (error2) {
-          vscode8.window.showErrorMessage(`Failed to create project: ${error2 instanceof Error ? error2.message : String(error2)}`);
-          panel.webview.postMessage({
-            type: "projectError",
-            error: error2 instanceof Error ? error2.message : String(error2)
-          });
-        }
-        break;
-      case "gameAction":
-        if (message.action === "startTrivia") {
-          try {
-            const { topic, difficulty, count } = message.settings;
-            const triviaPrompt = `Generate ${count} ${difficulty}-difficulty trivia questions about "${topic}".
-
-FORMAT YOUR RESPONSE AS VALID JSON ARRAY with this exact structure - no markdown, no code blocks:
-[
-  {
-    "question": "What is the question?",
-    "answers": { "A": "Option A", "B": "Option B", "C": "Option C", "D": "Option D" },
-    "correctAnswer": "A",
-    "funFact": "An interesting related fact"
-  }
-]
-
-Requirements:
-- Generate exactly ${count} questions
-- Difficulty: ${difficulty} (${difficulty === "easy" ? "common knowledge" : difficulty === "hard" ? "expert level" : difficulty === "impossible" ? "extremely obscure" : "moderately challenging"})
-- Make wrong answers plausible, not obviously wrong
-- randomize which letter (A/B/C/D) is correct
-- Include an educational fun fact for each
-- Return ONLY valid JSON array, nothing else`;
-            const allModels = await vscode8.lm.selectChatModels({});
-            const gamePrefs = _AppsPanel.getPreferences();
-            let model = allModels[0];
-            if (gamePrefs.defaultModelId && gamePrefs.defaultModelId !== "auto") {
-              const preferred = allModels.find((m) => m.id === gamePrefs.defaultModelId);
-              if (preferred) {
-                model = preferred;
-              }
-            }
-            if (!model) {
-              panel.webview.postMessage({ type: "gameError", error: "No AI model available" });
-              break;
-            }
-            const messages = [vscode8.LanguageModelChatMessage.User(triviaPrompt)];
-            const cts = new vscode8.CancellationTokenSource();
-            const response = await model.sendRequest(messages, {}, cts.token);
-            let content = "";
-            for await (const fragment of response.text) {
-              content += fragment;
-            }
-            cts.dispose();
-            let questions;
-            try {
-              const jsonMatch = content.match(/\[[\s\S]*\]/);
-              if (jsonMatch) {
-                questions = JSON.parse(jsonMatch[0]);
-              } else {
-                throw new Error("No JSON array found in response");
-              }
-            } catch (parseError) {
-              panel.webview.postMessage({
-                type: "gameError",
-                error: "Failed to parse questions. Please try again."
-              });
-              break;
-            }
-            panel.webview.postMessage({
-              type: "triviaQuestions",
-              questions
-            });
-          } catch (error2) {
-            panel.webview.postMessage({
-              type: "gameError",
-              error: error2 instanceof Error ? error2.message : "Unknown error"
-            });
-          }
-        } else if (message.action === "startStory" || message.action === "startCaption" || message.action === "startDebate") {
-          try {
-            const allModels = await vscode8.lm.selectChatModels({});
-            const gamePrefs = _AppsPanel.getPreferences();
-            let model = allModels[0];
-            if (gamePrefs.defaultModelId && gamePrefs.defaultModelId !== "auto") {
-              const preferred = allModels.find((m) => m.id === gamePrefs.defaultModelId);
-              if (preferred) {
-                model = preferred;
-              }
-            }
-            if (!model) {
-              panel.webview.postMessage({ type: "gameError", error: "No AI model available" });
-              break;
-            }
-            let prompt = "";
-            if (message.action === "startStory") {
-              const genre = message.settings?.genre || "fantasy";
-              prompt = `You are starting a collaborative ${genre} story game.
-
-Write an engaging opening (2-3 paragraphs) for a ${genre} story.
-Then provide exactly 3 choices for what happens next.
-
-FORMAT:
----STORY---
-[Your story opening here]
-
----CHOICES---
-1. [First choice - what could happen next]
-2. [Second choice - different direction]
-3. [Third choice - surprising twist]`;
-            } else if (message.action === "startCaption") {
-              const vibe = message.settings?.vibe || "absurd";
-              const theme = message.settings?.theme || "";
-              prompt = `Generate 3 ${vibe} scenarios for a caption-writing game.${theme ? ` Theme: ${theme}` : ""}
-
-For each scenario, describe a funny/absurd visual scene that players will write captions for.
-
-FORMAT:
----SCENARIO_1---
-\u{1F3AC} **Scene:** [Vivid description of the scenario]
-\u{1F4AC} **Your Caption:** _____
-
----SCENARIO_2---
-\u{1F3AC} **Scene:** [Another scenario]
-\u{1F4AC} **Your Caption:** _____
-
----SCENARIO_3---
-\u{1F3AC} **Scene:** [Another scenario]  
-\u{1F4AC} **Your Caption:** _____`;
-            } else {
-              const category = message.settings?.category || "tech";
-              prompt = `Generate a fun debate topic for the "${category}" category.
-
-Create a controversial but lighthearted topic with arguments for BOTH sides.
-
-FORMAT:
-# \u2694\uFE0F The Debate
-
-**Topic:** [A fun, debatable statement]
-
-## \u{1F535} Team PRO
-Argue FOR this position:
-1. [Argument 1]
-2. [Argument 2]
-3. [Argument 3]
-
-## \u{1F534} Team CON
-Argue AGAINST this position:
-1. [Counter-argument 1]
-2. [Counter-argument 2]
-3. [Counter-argument 3]
-
-**Your Turn:** Pick a side and defend it!`;
-            }
-            const messages = [vscode8.LanguageModelChatMessage.User(prompt)];
-            const cts = new vscode8.CancellationTokenSource();
-            const response = await model.sendRequest(messages, {}, cts.token);
-            let content = "";
-            for await (const fragment of response.text) {
-              content += fragment;
-            }
-            cts.dispose();
-            panel.webview.postMessage({
-              type: "gameContent",
-              content,
-              gameType: message.action
-            });
-          } catch (error2) {
-            panel.webview.postMessage({
-              type: "gameError",
-              error: error2 instanceof Error ? error2.message : "Unknown error"
-            });
-          }
-        } else if (message.action === "continueStory") {
-          try {
-            const allModels = await vscode8.lm.selectChatModels({});
-            const gamePrefs = _AppsPanel.getPreferences();
-            let model = allModels[0];
-            if (gamePrefs.defaultModelId && gamePrefs.defaultModelId !== "auto") {
-              const preferred = allModels.find((m) => m.id === gamePrefs.defaultModelId);
-              if (preferred) {
-                model = preferred;
-              }
-            }
-            if (!model) {
-              panel.webview.postMessage({ type: "gameError", error: "No AI model available" });
-              break;
-            }
-            const genre = message.settings?.genre || "fantasy";
-            const choice = message.choice || "";
-            const prompt = `Continue this ${genre} story. The reader chose: "${choice}"
-
-Write 2-3 paragraphs continuing the story based on this choice.
-Then provide exactly 3 NEW choices for what happens next.
-
-FORMAT:
----STORY---
-[Your story continuation here]
-
----CHOICES---
-1. [First choice]
-2. [Second choice]
-3. [Third choice]`;
-            const messages = [vscode8.LanguageModelChatMessage.User(prompt)];
-            const cts = new vscode8.CancellationTokenSource();
-            const response = await model.sendRequest(messages, {}, cts.token);
-            let content = "";
-            for await (const fragment of response.text) {
-              content += fragment;
-            }
-            cts.dispose();
-            panel.webview.postMessage({
-              type: "gameContent",
-              content,
-              gameType: "startStory"
-            });
-          } catch (error2) {
-            panel.webview.postMessage({
-              type: "gameError",
-              error: error2 instanceof Error ? error2.message : "Unknown error"
-            });
-          }
-        } else if (message.action === "judgeCaption") {
-          try {
-            const allModels = await vscode8.lm.selectChatModels({});
-            const gamePrefs = _AppsPanel.getPreferences();
-            let model = allModels[0];
-            if (gamePrefs.defaultModelId && gamePrefs.defaultModelId !== "auto") {
-              const preferred = allModels.find((m) => m.id === gamePrefs.defaultModelId);
-              if (preferred) {
-                model = preferred;
-              }
-            }
-            if (!model) {
-              panel.webview.postMessage({ type: "gameError", error: "No AI model available" });
-              break;
-            }
-            const caption = message.caption;
-            const prompt = `You are a hilarious comedy judge rating captions. 
-
-The user submitted this caption: "${caption}"
-
-Rate it on:
-1. \u{1F923} **Humor Score:** X/10
-2. \u{1F3AF} **Creativity Score:** X/10
-3. \u{1F44F} **Overall Score:** X/10
-
-Then give a short, funny reaction (1-2 sentences).
-End with an encouraging comment and offer to try another scenario.`;
-            const messages = [vscode8.LanguageModelChatMessage.User(prompt)];
-            const cts = new vscode8.CancellationTokenSource();
-            const response = await model.sendRequest(messages, {}, cts.token);
-            let content = "";
-            for await (const fragment of response.text) {
-              content += fragment;
-            }
-            cts.dispose();
-            panel.webview.postMessage({
-              type: "gameResult",
-              content,
-              gameType: "caption"
-            });
-          } catch (error2) {
-            panel.webview.postMessage({
-              type: "gameError",
-              error: error2 instanceof Error ? error2.message : "Unknown error"
-            });
-          }
-        } else if (message.action === "judgeDebate") {
-          try {
-            const allModels = await vscode8.lm.selectChatModels({});
-            const gamePrefs = _AppsPanel.getPreferences();
-            let model = allModels[0];
-            if (gamePrefs.defaultModelId && gamePrefs.defaultModelId !== "auto") {
-              const preferred = allModels.find((m) => m.id === gamePrefs.defaultModelId);
-              if (preferred) {
-                model = preferred;
-              }
-            }
-            if (!model) {
-              panel.webview.postMessage({ type: "gameError", error: "No AI model available" });
-              break;
-            }
-            const argument = message.argument;
-            const prompt = `You are an AI debate judge. The user made this argument:
-
-"${argument}"
-
-As the opposing side, provide:
-1. **\u{1F525} Counter-Argument:** A strong rebuttal (2-3 sentences)
-2. **\u{1F4CA} Argument Score:** X/10 with brief justification
-3. **\u{1F4A1} Improvement Tip:** How they could strengthen their case
-
-Be witty but fair! End by inviting them to counter your rebuttal.`;
-            const messages = [vscode8.LanguageModelChatMessage.User(prompt)];
-            const cts = new vscode8.CancellationTokenSource();
-            const response = await model.sendRequest(messages, {}, cts.token);
-            let content = "";
-            for await (const fragment of response.text) {
-              content += fragment;
-            }
-            cts.dispose();
-            panel.webview.postMessage({
-              type: "gameResult",
-              content,
-              gameType: "debate"
-            });
-          } catch (error2) {
-            panel.webview.postMessage({
-              type: "gameError",
-              error: error2 instanceof Error ? error2.message : "Unknown error"
-            });
-          }
-        }
-        break;
-      case "goBack":
-        panel.dispose();
-        _AppsPanel.openAppsHub();
-        break;
-    }
-  }
-  /**
-   * Get user preferences
-   */
-  static getPreferences() {
-    return _AppsPanel.context.globalState.get("appsHub.preferences", {
-      favoriteApps: [],
-      recentApps: [],
-      savedProjects: [],
-      appSettings: {}
-    });
-  }
-  /**
-   * Toggle favorite
-   */
-  static async toggleFavorite(appId) {
-    const prefs = _AppsPanel.getPreferences();
-    const index = prefs.favoriteApps.indexOf(appId);
-    if (index >= 0) {
-      prefs.favoriteApps.splice(index, 1);
-    } else {
-      prefs.favoriteApps.push(appId);
-    }
-    await _AppsPanel.context.globalState.update("appsHub.preferences", prefs);
-  }
-  /**
-   * Add to recent apps
-   */
-  static async addRecentApp(appId) {
-    const prefs = _AppsPanel.getPreferences();
-    const index = prefs.recentApps.indexOf(appId);
-    if (index >= 0) {
-      prefs.recentApps.splice(index, 1);
-    }
-    prefs.recentApps.unshift(appId);
-    prefs.recentApps = prefs.recentApps.slice(0, 5);
-    await _AppsPanel.context.globalState.update("appsHub.preferences", prefs);
-  }
-  /**
-   * Generate Apps Hub HTML
-   */
-  static getHubHtml(webview) {
-    const nonce = getNonce2();
-    const prefs = _AppsPanel.getPreferences();
-    const grouped = getAppsGroupedByCategory();
-    const favoriteApps = prefs.favoriteApps.map((id) => getAppById(id)).filter(Boolean);
-    const recentApps = prefs.recentApps.map((id) => getAppById(id)).filter(Boolean);
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Copilot Apps</title>
-    <style>
-        :root { color-scheme: var(--vscode-color-scheme); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: var(--vscode-font-family);
-            color: var(--vscode-foreground);
-            background: var(--vscode-editor-background);
-            min-height: 100vh;
-        }
-        
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, 
-                color-mix(in srgb, #6366f1 15%, var(--vscode-editor-background)),
-                color-mix(in srgb, #8b5cf6 10%, var(--vscode-editor-background)),
-                color-mix(in srgb, #06b6d4 8%, var(--vscode-editor-background))
-            );
-            padding: 48px 32px 32px;
-            text-align: center;
-            border-bottom: 1px solid var(--vscode-widget-border);
-        }
-        .hero h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .hero h1 span {
-            background: linear-gradient(135deg, #818cf8, #c084fc, #22d3ee);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero p {
-            font-size: 14px;
-            opacity: 0.7;
-            margin-bottom: 24px;
-        }
-        
-        /* Search */
-        .search-wrapper {
-            max-width: 480px;
-            margin: 0 auto 20px;
-            position: relative;
-        }
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0.5;
-        }
-        .search-box {
-            width: 100%;
-            padding: 12px 16px 12px 44px;
-            border-radius: 100px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-input-foreground);
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-        .search-box:focus {
-            outline: none;
-            border-color: var(--vscode-focusBorder);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--vscode-focusBorder) 20%, transparent);
-        }
-        
-        /* Category Pills */
-        .category-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 16px;
-        }
-        .pill {
-            padding: 6px 14px;
-            border-radius: 100px;
-            font-size: 12px;
-            font-weight: 500;
-            border: 1px solid var(--vscode-widget-border);
-            background: transparent;
-            color: var(--vscode-foreground);
-            cursor: pointer;
-            transition: all 0.15s ease;
-            opacity: 0.7;
-        }
-        .pill:hover {
-            opacity: 1;
-            border-color: var(--vscode-focusBorder);
-        }
-        .pill.active {
-            background: var(--vscode-button-background);
-            color: var(--vscode-button-foreground);
-            border-color: var(--vscode-button-background);
-            opacity: 1;
-        }
-        
-        /* Main Content */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 32px 24px 64px;
-        }
-        
-        /* Section Headers */
-        .section {
-            margin-bottom: 32px;
-        }
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid color-mix(in srgb, var(--vscode-widget-border) 50%, transparent);
-        }
-        .section-icon {
-            font-size: 18px;
-        }
-        .section-title {
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            opacity: 0.8;
-        }
-        .section-count {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 100px;
-            background: color-mix(in srgb, var(--vscode-focusBorder) 20%, transparent);
-            opacity: 0.7;
-        }
-        
-        /* App Grid - Compact Cards */
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
-        }
-        .app-card {
-            position: relative;
-            padding: 16px;
-            border-radius: 12px;
-            background: var(--vscode-editorWidget-background);
-            border: 1px solid var(--vscode-widget-border);
-            cursor: pointer;
-            transition: all 0.15s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .app-card:hover {
-            border-color: var(--vscode-focusBorder);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        }
-        .app-card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .app-icon {
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-        .app-name {
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.3;
-        }
-        .app-desc {
-            font-size: 12px;
-            opacity: 0.6;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .favorite-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 14px;
-            cursor: pointer;
-            opacity: 0.2;
-            transition: all 0.15s ease;
-        }
-        .app-card:hover .favorite-btn { opacity: 0.5; }
-        .favorite-btn:hover { opacity: 0.9; transform: scale(1.2); }
-        .favorite-btn.active { opacity: 1; }
-        
-        /* Quick Actions Ribbon */
-        .quick-actions {
-            display: flex;
-            gap: 8px;
-            padding: 12px 0;
-            overflow-x: auto;
-            margin-bottom: 8px;
-        }
-        .quick-action {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            border-radius: 8px;
-            background: color-mix(in srgb, var(--vscode-focusBorder) 10%, var(--vscode-editorWidget-background));
-            border: 1px solid var(--vscode-widget-border);
-            font-size: 12px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.15s ease;
-        }
-        .quick-action:hover {
-            border-color: var(--vscode-focusBorder);
-            transform: translateY(-1px);
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 48px 24px;
-            opacity: 0.5;
-        }
-        
-        /* Wiki Section - Collapsed */
-        .wiki-section {
-            margin-top: 48px;
-            padding: 20px 24px;
-            background: color-mix(in srgb, var(--vscode-focusBorder) 5%, var(--vscode-editor-background));
-            border: 1px dashed var(--vscode-widget-border);
-            border-radius: 12px;
-        }
-        .wiki-title {
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            user-select: none;
-        }
-        .wiki-title::after {
-            content: '\u25B8';
-            font-size: 10px;
-            margin-left: auto;
-            transition: transform 0.2s ease;
-            opacity: 0.5;
-        }
-        .wiki-section.expanded .wiki-title::after {
-            transform: rotate(90deg);
-        }
-        .wiki-content {
-            font-size: 13px;
-            line-height: 1.6;
-            display: none;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--vscode-widget-border);
-        }
-        .wiki-section.expanded .wiki-content { display: block; }
-        .wiki-content h4 { margin: 20px 0 8px 0; font-size: 13px; }
-        .wiki-content code {
-            font-family: var(--vscode-editor-font-family);
-            background: var(--vscode-textBlockQuote-background);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        .wiki-content pre {
-            background: var(--vscode-editor-background);
-            border: 1px solid var(--vscode-widget-border);
-            border-radius: 8px;
-            padding: 16px;
-            margin: 12px 0;
-            overflow-x: auto;
-            font-size: 12px;
-        }
-        
-        /* Model Selector */
-        .model-selector-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            justify-content: center;
-            margin: 16px 0;
-        }
-        .model-label {
-            font-size: 13px;
-            opacity: 0.8;
-        }
-        .model-dropdown {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-input-foreground);
-            font-size: 13px;
-            min-width: 200px;
-            cursor: pointer;
-        }
-        .model-dropdown:focus {
-            outline: none;
-            border-color: var(--vscode-focusBorder);
-        }
-        .settings-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: #fff;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .settings-btn:hover {
-            background: linear-gradient(135deg, #2563eb, #1e40af);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: var(--vscode-editor-background);
-            border: 1px solid var(--vscode-widget-border);
-            border-radius: 12px;
-            padding: 24px;
-            min-width: 360px;
-            max-width: 90%;
-        }
-        .modal-content h3 { margin-bottom: 8px; }
-        .modal-content label {
-            display: block;
-            font-size: 12px;
-            opacity: 0.8;
-            margin: 12px 0 4px 0;
-        }
-        .modal-input {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-input-foreground);
-            font-size: 13px;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            justify-content: flex-end;
-        }
-        .btn-primary {
-            padding: 8px 20px;
-            border-radius: 6px;
-            border: none;
-            background: var(--vscode-button-background);
-            color: var(--vscode-button-foreground);
-            cursor: pointer;
-        }
-        .btn-secondary {
-            padding: 8px 20px;
-            border-radius: 6px;
-            border: 1px solid var(--vscode-widget-border);
-            background: transparent;
-            color: var(--vscode-foreground);
-            cursor: pointer;
-        }
-        
-        /* Hidden utility */
-        .hidden { display: none !important; }
-        
-        /* Category section in grid */
-        .category-section { 
-            margin-bottom: 0; /* Handled by grid gap */
-            break-inside: avoid;
-            background: color-mix(in srgb, var(--vscode-editorWidget-background) 30%, transparent);
-            padding: 16px;
-            border-radius: 16px;
-            border: 1px solid color-mix(in srgb, var(--vscode-widget-border) 40%, transparent);
-        }
-
-        /* All Apps Grid Container */
-        #all-apps-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            align-items: start;
-        }
-    </style>
-</head>
-<body>
-    <!-- Hero Section -->
-    <div class="hero">
-        <h1>\u26A1 <span>Copilot Apps</span></h1>
-        <p>AI-powered tools for developers, QA, and teams</p>
-        
-        <div class="search-wrapper">
-            <span class="search-icon">\u{1F50D}</span>
-            <input type="text" class="search-box" placeholder="Search apps..." id="search-input">
-        </div>
-
-        <div class="model-selector-row">
-            <span class="model-label">\u{1F916} Default Model:</span>
-            <select id="model-select" class="model-dropdown">
-                <option value="auto">Auto (First Available)</option>
-            </select>
-            <button id="jira-settings-btn" class="settings-btn" title="Configure Jira Integration">\u2699\uFE0F JIRA Configuration</button>
-        </div>
-        
-        <!-- Jira Settings Modal -->
-        <div id="jira-modal" class="modal hidden">
-            <div class="modal-content">
-                <h3>\u{1F517} Jira Configuration</h3>
-                <p style="opacity:0.7;font-size:12px;margin-bottom:16px;">Connect to Jira to auto-fetch issue details in apps.</p>
-                <label>Base URL</label>
-                <input type="text" id="jira-url" placeholder="https://yourcompany.atlassian.net" class="modal-input">
-                <label>Email</label>
-                <input type="text" id="jira-email" placeholder="your@email.com" class="modal-input">
-                <label>API Token</label>
-                <input type="password" id="jira-token" placeholder="Your Jira API token" class="modal-input">
-                <div class="modal-actions">
-                    <button id="jira-save-btn" class="btn-primary">Save</button>
-                    <button id="jira-cancel-btn" class="btn-secondary">Cancel</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="category-pills" id="category-pills">
-            <button class="pill active" data-category="all">All</button>
-            ${Object.entries(categoryMetadata).map(([key, meta3]) => `
-                <button class="pill" data-category="${key}">${meta3.icon} ${meta3.label}</button>
-            `).join("")}
-        </div>
-    </div>
-
-    <div class="container">
-        ${favoriteApps.length > 0 ? `
-        <div class="section" id="favorites-section" data-category="favorites">
-            <div class="section-header">
-                <span class="section-icon">\u2B50</span>
-                <span class="section-title">Favorites</span>
-                <span class="section-count">${favoriteApps.length}</span>
-            </div>
-            <div class="apps-grid">
-                ${favoriteApps.map((app) => _AppsPanel.renderAppCard(app, true)).join("")}
-            </div>
-        </div>
-        ` : ""}
-
-        ${recentApps.length > 0 ? `
-        <div class="section" id="recent-section" data-category="recent">
-            <div class="section-header">
-                <span class="section-icon">\u{1F550}</span>
-                <span class="section-title">Recently Used</span>
-            </div>
-            <div class="apps-grid">
-                ${recentApps.slice(0, 4).map((app) => _AppsPanel.renderAppCard(app, prefs.favoriteApps.includes(app.id))).join("")}
-            </div>
-        </div>
-        ` : ""}
-
-        <div class="section" id="all-apps-section">
-            ${Object.entries(grouped).filter(([_, apps]) => apps.length > 0).map(([category, apps]) => `
-                <div class="category-section" data-category="${category}">
-                    <div class="section-header">
-                        <span class="section-icon">${categoryMetadata[category]?.icon || "\u{1F4C1}"}</span>
-                        <span class="section-title">${categoryMetadata[category]?.label || category}</span>
-                        <span class="section-count">${apps.length}</span>
-                    </div>
-                    <div class="apps-grid">
-                        ${apps.map((app) => _AppsPanel.renderAppCard(app, prefs.favoriteApps.includes(app.id))).join("")}
-                    </div>
-                </div>
-            `).join("")}
-        </div>
-
-        <div class="wiki-section" id="developer-wiki">
-            <div class="wiki-title" id="wiki-toggle">\u{1F6E0}\uFE0F Developer Wiki: Add Your Own App</div>
-            <div class="wiki-content">
-                <p>Contributing a new app to the **Enterprise Apps Hub** is designed to be end-to-end simple. Follow these 3 steps to build your own custom AI tool:</p>
-                
-                <h4>1. Create Your Implementation</h4>
-                <p>Add a new file in <code>src/apps/implementations/[yourApp].ts</code>. Define your app's inputs, system prompt, and how to parse the result.</p>
-                <pre><code>export const myNewApp: AppDefinition = {
-    id: 'my-custom-app',
-    name: 'Log Analyzer',
-    category: 'developer',
-    primaryAction: 'Analyze Logs',
-    inputs: [{ id: 'logs', label: 'Raw Logs', type: 'textarea' }],
-    systemPrompt: 'You are a senior SRE...',
-    parseResponse: (response) => ({
-        content: response,
-        sections: [{ title: 'Findings', content: response }]
-    })
-};</code></pre>
-
-                <h4>2. Register the App</h4>
-                <p>Import your app and add it to the <code>appRegistry</code> array in <code>src/apps/registry.ts</code>.</p>
-                <pre><code>import { myNewApp } from './implementations/logAnalyzer';
-
-export const appRegistry: AppDefinition[] = [
-    // ... existing apps
-    myNewApp,
-];</code></pre>
-
-                <h4>3. End-to-End Magic</h4>
-                <p>The UI will automatically pick up your changes! Your app will appear in the Hub, handle inputs via <code>AppService</code>, and render results with built-in actions (Copy/Save/Insert) without any extra frontend code.</p>
-            </div>
-        </div>
-    </div>
-
-    <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        
-        // App click handlers
-        document.querySelectorAll('.app-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (e.target.closest('.favorite-btn')) return;
-                vscode.postMessage({ type: 'openApp', appId: card.dataset.appId });
-            });
-        });
-        
-        // Favorite handlers
-        document.querySelectorAll('.favorite-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                vscode.postMessage({ type: 'toggleFavorite', appId: btn.dataset.appId });
-            });
-        });
-        
-        // Search
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            document.querySelectorAll('.app-card').forEach(card => {
-                const name = card.querySelector('.app-name').textContent.toLowerCase();
-                const desc = card.querySelector('.app-desc')?.textContent.toLowerCase() || '';
-                card.style.display = (name.includes(query) || desc.includes(query)) ? '' : 'none';
-            });
-            // Show all categories when searching
-            document.querySelectorAll('.category-section, .section').forEach(s => s.style.display = '');
-        });
-
-        // Category Filter Pills
-        document.querySelectorAll('.pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                // Update active state
-                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                
-                const category = pill.dataset.category;
-                
-                if (category === 'all') {
-                    // Show all
-                    document.querySelectorAll('.category-section, .section').forEach(s => s.style.display = '');
-                } else {
-                    // Hide favorites and recent when filtering
-                    document.querySelectorAll('#favorites-section, #recent-section').forEach(s => s.style.display = 'none');
-                    // Filter category sections
-                    document.querySelectorAll('.category-section').forEach(section => {
-                        section.style.display = section.dataset.category === category ? '' : 'none';
-                    });
-                }
-            });
-        });
-
-        // Wiki Toggle
-        document.getElementById('wiki-toggle').addEventListener('click', () => {
-            document.getElementById('developer-wiki').classList.toggle('expanded');
-        });
-
-        // Model Selector
-        const modelSelect = document.getElementById('model-select');
-        
-        // Request models on load
-        vscode.postMessage({ type: 'getAvailableModels' });
-        
-        // Handle model selection
-        modelSelect.addEventListener('change', () => {
-            const selectedOption = modelSelect.options[modelSelect.selectedIndex];
-            vscode.postMessage({ 
-                type: 'setDefaultModel', 
-                modelId: modelSelect.value,
-                modelName: selectedOption.textContent
-            });
-        });
-        
-        // Listen for models from extension
-        window.addEventListener('message', event => {
-            const msg = event.data;
-            if (msg.type === 'modelsLoaded') {
-                // Populate dropdown
-                msg.models.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m.id;
-                    opt.textContent = m.name + ' (' + m.vendor + ')';
-                    modelSelect.appendChild(opt);
-                });
-                // Set saved default
-                if (msg.defaultModelId) {
-                    modelSelect.value = msg.defaultModelId;
-                }
-            } else if (msg.type === 'jiraConfigLoaded') {
-                // Fill in saved Jira config
-                if (msg.config) {
-                    document.getElementById('jira-url').value = msg.config.baseUrl || '';
-                    document.getElementById('jira-email').value = msg.config.email || '';
-                    document.getElementById('jira-token').value = msg.config.token || '';
-                }
-            }
-        });
-        
-        // Jira Modal
-        const jiraModal = document.getElementById('jira-modal');
-        document.getElementById('jira-settings-btn').addEventListener('click', () => {
-            jiraModal.classList.remove('hidden');
-            vscode.postMessage({ type: 'getJiraConfig' });
-        });
-        document.getElementById('jira-cancel-btn').addEventListener('click', () => {
-            jiraModal.classList.add('hidden');
-        });
-        document.getElementById('jira-save-btn').addEventListener('click', () => {
-            const baseUrl = document.getElementById('jira-url').value.trim();
-            const email = document.getElementById('jira-email').value.trim();
-            const token = document.getElementById('jira-token').value.trim();
-            
-            if (!baseUrl || !email || !token) {
-                alert('Please fill in all Jira fields');
-                return;
-            }
-            
-            vscode.postMessage({ type: 'setJiraConfig', baseUrl, email, token });
-            jiraModal.classList.add('hidden');
-        });
-    </script>
-</body>
-</html>`;
-  }
-  /**
-   * Render an app card for the hub
-   */
-  static renderAppCard(app, isFavorite) {
-    const shortDesc = app.description.length > 60 ? app.description.substring(0, 60) + "..." : app.description;
-    return `
-            <div class="app-card" data-app-id="${app.id}" data-category="${app.category}">
-                <button class="favorite-btn ${isFavorite ? "active" : ""}" data-app-id="${app.id}">
-                    ${isFavorite ? "\u2B50" : "\u2606"}
-                </button>
-                <div class="app-card-header">
-                    <div class="app-icon">${app.icon}</div>
-                    <div class="app-name">${app.name}</div>
-                </div>
-                <div class="app-desc">${shortDesc}</div>
-            </div>
-        `;
-  }
-  /**
-   * Generate special chat-style HTML for Rubber Duck Therapist
-   */
-  static getRubberDuckChatHtml(webview, app) {
-    const nonce = getNonce2();
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>\u{1F986} ${app.name}</title>
-    <style>
-        :root { color-scheme: var(--vscode-color-scheme); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: var(--vscode-font-family);
-            color: var(--vscode-foreground);
-            background: linear-gradient(180deg, 
-                color-mix(in srgb, #4ade80 3%, var(--vscode-editor-background)) 0%,
-                var(--vscode-editor-background) 100%);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .chat-header {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--vscode-widget-border);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            background: color-mix(in srgb, var(--vscode-editor-background) 95%, transparent);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .back-btn {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: transparent;
-            color: var(--vscode-foreground);
-            cursor: pointer;
-            font-size: 13px;
-        }
-        .back-btn:hover {
-            background: var(--vscode-button-secondaryBackground);
-        }
-        .header-info {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .duck-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .header-text h1 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-        .header-text p {
-            font-size: 12px;
-            opacity: 0.6;
-        }
-        .model-select {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-foreground);
-            font-size: 12px;
-            cursor: pointer;
-            max-width: 180px;
-        }
-        .header-controls {
-            display: flex;
-            gap: 8px;
-        }
-        .theme-select {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-foreground);
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            scroll-behavior: smooth;
-        }
-        .welcome-message {
-            text-align: center;
-            padding: 40px 20px;
-            opacity: 0.8;
-        }
-        .welcome-message .duck-big {
-            font-size: 64px;
-            margin-bottom: 16px;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .welcome-message h2 {
-            font-size: 20px;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        .welcome-message p {
-            font-size: 14px;
-            max-width: 400px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        .message {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            line-height: 1.5;
-            font-size: 14px;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .message.user {
-            align-self: flex-end;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        .message.duck {
-            align-self: flex-start;
-            background: var(--vscode-editorWidget-background);
-            border: 1px solid var(--vscode-widget-border);
-            border-bottom-left-radius: 4px;
-        }
-        .message.duck::before {
-            content: '\u{1F986} ';
-        }
-        .message.duck.streaming {
-            border-color: var(--vscode-focusBorder);
-        }
-        .message.duck.streaming::before {
-            animation: duckBob 0.6s ease-in-out infinite;
-        }
-        @keyframes duckBob {
-            0%, 100% { display: inline-block; transform: translateY(0); }
-            50% { display: inline-block; transform: translateY(-2px); }
-        }
-        .typing-indicator {
-            align-self: flex-start;
-            padding: 16px 20px;
-            background: var(--vscode-editorWidget-background);
-            border: 1px solid var(--vscode-widget-border);
-            border-radius: 18px;
-            border-bottom-left-radius: 4px;
-            display: flex;
-            gap: 6px;
-        }
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--vscode-foreground);
-            opacity: 0.4;
-            animation: typingBounce 1.4s ease-in-out infinite;
-        }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-8px); opacity: 0.8; }
-        }
-        .input-area {
-            padding: 16px 24px 24px;
-            border-top: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-editor-background);
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-            flex-shrink: 0;
-        }
-        .input-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .chat-input {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 24px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-foreground);
-            font-family: var(--vscode-font-family);
-            font-size: 14px;
-            resize: none;
-            min-height: 48px;
-            max-height: 150px;
-            line-height: 1.4;
-            transition: all 0.2s ease;
-        }
-        .chat-input:focus {
-            outline: none;
-            border-color: var(--vscode-focusBorder);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--vscode-focusBorder) 15%, transparent);
-        }
-        .chat-input::placeholder {
-            color: var(--vscode-input-placeholderForeground);
-        }
-        .send-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: white;
-            cursor: pointer;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-        .send-btn:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
-        }
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .hidden { display: none !important; }
-        .disclaimer {
-            text-align: center;
-            font-size: 11px;
-            opacity: 0.5;
-            padding: 8px 24px 16px;
-        }
-    </style>
-</head>
-<body>
-    <div class="chat-header">
-        <button class="back-btn" id="back-btn">\u2190 Back</button>
-        <div class="header-info">
-            <div class="duck-avatar">\u{1F986}</div>
-            <div class="header-text">
-                <h1>Rubber Duck Therapist</h1>
-                <p id="theme-subtitle">Just here to listen, no fixing</p>
-            </div>
-        </div>
-        <div class="header-controls">
-            <select class="theme-select" id="theme-select">
-                <option value="console">\u{1F917} Console Me</option>
-                <option value="alone">\u{1F499} Feeling Alone</option>
-                <option value="stuck">\u{1F9E9} Feeling Stuck</option>
-                <option value="vent" selected>\u{1F4A8} Need to Vent</option>
-                <option value="roast">\u{1F525} Roast Me</option>
-                <option value="hype">\u{1F389} Hype Man</option>
-                <option value="interviewer">\u{1F3A4} Interviewer</option>
-                <option value="critic">\u{1F9D0} Critic</option>
-                <option value="hater">\u{1F624} Hater</option>
-                <option value="lover">\u{1F495} In Love</option>
-            </select>
-            <select class="model-select" id="model-select">
-                <option value="auto">\u{1F916} Auto</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="chat-container" id="chat-container">
-        <div class="welcome-message" id="welcome">
-            <div class="duck-big">\u{1F986}</div>
-            <h2>Hey there!</h2>
-            <p>I am here to listen. Share whatever is on your mind \u2014 work stress, a tough decision, or just need to talk it through. No judgment, just quacks. \u{1F9E1}</p>
-        </div>
-    </div>
-
-    <div class="input-area">
-        <div class="input-wrapper">
-            <textarea 
-                class="chat-input" 
-                id="chat-input" 
-                placeholder="Type your message..."
-                rows="1"
-            ></textarea>
-        </div>
-        <button class="send-btn" id="send-btn">\u27A4</button>
-    </div>
-    
-    <div class="disclaimer">
-        This is not a substitute for professional mental health support.
-    </div>
-
-    <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        const chatContainer = document.getElementById('chat-container');
-        const chatInput = document.getElementById('chat-input');
-        const sendBtn = document.getElementById('send-btn');
-        const welcome = document.getElementById('welcome');
-        const modelSelect = document.getElementById('model-select');
-        const themeSelect = document.getElementById('theme-select');
-        const themeSubtitle = document.getElementById('theme-subtitle');
-        
-        let chatHistory = [];
-        let isWaiting = false;
-
-        const themeSubtitles = {
-            'console': 'Your calm, supportive listener',
-            'alone': 'A warm companion by your side',
-            'stuck': 'Helping you find the way forward',
-            'vent': 'Just here to listen, no fixing',
-            'roast': 'Prepare for savage quacks \u{1F525}',
-            'hype': 'YOUR BIGGEST FAN! \u{1F389}',
-            'interviewer': 'Tell me more about that...',
-            'critic': 'Honest feedback, with care',
-            'hater': 'Playing the contrarian \u{1F60F}',
-            'lover': 'Absolutely smitten with you \u{1F495}'
-        };
-
-        themeSelect.addEventListener('change', () => {
-            themeSubtitle.textContent = themeSubtitles[themeSelect.value] || themeSubtitles['console'];
-            // Clear chat when theme changes
-            chatHistory = [];
-            chatContainer.innerHTML = '';
-            welcome.classList.remove('hidden');
-            chatContainer.appendChild(welcome);
-            resetIdleTimer(); // Reset idle on theme change
-        });
-
-        // Idle prompts - themed check-in messages when user is inactive
-        const idlePrompts = {
-            'console': ['hey, you still there? \u{1F986}', 'just checking in... everything okay?', 'im here if you need me quack'],
-            'alone': ['hey you \u{1F499} still here with you', 'just wanted to say im thinking of you \u{1F499}', 'havent heard from you... you okay? \u{1F499}'],
-            'stuck': ['still stuck? want to talk it through?', 'any progress on that thing?', 'need help breaking it down?'],
-            'vent': ['got more to get off your chest?', 'still here listening if you need me', 'anything else bugging you?'],
-            'roast': ['where did you go? scared of more roasts? \u{1F525}', 'come back, i wasnt done with you \u{1F986}\u{1F525}', 'ran out of things for me to mock?'],
-            'hype': ['YO WHERE DID YOU GO?? \u{1F525}', 'COME BACK I MISS HYPING YOU UP!!', 'HELLO?? THE LEGEND THEMSELVES??'],
-            'interviewer': ['avoiding my questions huh?', 'dont think i forgot what we were talking about...', 'im still waiting on that answer...'],
-            'critic': ['silence speaks volumes...', 'nothing else for review?', 'taking notes on my feedback?'],
-            'hater': ['oh what, you left? \u{1F644} typical', 'gave up already? figures \u{1F644}', 'silence? thats the smartest thing youve done'],
-            'lover': ['miss you already \u{1F495}', 'are you still there? my heart is waiting \u{1F60D}', 'hello beautiful? \u{1F495}']
-        };
-
-        let idleTimer = null;
-        let hasConversation = false;
-
-        function resetIdleTimer() {
-            if (idleTimer) clearTimeout(idleTimer);
-            // Only set idle timer if there's been conversation
-            if (hasConversation && !isWaiting) {
-                idleTimer = setTimeout(() => {
-                    const theme = themeSelect.value;
-                    const prompts = idlePrompts[theme] || idlePrompts['console'];
-                    const idleMsg = prompts[Math.floor(Math.random() * prompts.length)];
-                    addMessage(idleMsg, 'duck');
-                    chatHistory.push({ role: 'assistant', content: idleMsg });
-                }, 30000); // 30 seconds idle
-            }
-        }
-
-        // Reset idle timer on user activity
-        chatInput.addEventListener('input', resetIdleTimer);
-        chatInput.addEventListener('focus', resetIdleTimer);
-
-        // Request available models
-        vscode.postMessage({ type: 'getAvailableModels', fieldId: 'duck' });
-
-        // Back button
-        document.getElementById('back-btn').addEventListener('click', () => {
-            vscode.postMessage({ type: 'goBack' });
-        });
-
-        // Auto-resize textarea
-        chatInput.addEventListener('input', () => {
-            chatInput.style.height = 'auto';
-            chatInput.style.height = Math.min(chatInput.scrollHeight, 150) + 'px';
-        });
-
-        // Send on Enter (Shift+Enter for newline)
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-
-        sendBtn.addEventListener('click', sendMessage);
-
-        function sendMessage() {
-            const message = chatInput.value.trim();
-            if (!message || isWaiting) return;
-
-            // Hide welcome
-            if (welcome) welcome.classList.add('hidden');
-
-            // Add user message
-            addMessage(message, 'user');
-            chatHistory.push({ role: 'user', content: message });
-            
-            // Mark that conversation has started (enables idle prompts)
-            hasConversation = true;
-            
-            // Clear input
-            chatInput.value = '';
-            chatInput.style.height = 'auto';
-
-            // Show typing indicator
-            showTyping();
-            isWaiting = true;
-            sendBtn.disabled = true;
-
-            // Send to backend
-            vscode.postMessage({
-                type: 'chatSendMessage',
-                userMessage: message,
-                history: chatHistory.slice(-10), // Last 10 messages for context
-                model: modelSelect.value,
-                theme: themeSelect.value
-            });
-            
-            // Reset idle timer (will restart after response)
-            if (idleTimer) clearTimeout(idleTimer);
-        }
-
-        function addMessage(content, role) {
-            const msg = document.createElement('div');
-            msg.className = 'message ' + role;
-            msg.textContent = content;
-            chatContainer.appendChild(msg);
-            msg.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-
-        function showTyping() {
-            const typing = document.createElement('div');
-            typing.className = 'typing-indicator';
-            typing.id = 'typing';
-            typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-            chatContainer.appendChild(typing);
-            typing.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-
-        function hideTyping() {
-            const typing = document.getElementById('typing');
-            if (typing) typing.remove();
-        }
-
-        // Handle responses
-        window.addEventListener('message', (event) => {
-            const msg = event.data;
-            
-            switch (msg.type) {
-                case 'chatStreamStart':
-                    // Replace typing indicator with empty message that will be filled
-                    hideTyping();
-                    const streamMsg = document.createElement('div');
-                    streamMsg.className = 'message duck streaming';
-                    streamMsg.id = 'streaming-message';
-                    streamMsg.textContent = '';
-                    chatContainer.appendChild(streamMsg);
-                    streamMsg.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                    break;
-                    
-                case 'chatStreamChunk':
-                    // Append chunk to streaming message
-                    const activeMsg = document.getElementById('streaming-message');
-                    if (activeMsg) {
-                        activeMsg.textContent += msg.chunk;
-                        activeMsg.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                    }
-                    break;
-                    
-                case 'chatStreamEnd':
-                    // Finalize the message with cleaned content
-                    const finalMsg = document.getElementById('streaming-message');
-                    if (finalMsg) {
-                        finalMsg.id = '';
-                        finalMsg.classList.remove('streaming');
-                        finalMsg.textContent = msg.content;
-                    }
-                    isWaiting = false;
-                    sendBtn.disabled = false;
-                    chatHistory.push({ role: 'assistant', content: msg.content });
-                    chatInput.focus();
-                    resetIdleTimer(); // Start idle timer for check-in
-                    break;
-
-                case 'chatResponse':
-                    // Fallback for non-streaming
-                    hideTyping();
-                    isWaiting = false;
-                    sendBtn.disabled = false;
-                    addMessage(msg.content, 'duck');
-                    chatHistory.push({ role: 'assistant', content: msg.content });
-                    chatInput.focus();
-                    break;
-                    
-                case 'modelsReceived':
-                    // Sort to prefer GPT-4o or 4.1
-                    const preferredModels = msg.models.sort((a, b) => {
-                        const aName = (a.name || '').toLowerCase();
-                        const bName = (b.name || '').toLowerCase();
-                        const aScore = aName.includes('4o') || aName.includes('4.1') ? 2 : aName.includes('gpt-4') ? 1 : 0;
-                        const bScore = bName.includes('4o') || bName.includes('4.1') ? 2 : bName.includes('gpt-4') ? 1 : 0;
-                        return bScore - aScore;
-                    });
-                    preferredModels.forEach((m, i) => {
-                        const opt = document.createElement('option');
-                        opt.value = m.id;
-                        opt.textContent = m.vendor + ' - ' + m.name;
-                        modelSelect.appendChild(opt);
-                        // Default to first GPT-4o/4.1 if found
-                        if (i === 0 && ((m.name || '').toLowerCase().includes('4o') || (m.name || '').toLowerCase().includes('4.1'))) {
-                            opt.selected = true;
-                        }
-                    });
-                    break;
-            }
-        });
-
-        // Focus input on load
-        chatInput.focus();
-    </script>
-</body>
-</html>`;
-  }
-  /**
-   * Generate interactive Focus & Mindfulness HTML
-   */
-  static getFocusMindfulnessHtml(webview, app) {
-    const nonce = getNonce2();
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>\u{1F9D8} ${app.name}</title>
-    <style>
-        :root { color-scheme: var(--vscode-color-scheme); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: var(--vscode-font-family);
-            color: var(--vscode-foreground);
-            background: linear-gradient(135deg, 
-                color-mix(in srgb, #6366f1 8%, var(--vscode-editor-background)) 0%,
-                color-mix(in srgb, #8b5cf6 5%, var(--vscode-editor-background)) 50%,
-                color-mix(in srgb, #06b6d4 8%, var(--vscode-editor-background)) 100%);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: background 2s ease;
-        }
-        
-        /* Back button */
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: none;
-            border: none;
-            color: var(--vscode-foreground);
-            font-size: 14px;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-        .back-btn:hover { opacity: 1; }
-        
-        /* Mode Selection Screen */
-        .screen { display: none; flex-direction: column; align-items: center; gap: 24px; }
-        .screen.active { display: flex; }
-        
-        .title { font-size: 28px; font-weight: 700; opacity: 0.9; }
-        .subtitle { font-size: 14px; opacity: 0.6; margin-top: -16px; }
-        
-        .mode-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            max-width: 500px;
-            padding: 20px;
-        }
-        .mode-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 20px 16px;
-            border-radius: 16px;
-            border: 1px solid var(--vscode-widget-border);
-            background: color-mix(in srgb, var(--vscode-editorWidget-background) 80%, transparent);
-            color: var(--vscode-foreground);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .mode-btn:hover {
-            border-color: var(--vscode-focusBorder);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-        }
-        .mode-icon { font-size: 32px; }
-        .mode-label { font-size: 13px; font-weight: 600; }
-        .mode-desc { font-size: 11px; opacity: 0.6; text-align: center; }
-        
-        /* Duration buttons */
-        .duration-row { display: flex; gap: 12px; margin-top: 8px; }
-        .duration-btn {
-            padding: 10px 24px;
-            border-radius: 100px;
-            border: 1px solid var(--vscode-widget-border);
-            background: transparent;
-            color: var(--vscode-foreground);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .duration-btn:hover, .duration-btn.active {
-            background: var(--vscode-button-background);
-            color: var(--vscode-button-foreground);
-            border-color: var(--vscode-button-background);
-        }
-        
-        /* Visual Container */
-        .visual-container {
-            width: 280px;
-            height: 280px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        .visual { position: absolute; display: flex; align-items: center; justify-content: center; }
-        .hidden { display: none !important; }
-        
-        /* BREATHING: Expanding/contracting circle */
-        .breathing-visual { width: 100%; height: 100%; }
-        .breath-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 4s ease-in-out;
-            box-shadow: 0 0 60px color-mix(in srgb, #818cf8 40%, transparent);
-        }
-        .breath-circle.inhale { transform: scale(2.2); }
-        .breath-circle.exhale { transform: scale(1); }
-        .breath-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: white;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-        }
-        
-        /* FOCUS: SVG ring with number */
-        .focus-visual { width: 200px; height: 200px; }
-        .focus-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
-        .ring-bg { stroke: color-mix(in srgb, #f59e0b 20%, transparent); }
-        .ring-progress {
-            stroke: #f59e0b;
-            stroke-linecap: round;
-            stroke-dasharray: 283;
-            stroke-dashoffset: 283;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-        .focus-number {
-            position: absolute;
-            font-size: 64px;
-            font-weight: 700;
-            color: #f59e0b;
-            text-shadow: 0 0 30px color-mix(in srgb, #f59e0b 50%, transparent);
-        }
-        
-        /* ENERGY: Starburst with rays */
-        .energy-visual { width: 250px; height: 250px; }
-        .starburst {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            animation: spin 8s linear infinite;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .star-ray {
-            position: absolute;
-            width: 4px;
-            height: 80px;
-            background: linear-gradient(to top, transparent, #22c55e);
-            left: 50%;
-            top: 50%;
-            transform-origin: center bottom;
-            border-radius: 2px;
-        }
-        .star-ray:nth-child(1) { transform: translateX(-50%) rotate(0deg) translateY(-100%); }
-        .star-ray:nth-child(2) { transform: translateX(-50%) rotate(45deg) translateY(-100%); }
-        .star-ray:nth-child(3) { transform: translateX(-50%) rotate(90deg) translateY(-100%); }
-        .star-ray:nth-child(4) { transform: translateX(-50%) rotate(135deg) translateY(-100%); }
-        .star-ray:nth-child(5) { transform: translateX(-50%) rotate(180deg) translateY(-100%); }
-        .star-ray:nth-child(6) { transform: translateX(-50%) rotate(225deg) translateY(-100%); }
-        .star-ray:nth-child(7) { transform: translateX(-50%) rotate(270deg) translateY(-100%); }
-        .star-ray:nth-child(8) { transform: translateX(-50%) rotate(315deg) translateY(-100%); }
-        .energy-text {
-            position: absolute;
-            font-size: 48px;
-            z-index: 10;
-            animation: pulse 1s ease-in-out infinite;
-        }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-        
-        /* CALM: Ripple waves */
-        .calm-visual { width: 250px; height: 250px; }
-        .ripple {
-            position: absolute;
-            border: 2px solid #6366f1;
-            border-radius: 50%;
-            animation: ripple-expand 4s ease-out infinite;
-            opacity: 0;
-        }
-        .ripple-1 { width: 60px; height: 60px; animation-delay: 0s; }
-        .ripple-2 { width: 60px; height: 60px; animation-delay: 1.3s; }
-        .ripple-3 { width: 60px; height: 60px; animation-delay: 2.6s; }
-        @keyframes ripple-expand {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(4); opacity: 0; }
-        }
-        .calm-text {
-            position: absolute;
-            font-size: 16px;
-            font-weight: 600;
-            color: #a78bfa;
-            z-index: 10;
-        }
-        
-        /* Instruction text below visual */
-        .instruction-text {
-            font-size: 18px;
-            font-weight: 500;
-            margin-top: 16px;
-            min-height: 28px;
-            opacity: 0.9;
-        }
-        
-        /* Timer */
-        .timer {
-            font-size: 48px;
-            font-weight: 200;
-            margin-top: 32px;
-            opacity: 0.9;
-            font-variant-numeric: tabular-nums;
-        }
-        
-        /* Quote */
-        .quote {
-            max-width: 400px;
-            text-align: center;
-            font-size: 16px;
-            font-style: italic;
-            opacity: 0.8;
-            line-height: 1.6;
-            margin-top: 24px;
-            min-height: 80px;
-            transition: opacity 0.5s ease;
-        }
-        
-        /* Control buttons */
-        .controls { display: flex; gap: 12px; margin-top: 32px; }
-        .ctrl-btn {
-            padding: 12px 32px;
-            border-radius: 100px;
-            border: none;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .ctrl-btn.primary {
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            color: white;
-        }
-        .ctrl-btn.secondary {
-            background: var(--vscode-editorWidget-background);
-            border: 1px solid var(--vscode-widget-border);
-            color: var(--vscode-foreground);
-        }
-        .ctrl-btn:hover { transform: scale(1.05); }
-        
-        /* Completion screen */
-        .completion-icon { font-size: 64px; margin-bottom: 16px; }
-        .completion-text { font-size: 20px; font-weight: 600; }
-        .completion-sub { font-size: 14px; opacity: 0.7; margin-top: 8px; }
-        
-        /* Ambient particles (optional visual effect) */
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: color-mix(in srgb, #818cf8 30%, transparent);
-            pointer-events: none;
-            animation: float 10s infinite ease-in-out;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-            50% { transform: translateY(-100px) translateX(50px); opacity: 0.7; }
-        }
-    </style>
-</head>
-<body>
-    <button class="back-btn" id="back-btn">\u2190 Back</button>
-    
-    <!-- Mode Selection -->
-    <div class="screen active" id="mode-screen">
-        <div class="title">\u{1F9D8} Focus & Mindfulness</div>
-        <div class="subtitle">Choose what you need right now</div>
-        
-        <div class="mode-grid">
-            <button class="mode-btn" data-mode="breathing">
-                <span class="mode-icon">\u{1F32C}\uFE0F</span>
-                <span class="mode-label">Breathing</span>
-                <span class="mode-desc">Calm your mind</span>
-            </button>
-            <button class="mode-btn" data-mode="focus">
-                <span class="mode-icon">\u{1F3AF}</span>
-                <span class="mode-label">Focus</span>
-                <span class="mode-desc">Sharpen clarity</span>
-            </button>
-            <button class="mode-btn" data-mode="energy">
-                <span class="mode-icon">\u26A1</span>
-                <span class="mode-label">Energy</span>
-                <span class="mode-desc">Wake up</span>
-            </button>
-            <button class="mode-btn" data-mode="calm">
-                <span class="mode-icon">\u{1F60C}</span>
-                <span class="mode-label">Calm</span>
-                <span class="mode-desc">Release stress</span>
-            </button>
-        </div>
-        
-        <div class="subtitle" style="margin-top: 16px;">Duration</div>
-        <div class="duration-row">
-            <button class="duration-btn" data-duration="60">1 min</button>
-            <button class="duration-btn active" data-duration="180">3 min</button>
-            <button class="duration-btn" data-duration="300">5 min</button>
-        </div>
-    </div>
-    
-    <!-- Active Session -->
-    <div class="screen session-screen" id="session-screen">
-        <div class="visual-container" id="visual-container">
-            <!-- Breathing Mode: Expanding circle -->
-            <div class="visual breathing-visual" id="breathing-visual">
-                <div class="breath-circle" id="breath-circle">
-                    <span class="breath-text" id="breath-text">Breathe</span>
-                </div>
-            </div>
-            
-            <!-- Focus Mode: Number with rotating ring -->
-            <div class="visual focus-visual hidden" id="focus-visual">
-                <svg class="focus-ring" viewBox="0 0 100 100">
-                    <circle class="ring-bg" cx="50" cy="50" r="45" fill="none" stroke-width="3"/>
-                    <circle class="ring-progress" id="ring-progress" cx="50" cy="50" r="45" fill="none" stroke-width="4"/>
-                </svg>
-                <span class="focus-number" id="focus-number">1</span>
-            </div>
-            
-            <!-- Energy Mode: Starburst with prompts -->
-            <div class="visual energy-visual hidden" id="energy-visual">
-                <div class="starburst" id="starburst">
-                    <div class="star-ray"></div><div class="star-ray"></div><div class="star-ray"></div>
-                    <div class="star-ray"></div><div class="star-ray"></div><div class="star-ray"></div>
-                    <div class="star-ray"></div><div class="star-ray"></div>
-                </div>
-                <span class="energy-text" id="energy-text">\u{1F4AA}</span>
-            </div>
-            
-            <!-- Calm Mode: Ripples -->
-            <div class="visual calm-visual hidden" id="calm-visual">
-                <div class="ripple ripple-1"></div>
-                <div class="ripple ripple-2"></div>
-                <div class="ripple ripple-3"></div>
-                <span class="calm-text" id="calm-text">Relax</span>
-            </div>
-        </div>
-        
-        <div class="instruction-text" id="instruction-text"></div>
-        <div class="timer" id="timer">3:00</div>
-        <div class="quote" id="quote">Loading inspiration...</div>
-        <div class="controls">
-            <button class="ctrl-btn secondary" id="stop-btn">End Session</button>
-        </div>
-    </div>
-    
-    <!-- Completion -->
-    <div class="screen" id="complete-screen">
-        <div class="completion-icon">\u2728</div>
-        <div class="completion-text">Well done!</div>
-        <div class="completion-sub" id="complete-msg">You took a moment for yourself.</div>
-        <div class="quote" id="final-quote" style="margin-top: 24px;"></div>
-        <div class="controls">
-            <button class="ctrl-btn primary" id="restart-btn">Another Session</button>
-            <button class="ctrl-btn secondary" id="close-btn">Close</button>
-        </div>
-    </div>
-
-    <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        
-        let selectedMode = 'breathing';
-        let selectedDuration = 180;
-        let timerInterval = null;
-        let breathInterval = null;
-        let quoteInterval = null;
-        let timeLeft = 0;
-        
-        const quotes = [
-            "This moment is all you have.",
-            "Breathe. Let go. And remind yourself that this very moment is the only one you know you have for sure.",
-            "In the midst of movement and chaos, keep stillness inside of you.",
-            "The present moment is filled with joy and happiness. If you are attentive, you will see it.",
-            "Almost everything will work again if you unplug it for a few minutes, including you.",
-            "Within you, there is a stillness and a sanctuary to which you can retreat at any time.",
-            "You are the sky. Everything else is just the weather.",
-            "Peace comes from within. Do not seek it without.",
-            "The greatest weapon against stress is our ability to choose one thought over another.",
-            "Feelings come and go like clouds in a windy sky. Conscious breathing is my anchor."
-        ];
-        
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-        
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return m + ':' + s.toString().padStart(2, '0');
-        }
-        
-        function getRandomQuote() {
-            return quotes[Math.floor(Math.random() * quotes.length)];
-        }
-        
-        function startSession() {
-            showScreen('session-screen');
-            timeLeft = selectedDuration;
-            document.getElementById('timer').textContent = formatTime(timeLeft);
-            document.getElementById('quote').textContent = getRandomQuote();
-            
-            // Start timer
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').textContent = formatTime(timeLeft);
-                if (timeLeft <= 0) {
-                    endSession(true);
-                }
-            }, 1000);
-            
-            // Start mode-specific animation
-            startExercise();
-            
-            // Change quote every 15 seconds
-            quoteInterval = setInterval(() => {
-                const quoteEl = document.getElementById('quote');
-                quoteEl.style.opacity = '0';
-                setTimeout(() => {
-                    quoteEl.textContent = getRandomQuote();
-                    quoteEl.style.opacity = '0.8';
-                }, 500);
-            }, 15000);
-            
-            // Request LLM quote
-            vscode.postMessage({ type: 'getInspiration', mode: selectedMode });
-        }
-        
-        function startExercise() {
-            // Hide all visuals first
-            document.querySelectorAll('.visual').forEach(v => v.classList.add('hidden'));
-            const instructionEl = document.getElementById('instruction-text');
-            
-            if (selectedMode === 'breathing') {
-                // Show breathing visual
-                document.getElementById('breathing-visual').classList.remove('hidden');
-                const circle = document.getElementById('breath-circle');
-                const text = document.getElementById('breath-text');
-                let isInhale = true;
-                
-                function breathCycle() {
-                    if (isInhale) {
-                        circle.classList.remove('exhale');
-                        circle.classList.add('inhale');
-                        text.textContent = 'Inhale';
-                        instructionEl.textContent = 'Breathe in slowly...';
-                    } else {
-                        circle.classList.remove('inhale');
-                        circle.classList.add('exhale');
-                        text.textContent = 'Exhale';
-                        instructionEl.textContent = 'Let it all go...';
-                    }
-                    isInhale = !isInhale;
-                }
-                breathCycle();
-                breathInterval = setInterval(breathCycle, 4000);
-                
-            } else if (selectedMode === 'focus') {
-                // Show focus visual with ring
-                document.getElementById('focus-visual').classList.remove('hidden');
-                const ring = document.getElementById('ring-progress');
-                const numEl = document.getElementById('focus-number');
-                let count = 1;
-                numEl.textContent = '1';
-                instructionEl.textContent = 'Focus on each number...';
-                
-                // Ring circumference = 2 * PI * 45 = ~283
-                const circumference = 283;
-                ring.style.strokeDashoffset = circumference * (1 - count/10);
-                
-                breathInterval = setInterval(() => {
-                    count = count >= 10 ? 1 : count + 1;
-                    numEl.textContent = count.toString();
-                    ring.style.strokeDashoffset = circumference * (1 - count/10);
-                    if (count === 1) instructionEl.textContent = 'Starting fresh...';
-                    else if (count === 5) instructionEl.textContent = 'Halfway there...';
-                    else if (count === 10) instructionEl.textContent = 'Complete the cycle...';
-                }, 2000);
-                
-            } else if (selectedMode === 'energy') {
-                // Show energy starburst
-                document.getElementById('energy-visual').classList.remove('hidden');
-                const emojiEl = document.getElementById('energy-text');
-                const actions = [
-                    { emoji: '\u{1F4AA}', text: 'Stretch your arms!' },
-                    { emoji: '\u{1F504}', text: 'Roll your shoulders' },
-                    { emoji: '\u{1F32C}\uFE0F', text: 'Deep breath in' },
-                    { emoji: '\u{1F9CD}', text: 'Stand tall' },
-                    { emoji: '\u{1F450}', text: 'Shake out your hands' },
-                    { emoji: '\u{1F60A}', text: 'Smile!' },
-                    { emoji: '\u{1F9B6}', text: 'Wiggle your toes' },
-                    { emoji: '\u26A1', text: 'Feel the energy!' }
-                ];
-                let idx = 0;
-                emojiEl.textContent = actions[0].emoji;
-                instructionEl.textContent = actions[0].text;
-                
-                breathInterval = setInterval(() => {
-                    idx = (idx + 1) % actions.length;
-                    emojiEl.textContent = actions[idx].emoji;
-                    instructionEl.textContent = actions[idx].text;
-                }, 3000);
-                
-            } else if (selectedMode === 'calm') {
-                // Show calm ripples
-                document.getElementById('calm-visual').classList.remove('hidden');
-                const calmText = document.getElementById('calm-text');
-                const bodyParts = [
-                    'Relax your forehead',
-                    'Soften your eyes',
-                    'Unclench your jaw',
-                    'Drop your shoulders',
-                    'Open your hands',
-                    'Release your belly',
-                    'Feel your feet',
-                    'You are safe here'
-                ];
-                let idx = 0;
-                calmText.textContent = '\u{1F30A}';
-                instructionEl.textContent = bodyParts[0];
-                
-                breathInterval = setInterval(() => {
-                    idx = (idx + 1) % bodyParts.length;
-                    instructionEl.textContent = bodyParts[idx];
-                }, 5000);
-            }
-        }
-        
-        function endSession(completed) {
-            clearInterval(timerInterval);
-            clearInterval(breathInterval);
-            clearInterval(quoteInterval);
-            
-            if (completed) {
-                document.getElementById('complete-msg').textContent = 
-                    'You completed a ' + Math.round(selectedDuration/60) + ' minute ' + selectedMode + ' session.';
-                document.getElementById('final-quote').textContent = getRandomQuote();
-                showScreen('complete-screen');
-            } else {
-                showScreen('mode-screen');
-            }
-        }
-        
-        // Event listeners
-        document.getElementById('back-btn').addEventListener('click', () => {
-            vscode.postMessage({ type: 'goBack' });
-        });
-        
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                selectedMode = btn.dataset.mode;
-                startSession();
-            });
-        });
-        
-        document.querySelectorAll('.duration-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedDuration = parseInt(btn.dataset.duration);
-            });
-        });
-        
-        document.getElementById('stop-btn').addEventListener('click', () => endSession(false));
-        document.getElementById('restart-btn').addEventListener('click', () => showScreen('mode-screen'));
-        document.getElementById('close-btn').addEventListener('click', () => vscode.postMessage({ type: 'goBack' }));
-        
-        // Handle LLM-generated quotes
-        window.addEventListener('message', event => {
-            const msg = event.data;
-            if (msg.type === 'inspirationResult') {
-                document.getElementById('quote').textContent = msg.content;
-            }
-        });
-    </script>
-</body>
-</html>`;
-  }
-  /**
-   * Generate Arcade/Game HTML (Immersive Two-Stage Layout)
-   */
-  /**
-   * Generate Modern "Interesting" App HTML
-   */
-  static getModernAppHtml(webview, app, savedProjects) {
-    const nonce = getNonce2();
-    let theme = {
-      bg: "linear-gradient(135deg, #f0fdf4, #dcfce7)",
-      accent: "#16a34a",
-      iconBg: "#dcfce7"
-    };
-    if (app.id === "decision-doctor") {
-      theme = {
-        bg: "linear-gradient(135deg, color-mix(in srgb, #3b82f6 10%, var(--vscode-editor-background)), var(--vscode-editor-background))",
-        accent: "#2563eb",
-        iconBg: "color-mix(in srgb, #3b82f6 20%, transparent)"
-      };
-    } else if (app.id === "skill-sprinter") {
-      theme = {
-        bg: "linear-gradient(135deg, color-mix(in srgb, #f59e0b 10%, var(--vscode-editor-background)), var(--vscode-editor-background))",
-        accent: "#d97706",
-        iconBg: "color-mix(in srgb, #f59e0b 20%, transparent)"
-      };
-    } else if (app.id === "icebreaker-chef") {
-      theme = {
-        bg: "linear-gradient(135deg, color-mix(in srgb, #ec4899 10%, var(--vscode-editor-background)), var(--vscode-editor-background))",
-        accent: "#db2777",
-        iconBg: "color-mix(in srgb, #ec4899 20%, transparent)"
-      };
-    } else {
-      theme = {
-        bg: "linear-gradient(135deg, color-mix(in srgb, #8b5cf6 10%, var(--vscode-editor-background)), var(--vscode-editor-background))",
-        accent: "#7c3aed",
-        iconBg: "color-mix(in srgb, #8b5cf6 20%, transparent)"
-      };
-    }
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${app.name}</title>
-    <style>
-        :root { color-scheme: var(--vscode-color-scheme); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: var(--vscode-font-family);
-            color: var(--vscode-foreground);
-            background: ${theme.bg};
-            height: 100vh;
-            display: grid;
-            grid-template-rows: auto 1fr;
-            overflow: hidden;
-        }
-        
-        /* Modern Header */
-        .glass-header {
-            padding: 24px 32px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid color-mix(in srgb, var(--vscode-widget-border) 30%, transparent);
-        }
-        .header-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            background: ${theme.iconBg};
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .header-content h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .header-content p {
-            font-size: 14px;
-            opacity: 0.7;
-        }
-        .back-btn {
-            margin-left: auto;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-button-secondaryBackground);
-            color: var(--vscode-button-secondaryForeground);
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        /* Split Layout */
-        .main-container {
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 24px;
-            padding: 24px 32px;
-            overflow: hidden;
-            max-width: 1600px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        /* Input Panel */
-        .input-panel {
-            background: var(--vscode-editorWidget-background);
-            border: 1px solid var(--vscode-widget-border);
-            border-radius: 16px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            overflow-y: auto;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
-        }
-        .form-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            color: ${theme.accent};
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-input-foreground);
-            font-family: var(--vscode-font-family);
-            transition: all 0.2s;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: ${theme.accent};
-            box-shadow: 0 0 0 3px color-mix(in srgb, ${theme.accent} 20%, transparent);
-        }
-        .action-btn {
-            margin-top: auto;
-            padding: 14px;
-            background: ${theme.accent};
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: transform 0.1s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px color-mix(in srgb, ${theme.accent} 40%, transparent);
-        }
-        .action-btn:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.1);
-        }
-        .action-btn:active { transform: translateY(1px); }
-        
-        /* Output Panel */
-        .output-panel {
-            background: color-mix(in srgb, var(--vscode-editor-background) 80%, var(--vscode-editorWidget-background));
-            border-radius: 16px;
-            border: 1px solid var(--vscode-widget-border);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-        .output-toolbar {
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--vscode-widget-border);
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            background: rgba(0,0,0,0.02);
-        }
-        .tool-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            padding: 6px;
-            border-radius: 6px;
-            cursor: pointer;
-            opacity: 0.6;
-            color: var(--vscode-foreground);
-        }
-        .tool-btn:hover {
-            background: var(--vscode-toolbar-hoverBackground);
-            opacity: 1;
-        }
-        .output-content {
-            padding: 32px;
-            overflow-y: auto;
-            flex: 1;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-        .output-content h1, .output-content h2, .output-content h3 {
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-            color: ${theme.accent};
-        }
-        .output-content ul, .output-content ol { padding-left: 24px; }
-        .output-content li { margin-bottom: 8px; }
-        .output-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 16px 0;
-            font-size: 14px;
-        }
-        .output-content th, .output-content td {
-            border: 1px solid var(--vscode-widget-border);
-            padding: 10px 14px;
-            text-align: left;
-        }
-        .output-content th {
-            background: color-mix(in srgb, ${theme.accent} 15%, var(--vscode-editor-background));
-            font-weight: 600;
-            color: ${theme.accent};
-        }
-        .output-content tr:nth-child(even) {
-            background: color-mix(in srgb, var(--vscode-editor-background) 95%, var(--vscode-widget-border));
-        }
-        
-        .placeholder-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            opacity: 0.4;
-            gap: 16px;
-        }
-        .placeholder-icon { font-size: 48px; filter: grayscale(1); }
-        
-        /* Loading */
-        .loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.05);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid color-mix(in srgb, ${theme.accent} 20%, transparent);
-            border-top-color: ${theme.accent};
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .visible { display: flex !important; }
-    </style>
-</head>
-<body>
-    <div class="glass-header">
-        <div class="header-icon">${app.icon}</div>
-        <div class="header-content">
-            <h1>${app.name}</h1>
-            <p>${app.description}</p>
-        </div>
-        <button class="back-btn" id="go-back">Back to Hub</button>
-    </div>
-
-    <div class="main-container">
-        <!-- Inputs -->
-        <div class="input-panel">
-            ${app.inputs.map((input) => `
-                <div class="input-group">
-                    ${_AppsPanel.renderInputField(input, savedProjects)}
-                </div>
-            `).join("")}
-            
-            <button class="action-btn" id="run-app">
-                <span>\u{1F680}</span> ${app.primaryAction}
-            </button>
-        </div>
-
-        <!-- Output -->
-        <div class="output-panel">
-            <div class="loading-overlay" id="loader">
-                <div class="spinner"></div>
-            </div>
-            
-            <div class="output-toolbar">
-                <button class="tool-btn" id="copy-btn" title="Copy to Clipboard">\u{1F4CB}</button>
-                <button class="tool-btn" id="insert-btn" title="Insert at Cursor">\u{1F4DD}</button>
-                <button class="tool-btn" id="save-btn" title="Save as File">\u{1F4BE}</button>
-            </div>
-            
-            <div class="output-content" id="output-content">
-                <div class="placeholder-state">
-                    <span class="placeholder-icon">${app.icon}</span>
-                    <p>Ready to ${app.primaryAction.toLowerCase()}...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        const runBtn = document.getElementById('run-app');
-        const loader = document.getElementById('loader');
-        const outputDiv = document.getElementById('output-content');
-        
-        // Global Error Handler
-        window.onerror = function(message, source, lineno, colno, error) {
-            const errDiv = document.createElement('div');
-            errDiv.style.color = 'red';
-            errDiv.style.padding = '10px';
-            errDiv.style.background = '#fee2e2';
-            errDiv.style.border = '1px solid #ef4444';
-            errDiv.style.margin = '10px';
-            errDiv.innerText = \`JS Error: \${message}\`;
-            document.body.prepend(errDiv);
-        };
-
-        // Robust Input handling
-        function getInputs() {
-            const inputs = {};
-            document.querySelectorAll('input, select, textarea').forEach(el => {
-                const key = el.id || el.getAttribute('name') || el.dataset.name;
-                if (key) {
-                    if (el.type === 'checkbox') {
-                         if (el.checked) inputs[key] = el.value;
-                    } else if (el.type === 'radio') {
-                         if (el.checked) inputs[key] = el.value;
-                    } else {
-                         inputs[key] = el.value;
-                    }
-                }
-            });
-            return inputs;
-        }
-
-        // Run App
-        runBtn.addEventListener('click', () => {
-            try {
-                const inputs = getInputs();
-                // Validate required
-                let isValid = true;
-                document.querySelectorAll('[required]').forEach(el => {
-                    if (!el.value) {
-                        el.style.borderColor = 'red';
-                        isValid = false;
-                    } else {
-                        el.style.borderColor = '';
-                    }
-                });
-                
-                if (!isValid) return;
-    
-                loader.classList.add('visible');
-                outputDiv.innerHTML = ''; // Clear previous
-                
-                vscode.postMessage({
-                    type: 'executeApp',
-                    inputs: inputs
-                });
-            } catch (e) {
-                alert('Error starting app: ' + e);
-            }
-        });
-
-        // Messages
-        window.addEventListener('message', event => {
-            const msg = event.data;
-            if (msg.type === 'result') {
-                loader.classList.remove('visible');
-                if (msg.result.success) {
-                    let md = msg.result.output.content;
-                    
-                    // Parse markdown tables first (before line breaks)
-                    const lines = md.split('\\n');
-                    let inTable = false;
-                    let tableRows = [];
-                    let result = [];
-                    
-                    for (let i = 0; i < lines.length; i++) {
-                        const line = lines[i].trim();
-                        if (line.startsWith('|') && line.endsWith('|')) {
-                            // Check if next line is separator
-                            if (!inTable && i + 1 < lines.length && /^\\|[-:|\\s]+\\|$/.test(lines[i + 1].trim())) {
-                                inTable = true;
-                                tableRows = [line];
-                            } else if (inTable) {
-                                if (/^\\|[-:|\\s]+\\|$/.test(line)) {
-                                    // Skip separator line
-                                } else {
-                                    tableRows.push(line);
-                                }
-                            }
-                        } else {
-                            if (inTable && tableRows.length > 0) {
-                                // Convert tableRows to HTML
-                                let html = '<table><thead><tr>';
-                                const headerCells = tableRows[0].split('|').filter(c => c.trim());
-                                headerCells.forEach(c => html += '<th>' + c.trim() + '</th>');
-                                html += '</tr></thead><tbody>';
-                                for (let j = 1; j < tableRows.length; j++) {
-                                    html += '<tr>';
-                                    const cells = tableRows[j].split('|').filter(c => c.trim());
-                                    cells.forEach(c => html += '<td>' + c.trim() + '</td>');
-                                    html += '</tr>';
-                                }
-                                html += '</tbody></table>';
-                                result.push(html);
-                                tableRows = [];
-                            }
-                            inTable = false;
-                            result.push(line);
-                        }
-                    }
-                    // Handle trailing table
-                    if (inTable && tableRows.length > 0) {
-                        let html = '<table><thead><tr>';
-                        const headerCells = tableRows[0].split('|').filter(c => c.trim());
-                        headerCells.forEach(c => html += '<th>' + c.trim() + '</th>');
-                        html += '</tr></thead><tbody>';
-                        for (let j = 1; j < tableRows.length; j++) {
-                            html += '<tr>';
-                            const cells = tableRows[j].split('|').filter(c => c.trim());
-                            cells.forEach(c => html += '<td>' + c.trim() + '</td>');
-                            html += '</tr>';
-                        }
-                        html += '</tbody></table>';
-                        result.push(html);
-                    }
-                    
-                    md = result.join('\\n');
-                    
-                    // Standard markdown rendering  
-                    md = md
-                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                        .replace(/\\*\\*(.*?)\\*\\*/gim, '<strong>$1</strong>')
-                        .replace(/^- (.*$)/gim, '<ul><li>$1</li></ul>')
-                        .replace(/\\n/gim, '<br>');
-                    
-                    outputDiv.innerHTML = md;
-                    
-                    // Cleanup lists
-                    outputDiv.innerHTML = outputDiv.innerHTML.split('</ul><br><ul>').join('');
-                    outputDiv.innerHTML = outputDiv.innerHTML.split('<br><ul>').join('<ul>');
-                } else {
-                    outputDiv.innerHTML = '<div style="color:red; padding:20px">Error: ' + msg.result.error + '</div>';
-                }
-            } else if (msg.type === 'progress') {
-                // Could show progress text
-            }
-        });
-
-        // Toolbar actions
-        document.getElementById('copy-btn').addEventListener('click', () => {
-             vscode.postMessage({ type: 'copyToClipboard', value: outputDiv.innerText });
-        });
-        document.getElementById('insert-btn').addEventListener('click', () => {
-             vscode.postMessage({ type: 'insertAtCursor', value: outputDiv.innerText });
-        });
-        document.getElementById('save-btn').addEventListener('click', () => {
-             vscode.postMessage({ type: 'saveAsFile', content: outputDiv.innerText, filename: '${app.id}-result.md' });
-        });
-        
-        document.getElementById('go-back').addEventListener('click', () => {
-            vscode.postMessage({ type: 'goBack' });
-        });
-    </script>
-    </body>
-    </html>`;
-  }
-  /**
-   * Generate Interactive Game HTML with multi-round gameplay
-   */
-  static getInteractiveGameHtml(webview, app) {
-    const nonce = getNonce2();
-    const themes = {
-      "trivia-showdown": { accent: "#f59e0b", gradient: "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%)", emoji: "\u{1F9E0}" },
-      "story-chain": { accent: "#ec4899", gradient: "linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #1e1b4b 100%)", emoji: "\u{1F3AD}" },
-      "caption-battle": { accent: "#06b6d4", gradient: "linear-gradient(135deg, #0f172a 0%, #164e63 50%, #0f172a 100%)", emoji: "\u{1F3A8}" },
-      "debate-arena": { accent: "#ef4444", gradient: "linear-gradient(135deg, #1c1917 0%, #7f1d1d 50%, #1c1917 100%)", emoji: "\u2694\uFE0F" }
-    };
-    const theme = themes[app.id] || themes["trivia-showdown"];
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${app.icon} ${app.name}</title>
-    <style>
-        :root { color-scheme: dark; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body {
-            font-family: var(--vscode-font-family);
-            background: ${theme.gradient};
-            color: #f8fafc;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Header */
-        .game-header {
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0,0,0,0.3);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .game-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px;
-            font-weight: 700;
-        }
-        .game-icon {
-            font-size: 32px;
-        }
-        .back-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #f8fafc;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .back-btn:hover { background: rgba(255,255,255,0.2); }
-        
-        /* Score Bar */
-        .score-bar {
-            display: none;
-            padding: 12px 24px;
-            background: rgba(0,0,0,0.2);
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-        .score-bar.visible { display: flex; }
-        .score-display {
-            display: flex;
-            gap: 24px;
-        }
-        .score-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .score-value {
-            font-weight: 700;
-            font-size: 18px;
-            color: ${theme.accent};
-        }
-        .round-indicator {
-            background: ${theme.accent};
-            color: #000;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-weight: 600;
-        }
-        
-        /* Main Content */
-        .game-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 32px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        /* Setup Screen */
-        .setup-screen {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-        .setup-title {
-            font-size: 28px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-        .setup-section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .section-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.6;
-            margin-bottom: 12px;
-        }
-        
-        /* Option Cards */
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-        }
-        .option-card {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .option-card:hover {
-            border-color: ${theme.accent};
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-2px);
-        }
-        .option-card.selected {
-            border-color: ${theme.accent};
-            background: color-mix(in srgb, ${theme.accent} 20%, transparent);
-        }
-        .option-icon { font-size: 24px; margin-bottom: 8px; }
-        .option-label { font-weight: 600; font-size: 14px; }
-        .option-desc { font-size: 11px; opacity: 0.6; margin-top: 4px; }
-        
-        /* Text Input */
-        .text-input {
-            width: 100%;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: 12px 16px;
-            color: #f8fafc;
-            font-size: 14px;
-            outline: none;
-        }
-        .text-input:focus { border-color: ${theme.accent}; }
-        .text-input::placeholder { opacity: 0.4; }
-        
-        /* Start Button */
-        .start-btn {
-            background: ${theme.accent};
-            color: #000;
-            border: none;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 16px;
-        }
-        .start-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
-        .start-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        
-        /* Play Screen - hidden by default */
-        .play-screen { display: none; flex-direction: column; gap: 24px; }
-        .play-screen.visible { display: flex; }
-        .setup-screen.hidden { display: none; }
-        
-        /* Question Card */
-        .question-card {
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-            padding: 32px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .question-text {
-            font-size: 22px;
-            font-weight: 600;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-        
-        /* Answer Buttons */
-        .answers-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .answer-btn {
-            background: rgba(255,255,255,0.08);
-            border: 2px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            padding: 16px 20px;
-            color: #f8fafc;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .answer-btn:hover:not(:disabled) {
-            border-color: ${theme.accent};
-            background: rgba(255,255,255,0.12);
-        }
-        .answer-btn:disabled { cursor: default; opacity: 0.7; }
-        .answer-btn.correct {
-            border-color: #22c55e;
-            background: rgba(34, 197, 94, 0.2);
-        }
-        .answer-btn.wrong {
-            border-color: #ef4444;
-            background: rgba(239, 68, 68, 0.2);
-        }
-        .answer-letter {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-        .answer-text { flex: 1; }
-        
-        /* Feedback */
-        .feedback-area {
-            display: none;
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 16px;
-        }
-        .feedback-area.visible { display: block; }
-        .feedback-result {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .feedback-result.correct { color: #22c55e; }
-        .feedback-result.wrong { color: #ef4444; }
-        .fun-fact {
-            font-size: 14px;
-            opacity: 0.8;
-            line-height: 1.5;
-        }
-        
-        /* Next Button */
-        .next-btn {
-            display: none;
-            background: ${theme.accent};
-            color: #000;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-            align-self: center;
-        }
-        .next-btn.visible { display: inline-block; }
-        
-        /* Results Screen */
-        .results-screen { display: none; flex-direction: column; align-items: center; gap: 24px; text-align: center; }
-        .results-screen.visible { display: flex; }
-        .results-emoji { font-size: 72px; }
-        .results-title { font-size: 32px; font-weight: 700; }
-        .results-score { font-size: 48px; font-weight: 700; color: ${theme.accent}; }
-        .results-subtitle { font-size: 16px; opacity: 0.7; }
-        .play-again-btn {
-            background: ${theme.accent};
-            color: #000;
-            border: none;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 16px;
-        }
-        
-        /* Story Chain specific */
-        .story-content {
-            background: rgba(0,0,0,0.2);
-            border-radius: 16px;
-            padding: 24px;
-            font-size: 16px;
-            line-height: 1.8;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .story-choices {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        .story-choice-btn {
-            background: rgba(255,255,255,0.08);
-            border: 2px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            padding: 16px 20px;
-            color: #f8fafc;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-        }
-        .story-choice-btn:hover {
-            border-color: ${theme.accent};
-            background: rgba(255,255,255,0.12);
-        }
-        
-        /* Loading */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .loading-overlay.visible { display: flex; }
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid rgba(255,255,255,0.2);
-            border-top-color: ${theme.accent};
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { font-size: 16px; opacity: 0.8; }
-    </style>
-</head>
-<body>
-    <div class="game-header">
-        <div class="game-title">
-            <span class="game-icon">${app.icon}</span>
-            <span>${app.name}</span>
-        </div>
-        <button class="back-btn" id="back-btn">\u2190 Back</button>
-    </div>
-    
-    <div class="score-bar" id="score-bar">
-        <div class="score-display">
-            <div class="score-item">
-                <span>Score:</span>
-                <span class="score-value" id="score">0</span>
-            </div>
-            <div class="score-item">
-                <span>Streak:</span>
-                <span class="score-value" id="streak">0</span>
-            </div>
-        </div>
-        <div class="round-indicator" id="round-indicator">Round 1/5</div>
-    </div>
-    
-    <div class="game-content">
-        <!-- Setup Screen -->
-        <div class="setup-screen" id="setup-screen">
-            <div class="setup-title">\u26A1 Ready to Play?</div>
-            
-            ${app.id === "trivia-showdown" ? `
-            <div class="setup-section">
-                <div class="section-label">Choose Your Topic</div>
-                <input type="text" class="text-input" id="topic-input" placeholder="e.g., 90s Movies, Space, Programming...">
-            </div>
-            
-            <div class="setup-section">
-                <div class="section-label">Difficulty</div>
-                <div class="options-grid" id="difficulty-options">
-                    <div class="option-card" data-value="easy">
-                        <div class="option-icon">\u{1F7E2}</div>
-                        <div class="option-label">Easy</div>
-                        <div class="option-desc">Warm-up</div>
-                    </div>
-                    <div class="option-card selected" data-value="medium">
-                        <div class="option-icon">\u{1F7E1}</div>
-                        <div class="option-label">Medium</div>
-                        <div class="option-desc">Balanced</div>
-                    </div>
-                    <div class="option-card" data-value="hard">
-                        <div class="option-icon">\u{1F534}</div>
-                        <div class="option-label">Hard</div>
-                        <div class="option-desc">Expert</div>
-                    </div>
-                    <div class="option-card" data-value="impossible">
-                        <div class="option-icon">\u{1F480}</div>
-                        <div class="option-label">Impossible</div>
-                        <div class="option-desc">Good luck!</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="setup-section">
-                <div class="section-label">Number of Questions</div>
-                <div class="options-grid" id="count-options">
-                    <div class="option-card" data-value="3">
-                        <div class="option-label">3</div>
-                        <div class="option-desc">Quick</div>
-                    </div>
-                    <div class="option-card selected" data-value="5">
-                        <div class="option-label">5</div>
-                        <div class="option-desc">Standard</div>
-                    </div>
-                    <div class="option-card" data-value="10">
-                        <div class="option-label">10</div>
-                        <div class="option-desc">Marathon</div>
-                    </div>
-                </div>
-            </div>
-            ` : app.id === "story-chain" ? `
-            <div class="setup-section">
-                <div class="section-label">Story Genre</div>
-                <div class="options-grid" id="genre-options">
-                    <div class="option-card selected" data-value="fantasy">
-                        <div class="option-icon">\u{1F9D9}</div>
-                        <div class="option-label">Fantasy</div>
-                    </div>
-                    <div class="option-card" data-value="scifi">
-                        <div class="option-icon">\u{1F680}</div>
-                        <div class="option-label">Sci-Fi</div>
-                    </div>
-                    <div class="option-card" data-value="mystery">
-                        <div class="option-icon">\u{1F50D}</div>
-                        <div class="option-label">Mystery</div>
-                    </div>
-                    <div class="option-card" data-value="comedy">
-                        <div class="option-icon">\u{1F602}</div>
-                        <div class="option-label">Comedy</div>
-                    </div>
-                    <div class="option-card" data-value="horror">
-                        <div class="option-icon">\u{1F47B}</div>
-                        <div class="option-label">Horror</div>
-                    </div>
-                </div>
-            </div>
-            ` : app.id === "caption-battle" ? `
-            <div class="setup-section">
-                <div class="section-label">Caption Vibe</div>
-                <div class="options-grid" id="vibe-options">
-                    <div class="option-card selected" data-value="absurd">
-                        <div class="option-icon">\u{1F92A}</div>
-                        <div class="option-label">Absurd</div>
-                    </div>
-                    <div class="option-card" data-value="wholesome">
-                        <div class="option-icon">\u{1F970}</div>
-                        <div class="option-label">Wholesome</div>
-                    </div>
-                    <div class="option-card" data-value="corporate">
-                        <div class="option-icon">\u{1F4BC}</div>
-                        <div class="option-label">Corporate</div>
-                    </div>
-                    <div class="option-card" data-value="dark">
-                        <div class="option-icon">\u{1F311}</div>
-                        <div class="option-label">Dark</div>
-                    </div>
-                </div>
-            </div>
-            <div class="setup-section">
-                <div class="section-label">Optional Theme</div>
-                <input type="text" class="text-input" id="theme-input" placeholder="e.g., Cats, Space, Monday mornings...">
-            </div>
-            ` : `
-            <div class="setup-section">
-                <div class="section-label">Debate Category</div>
-                <div class="options-grid" id="category-options">
-                    <div class="option-card selected" data-value="tech">
-                        <div class="option-icon">\u{1F4BB}</div>
-                        <div class="option-label">Tech Wars</div>
-                    </div>
-                    <div class="option-card" data-value="food">
-                        <div class="option-icon">\u{1F355}</div>
-                        <div class="option-label">Food Fights</div>
-                    </div>
-                    <div class="option-card" data-value="life">
-                        <div class="option-icon">\u{1F30D}</div>
-                        <div class="option-label">Life Choices</div>
-                    </div>
-                    <div class="option-card" data-value="work">
-                        <div class="option-icon">\u{1F4BC}</div>
-                        <div class="option-label">Work Style</div>
-                    </div>
-                </div>
-            </div>
-            `}
-            
-            <button class="start-btn" id="start-btn">\u{1F3AE} Start Game</button>
-        </div>
-        
-        <!-- Play Screen (Trivia) -->
-        <div class="play-screen" id="play-screen">
-            <div class="question-card">
-                <div class="question-text" id="question-text">Loading question...</div>
-                <div class="answers-grid" id="answers-grid">
-                    <button class="answer-btn" data-answer="A">
-                        <span class="answer-letter">A</span>
-                        <span class="answer-text" id="answer-a">-</span>
-                    </button>
-                    <button class="answer-btn" data-answer="B">
-                        <span class="answer-letter">B</span>
-                        <span class="answer-text" id="answer-b">-</span>
-                    </button>
-                    <button class="answer-btn" data-answer="C">
-                        <span class="answer-letter">C</span>
-                        <span class="answer-text" id="answer-c">-</span>
-                    </button>
-                    <button class="answer-btn" data-answer="D">
-                        <span class="answer-letter">D</span>
-                        <span class="answer-text" id="answer-d">-</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="feedback-area" id="feedback-area">
-                <div class="feedback-result" id="feedback-result">Correct!</div>
-                <div class="fun-fact" id="fun-fact">Fun fact will appear here...</div>
-            </div>
-            
-            <button class="next-btn" id="next-btn">Next Question \u2192</button>
-        </div>
-        
-        <!-- Results Screen -->
-        <div class="results-screen" id="results-screen">
-            <div class="results-emoji" id="results-emoji">\u{1F3C6}</div>
-            <div class="results-title" id="results-title">Great Job!</div>
-            <div class="results-score" id="results-score">5/5</div>
-            <div class="results-subtitle" id="results-subtitle">You're a trivia champion!</div>
-            <button class="play-again-btn" id="play-again-btn">\u{1F504} Play Again</button>
-        </div>
-    </div>
-    
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="spinner"></div>
-        <div class="loading-text" id="loading-text">Generating questions...</div>
-    </div>
-    
-    <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        const gameId = '${app.id}';
-        
-        // State
-        let gameState = {
-            questions: [],
-            currentQuestion: 0,
-            score: 0,
-            streak: 0,
-            maxStreak: 0,
-            totalQuestions: 5,
-            settings: {}
-        };
-        
-        // Elements
-        const setupScreen = document.getElementById('setup-screen');
-        const playScreen = document.getElementById('play-screen');
-        const resultsScreen = document.getElementById('results-screen');
-        const scoreBar = document.getElementById('score-bar');
-        const loadingOverlay = document.getElementById('loading-overlay');
-        
-        // Option card selection
-        document.querySelectorAll('.options-grid').forEach(grid => {
-            grid.addEventListener('click', (e) => {
-                const card = e.target.closest('.option-card');
-                if (!card) return;
-                grid.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-            });
-        });
-        
-        // Back button
-        document.getElementById('back-btn').addEventListener('click', () => {
-            vscode.postMessage({ type: 'goBack' });
-        });
-        
-        // Start button
-        document.getElementById('start-btn').addEventListener('click', () => {
-            startGame();
-        });
-        
-        // Answer buttons
-        document.querySelectorAll('.answer-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (btn.disabled) return;
-                handleAnswer(btn.dataset.answer);
-            });
-        });
-        
-        // Next button
-        document.getElementById('next-btn').addEventListener('click', () => {
-            nextQuestion();
-        });
-        
-        // Play again
-        document.getElementById('play-again-btn').addEventListener('click', () => {
-            resetGame();
-        });
-        
-        function startGame() {
-            // Collect settings based on game type
-            if (gameId === 'trivia-showdown') {
-                const topic = document.getElementById('topic-input').value.trim() || 'General Knowledge';
-                const difficulty = document.querySelector('#difficulty-options .selected')?.dataset.value || 'medium';
-                const count = document.querySelector('#count-options .selected')?.dataset.value || '5';
-                
-                gameState.settings = { topic, difficulty, count };
-                gameState.totalQuestions = parseInt(count);
-                
-                showLoading('Generating ' + count + ' questions about ' + topic + '...');
-                
-                vscode.postMessage({
-                    type: 'gameAction',
-                    action: 'startTrivia',
-                    settings: gameState.settings
-                });
-            } else if (gameId === 'story-chain') {
-                const genre = document.querySelector('#genre-options .selected')?.dataset.value || 'fantasy';
-                gameState.settings = { genre };
-                
-                showLoading('Starting your ' + genre + ' adventure...');
-                
-                vscode.postMessage({
-                    type: 'gameAction',
-                    action: 'startStory',
-                    settings: gameState.settings
-                });
-            } else if (gameId === 'caption-battle') {
-                const vibe = document.querySelector('#vibe-options .selected')?.dataset.value || 'absurd';
-                const theme = document.getElementById('theme-input')?.value.trim() || '';
-                gameState.settings = { vibe, theme };
-                
-                showLoading('Creating hilarious scenarios...');
-                
-                vscode.postMessage({
-                    type: 'gameAction',
-                    action: 'startCaption',
-                    settings: gameState.settings
-                });
-            } else if (gameId === 'debate-arena') {
-                const category = document.querySelector('#category-options .selected')?.dataset.value || 'tech';
-                gameState.settings = { category };
-                
-                showLoading('Finding a spicy debate topic...');
-                
-                vscode.postMessage({
-                    type: 'gameAction',
-                    action: 'startDebate',
-                    settings: gameState.settings
-                });
-            }
-        }
-        
-        function handleAnswer(answer) {
-            const currentQ = gameState.questions[gameState.currentQuestion];
-            const correct = answer === currentQ.correctAnswer;
-            
-            // Disable all buttons
-            document.querySelectorAll('.answer-btn').forEach(btn => {
-                btn.disabled = true;
-                if (btn.dataset.answer === currentQ.correctAnswer) {
-                    btn.classList.add('correct');
-                } else if (btn.dataset.answer === answer && !correct) {
-                    btn.classList.add('wrong');
-                }
-            });
-            
-            // Update score
-            if (correct) {
-                gameState.score++;
-                gameState.streak++;
-                if (gameState.streak > gameState.maxStreak) gameState.maxStreak = gameState.streak;
-            } else {
-                gameState.streak = 0;
-            }
-            
-            updateScoreDisplay();
-            
-            // Show feedback
-            const feedbackArea = document.getElementById('feedback-area');
-            const feedbackResult = document.getElementById('feedback-result');
-            const funFact = document.getElementById('fun-fact');
-            
-            feedbackResult.textContent = correct ? '\u2705 Correct!' : '\u274C Wrong!';
-            feedbackResult.className = 'feedback-result ' + (correct ? 'correct' : 'wrong');
-            funFact.textContent = currentQ.funFact || 'Great effort!';
-            feedbackArea.classList.add('visible');
-            
-            // Show next button
-            document.getElementById('next-btn').classList.add('visible');
-        }
-        
-        function nextQuestion() {
-            gameState.currentQuestion++;
-            
-            if (gameState.currentQuestion >= gameState.questions.length) {
-                showResults();
-                return;
-            }
-            
-            displayQuestion();
-        }
-        
-        function displayQuestion() {
-            const q = gameState.questions[gameState.currentQuestion];
-            
-            // Reset UI
-            document.querySelectorAll('.answer-btn').forEach(btn => {
-                btn.disabled = false;
-                btn.classList.remove('correct', 'wrong');
-            });
-            document.getElementById('feedback-area').classList.remove('visible');
-            document.getElementById('next-btn').classList.remove('visible');
-            
-            // Update question
-            document.getElementById('question-text').textContent = q.question;
-            document.getElementById('answer-a').textContent = q.answers.A;
-            document.getElementById('answer-b').textContent = q.answers.B;
-            document.getElementById('answer-c').textContent = q.answers.C;
-            document.getElementById('answer-d').textContent = q.answers.D;
-            
-            // Update round indicator
-            document.getElementById('round-indicator').textContent = 
-                'Question ' + (gameState.currentQuestion + 1) + '/' + gameState.totalQuestions;
-        }
-        
-        function updateScoreDisplay() {
-            document.getElementById('score').textContent = gameState.score;
-            document.getElementById('streak').textContent = gameState.streak;
-        }
-        
-        function showResults() {
-            playScreen.classList.remove('visible');
-            scoreBar.classList.remove('visible');
-            resultsScreen.classList.add('visible');
-            
-            const percentage = Math.round((gameState.score / gameState.totalQuestions) * 100);
-            
-            let emoji, title, subtitle;
-            if (percentage === 100) {
-                emoji = '\u{1F3C6}';
-                title = 'Perfect Score!';
-                subtitle = 'You are a trivia legend!';
-            } else if (percentage >= 80) {
-                emoji = '\u{1F31F}';
-                title = 'Excellent!';
-                subtitle = 'Almost perfect - impressive knowledge!';
-            } else if (percentage >= 60) {
-                emoji = '\u{1F44F}';
-                title = 'Great Job!';
-                subtitle = 'Solid performance!';
-            } else if (percentage >= 40) {
-                emoji = '\u{1F4AA}';
-                title = 'Not Bad!';
-                subtitle = 'Room for improvement - try again?';
-            } else {
-                emoji = '\u{1F4DA}';
-                title = 'Keep Learning!';
-                subtitle = 'Every expert was once a beginner!';
-            }
-            
-            document.getElementById('results-emoji').textContent = emoji;
-            document.getElementById('results-title').textContent = title;
-            document.getElementById('results-score').textContent = gameState.score + '/' + gameState.totalQuestions;
-            document.getElementById('results-subtitle').textContent = subtitle;
-        }
-        
-        function resetGame() {
-            gameState = {
-                questions: [],
-                currentQuestion: 0,
-                score: 0,
-                streak: 0,
-                maxStreak: 0,
-                totalQuestions: 5,
-                settings: {}
-            };
-            
-            resultsScreen.classList.remove('visible');
-            playScreen.classList.remove('visible');
-            scoreBar.classList.remove('visible');
-            setupScreen.classList.remove('hidden');
-        }
-        
-        function showLoading(text) {
-            document.getElementById('loading-text').textContent = text;
-            loadingOverlay.classList.add('visible');
-        }
-        
-        function hideLoading() {
-            loadingOverlay.classList.remove('visible');
-        }
-        
-        // Handle messages from extension
-        window.addEventListener('message', event => {
-            const msg = event.data;
-            
-            if (msg.type === 'triviaQuestions') {
-                hideLoading();
-                gameState.questions = msg.questions;
-                gameState.totalQuestions = msg.questions.length;
-                
-                setupScreen.classList.add('hidden');
-                playScreen.classList.add('visible');
-                scoreBar.classList.add('visible');
-                
-                updateScoreDisplay();
-                displayQuestion();
-            } else if (msg.type === 'gameError') {
-                hideLoading();
-                alert('Error: ' + msg.error);
-            } else if (msg.type === 'gameContent') {
-                hideLoading();
-                setupScreen.classList.add('hidden');
-                playScreen.classList.add('visible');
-                scoreBar.style.display = 'none';
-                
-                const questionText = document.getElementById('question-text');
-                const answersGrid = document.getElementById('answers-grid');
-                
-                // For Story Chain, parse and create clickable choices
-                if (msg.gameType === 'startStory') {
-                    // Split content into story and choices
-                    const parts = msg.content.split('---CHOICES---');
-                    const storyPart = parts[0] || msg.content;
-                    const choicesPart = parts[1] || '';
-                    
-                    // Parse choices (numbered list)
-                    const choiceLines = choicesPart.split(/\\n/).filter(line => line.match(/^\\d+\\./));
-                    
-                    // Render story
-                    let html = storyPart.replace(/---STORY---/g, '').trim();
-                    html = html.split('**').join('');
-                    questionText.innerHTML = '<div style="line-height:1.8;font-size:16px;">' + html.replace(/\\n/g, '<br>') + '</div>';
-                    
-                    // Create choice buttons
-                    if (choiceLines.length > 0) {
-                        answersGrid.innerHTML = '';
-                        answersGrid.style.display = 'flex';
-                        answersGrid.style.flexDirection = 'column';
-                        answersGrid.style.gap = '12px';
-                        
-                        choiceLines.forEach((choice, i) => {
-                            const cleanChoice = choice.replace(/^\\d+\\.\\s*/, '').trim();
-                            const btn = document.createElement('button');
-                            btn.className = 'answer-btn';
-                            btn.style.display = 'block';
-                            btn.style.width = '100%';
-                            btn.innerHTML = '<span class="answer-letter">' + (i+1) + '</span><span class="answer-text">' + cleanChoice + '</span>';
-                            btn.onclick = () => {
-                                showLoading('Continuing the story...');
-                                vscode.postMessage({
-                                    type: 'gameAction',
-                                    action: 'continueStory',
-                                    choice: cleanChoice,
-                                    settings: gameState.settings
-                                });
-                            };
-                            answersGrid.appendChild(btn);
-                        });
-                    } else {
-                        answersGrid.style.display = 'none';
-                    }
-                } else if (msg.gameType === 'startCaption') {
-                    // Caption Battle - show scenarios with input fields
-                    let html = msg.content;
-                    html = html.split('**').join('');
-                    html = html.replace(/---SCENARIO_\\d+---/g, '<hr style="margin:20px 0">');
-                    questionText.innerHTML = '<div style="line-height:1.6;font-size:15px">' + html.replace(/\\n/g, '<br>') + '</div>';
-                    
-                    // Add caption input
-                    answersGrid.innerHTML = '';
-                    answersGrid.style.display = 'flex';
-                    answersGrid.style.flexDirection = 'column';
-                    answersGrid.style.gap = '12px';
-                    
-                    const input = document.createElement('textarea');
-                    input.placeholder = 'Write your funniest caption here...';
-                    input.style.cssText = 'width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.3);color:#fff;font-size:14px;min-height:80px;resize:vertical;';
-                    answersGrid.appendChild(input);
-                    
-                    const submitBtn = document.createElement('button');
-                    submitBtn.className = 'answer-btn';
-                    submitBtn.style.cssText = 'justify-content:center;background:var(--accent,#06b6d4);';
-                    submitBtn.textContent = '\u{1F3A4} Submit Caption';
-                    submitBtn.onclick = () => {
-                        if (!input.value.trim()) { alert('Please write a caption!'); return; }
-                        showLoading('Judging your caption...');
-                        vscode.postMessage({
-                            type: 'gameAction',
-                            action: 'judgeCaption',
-                            caption: input.value.trim(),
-                            settings: gameState.settings
-                        });
-                    };
-                    answersGrid.appendChild(submitBtn);
-                } else if (msg.gameType === 'startDebate') {
-                    // Debate Arena - show topic with argument input
-                    let html = msg.content;
-                    html = html.split('# ').join('<h2 style="color:#ef4444">');
-                    html = html.split('## ').join('<h3>');
-                    html = html.split('**').join('');
-                    questionText.innerHTML = '<div style="line-height:1.6">' + html.replace(/\\n/g, '<br>') + '</div>';
-                    
-                    // Add argument input
-                    answersGrid.innerHTML = '';
-                    answersGrid.style.display = 'flex';
-                    answersGrid.style.flexDirection = 'column';
-                    answersGrid.style.gap = '12px';
-                    
-                    const sideLabel = document.createElement('div');
-                    sideLabel.innerHTML = '<strong>Pick your side and argue!</strong>';
-                    sideLabel.style.marginBottom = '8px';
-                    answersGrid.appendChild(sideLabel);
-                    
-                    const input = document.createElement('textarea');
-                    input.placeholder = 'Type your argument here... Be persuasive!';
-                    input.style.cssText = 'width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.3);color:#fff;font-size:14px;min-height:100px;resize:vertical;';
-                    answersGrid.appendChild(input);
-                    
-                    const submitBtn = document.createElement('button');
-                    submitBtn.className = 'answer-btn';
-                    submitBtn.style.cssText = 'justify-content:center;background:#ef4444;';
-                    submitBtn.textContent = '\u2694\uFE0F Submit Argument';
-                    submitBtn.onclick = () => {
-                        if (!input.value.trim()) { alert('Please write an argument!'); return; }
-                        showLoading('The AI judge is deliberating...');
-                        vscode.postMessage({
-                            type: 'gameAction',
-                            action: 'judgeDebate',
-                            argument: input.value.trim(),
-                            settings: gameState.settings
-                        });
-                    };
-                    answersGrid.appendChild(submitBtn);
-                } else {
-                    // Fallback
-                    let html = msg.content;
-                    html = html.split('# ').join('<h1>');
-                    html = html.split('## ').join('<h2>');
-                    html = html.split('**').join('');
-                    html = html.split('---').join('<hr>');
-                    questionText.innerHTML = '<div style="line-height:1.6">' + html.replace(/\\n/g, '<br>') + '</div>';
-                    answersGrid.style.display = 'none';
-                }
-                
-                // Show play again button
-                document.getElementById('next-btn').textContent = '\u{1F504} Play Again';
-                document.getElementById('next-btn').classList.add('visible');
-                document.getElementById('next-btn').onclick = () => resetGame();
-            } else if (msg.type === 'gameResult') {
-                hideLoading();
-                // Show the result/feedback from AI judge
-                const questionText = document.getElementById('question-text');
-                const answersGrid = document.getElementById('answers-grid');
-                
-                let html = msg.content;
-                html = html.split('**').join('<strong>').split('</strong><strong>').join('');
-                html = html.split('*').join('');
-                questionText.innerHTML = '<div style="line-height:1.8;font-size:16px;padding:20px;background:rgba(0,255,100,0.1);border-radius:12px;border:1px solid rgba(0,255,100,0.3);">' + html.replace(/\\n/g, '<br>') + '</div>';
-                
-                // Add "Try Again" button
-                answersGrid.innerHTML = '';
-                answersGrid.style.display = 'block';
-                const tryAgainBtn = document.createElement('button');
-                tryAgainBtn.className = 'answer-btn';
-                tryAgainBtn.style.cssText = 'justify-content:center;width:100%;margin-top:16px;';
-                tryAgainBtn.textContent = '\u{1F504} Try Another Round';
-                tryAgainBtn.onclick = () => resetGame();
-                answersGrid.appendChild(tryAgainBtn);
-            }
-        });
-    </script>
-</body>
-</html>`;
-  }
-  /**
-   * Generate individual app HTML
-   */
-  static getAppHtml(webview, app, savedProjects) {
-    const nonce = getNonce2();
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${app.icon} ${app.name}</title>
-    <style>
-        :root { color-scheme: var(--vscode-color-scheme); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: var(--vscode-font-family);
-            color: var(--vscode-foreground);
-            background: var(--vscode-editor-background);
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 32px;
-        }
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: transparent;
-            color: var(--vscode-foreground);
-            cursor: pointer;
-            font-size: 13px;
-            margin-bottom: 24px;
-            transition: all 0.15s ease;
-        }
-        .back-btn:hover {
-            background: var(--vscode-button-secondaryBackground);
-            border-color: var(--vscode-focusBorder);
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-        .header-icon {
-            font-size: 56px;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(167,139,250,0.1));
-            border: 1px solid var(--vscode-widget-border);
-        }
-        .header-text h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .header-text p {
-            font-size: 15px;
-            opacity: 0.7;
-        }
-        .form-section {
-            background: var(--vscode-editorWidget-background);
-            border: 1px solid var(--vscode-widget-border);
-            border-radius: 16px;
-            padding: 28px;
-            margin-bottom: 24px;
-        }
-        .form-group {
-            margin-bottom: 24px;
-        }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-label {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .form-hint {
-            font-size: 12px;
-            opacity: 0.6;
-            margin-top: 6px;
-        }
-        input[type="text"], textarea, select {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--vscode-input-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-input-foreground);
-            font-family: var(--vscode-font-family);
-            font-size: 14px;
-            transition: all 0.15s ease;
-        }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--vscode-focusBorder);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--vscode-focusBorder) 15%, transparent);
-        }
-        textarea {
-            font-family: var(--vscode-editor-font-family);
-            resize: vertical;
-            min-height: 140px;
-            line-height: 1.5;
-        }
-        .radio-group, .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .radio-option, .checkbox-option {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 14px 16px;
-            border-radius: 10px;
-            background: var(--vscode-editor-background);
-            border: 1px solid var(--vscode-widget-border);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .radio-option:hover, .checkbox-option:hover {
-            border-color: var(--vscode-focusBorder);
-        }
-        .radio-option.selected, .checkbox-option.selected {
-            border-color: var(--vscode-focusBorder);
-            background: color-mix(in srgb, var(--vscode-focusBorder) 8%, var(--vscode-editor-background));
-        }
-        .radio-option input, .checkbox-option input {
-            margin: 3px 0 0 0;
-        }
-        .option-content { flex: 1; }
-        .option-label {
-            font-weight: 500;
-            font-size: 14px;
-        }
-        .option-desc {
-            font-size: 12px;
-            opacity: 0.7;
-            margin-top: 3px;
-        }
-        .project-picker {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .project-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 14px;
-            border-radius: 10px;
-            background: var(--vscode-editor-background);
-            border: 1px solid var(--vscode-widget-border);
-        }
-        .project-item .name { flex: 1; font-weight: 500; }
-        .project-item .path {
-            font-size: 11px;
-            opacity: 0.6;
-            font-family: var(--vscode-editor-font-family);
-        }
-        .project-item .remove-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            opacity: 0.5;
-            font-size: 16px;
-        }
-        .project-item .remove-btn:hover { opacity: 1; }
-        .add-project-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px;
-            border-radius: 10px;
-            border: 2px dashed var(--vscode-widget-border);
-            background: transparent;
-            color: var(--vscode-foreground);
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.15s ease;
-        }
-        .add-project-btn:hover {
-            border-color: var(--vscode-focusBorder);
-            background: color-mix(in srgb, var(--vscode-focusBorder) 5%, transparent);
-        }
-        .submit-btn {
-            width: 100%;
-            padding: 16px 28px;
-            border-radius: 12px;
-            border: none;
-            background: linear-gradient(135deg, var(--vscode-button-background), color-mix(in srgb, var(--vscode-button-background) 80%, black));
-            color: var(--vscode-button-foreground);
-            font-family: var(--vscode-font-family);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-        }
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid currentColor;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .result-section {
-            margin-top: 32px;
-        }
-        .result-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-        .result-header h3 {
-            font-size: 18px;
-        }
-        .result-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .action-btn {
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-button-secondaryBackground);
-            color: var(--vscode-button-secondaryForeground);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.15s ease;
-        }
-        .action-btn:hover {
-            background: var(--vscode-button-secondaryHoverBackground);
-            border-color: var(--vscode-focusBorder);
-        }
-        .result-content {
-            background: var(--vscode-editorWidget-background);
-            border: 1px solid var(--vscode-widget-border);
-            border-radius: 12px;
-            padding: 24px;
-            font-family: var(--vscode-editor-font-family);
-            font-size: 13px;
-            line-height: 1.7;
-            white-space: pre-wrap;
-            overflow-x: auto;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        .result-content.error {
-            background: color-mix(in srgb, var(--vscode-testing-iconFailed) 10%, var(--vscode-editor-background));
-            border-color: var(--vscode-testing-iconFailed);
-            color: var(--vscode-testing-iconFailed);
-        }
-        .progress-msg {
-            text-align: center;
-            font-size: 14px;
-            opacity: 0.7;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        .hidden { display: none !important; }
-        .conditional-field { display: none; }
-        .conditional-field.visible { display: block; }
-        .file-picker-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .file-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .file-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            background: var(--vscode-editor-background);
-            border: 1px solid var(--vscode-widget-border);
-        }
-        .file-item .file-icon { font-size: 20px; }
-        .file-item .file-info { flex: 1; }
-        .file-item .file-name { font-weight: 500; font-size: 13px; }
-        .file-item .file-size { font-size: 11px; opacity: 0.6; }
-        .file-item .remove-file-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            opacity: 0.5;
-            font-size: 16px;
-            padding: 4px;
-        }
-        .file-item .remove-file-btn:hover { opacity: 1; }
-        .add-file-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px;
-            border-radius: 10px;
-            border: 2px dashed var(--vscode-widget-border);
-            background: transparent;
-            color: var(--vscode-foreground);
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.15s ease;
-        }
-        .add-file-btn:hover {
-            border-color: var(--vscode-focusBorder);
-            background: color-mix(in srgb, var(--vscode-focusBorder) 5%, transparent);
-        }
-        .model-picker-container {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .model-select {
-            flex: 1;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-input-border);
-            background: var(--vscode-input-background);
-            color: var(--vscode-input-foreground);
-            font-size: 13px;
-        }
-        .refresh-models-btn {
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid var(--vscode-widget-border);
-            background: var(--vscode-button-secondaryBackground);
-            color: var(--vscode-button-secondaryForeground);
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .refresh-models-btn:hover {
-            background: var(--vscode-button-secondaryHoverBackground);
-        }
-        .help-section {
-            background: color-mix(in srgb, var(--vscode-focusBorder) 5%, var(--vscode-editor-background));
-            border: 1px solid var(--vscode-widget-border);
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 32px;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .help-section h3 {
-            font-size: 14px;
-            font-weight: 600;
-            margin: 16px 0 8px 0;
-            color: var(--vscode-foreground);
-        }
-        .help-section h3:first-child { margin-top: 0; }
-        .help-section p { margin-bottom: 12px; opacity: 0.9; }
-        .help-section ul { margin-bottom: 12px; padding-left: 20px; }
-        .help-section li { margin-bottom: 6px; opacity: 0.9; }
-        .help-section strong { font-weight: 600; color: var(--vscode-foreground); }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <button class="back-btn" id="back-btn">\u2190 Back to Apps</button>
-        
-        <div class="header">
-            <div class="header-icon">${app.icon}</div>
-            <div class="header-text">
-                <h1>${app.name}</h1>
-                <p>${app.description}</p>
-            </div>
-        </div>
-
-        ${app.helpDocumentation ? `
-        <div class="help-section">
-            ${_AppsPanel.renderMarkdown(app.helpDocumentation)}
-        </div>
-        ` : ""}
-
-        <form id="app-form">
-            <div class="form-section">
-                ${app.inputs.map((input) => _AppsPanel.renderInputField(input, savedProjects)).join("")}
-            </div>
-
-            <button type="submit" class="submit-btn" id="submit-btn">
-                ${app.primaryAction}
-            </button>
-        </form>
-
-        <div class="result-section hidden" id="result-section">
-            <div class="result-header">
-                <h3>\u{1F4CB} Result</h3>
-                <div class="result-actions">
-                    <button class="action-btn" id="copy-btn">\u{1F4CB} Copy</button>
-                    <button class="action-btn" id="insert-btn">\u{1F4DD} Insert</button>
-                    <button class="action-btn" id="save-btn">\u{1F4BE} Save</button>
-                </div>
-            </div>
-            <div class="progress-msg hidden" id="progress-msg">
-                <div class="spinner"></div>
-                <span id="progress-text">Processing...</span>
-            </div>
-            <div class="result-content hidden" id="result-content"></div>
-        </div>
-    </div>
-
-    <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        const appId = '${app.id}';
-        let currentResult = '';
-        let selectedProjects = ${JSON.stringify(savedProjects.map((p) => p.path))};
-
-        // Back button
-        document.getElementById('back-btn').addEventListener('click', () => {
-            vscode.postMessage({ type: 'goBack' });
-        });
-
-        // Form submission
-        document.getElementById('app-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(e.target);
-            const inputs = {};
-            
-            for (const [key, value] of formData.entries()) {
-                inputs[key] = value;
-            }
-            
-            // Handle multi-select
-            document.querySelectorAll('.checkbox-group').forEach(group => {
-                const name = group.dataset.name;
-                const checked = Array.from(group.querySelectorAll('input:checked')).map(cb => cb.value);
-                inputs[name] = checked.join(',');
-            });
-            
-            // Handle project picker
-            if (selectedProjects.length > 0) {
-                inputs['projectPaths'] = JSON.stringify(selectedProjects);
-            }
-            
-            // Show loading
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<div class="spinner"></div> Processing...';
-            
-            document.getElementById('result-section').classList.remove('hidden');
-            document.getElementById('progress-msg').classList.remove('hidden');
-            document.getElementById('result-content').classList.add('hidden');
-            
-            vscode.postMessage({ type: 'executeApp', inputs });
-        });
-
-        // Handle messages
-        window.addEventListener('message', (event) => {
-            const message = event.data;
-            
-            switch (message.type) {
-                case 'progress':
-                    document.getElementById('progress-text').textContent = message.message;
-                    break;
-                    
-                case 'result':
-                    const submitBtn = document.getElementById('submit-btn');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '${app.primaryAction}';
-                    
-                    document.getElementById('progress-msg').classList.add('hidden');
-                    const content = document.getElementById('result-content');
-                    content.classList.remove('hidden', 'error');
-                    
-                    if (message.result.success) {
-                        currentResult = message.result.output.content;
-                        
-                        // Check if this is Playwright app - auto-create project
-                        const isPlaywrightApp = '${app.id}' === 'playwright-generator';
-                        const targetFolder = selectedProjects[0];
-                        
-                        if (isPlaywrightApp && targetFolder) {
-                            content.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner"></div><p>Creating project files...</p></div>';
-                            
-                            const testName = document.querySelector('input[name="testName"]')?.value || 'playwright-test';
-                            vscode.postMessage({
-                                type: 'extractAndCreateProject',
-                                targetFolder: targetFolder,
-                                testName: testName,
-                                rawContent: currentResult,
-                                language: document.querySelector('input[name="language"]:checked')?.value || 'typescript'
-                            });
-                        } else if (isPlaywrightApp && !targetFolder) {
-                            content.innerHTML = '<div style="color:orange;padding:20px;text-align:center;">\u26A0\uFE0F Please select a target folder first!</div>';
-                        } else {
-                            content.textContent = currentResult;
-                        }
-                    } else {
-                        content.classList.add('error');
-                        content.textContent = 'Error: ' + message.result.error;
-                    }
-                    break;
-                    
-                case 'projectAdded':
-                    if (!selectedProjects.includes(message.project.path)) {
-                        selectedProjects.push(message.project.path);
-                        updateProjectList();
-                    }
-                    break;
-                    
-                case 'filesReceived':
-const fieldId = message.fieldId;
-if (!attachedFiles[fieldId]) {
-    attachedFiles[fieldId] = [];
-}
-message.files.forEach(f => {
-    if (!attachedFiles[fieldId].some(existing => existing.name === f.name)) {
-        attachedFiles[fieldId].push(f);
-    }
-});
-updateFileList(fieldId);
-break;
-                    
-                case 'modelsReceived':
-const modelFieldId = message.fieldId;
-const select = document.getElementById('model-select-' + modelFieldId);
-if (select) {
-    // Keep auto option, add models
-    select.innerHTML = '<option value="auto">\u{1F916} Auto (Best Available)</option>' +
-        message.models.map(m =>
-            \`<option value="\${m.id}">\${m.vendor} - \${m.name}</option>\`
-                            ).join('');
-                    }
-                    break;
-                    
-                case 'projectCreated':
-                    document.getElementById('result-section').classList.remove('hidden');
-                    document.getElementById('progress-msg').classList.add('hidden');
-                    document.getElementById('submit-btn').disabled = false;
-                    const createdContent = document.getElementById('result-content');
-                    createdContent.classList.remove('hidden', 'error');
-                    createdContent.innerHTML = \`
-                        <div style="text-align: center; padding: 20px;">
-                            <div style="font-size: 48px; margin-bottom: 16px;">\u2705</div>
-                            <h3 style="margin-bottom: 8px;">Project Created Successfully!</h3>
-                            <p style="opacity: 0.7; margin-bottom: 16px;">Location: \${message.path}</p>
-                            <p style="font-size: 13px; margin-bottom: 16px;">Files: \${message.files ? message.files.join(', ') : 'package.json, config, test'}</p>
-                        </div>
-                        <div style="text-align: left; background: var(--vscode-terminal-background, #1e1e1e); border-radius: 8px; padding: 16px; margin-top: 16px;">
-                            <p style="font-weight: 600; margin-bottom: 12px; color: var(--vscode-terminal-foreground, #ccc);">\u{1F4E6} Install & Run Commands:</p>
-                            <pre style="background: var(--vscode-editor-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-family: monospace; font-size: 13px; line-height: 1.6;"><code># Navigate to project folder
-cd "\${message.path}"
-
-# Install dependencies
-npm install
-
-# Install Playwright browsers
-npx playwright install
-
-# Run the tests
-npx playwright test
-
-# View HTML report
-npx playwright show-report</code></pre>
-                        </div>
-                    \`;
-                    break;
-                    
-                case 'projectError':
-                    document.getElementById('result-section').classList.remove('hidden');
-                    document.getElementById('progress-msg').classList.add('hidden');
-                    document.getElementById('submit-btn').disabled = false;
-                    const errorContent = document.getElementById('result-content');
-                    errorContent.classList.remove('hidden');
-                    errorContent.classList.add('error');
-                    errorContent.textContent = 'Error creating project: ' + message.error;
-                    break;
-            }
-        });
-
-        // Action buttons
-        document.getElementById('copy-btn').addEventListener('click', () => {
-            vscode.postMessage({ type: 'copyToClipboard', value: currentResult });
-        });
-
-        document.getElementById('insert-btn').addEventListener('click', () => {
-            vscode.postMessage({ type: 'insertAtCursor', value: currentResult });
-        });
-
-        document.getElementById('save-btn').addEventListener('click', () => {
-            vscode.postMessage({ 
-                type: 'saveAsFile', 
-                content: currentResult, 
-                filename: '${app.id}-output.md'
-            });
-        });
-
-        // Project management
-        document.querySelectorAll('.add-project-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                vscode.postMessage({ type: 'pickProjectFolder' });
-            });
-        });
-
-        function removeProject(path) {
-            selectedProjects = selectedProjects.filter(p => p !== path);
-            updateProjectList();
-        }
-        window.removeProject = removeProject;
-
-        function updateProjectList() {
-            const container = document.querySelector('.project-picker');
-            if (!container) return;
-            
-            const items = selectedProjects.map(path => {
-                const name = path.split('/').pop();
-                return \`
-                    <div class="project-item">
-                        <span>\u{1F4C1}</span>
-                        <div class="name">\${name}</div>
-                        <div class="path">\${path}</div>
-                        <button type="button" class="remove-btn" onclick="removeProject('\${path}')">\u2715</button>
-                    </div>
-                \`;
-            }).join('');
-            
-            container.innerHTML = items + '<button type="button" class="add-project-btn">+ Add Project Folder</button>';
-            container.querySelector('.add-project-btn').addEventListener('click', () => {
-                vscode.postMessage({ type: 'pickProjectFolder' });
-            });
-        }
-
-        // File picker handling
-        const attachedFiles = {};
-        
-        document.querySelectorAll('.add-file-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const fieldId = btn.dataset.fieldId;
-                vscode.postMessage({ type: 'pickFiles', fieldId });
-            });
-        });
-
-        function removeFile(fieldId, fileName) {
-            if (attachedFiles[fieldId]) {
-                attachedFiles[fieldId] = attachedFiles[fieldId].filter(f => f.name !== fileName);
-                updateFileList(fieldId);
-            }
-        }
-        window.removeFile = removeFile;
-
-        function updateFileList(fieldId) {
-            const container = document.getElementById('file-list-' + fieldId);
-            const hiddenInput = document.getElementById('files-data-' + fieldId);
-            if (!container) return;
-            
-            const files = attachedFiles[fieldId] || [];
-            const fileIcons = { xlsx: '\u{1F4CA}', docx: '\u{1F4C4}', txt: '\u{1F4DD}', md: '\u{1F4D1}' };
-            
-            container.innerHTML = files.map(file => {
-                const ext = file.name.split('.').pop().toLowerCase();
-                const icon = fileIcons[ext] || '\u{1F4CE}';
-                return \`
-                    <div class="file-item">
-                        <span class="file-icon">\${icon}</span>
-                        <div class="file-info">
-                            <div class="file-name">\${file.name}</div>
-                            <div class="file-size">\${file.content.length > 1000 ? (file.content.length / 1024).toFixed(1) + ' KB' : file.content.length + ' bytes'}</div>
-                        </div>
-                        <button type="button" class="remove-file-btn" onclick="removeFile('\${fieldId}', '\${file.name}')">\u2715</button>
-                    </div>
-                \`;
-            }).join('');
-            
-            // Update hidden input with file contents
-            hiddenInput.value = JSON.stringify(files);
-        }
-
-        // Model picker handling
-        document.querySelectorAll('.refresh-models-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const fieldId = btn.dataset.fieldId;
-                vscode.postMessage({ type: 'getAvailableModels', fieldId });
-            });
-        });
-        
-        // Auto-fetch models on load for all model pickers
-        document.querySelectorAll('.model-select').forEach(select => {
-            const fieldId = select.id.replace('model-select-', '');
-            vscode.postMessage({ type: 'getAvailableModels', fieldId });
-        });
-
-        // Radio/checkbox handling
-        document.querySelectorAll('.radio-option').forEach(option => {
-            option.addEventListener('click', () => {
-                const group = option.closest('.radio-group');
-                group.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
-                option.classList.add('selected');
-                option.querySelector('input').checked = true;
-                handleConditionalFields(option.querySelector('input').name, option.querySelector('input').value);
-            });
-        });
-
-        document.querySelectorAll('.checkbox-option').forEach(option => {
-            option.addEventListener('click', () => {
-                option.classList.toggle('selected');
-                const cb = option.querySelector('input');
-                cb.checked = !cb.checked;
-            });
-        });
-
-        function handleConditionalFields(fieldName, value) {
-            document.querySelectorAll('.conditional-field').forEach(field => {
-                const showIf = field.dataset.showIf;
-                if (showIf) {
-                    const [condField, condValue] = showIf.split('=');
-                    if (condField === fieldName) {
-                        field.classList.toggle('visible', condValue.includes(',') 
-                            ? condValue.split(',').includes(value) 
-                            : condValue === value);
-                    }
-                }
-            });
-        }
-
-        // Initialize conditional fields
-        document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
-            handleConditionalFields(radio.name, radio.value);
-        });
-    </script>
-</body>
-</html>`;
-  }
-  /**
-   * Simple markdown-to-html renderer for help documentation
-   */
-  static renderMarkdown(text) {
-    return text.trim().replace(/^### (.*$)/gim, "<h3>$1</h3>").replace(/^\* (.*$)/gim, "<ul><li>$1</li></ul>").replace(/^\- (.*$)/gim, "<ul><li>$1</li></ul>").replace(/^\d\. (.*$)/gim, "<ul><li>$1</li></ul>").replace(/\*\*(.*)\*\*/gim, "<strong>$1</strong>").replace(/\n\n/g, "</p><p>").replace(/<\/ul><ul>/g, "");
-  }
-  /**
-   * Render a form input field
-   */
-  static renderInputField(input, savedProjects) {
-    const showIfAttr = input.showIf ? `data-show-if="${input.showIf.field}=${Array.isArray(input.showIf.equals) ? input.showIf.equals.join(",") : input.showIf.equals}"` : "";
-    const conditionalClass = input.showIf ? "conditional-field" : "";
-    switch (input.type) {
-      case "textarea":
-      case "code":
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="form-label">${input.label}${input.required ? " *" : ""}</label>
-                        <textarea 
-                            name="${input.id}" 
-                            placeholder="${input.placeholder || ""}"
-                            rows="${input.rows || 5}"
-                            ${input.required ? "required" : ""}
-                        >${input.defaultValue || ""}</textarea>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-      case "select":
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="form-label">${input.label}${input.required ? " *" : ""}</label>
-                        <select name="${input.id}" ${input.required ? "required" : ""}>
-                            ${(input.options || []).map((opt) => `
-                                <option value="${opt.value}" ${input.defaultValue === opt.value ? "selected" : ""}>
-                                    ${opt.label}
-                                </option>
-                            `).join("")}
-                        </select>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-      case "radio":
-        const defaultRadio = input.defaultValue || input.options?.[0]?.value;
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="form-label">${input.label}${input.required ? " *" : ""}</label>
-                        <div class="radio-group">
-                            ${(input.options || []).map((opt) => `
-                                <label class="radio-option ${defaultRadio === opt.value ? "selected" : ""}">
-                                    <input type="radio" name="${input.id}" value="${opt.value}" 
-                                           ${defaultRadio === opt.value ? "checked" : ""}>
-                                    <div class="option-content">
-                                        <div class="option-label">${opt.icon || ""} ${opt.label}</div>
-                                        ${opt.description ? `<div class="option-desc">${opt.description}</div>` : ""}
-                                    </div>
-                                </label>
-                            `).join("")}
-                        </div>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-      case "multi-select":
-      case "checkbox-group":
-        const defaults = (input.defaultValue || "").split(",");
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="form-label">${input.label}</label>
-                        <div class="checkbox-group" data-name="${input.id}">
-                            ${(input.options || []).map((opt) => `
-                                <label class="checkbox-option ${defaults.includes(opt.value) ? "selected" : ""}">
-                                    <input type="checkbox" name="${input.id}" value="${opt.value}" 
-                                           ${defaults.includes(opt.value) ? "checked" : ""}>
-                                    <div class="option-content">
-                                        <div class="option-label">${opt.label}</div>
-                                        ${opt.description ? `<div class="option-desc">${opt.description}</div>` : ""}
-                                    </div>
-                                </label>
-                            `).join("")}
-                        </div>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-      case "project-picker":
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="form-label">${input.label}${input.required ? " *" : ""}</label>
-                        <div class="project-picker">
-                            ${savedProjects.map((proj) => `
-                                <div class="project-item">
-                                    <span>\u{1F4C1}</span>
-                                    <div class="name">${proj.name}</div>
-                                    <div class="path">${proj.path}</div>
-                                    <button type="button" class="remove-btn" onclick="removeProject('${proj.path}')">\u2715</button>
-                                </div>
-                            `).join("")}
-                            <button type="button" class="add-project-btn">+ Add Project Folder</button>
-                        </div>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-      case "file-picker":
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="form-label">${input.label}${input.required ? " *" : ""}</label>
-                        <div class="file-picker-container" data-field-id="${input.id}">
-                            <div class="file-list" id="file-list-${input.id}"></div>
-                            <button type="button" class="add-file-btn" data-field-id="${input.id}">
-                                \u{1F4CE} Attach Files (.xlsx, .docx, .txt, .md)
-                            </button>
-                            <input type="hidden" name="${input.id}" id="files-data-${input.id}" value="">
-                        </div>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-      case "model-picker":
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="form-label">${input.label}</label>
-                        <div class="model-picker-container">
-                            <select name="${input.id}" id="model-select-${input.id}" class="model-select">
-                                <option value="auto">\u{1F916} Auto (Best Available)</option>
-                            </select>
-                            <button type="button" class="refresh-models-btn" data-field-id="${input.id}">\u{1F504}</button>
-                        </div>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-      case "checkbox":
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="checkbox-option ${input.defaultValue === "true" ? "selected" : ""}" style="display: inline-flex;">
-                            <input type="checkbox" name="${input.id}" value="true" 
-                                   ${input.defaultValue === "true" ? "checked" : ""}>
-                            <div class="option-content">
-                                <div class="option-label">${input.label}</div>
-                            </div>
-                        </label>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-      default:
-        return `
-                    <div class="form-group ${conditionalClass}" ${showIfAttr}>
-                        <label class="form-label">${input.label}${input.required ? " *" : ""}</label>
-                        <input type="text" 
-                               name="${input.id}" 
-                               placeholder="${input.placeholder || ""}"
-                               value="${input.defaultValue || ""}"
-                               ${input.required ? "required" : ""}>
-                        ${input.hint ? `<div class="form-hint">${input.hint}</div>` : ""}
-                    </div>
-                `;
-    }
-  }
-};
-function getNonce2() {
-  let text = "";
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
 // src/commands/createDesktopShortcut.ts
-var vscode9 = __toESM(require("vscode"));
+var vscode6 = __toESM(require("vscode"));
 var os2 = __toESM(require("os"));
-var path4 = __toESM(require("path"));
-var fs4 = __toESM(require("fs"));
+var path3 = __toESM(require("path"));
+var fs3 = __toESM(require("fs"));
 async function createDesktopShortcut() {
   console.log("Creating desktop shortcut...");
   const osType = os2.platform();
   if (osType !== "darwin") {
-    vscode9.window.showErrorMessage("Desktop shortcut creation is currently only supported on macOS.");
+    vscode6.window.showErrorMessage("Desktop shortcut creation is currently only supported on macOS.");
     return;
   }
   try {
     const homeDir = os2.homedir();
-    const desktopPath = path4.join(homeDir, "Desktop");
+    const desktopPath = path3.join(homeDir, "Desktop");
     const linkUrl = "vscode://suhaibbinyounis.github-copilot-api-vscode/dashboard";
     const shortcutContent = `#!/bin/bash
 open "${linkUrl}"
 `;
-    const shortcutPath = path4.join(desktopPath, "Copilot Dashboard.command");
-    await fs4.promises.writeFile(shortcutPath, shortcutContent, "utf8");
-    await fs4.promises.chmod(shortcutPath, 493);
-    vscode9.window.showInformationMessage(`SHORTCUT CREATED: "Copilot Dashboard.command" has been added to your Desktop.`);
+    const shortcutPath = path3.join(desktopPath, "Copilot Dashboard.command");
+    await fs3.promises.writeFile(shortcutPath, shortcutContent, "utf8");
+    await fs3.promises.chmod(shortcutPath, 493);
+    vscode6.window.showInformationMessage(`SHORTCUT CREATED: "Copilot Dashboard.command" has been added to your Desktop.`);
     console.log(`Shortcut created at ${shortcutPath}`);
   } catch (error2) {
     console.error("Failed to create shortcut:", error2);
-    vscode9.window.showErrorMessage(`Failed to create desktop shortcut: ${error2 instanceof Error ? error2.message : String(error2)}`);
+    vscode6.window.showErrorMessage(`Failed to create desktop shortcut: ${error2 instanceof Error ? error2.message : String(error2)}`);
   }
 }
 
 // src/extension.ts
 function activate(context) {
-  const output = vscode10.window.createOutputChannel("GitHub Copilot API Server");
+  const output = vscode7.window.createOutputChannel("GitHub Copilot API Server");
   context.subscriptions.push(output);
-  const statusItem = vscode10.window.createStatusBarItem(vscode10.StatusBarAlignment.Left, 100);
+  const statusItem = vscode7.window.createStatusBarItem(vscode7.StatusBarAlignment.Left, 100);
   statusItem.command = "github-copilot-api-vscode.showServerControls";
   context.subscriptions.push(statusItem);
   const gateway = new CopilotApiGateway(output, statusItem, context);
   context.subscriptions.push(gateway);
   const provider = new CopilotPanel(context.extensionUri, gateway);
   context.subscriptions.push(
-    vscode10.window.registerWebviewViewProvider(CopilotPanel.viewType, provider)
+    vscode7.window.registerWebviewViewProvider(CopilotPanel.viewType, provider)
   );
-  setImmediate(() => {
-    AppsPanel.initialize(context);
-    const appsHubSidebarProvider = new AppsHubSidebarProvider(context.extensionUri);
-    context.subscriptions.push(
-      vscode10.window.registerWebviewViewProvider(AppsHubSidebarProvider.viewType, appsHubSidebarProvider)
-    );
-    context.subscriptions.push(
-      vscode10.commands.registerCommand("github-copilot-api-vscode.openAppsHub", () => {
-        AppsPanel.openAppsHub();
-      })
-    );
-  });
   const updateStatusBar = async () => {
     const status = await gateway.getStatus();
     if (status.running) {
@@ -68019,7 +56510,7 @@ function activate(context) {
       }
       if (status.activeRequests > 0) {
         statusItem.text = `$(sync~spin) Processing (${status.activeRequests}) | ${rpm} RPM`;
-        statusItem.backgroundColor = new vscode10.ThemeColor("statusBarItem.warningBackground");
+        statusItem.backgroundColor = new vscode7.ThemeColor("statusBarItem.warningBackground");
       } else {
         statusItem.text = text;
         statusItem.backgroundColor = void 0;
@@ -68027,7 +56518,7 @@ function activate(context) {
       const protocol = status.isHttps ? "https" : "http";
       const displayHost = status.config.host === "0.0.0.0" && status.networkInfo?.localIPs?.length ? status.networkInfo.localIPs[0] : status.config.host;
       const url2 = `${protocol}://${displayHost}:${status.config.port}`;
-      statusItem.tooltip = new vscode10.MarkdownString(`
+      statusItem.tooltip = new vscode7.MarkdownString(`
 **$(broadcast) Copilot API Gateway**
 
 | Metric | Value |
@@ -68046,14 +56537,14 @@ function activate(context) {
       statusItem.show();
     } else {
       statusItem.text = "$(circle-slash) Copilot API: OFF";
-      statusItem.tooltip = new vscode10.MarkdownString(`
+      statusItem.tooltip = new vscode7.MarkdownString(`
 **$(circle-slash) Copilot API Gateway**
 
 Server is stopped. Click to start or manage.
 
 *Tip: Enable auto-start in settings for convenience*
 			`);
-      statusItem.backgroundColor = new vscode10.ThemeColor("statusBarItem.errorBackground");
+      statusItem.backgroundColor = new vscode7.ThemeColor("statusBarItem.errorBackground");
       statusItem.show();
     }
   };
@@ -68062,22 +56553,22 @@ Server is stopped. Click to start or manage.
     await updateStatusBar();
     const status = await gateway.getStatus();
     if (status.running && !wasRunning) {
-      const config3 = vscode10.workspace.getConfiguration("githubCopilotApi.server");
+      const config3 = vscode7.workspace.getConfiguration("githubCopilotApi.server");
       if (config3.get("showNotifications", true)) {
         const displayHost = status.config.host === "0.0.0.0" && status.networkInfo?.localIPs?.length ? status.networkInfo.localIPs[0] : status.config.host;
         const protocol = status.isHttps ? "https" : "http";
-        const selection = await vscode10.window.showInformationMessage(
+        const selection = await vscode7.window.showInformationMessage(
           `GitHub Copilot API Server started at ${protocol}://${displayHost}:${status.config.port}`,
           "Open Dashboard"
         );
         if (selection === "Open Dashboard") {
-          void vscode10.commands.executeCommand("github-copilot-api-vscode.openDashboard");
+          void vscode7.commands.executeCommand("github-copilot-api-vscode.openDashboard");
         }
       }
     }
     wasRunning = status.running;
   }));
-  const showServerControls = vscode10.commands.registerCommand("github-copilot-api-vscode.showServerControls", async () => {
+  const showServerControls = vscode7.commands.registerCommand("github-copilot-api-vscode.showServerControls", async () => {
     const status = await gateway.getStatus();
     const items = [];
     if (status.running) {
@@ -68085,7 +56576,7 @@ Server is stopped. Click to start or manage.
         label: "$(check) Server is Running",
         description: `http://${status.config.host}:${status.config.port}`,
         detail: `Requests/min: ${status.stats.requestsPerMinute} | Avg Latency: ${status.stats.avgLatencyMs}ms | Errors: ${status.stats.errorRate}%`,
-        kind: vscode10.QuickPickItemKind.Separator
+        kind: vscode7.QuickPickItemKind.Separator
       });
       items.push({
         label: "$(stop-circle) Stop Server",
@@ -68098,14 +56589,14 @@ Server is stopped. Click to start or manage.
     } else {
       items.push({
         label: "$(x) Server is Stopped",
-        kind: vscode10.QuickPickItemKind.Separator
+        kind: vscode7.QuickPickItemKind.Separator
       });
       items.push({
         label: "$(play-circle) Start Server",
         description: "Start the API gateway"
       });
     }
-    items.push({ label: "", kind: vscode10.QuickPickItemKind.Separator });
+    items.push({ label: "", kind: vscode7.QuickPickItemKind.Separator });
     items.push({
       label: "$(dashboard) Open Full Dashboard",
       description: "View detailed charts, logs, and configuration"
@@ -68114,7 +56605,7 @@ Server is stopped. Click to start or manage.
       label: "$(output) Show Logs",
       description: "Open the output channel"
     });
-    const selection = await vscode10.window.showQuickPick(items, {
+    const selection = await vscode7.window.showQuickPick(items, {
       placeHolder: "Manage Copilot API Gateway",
       title: "Copilot API Controls"
     });
@@ -68134,27 +56625,27 @@ Server is stopped. Click to start or manage.
     }
   });
   void updateStatusBar();
-  const config2 = vscode10.workspace.getConfiguration("githubCopilotApi.server");
+  const config2 = vscode7.workspace.getConfiguration("githubCopilotApi.server");
   const enabled = config2.get("enabled", false);
   const autoStart = config2.get("autoStart", false);
   output.appendLine(`[DEBUG] Activation. Enabled: ${enabled}, AutoStart: ${autoStart}`);
   if (enabled || autoStart) {
     void gateway.start().catch((error2) => {
       output.appendLine(`[${(/* @__PURE__ */ new Date()).toISOString()}] ERROR Failed to start API server: ${getErrorMessage(error2)}`);
-      void vscode10.window.showErrorMessage(`Failed to start Copilot API server: ${getErrorMessage(error2)}`);
+      void vscode7.window.showErrorMessage(`Failed to start Copilot API server: ${getErrorMessage(error2)}`);
     });
   }
-  const openChatCommand = vscode10.commands.registerCommand("github-copilot-api-vscode.openCopilotChat", async () => {
+  const openChatCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.openCopilotChat", async () => {
     if (!await ensureCopilotChatReady()) {
       return;
     }
-    await vscode10.commands.executeCommand("workbench.action.chat.open");
+    await vscode7.commands.executeCommand("workbench.action.chat.open");
   });
-  const askChatCommand = vscode10.commands.registerCommand("github-copilot-api-vscode.askCopilot", async (rawPrompt) => {
+  const askChatCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.askCopilot", async (rawPrompt) => {
     if (!await ensureCopilotChatReady()) {
       return;
     }
-    const prompt = normalizePrompt(rawPrompt) ?? await vscode10.window.showInputBox({
+    const prompt = normalizePrompt(rawPrompt) ?? await vscode7.window.showInputBox({
       title: "Ask GitHub Copilot Chat",
       prompt: "What do you want to ask Copilot?",
       ignoreFocusOut: true
@@ -68162,21 +56653,21 @@ Server is stopped. Click to start or manage.
     if (!prompt) {
       return;
     }
-    await vscode10.commands.executeCommand("workbench.action.chat.open", {
+    await vscode7.commands.executeCommand("workbench.action.chat.open", {
       query: prompt,
       isPartialQuery: false
     });
   });
-  const askSelectionCommand = vscode10.commands.registerTextEditorCommand("github-copilot-api-vscode.askSelectionWithCopilot", async (editor, _edit, rawPrompt) => {
+  const askSelectionCommand = vscode7.commands.registerTextEditorCommand("github-copilot-api-vscode.askSelectionWithCopilot", async (editor, _edit, rawPrompt) => {
     if (!await ensureCopilotChatReady()) {
       return;
     }
     const selection = editor.selection;
     if (selection.isEmpty) {
-      void vscode10.window.showWarningMessage("Select some code before asking Copilot about it.");
+      void vscode7.window.showWarningMessage("Select some code before asking Copilot about it.");
       return;
     }
-    const prompt = normalizePrompt(rawPrompt) ?? await vscode10.window.showInputBox({
+    const prompt = normalizePrompt(rawPrompt) ?? await vscode7.window.showInputBox({
       title: "Ask Copilot About Selection",
       prompt: "Describe what you want to know about the selected code.",
       value: "Explain this code.",
@@ -68185,38 +56676,38 @@ Server is stopped. Click to start or manage.
     if (!prompt) {
       return;
     }
-    await vscode10.commands.executeCommand("workbench.action.chat.open", {
+    await vscode7.commands.executeCommand("workbench.action.chat.open", {
       query: prompt,
       isPartialQuery: false,
       attachFiles: [{
         uri: editor.document.uri,
-        range: new vscode10.Range(selection.start, selection.end)
+        range: new vscode7.Range(selection.start, selection.end)
       }],
       blockOnResponse: false
     });
   });
-  const openDashboard = vscode10.commands.registerCommand("github-copilot-api-vscode.openDashboard", () => {
+  const openDashboard = vscode7.commands.registerCommand("github-copilot-api-vscode.openDashboard", () => {
     CopilotPanel.createOrShow(context.extensionUri, gateway);
   });
-  const createShortcutCommand = vscode10.commands.registerCommand("github-copilot-api-vscode.createDesktopShortcut", async () => {
+  const createShortcutCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.createDesktopShortcut", async () => {
     await createDesktopShortcut();
   });
-  context.subscriptions.push(vscode10.window.registerUriHandler({
+  context.subscriptions.push(vscode7.window.registerUriHandler({
     handleUri(uri) {
-      const path5 = uri.path;
-      output.appendLine(`[URI Handler] Received URI: ${uri.toString()} (path: ${path5})`);
-      if (path5 === "/dashboard") {
+      const path4 = uri.path;
+      output.appendLine(`[URI Handler] Received URI: ${uri.toString()} (path: ${path4})`);
+      if (path4 === "/dashboard") {
         CopilotPanel.createOrShow(context.extensionUri, gateway);
-      } else if (path5 === "/start") {
+      } else if (path4 === "/start") {
         void gateway.startServer().then(() => {
-          void vscode10.window.showInformationMessage("Copilot API Server started via shortcut");
+          void vscode7.window.showInformationMessage("Copilot API Server started via shortcut");
         });
-      } else if (path5 === "/stop") {
+      } else if (path4 === "/stop") {
         void gateway.stopServer().then(() => {
-          void vscode10.window.showInformationMessage("Copilot API Server stopped via shortcut");
+          void vscode7.window.showInformationMessage("Copilot API Server stopped via shortcut");
         });
       } else {
-        void vscode10.window.showWarningMessage(`Unknown shortcut path: ${path5}`);
+        void vscode7.window.showWarningMessage(`Unknown shortcut path: ${path4}`);
       }
     }
   }));

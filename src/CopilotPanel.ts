@@ -122,6 +122,263 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
         }, null, CopilotPanel.panelDisposables);
     }
 
+    // Wiki panel singleton
+    private static wikiPanel: vscode.WebviewPanel | undefined;
+
+    /**
+     * Opens the API Usage Guide (Wiki) as a separate editor panel.
+     */
+    public static async openWiki(extensionUri: vscode.Uri, gateway: CopilotApiGateway): Promise<void> {
+        const column = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One;
+
+        if (CopilotPanel.wikiPanel) {
+            CopilotPanel.wikiPanel.reveal(column);
+            return;
+        }
+
+        const panel = vscode.window.createWebviewPanel(
+            'copilotApiWiki',
+            '📚 API Usage Guide',
+            column,
+            {
+                enableScripts: true,
+                retainContextWhenHidden: true,
+                localResourceRoots: [extensionUri]
+            }
+        );
+
+        CopilotPanel.wikiPanel = panel;
+        panel.webview.html = await CopilotPanel.getWikiHtml(panel.webview, gateway);
+
+        panel.onDidDispose(() => {
+            CopilotPanel.wikiPanel = undefined;
+        });
+    }
+
+    /**
+     * Generates the HTML for the Wiki panel
+     */
+    private static async getWikiHtml(webview: vscode.Webview, gateway: CopilotApiGateway): Promise<string> {
+        const nonce = getNonce();
+        const status = await gateway.getStatus();
+        const config = status.config;
+
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
+    <title>API Usage Guide</title>
+    <style>
+        body {
+            font-family: var(--vscode-font-family);
+            padding: 20px;
+            color: var(--vscode-foreground);
+            background: var(--vscode-editor-background);
+            line-height: 1.6;
+        }
+        h1 { margin-top: 0; }
+        .muted { opacity: 0.7; }
+        .wiki-tab {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+            transition: all 0.2s;
+        }
+        .wiki-tab.active {
+            background: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+        }
+        .wiki-tab:hover {
+            opacity: 0.9;
+        }
+        .wiki-panel {
+            display: none;
+        }
+        .wiki-panel.active {
+            display: block;
+        }
+        pre {
+            background: var(--vscode-textBlockQuote-background);
+            padding: 14px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            font-family: var(--vscode-editor-font-family);
+        }
+        h4 {
+            color: var(--vscode-textLink-foreground);
+            margin-top: 24px;
+        }
+        .tool-card {
+            background: var(--vscode-textBlockQuote-background);
+            padding: 14px;
+            border-radius: 8px;
+            border-left: 3px solid var(--vscode-textLink-foreground);
+            margin-bottom: 12px;
+        }
+        code {
+            font-size: 12px;
+            color: var(--vscode-textPreformat-foreground);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 API Usage Guide</h1>
+    <p class="muted">Complete reference for connecting to the Copilot API Gateway from various languages.</p>
+
+    <div id="wiki-tabs" style="display: flex; gap: 4px; margin: 20px 0 16px; flex-wrap: wrap;">
+        <button class="wiki-tab active" data-tab="python">🐍 Python</button>
+        <button class="wiki-tab" data-tab="javascript">📜 JavaScript</button>
+        <button class="wiki-tab" data-tab="curl">🔧 cURL</button>
+        <button class="wiki-tab" data-tab="mcp">🔌 MCP Tools</button>
+    </div>
+
+    <div id="wiki-content" style="background: var(--vscode-sideBar-background); border-radius: 0 8px 8px 8px; padding: 20px;">
+        <!-- Python Tab -->
+        <div class="wiki-panel active" data-panel="python">
+            <h4 style="margin-top: 0;">📦 Installation</h4>
+            <pre>pip install openai</pre>
+
+            <h4>🚀 Quick Start</h4>
+            <pre>from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://${config.host}:${config.port}/v1",
+    api_key="not-needed"
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Hello!"}
+    ]
+)
+
+print(response.choices[0].message.content)</pre>
+
+            <h4>📡 Streaming</h4>
+            <pre>stream = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Tell me a story"}],
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)</pre>
+        </div>
+
+        <!-- JavaScript Tab -->
+        <div class="wiki-panel" data-panel="javascript">
+            <h4 style="margin-top: 0;">📦 Installation</h4>
+            <pre>npm install openai</pre>
+
+            <h4>🚀 Quick Start</h4>
+            <pre>import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  baseURL: 'http://${config.host}:${config.port}/v1',
+  apiKey: 'not-needed'
+});
+
+const completion = await openai.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [{ role: 'user', content: 'Hello!' }]
+});
+
+console.log(completion.choices[0].message.content);</pre>
+
+            <h4>📡 Streaming</h4>
+            <pre>const stream = await openai.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [{ role: 'user', content: 'Tell me a story' }],
+  stream: true
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk.choices[0]?.delta?.content || '');
+}</pre>
+        </div>
+
+        <!-- cURL Tab -->
+        <div class="wiki-panel" data-panel="curl">
+            <h4 style="margin-top: 0;">🔧 Basic Request</h4>
+            <pre>curl -X POST http://${config.host}:${config.port}/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'</pre>
+
+            <h4>📡 Streaming</h4>
+            <pre>curl -X POST http://${config.host}:${config.port}/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "stream": true
+  }'</pre>
+
+            <h4>📋 List Models</h4>
+            <pre>curl http://${config.host}:${config.port}/v1/models</pre>
+        </div>
+
+        <!-- MCP Tab -->
+        <div class="wiki-panel" data-panel="mcp">
+            <h4 style="margin-top: 0;">🔌 Built-in VS Code Tools</h4>
+            <p class="muted">These tools are automatically available via MCP:</p>
+
+            <div class="tool-card" style="border-left-color: #10b981;">
+                <code>vscode_read_file</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">Read the contents of any file in the workspace</div>
+            </div>
+
+            <div class="tool-card" style="border-left-color: #3b82f6;">
+                <code>vscode_list_files</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">List files in a directory with optional glob pattern</div>
+            </div>
+
+            <div class="tool-card" style="border-left-color: #f59e0b;">
+                <code>vscode_open_file</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">Open a file in VS Code editor</div>
+            </div>
+
+            <div class="tool-card" style="border-left-color: #ef4444;">
+                <code>vscode_get_diagnostics</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">Get errors and warnings from Problems panel</div>
+            </div>
+
+            <div class="tool-card" style="border-left-color: #8b5cf6;">
+                <code>vscode_get_active_editor</code>
+                <div class="muted" style="font-size: 11px; margin-top: 4px;">Get content and cursor position of current file</div>
+            </div>
+        </div>
+    </div>
+
+    <script nonce="${nonce}">
+        document.querySelectorAll('.wiki-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.getAttribute('data-tab');
+                document.querySelectorAll('.wiki-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.wiki-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector('[data-panel="' + targetTab + '"]').classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>`;
+    }
+
     private static handleMessage(data: { type: string; value?: unknown }, gateway: CopilotApiGateway): void {
         switch (data.type) {
             case 'openChat':
@@ -138,6 +395,12 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
                 break;
             case 'stopServer':
                 void gateway.stopServer();
+                break;
+            case 'openUrl':
+                console.log('[CopilotPanel] Opening URL:', data.value);
+                if (typeof data.value === 'string') {
+                    void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(data.value));
+                }
                 break;
             case 'toggleHttp':
                 void gateway.toggleHttp();
@@ -342,50 +605,6 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
                     void vscode.window.showErrorMessage('Log folder not found');
                 }
                 break;
-            case 'generatePrompt':
-            case 'enhancePrompt':
-                if ((data as any).data && typeof (data as any).data === 'object') {
-                    const promptData = (data as any).data as { projectType?: string; techStack?: string; goal?: string; complexity?: string; context?: string; existingPrompt?: string };
-                    const isEnhance = data.type === 'enhancePrompt';
-
-                    // Build the meta-prompt
-                    let metaPrompt = isEnhance
-                        ? `You are an expert prompt engineer. Enhance and improve the following prompt to make it more detailed, specific, and effective:\n\n${promptData.existingPrompt || promptData.context}\n\nMake it more comprehensive with clear objectives, constraints, and expected deliverables.`
-                        : `You are an expert prompt engineer. Create a comprehensive, high-quality prompt for an AI coding assistant based on these specifications:
-
-${promptData.projectType ? `**Project Type:** ${promptData.projectType}` : ''}
-${promptData.techStack ? `**Tech Stack:** ${promptData.techStack}` : ''}
-${promptData.goal ? `**Goal:** ${promptData.goal}` : ''}
-${promptData.complexity ? `**Complexity Level:** ${promptData.complexity}` : ''}
-${promptData.context ? `**User Description:** ${promptData.context}` : ''}
-
-Generate a detailed, actionable prompt that includes:
-1. Clear project objective and scope
-2. Specific technical requirements
-3. Step-by-step implementation plan
-4. Best practices and considerations
-5. Expected deliverables and success criteria
-
-Format the output as a ready-to-use prompt that the user can copy and paste into an AI assistant.`;
-
-                    // Make the API call
-                    gateway.invokeCopilot(metaPrompt).then((response: string) => {
-                        if (CopilotPanel.currentPanel) {
-                            void CopilotPanel.currentPanel.webview.postMessage({
-                                type: 'promptResult',
-                                data: response
-                            });
-                        }
-                    }).catch((err: Error) => {
-                        if (CopilotPanel.currentPanel) {
-                            void CopilotPanel.currentPanel.webview.postMessage({
-                                type: 'promptError',
-                                error: err.message
-                            });
-                        }
-                    });
-                }
-                break;
         }
     }
 
@@ -488,13 +707,13 @@ Format the output as a ready-to-use prompt that the user can copy and paste into
     <!-- Actions Section -->
     <div class="section">
         <div class="section-title">⚡ Actions</div>
-        <button id="btn-dashboard">Open Dashboard</button>
-        <button id="btn-apps" class="secondary">Open Apps Hub</button>
-        <button id="btn-toggle" class="secondary">${isRunning ? '⏹ Stop Server' : '▶ Start Server'}</button>
-        <button id="btn-swagger" class="secondary">📝 Swagger API</button>
-        <button id="btn-metrics" class="secondary">📊 Prometheus Metrics</button>
-        <button id="btn-wiki" class="secondary">📚 Wiki</button>
-        <button id="btn-prompt" class="secondary">✨ Prompt Generator</button>
+        <div class="actions">
+            <button id="btn-toggle" class="secondary">${isRunning ? '⏹ Stop Server' : '▶ Start Server'}</button>
+            <button id="btn-swagger" class="secondary">📝 Swagger API</button>
+            <button id="btn-wiki" class="secondary">📚 Wiki</button>
+            <button id="btn-docs" class="secondary">📚 How to Use</button>
+            <button id="btn-dashboard" class="primary">Open Dashboard ↗</button>
+        </div>
     </div>
 
     <!-- Analytics Section -->
@@ -594,12 +813,14 @@ print(response.choices[0].message.content)\`;
         document.getElementById('btn-copy-curl').addEventListener('click', (e) => copyWithFeedback(e.target, curlCommand));
         document.getElementById('btn-copy-python').addEventListener('click', (e) => copyWithFeedback(e.target, pythonCode));
         document.getElementById('btn-dashboard').addEventListener('click', () => vscode.postMessage({ type: 'openDashboard' }));
-        document.getElementById('btn-apps').addEventListener('click', () => vscode.postMessage({ type: 'openAppsHub' }));
         document.getElementById('btn-toggle').addEventListener('click', () => vscode.postMessage({ type: '${isRunning ? 'stopServer' : 'startServer'}' }));
         document.getElementById('btn-swagger').addEventListener('click', () => vscode.postMessage({ type: 'openSwagger' }));
-        document.getElementById('btn-metrics').addEventListener('click', () => vscode.postMessage({ type: 'openMetrics' }));
+        document.getElementById('btn-swagger').addEventListener('click', () => vscode.postMessage({ type: 'openSwagger' }));
         document.getElementById('btn-wiki').addEventListener('click', () => vscode.postMessage({ type: 'openWiki' }));
-        document.getElementById('btn-prompt').addEventListener('click', () => vscode.postMessage({ type: 'openPromptGenerator' }));
+        const btnDocs = document.getElementById('btn-docs');
+        if (btnDocs) {
+            btnDocs.addEventListener('click', () => vscode.postMessage({ type: 'openUrl', value: 'https://notes.suhaib.in/docs/vscode/extensions/github-copilot-api-gateway/' }));
+        }
     </script>
 </body>
 </html>`;
@@ -640,118 +861,352 @@ print(response.choices[0].message.content)\`;
     <title>Copilot API Dashboard</title>
     <!-- Removed Chart.js for reliability -->
     <style>
-        :root { color-scheme: var(--vscode-color-scheme); }
+        :root {
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color-scheme: var(--vscode-color-scheme);
+        }
         body {
             margin: 0; padding: 0; min-height: 100vh;
-            background: radial-gradient(120% 120% at 20% 20%, rgba(56,189,248,0.05), transparent),
-                        radial-gradient(120% 120% at 80% 0%, rgba(147,197,253,0.05), transparent),
-                        var(--vscode-editor-background);
-            font-family: var(--vscode-font-family); color: var(--vscode-foreground);
+            background-color: var(--vscode-editor-background);
+            font-family: var(--vscode-font-family);
+            color: var(--vscode-foreground);
+            font-size: 13px; /* Enhanced legibility */
+            line-height: 1.5;
         }
-        .page { max-width: 1400px; margin: 0 auto; padding: 32px 32px 64px; display: flex; flex-direction: column; gap: 24px; }
-        .hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding-bottom: 8px; }
-        .hero h1 { margin: 0; font-size: 26px; letter-spacing: -0.4px; font-weight: 700; }
-        .hero p { margin: 6px 0 0 0; opacity: 0.7; font-size: 14px; max-width: 600px; line-height: 1.5; }
-        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--vscode-badge-background); color: var(--vscode-badge-foreground); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .card { background-color: var(--vscode-editorWidget-background); border: 1px solid var(--vscode-widget-border); border-radius: 12px; padding: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.12); border-color: var(--vscode-focusBorder); }
-        .card.full-width { grid-column: 1 / -1; }
-        h3 { margin-top: 0; margin-bottom: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.8; }
-        .status-row { display: flex; align-items: center; gap: 10px; font-weight: 600; }
-        .status-dot { width: 12px; height: 12px; border-radius: 50%; background-color: ${statusColor}; box-shadow: 0 0 10px ${statusColor}; }
-        .info-grid { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; font-size: 12px; align-items: center; }
-        .label { opacity: 0.7; text-transform: uppercase; letter-spacing: 0.3px; font-size: 11px; }
-        .value { font-family: var(--vscode-editor-font-family); word-break: break-all; }
-        .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
-        button { display: inline-flex; justify-content: center; align-items: center; gap: 6px; width: 100%; padding: 10px 12px; background-color: var(--vscode-button-background); color: var(--vscode-button-foreground); border: 1px solid color-mix(in srgb, var(--vscode-button-background) 50%, transparent); border-radius: 6px; cursor: pointer; font-family: var(--vscode-font-family); font-weight: 600; transition: transform 120ms ease, background-color 120ms ease; }
-        button:hover { background-color: var(--vscode-button-hoverBackground); transform: translateY(-1px); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        button.secondary { background-color: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
-        button.secondary:hover { background-color: var(--vscode-button-secondaryHoverBackground); }
-        button.success { background-color: var(--vscode-testing-iconPassed); }
-        button.danger { background-color: var(--vscode-testing-iconFailed); }
-        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--vscode-widget-border); }
-        .toggle-row:last-child { border-bottom: none; }
-        .switch { position: relative; width: 36px; height: 20px; }
-        .switch input { display: none; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--vscode-input-background); border: 1px solid var(--vscode-widget-border); transition: .2s; border-radius: 999px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: var(--vscode-foreground); transition: .2s; border-radius: 50%; }
-        input:checked + .slider { background: var(--vscode-testing-iconPassed); border-color: var(--vscode-testing-iconPassed); }
-        input:checked + .slider:before { transform: translateX(16px); background: var(--vscode-editor-background); }
-        .muted { opacity: 0.75; font-size: 12px; }
-        .inline-form { display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: center; }
-        .stacked { display: flex; flex-direction: column; gap: 12px; }
-        input, select, textarea { width: 100%; padding: 8px 10px; font-size: 13px; border-radius: 6px; border: 1px solid var(--vscode-input-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-family: var(--vscode-font-family); box-sizing: border-box; }
-        textarea { font-family: var(--vscode-editor-font-family); font-size: 12px; resize: vertical; min-height: 120px; }
-        select { cursor: pointer; }
-        .pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
-        .pill { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-editor-background); cursor: pointer; }
-        .pill:hover { border-color: var(--vscode-testing-iconPassed); color: var(--vscode-testing-iconPassed); }
-        .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
-        .doc-card { border: 1px dashed var(--vscode-widget-border); border-radius: 8px; padding: 10px; background: color-mix(in srgb, var(--vscode-editor-background) 90%, transparent); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
-        .doc-card:hover { border-color: var(--vscode-focusBorder); background: color-mix(in srgb, var(--vscode-editor-background) 70%, transparent); }
-        .doc-card h4 { margin: 0 0 6px 0; font-size: 13px; display: flex; gap: 8px; align-items: center; }
-        .doc-card code { display: inline-block; padding: 3px 6px; border-radius: 6px; background: var(--vscode-textBlockQuote-background); font-family: var(--vscode-editor-font-family); }
-        .doc-card p { margin: 6px 0 0 0; opacity: 0.85; font-size: 12px; }
-        pre { background: var(--vscode-textBlockQuote-background); border-radius: 8px; padding: 10px; font-size: 12px; overflow-x: auto; margin: 0; white-space: pre-wrap; word-break: break-word; }
-        a { color: var(--vscode-textLink-foreground); }
-
-        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Live Log Tail Styles */
-        .log-container {
-            background: var(--vscode-textBlockQuote-background);
-            color: var(--vscode-editor-foreground);
-            font-family: var(--vscode-editor-font-family);
-            font-size: 11px;
-            padding: 12px;
-            border-radius: 8px;
-            height: 300px;
-            overflow-y: auto;
+        
+        /* Layout */
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 32px 64px; /* More breathing room */
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 24px;
+        }
+        
+        /* Typography */
+        h1 { margin: 0; font-size: 28px; letter-spacing: -0.5px; font-weight: 600; color: var(--vscode-foreground); }
+        h3 { margin-top: 0; margin-bottom: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; opacity: 0.9; color: var(--vscode-foreground); }
+        h4 { margin: 0; font-size: 14px; font-weight: 600; color: var(--vscode-foreground); }
+        p { margin: 0; font-size: 13px; color: var(--vscode-descriptionForeground); line-height: 1.5; }
+        
+        .hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; padding-bottom: 16px; }
+        .hero p { margin-top: 8px; font-size: 14px; max-width: 600px; }
+        
+        .badge {
+            display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--vscode-badge-background);
+            color: var(--vscode-badge-foreground);
+            font-size: 11px; font-weight: 600;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--vscode-editorWidget-background);
             border: 1px solid var(--vscode-widget-border);
-            margin-top: 8px;
+            border-radius: 12px;
+            padding: 24px; /* increased padding */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth), border-color 0.2s var(--ease-smooth);
         }
-        .log-line {
-            line-height: 1.4;
-            white-space: pre-wrap;
-            word-break: break-all;
-            display: flex;
-            gap: 8px;
+        .card:hover {
+            border-color: var(--vscode-focusBorder);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
         }
-        .log-time { color: var(--vscode-descriptionForeground); min-width: 75px; flex-shrink: 0; }
-        .log-method { font-weight: 600; color: var(--vscode-terminal-ansiBlue); min-width: 50px; flex-shrink: 0; }
-        .log-path { color: var(--vscode-terminal-ansiMagenta); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .log-status { font-weight: 600; min-width: 35px; flex-shrink: 0; }
+        .card.full-width { grid-column: 1 / -1; }
+        
+        /* Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .info-grid { display: grid; grid-template-columns: 140px 1fr; gap: 12px; font-size: 13px; align-items: center; }
+        .label { color: var(--vscode-descriptionForeground); font-weight: 500; }
+        .value { color: var(--vscode-foreground); font-family: var(--vscode-editor-font-family); }
+
+        /* Actions & Buttons */
+        .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+        
+        button {
+            display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+            width: 100%; height: 32px; /* Touch target */
+            padding: 0 16px;
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border: 1px solid transparent;
+            border-radius: 999px; /* Pill shape */
+            cursor: pointer;
+            font-family: inherit; font-size: 13px; font-weight: 500;
+            transition: all 0.2s var(--ease-smooth);
+        }
+        button:hover {
+            background-color: var(--vscode-button-hoverBackground);
+            transform: translateY(-1px);
+        }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        button.secondary {
+            background-color: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+        }
+        button.secondary:hover { background-color: var(--vscode-button-secondaryHoverBackground); }
+        
+        button.success { background-color: var(--vscode-testing-iconPassed); color: var(--vscode-editor-background); } /* Ensure contrast on success */
+        button.danger { background-color: var(--vscode-testing-iconFailed); color: var(--vscode-editor-background); }
+
+        /* Forms */
+        input, select, textarea {
+            width: 100%; padding: 8px 12px;
+            font-size: 13px; font-family: inherit;
+            border-radius: 6px;
+            border: 1px solid var(--vscode-input-border);
+            background: var(--vscode-input-background);
+            color: var(--vscode-input-foreground);
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--vscode-focusBorder);
+        }
+        
+        .switch { position: relative; width: 40px; height: 22px; }
+        .switch input { display: none; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--vscode-input-background); border: 1px solid var(--vscode-widget-border);
+            transition: .2s var(--ease-smooth); border-radius: 999px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px;
+            background-color: var(--vscode-foreground); transition: .2s var(--ease-spring); border-radius: 50%;
+        }
+        input:checked + .slider { background: var(--vscode-testing-iconPassed); border-color: var(--vscode-testing-iconPassed); }
+        input:checked + .slider:before { transform: translateX(18px); background: var(--vscode-editor-background); }
+
+        /* Components */
+        .toggle-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; /* Larger touch target */
+            border-bottom: 1px solid var(--vscode-widget-border);
+            background: transparent;
+        }
+        .toggle-row:last-child { border-bottom: none; }
+
+        .pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .pill {
+            padding: 4px 12px; border-radius: 999px;
+            border: 1px solid var(--vscode-widget-border);
+            background: var(--vscode-editor-background);
+            color: var(--vscode-foreground);
+            cursor: pointer; font-size: 12px;
+            transition: all 0.15s ease;
+        }
+        .pill:hover { border-color: var(--vscode-testing-iconPassed); color: var(--vscode-testing-iconPassed); }
+
+        /* Documentation Cards */
+        .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .doc-card {
+            border: 1px solid var(--vscode-widget-border);
+            border-radius: 12px; padding: 16px;
+            background: var(--vscode-editor-background); /* Flat background */
+            cursor: pointer;
+            transition: border-color 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+        }
+        .doc-card:hover { border-color: var(--vscode-focusBorder); transform: translateY(-2px); }
+        .doc-card h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .doc-card p { opacity: 0.8; }
+        .doc-card code {
+            font-family: var(--vscode-editor-font-family); font-size: 11px;
+            padding: 2px 6px; border-radius: 4px;
+            background: var(--vscode-textBlockQuote-background);
+            color: var(--vscode-textPreformat-foreground);
+        }
+
+        /* Status & Logs */
+        .status-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background-color: ${statusColor};
+            box-shadow: 0 0 0 4px color-mix(in srgb, ${statusColor} 20%, transparent); /* Soft glow ring */
+        }
+        
+        .log-container {
+            background: var(--vscode-editor-background); /* Consistent background */
+            font-family: var(--vscode-editor-font-family);
+            font-size: 12px; line-height: 1.6;
+            padding: 16px; border-radius: 8px;
+            height: 350px; overflow-y: auto;
+            border: 1px solid var(--vscode-widget-border);
+            margin-top: 16px;
+        }
+        .log-line { display: flex; gap: 12px; padding: 2px 0; border-bottom: 1px solid transparent; }
+        .log-line:hover { background: var(--vscode-list-hoverBackground); }
+        .log-time { color: var(--vscode-descriptionForeground); font-size: 11px; min-width: 80px; }
+        .log-method { font-weight: 600; color: var(--vscode-textLink-foreground); min-width: 50px; }
+        .log-path { color: var(--vscode-textPreformat-foreground); flex: 1; word-break: break-all; }
         .log-status.success { color: var(--vscode-testing-iconPassed); }
         .log-status.error { color: var(--vscode-testing-iconFailed); }
-        .log-latency { color: var(--vscode-descriptionForeground); min-width: 60px; text-align: right; flex-shrink: 0; }
+        .log-latency { color: var(--vscode-descriptionForeground); font-size: 11px; min-width: 60px; text-align: right; }
 
-        #log-status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-        #log-status-indicator.active { background-color: var(--vscode-testing-iconPassed); box-shadow: 0 0 8px var(--vscode-testing-iconPassed); }
-        #log-status-indicator.inactive { background-color: var(--vscode-disabledForeground); }
+        .muted { color: var(--vscode-descriptionForeground); font-size: 12px; }
+        a { color: var(--vscode-textLink-foreground); text-decoration: none; }
+        a:hover { text-decoration: underline; }
 
-        /* Pending log entry styles */
-        .log-line.pending {
-            opacity: 0.7;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        .log-line.pending .log-status {
-            color: var(--vscode-charts-yellow);
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 0.4; }
+        /* Animations */
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+        .log-line.pending { opacity: 0.7; animation: pulse 2s ease-in-out infinite; }
+        
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Modern Sidebar Design - Constant Dark Theme */
+        @media (max-width: 600px) {
+            body {
+                background-color: #09090b; /* Zinc 950 */
+                color: #fafafa; /* Zinc 50 */
+            }
+            
+            .page {
+                padding: 16px 16px 32px;
+                gap: 12px;
+                max-width: 100%;
+            }
+
+            /* Compact Hero */
+            .hero {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+                padding-bottom: 0;
+                border-bottom: 1px solid #27272a; /* Zinc 800 */
+                padding-bottom: 12px;
+                margin-bottom: 4px;
+            }
+            .hero h1 { 
+                font-size: 18px; 
+                display: flex; 
+                align-items: center; 
+                gap: 8px;
+                color: #ffffff;
+            }
+            .hero p { display: none; }
+             
+            /* Unified Status Pill in Hero */
+            .hero h1:after {
+                content: '';
+                display: inline-block;
+                width: 8px; height: 8px;
+                border-radius: 50%;
+                background-color: ${statusColor};
+                box-shadow: 0 0 10px ${statusColor};
+                margin-left: auto;
+                animation: pulse 2s infinite;
+            }
+
+            /* Filled Cards for Sidebar */
+            .card {
+                background-color: #18181b; /* Zinc 900 */
+                border: 1px solid #27272a; /* Zinc 800 */
+                box-shadow: none;
+                padding: 16px;
+                border-radius: 8px;
+            }
+            .card:hover {
+                background-color: #27272a; /* Zinc 800 */
+                transform: none;
+                border-color: #3f3f46; /* Zinc 700 */
+            }
+
+            /* Typography Overrides */
+            h3, h4 { color: #e4e4e7; opacity: 1; } /* Zinc 200 */
+            .muted { color: #a1a1aa; opacity: 1; } /* Zinc 400 */
+            
+            /* Input overrides for dark theme consistency */
+            button {
+                background-color: #2563eb; /* Blue 600 */
+                color: white;
+                border: none;
+            }
+            button:hover { background-color: #1d4ed8; } /* Blue 700 */
+            button.secondary {
+                background-color: #27272a; /* Zinc 800 */
+                color: #e4e4e7;
+            }
+            button.secondary:hover { background-color: #3f3f46; } /* Zinc 700 */
+
+            /* Grid Stacking */
+            .grid, .info-grid, .docs-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px;
+            }
+
+            /* Buttons */
+            .actions { 
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            button {
+                width: 100%;
+                height: 36px;
+                border-radius: 6px;
+            }
+            
+            /* Status Stats Grid - Make them mini cards */
+            .info-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .info-grid .label { display: none; }
+            .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                background: transparent;
+            }
+            .info-grid > div {
+                 background: #18181b;
+                 padding: 8px;
+                 border-radius: 4px;
+                 border: 1px solid #27272a;
+                 display: flex;
+                 flex-direction: column;
+                 align-items: center;
+                 text-align: center;
+            }
+            .info-grid .label { 
+                display: block; 
+                font-size: 10px; 
+                margin-bottom: 2px;
+                color: #a1a1aa; /* Zinc 400 */
+            }
+            .info-grid .value { 
+                font-size: 14px; 
+                font-weight: 600;
+                color: #fafafa;
+            }
+            
+            /* Hide non-essential elements */
+            .badge { display: none; }
+            #server-url { 
+                font-size: 11px; 
+                color: #a1a1aa;
+                word-break: break-all; 
+            }
+
+            /* Aggressive Contrast Overrides */
+            a { color: #60a5fa !important; } /* Blue 400 */
+            .label { color: #a1a1aa !important; } /* Zinc 400 */
+            
+            /* Form Elements - Force Dark */
+            input, select, textarea {
+                background-color: #27272a !important; /* Zinc 800 */
+                color: #fafafa !important; /* Zinc 50 */
+                border-color: #3f3f46 !important; /* Zinc 700 */
+            }
+            input:focus, select:focus, textarea:focus {
+                border-color: #60a5fa !important; /* Blue 400 */
+            }
         }
 
     </style>
@@ -774,6 +1229,7 @@ print(response.choices[0].message.content)\`;
                 </button>
                 <button class="secondary" id="btn-open-chat" title="Open Copilot Chat" style="min-width: 90px;">💬 Chat</button>
                 <button class="secondary" id="btn-ask-copilot" title="Ask Copilot" style="min-width: 90px;">❓ Ask</button>
+                <button class="secondary" id="btn-docs" title="Read Documentation" style="min-width: 90px;">📚 Docs</button>
                 <button class="secondary" id="btn-settings" title="Settings">⚙️</button>
             </div>
         </div>
@@ -1207,583 +1663,6 @@ print(response.choices[0].message.content)\`;
             </div>
         </div>
 
-        <!-- Prompt Generator Section -->
-        <div id="prompt-generator-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 95%, #8b5cf6 5%), color-mix(in srgb, var(--vscode-editor-background) 98%, #7c3aed 2%));">
-            <h3>✨ Prompt Generator</h3>
-            <p class="muted" style="margin-bottom: 16px;">Create high-quality, detailed prompts for AI assistants. Select options or describe what you need. <span style="opacity: 0.7; font-size: 10px;">💡 Uses Copilot directly - server not required</span></p>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
-                <!-- Project Type -->
-                <div>
-                    <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">🎯 Project Type</label>
-                    <select id="prompt-project-type" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px;">
-                        <option value="">Select type...</option>
-                        <option value="web-app">Web Application</option>
-                        <option value="mobile-app">Mobile App</option>
-                        <option value="api">REST API / Backend</option>
-                        <option value="cli">CLI Tool</option>
-                        <option value="library">Library / Package</option>
-                        <option value="automation">Automation Script</option>
-                        <option value="data">Data Processing</option>
-                        <option value="ml">Machine Learning</option>
-                        <option value="devops">DevOps / Infrastructure</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <!-- Tech Stack -->
-                <div>
-                    <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">🛠️ Tech Stack</label>
-                    <select id="prompt-tech-stack" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px;">
-                        <option value="">Select stack...</option>
-                        <option value="typescript-node">TypeScript + Node.js</option>
-                        <option value="python">Python</option>
-                        <option value="react">React + TypeScript</option>
-                        <option value="nextjs">Next.js</option>
-                        <option value="vue">Vue.js</option>
-                        <option value="rust">Rust</option>
-                        <option value="go">Go</option>
-                        <option value="java">Java / Spring</option>
-                        <option value="csharp">.NET / C#</option>
-                        <option value="swift">Swift / iOS</option>
-                        <option value="kotlin">Kotlin / Android</option>
-                        <option value="flutter">Flutter / Dart</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <!-- Goal -->
-                <div>
-                    <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">🎪 Goal</label>
-                    <select id="prompt-goal" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px;">
-                        <option value="">Select goal...</option>
-                        <option value="build-new">Build from scratch</option>
-                        <option value="add-feature">Add new feature</option>
-                        <option value="refactor">Refactor / Improve</option>
-                        <option value="debug">Debug / Fix issues</option>
-                        <option value="optimize">Optimize performance</option>
-                        <option value="test">Write tests</option>
-                        <option value="document">Write documentation</option>
-                        <option value="review">Code review</option>
-                        <option value="migrate">Migrate / Upgrade</option>
-                        <option value="learn">Learn / Explain</option>
-                    </select>
-                </div>
-
-                <!-- Complexity -->
-                <div>
-                    <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">📊 Complexity</label>
-                    <select id="prompt-complexity" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px;">
-                        <option value="">Select level...</option>
-                        <option value="simple">Simple / Quick task</option>
-                        <option value="medium">Medium complexity</option>
-                        <option value="complex">Complex / Multi-step</option>
-                        <option value="enterprise">Enterprise-grade</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Custom Context -->
-            <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">📝 Describe what you want to build</label>
-                <textarea id="prompt-context" placeholder="E.g., 'A user authentication system with OAuth, password reset, and role-based access control...'" style="width: 100%; min-height: 80px; padding: 10px; border-radius: 6px; border: 1px solid var(--vscode-widget-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); font-size: 12px; resize: vertical; font-family: inherit; box-sizing: border-box;"></textarea>
-            </div>
-
-            <!-- Generate Button -->
-            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                <button id="btn-generate-prompt" style="flex: 1; padding: 10px 16px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    ✨ Generate Prompt
-                </button>
-                <button id="btn-enhance-prompt" class="secondary" style="padding: 10px 16px; background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); border: none; border-radius: 6px; cursor: pointer; font-size: 12px;" title="Enhance with AI suggestions">
-                    🚀 Enhance
-                </button>
-            </div>
-
-            <!-- Output Area -->
-            <div id="prompt-output-container" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <label style="font-size: 11px; font-weight: 600; opacity: 0.8;">📋 Generated Prompt</label>
-                    <div style="display: flex; gap: 4px;">
-                        <button id="btn-copy-prompt" class="secondary" style="padding: 4px 10px; font-size: 10px; border-radius: 4px; cursor: pointer; border: none; background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);">📋 Copy</button>
-                        <button id="btn-export-prompt" class="secondary" style="padding: 4px 10px; font-size: 10px; border-radius: 4px; cursor: pointer; border: none; background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);">💾 Export</button>
-                    </div>
-                </div>
-                <div id="prompt-output" style="background: var(--vscode-editor-background); border: 1px solid var(--vscode-widget-border); border-radius: 8px; padding: 16px; font-size: 12px; line-height: 1.6; white-space: pre-wrap; max-height: 400px; overflow-y: auto; font-family: var(--vscode-editor-font-family);"></div>
-            </div>
-
-            <!-- Loading State -->
-            <div id="prompt-loading" style="display: none; text-align: center; padding: 20px;">
-                <div style="display: inline-block; animation: spin 1s linear infinite; font-size: 24px;">⚙️</div>
-                <div class="muted" style="margin-top: 8px;">Generating your prompt with AI...</div>
-            </div>
-        </div>
-
-        <!-- Mini Wiki Section -->
-        <div id="wiki-section" class="card full-width" style="background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-editor-background) 92%, #10b981 8%), color-mix(in srgb, var(--vscode-editor-background) 96%, #059669 4%));">
-            <h3>📚 API Usage Guide</h3>
-            <p class="muted" style="margin-bottom: 16px;">Complete reference for connecting to the Copilot API Gateway from various languages, with installation instructions and real-world examples.</p>
-
-            <!-- Tab Navigation -->
-            <div id="wiki-tabs" style="display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap;">
-                <button class="wiki-tab active" data-tab="python" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">🐍 Python</button>
-                <button class="wiki-tab" data-tab="javascript" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">📜 JavaScript</button>
-                <button class="wiki-tab" data-tab="curl" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">🔧 cURL</button>
-                <button class="wiki-tab" data-tab="mcp" style="padding: 8px 16px; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 12px; font-weight: 600;">🔌 MCP Tools</button>
-            </div>
-
-            <!-- Tab Content -->
-            <div id="wiki-content" style="background: var(--vscode-editor-background); border-radius: 0 8px 8px 8px; padding: 16px; max-height: 600px; overflow-y: auto;">
-
-                <!-- Python Tab -->
-                <div class="wiki-panel" data-panel="python">
-                    <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">📦 Installation</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;"># Install the OpenAI Python library
-pip install openai
-
-# Or with Anthropic support
-pip install anthropic</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🚀 Quick Start - OpenAI SDK</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
-
-# Point to your local Copilot API Gateway
-client = OpenAI(
-    base_url="http://${config.host}:${config.port}/v1",
-    api_key="not-needed"  # API key not required unless configured
-)
-
-# Simple chat completion
-response = client.chat.completions.create(
-    model="gpt-4o",  # or "claude-3.5-sonnet", "o1-mini", etc.
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Explain quantum computing in simple terms"}
-    ],
-    temperature=0.7,
-    max_tokens=500
-)
-
-print(response.choices[0].message.content)</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">📡 Streaming Responses</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://${config.host}:${config.port}/v1",
-    api_key="not-needed"
-)
-
-# Stream the response in real-time
-stream = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "Write a haiku about coding"}],
-    stream=True
-)
-
-for chunk in stream:
-    if chunk.choices[0].delta.content:
-        print(chunk.choices[0].delta.content, end="", flush=True)
-print()  # Newline at end</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🔧 Function Calling (Tool Use)</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
-import json
-
-client = OpenAI(
-    base_url="http://${config.host}:${config.port}/v1",
-    api_key="not-needed"
-)
-
-# Define tools/functions
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": "Get current weather for a location",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {"type": "string", "description": "City name"},
-                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]}
-                },
-                "required": ["location"]
-            }
-        }
-    }
-]
-
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "What's the weather in Tokyo?"}],
-    tools=tools,
-    tool_choice="auto"
-)
-
-# Check if model wants to call a function
-if response.choices[0].message.tool_calls:
-    tool_call = response.choices[0].message.tool_calls[0]
-    print(f"Function: {tool_call.function.name}")
-    print(f"Arguments: {tool_call.function.arguments}")</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🎭 Using with Anthropic SDK</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import anthropic
-
-client = anthropic.Anthropic(
-    base_url="http://${config.host}:${config.port}",
-    api_key="not-needed"
-)
-
-message = client.messages.create(
-    model="claude-3.5-sonnet",
-    max_tokens=1024,
-    system="You are a helpful coding assistant.",
-    messages=[
-        {"role": "user", "content": "Write a Python function to calculate fibonacci"}
-    ]
-)
-
-print(message.content[0].text)</pre>
-                </div>
-
-                <!-- JavaScript Tab -->
-                <div class="wiki-panel" data-panel="javascript" style="display: none;">
-                    <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">📦 Installation</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;"># Node.js - Install OpenAI SDK
-npm install openai
-
-# Or with yarn
-yarn add openai</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🚀 Quick Start - Node.js</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  baseURL: 'http://${config.host}:${config.port}/v1',
-  apiKey: 'not-needed'
-});
-
-async function chat() {
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    messages: [
-      { role: 'system', content: 'You are a helpful assistant.' },
-      { role: 'user', content: 'Hello!' }
-    ]
-  });
-
-  console.log(completion.choices[0].message.content);
-}
-
-chat();</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">📡 Streaming Responses</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  baseURL: 'http://${config.host}:${config.port}/v1',
-  apiKey: 'not-needed'
-});
-
-async function streamChat() {
-  const stream = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    messages: [{ role: 'user', content: 'Tell me a story' }],
-    stream: true
-  });
-
-  for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content || '';
-    process.stdout.write(content);
-  }
-}
-
-streamChat();</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🌐 Browser - Fetch API</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">async function chat(message) {
-  const response = await fetch('http://${config.host}:${config.port}/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'gpt-4o',
-      messages: [{ role: 'user', content: message }]
-    })
-  });
-
-  const data = await response.json();
-  return data.choices[0].message.content;
-}
-
-// Usage
-const answer = await chat('What is the capital of France?');
-console.log(answer);</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🔧 Function Calling</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  baseURL: 'http://${config.host}:${config.port}/v1',
-  apiKey: 'not-needed'
-});
-
-const tools = [{
-  type: 'function',
-  function: {
-    name: 'search_database',
-    description: 'Search for records in database',
-    parameters: {
-      type: 'object',
-      properties: {
-        query: { type: 'string', description: 'Search query' },
-        limit: { type: 'number', description: 'Max results' }
-      },
-      required: ['query']
-    }
-  }
-}];
-
-const response = await openai.chat.completions.create({
-  model: 'gpt-4o',
-  messages: [{ role: 'user', content: 'Find all users named John' }],
-  tools: tools
-});
-
-console.log(response.choices[0].message.tool_calls);</pre>
-                </div>
-
-                <!-- cURL Tab -->
-                <div class="wiki-panel" data-panel="curl" style="display: none;">
-                    <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">🚀 Basic Chat Completion</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [
-      {"role": "system", "content": "You are a helpful assistant."},
-      {"role": "user", "content": "Hello!"}
-    ]
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">📡 Streaming Response</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -N \\
-  -d '{
-    "model": "gpt-4o",
-    "stream": true,
-    "messages": [{"role": "user", "content": "Write a poem about AI"}]
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🔐 With API Key Authentication</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer your-secret-api-key" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">📋 List Available Models</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/models</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🎭 Anthropic Endpoint (Claude)</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/messages \\
-  -H "Content-Type: application/json" \\
-  -H "x-api-key: not-needed" \\
-  -H "anthropic-version: 2023-06-01" \\
-  -d '{
-    "model": "claude-3.5-sonnet",
-    "max_tokens": 1024,
-    "messages": [{"role": "user", "content": "Hello Claude!"}]
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🦙 Llama Endpoint (Meta)</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/llama/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [
-      {"role": "system", "content": "You are a helpful assistant."},
-      {"role": "user", "content": "Hello!"}
-    ],
-    "max_completion_tokens": 1024
-  }'</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🔧 Function Calling</h4>
-
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [{"role": "user", "content": "What time is it in London?"}],
-    "tools": [{
-      "type": "function",
-      "function": {
-        "name": "get_time",
-        "description": "Get current time for a timezone",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "timezone": {"type": "string"}
-          }
-        }
-      }
-    }]
-  }'</pre>
-                </div>
-
-                <!-- MCP Tools Tab -->
-                <div class="wiki-panel" data-panel="mcp" style="display: none;">
-                    <h4 style="margin-top: 0; color: var(--vscode-textLink-foreground);">⚙️ Configure MCP Servers (settings.json)</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">// Add to your VS Code settings.json
-"githubCopilotApi.mcp.servers": {
-  // Filesystem access
-  "filesystem": {
-    "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/folder"]
-  },
-  // Git operations
-  "git": {
-    "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-git"]
-  },
-  // Remote MCP server via SSE
-  "remote-tools": {
-    "url": "http://your-server:8000/sse"
-  }
-}</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🖥️ Built-in VS Code Tools</h4>
-                    <p class="muted" style="font-size: 11px; margin-bottom: 12px;">These tools are automatically available without any configuration:</p>
-
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #10b981;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_read_file</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">Read the contents of any file in the workspace</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "uri": "file:///path/to/file.ts" }</pre>
-                        </div>
-
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_list_files</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">List files in a directory with optional glob pattern</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "folder": "/src", "pattern": "**/*.ts" }</pre>
-                        </div>
-
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_open_file</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">Open a file in VS Code editor, optionally at specific lines</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "uri": "file:///path/to/file.ts", "startLine": 10, "endLine": 20 }</pre>
-                        </div>
-
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #ef4444;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_get_diagnostics</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">Get current errors and warnings from the Problems panel</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ "maxResults": 50 }</pre>
-                        </div>
-
-                        <div style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; border-left: 3px solid #8b5cf6;">
-                            <code style="font-size: 12px; color: var(--vscode-textPreformat-foreground); font-weight: 600;">vscode_get_active_editor</code>
-                            <div class="muted" style="font-size: 11px; margin-top: 4px;">Get content and cursor position of currently open file</div>
-                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px;">{ } // No parameters needed</pre>
-                        </div>
-                    </div>
-
-                    <h4 style="color: var(--vscode-textLink-foreground); margin-top: 20px;">🐍 Using VS Code Tools with Python</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://${config.host}:${config.port}/v1",
-    api_key="not-needed"
-)
-
-# Define the VS Code tools
-vscode_tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "vscode_read_file",
-            "description": "Read the contents of a file",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "uri": {"type": "string", "description": "File URI (file:///path/to/file)"}
-                },
-                "required": ["uri"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "vscode_get_diagnostics",
-            "description": "Get current errors and warnings",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "maxResults": {"type": "number", "description": "Max results to return"}
-                }
-            }
-        }
-    }
-]
-
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-        {"role": "user", "content": "Read package.json and tell me the version"}
-    ],
-    tools=vscode_tools,
-    tool_choice="auto"
-)
-
-# The gateway will automatically execute the tool and return results
-if response.choices[0].message.tool_calls:
-    for tool_call in response.choices[0].message.tool_calls:
-        print(f"Tool: {tool_call.function.name}")
-        print(f"Args: {tool_call.function.arguments}")</pre>
-
-                    <h4 style="color: var(--vscode-textLink-foreground);">🔧 cURL Example with MCP Tools</h4>
-                    <pre style="background: var(--vscode-textBlockQuote-background); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px;">curl http://${config.host}:${config.port}/v1/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-4o",
-    "messages": [
-      {"role": "user", "content": "List all TypeScript files in /src and check for errors"}
-    ],
-    "tools": [
-      {
-        "type": "function",
-        "function": {
-          "name": "vscode_list_files",
-          "description": "List files matching pattern",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "folder": {"type": "string"},
-              "pattern": {"type": "string"}
-            }
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "vscode_get_diagnostics",
-          "description": "Get errors and warnings",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "maxResults": {"type": "number"}
-            }
-          }
-        }
-      }
-    ]
-  }'</pre>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Detail Modal -->
@@ -1837,6 +1716,13 @@ if response.choices[0].message.tool_calls:
         document.getElementById('btn-settings').onclick = function() {
             vscode.postMessage({ type: 'showControls' });
         };
+
+        const btnDocs = document.getElementById('btn-docs');
+        if (btnDocs) {
+            btnDocs.onclick = function() {
+                vscode.postMessage({ type: 'openUrl', value: 'https://notes.suhaib.in/docs/vscode/extensions/github-copilot-api-gateway/' });
+            };
+        }
 
         document.getElementById('btn-copy-url').onclick = function() {
             var url = document.getElementById('server-url').innerText;
@@ -2031,65 +1917,6 @@ if response.choices[0].message.tool_calls:
                 tab.style.color = 'var(--vscode-button-secondaryForeground)';
             }
         });
-
-        // Prompt Generator handlers
-        document.getElementById('btn-generate-prompt').onclick = function() {
-            var projectType = document.getElementById('prompt-project-type').value;
-            var techStack = document.getElementById('prompt-tech-stack').value;
-            var goal = document.getElementById('prompt-goal').value;
-            var complexity = document.getElementById('prompt-complexity').value;
-            var context = document.getElementById('prompt-context').value;
-
-            if (!context && !projectType && !techStack && !goal) {
-                alert('Please select at least one option or describe what you want to build.');
-                return;
-            }
-
-            document.getElementById('prompt-output-container').style.display = 'none';
-            document.getElementById('prompt-loading').style.display = 'block';
-
-            vscode.postMessage({
-                type: 'generatePrompt',
-                data: { projectType: projectType, techStack: techStack, goal: goal, complexity: complexity, context: context }
-            });
-        };
-
-        document.getElementById('btn-enhance-prompt').onclick = function() {
-            var context = document.getElementById('prompt-context').value;
-            var currentOutput = document.getElementById('prompt-output').textContent;
-
-            if (!context && !currentOutput) {
-                alert('Please enter a description or generate a prompt first.');
-                return;
-            }
-
-            document.getElementById('prompt-loading').style.display = 'block';
-
-            vscode.postMessage({
-                type: 'enhancePrompt',
-                data: { context: context, existingPrompt: currentOutput }
-            });
-        };
-
-        document.getElementById('btn-copy-prompt').onclick = function() {
-            var content = document.getElementById('prompt-output').textContent;
-            navigator.clipboard.writeText(content).then(function() {
-                var btn = document.getElementById('btn-copy-prompt');
-                btn.textContent = '✓ Copied';
-                setTimeout(function() { btn.textContent = '📋 Copy'; }, 1500);
-            });
-        };
-
-        document.getElementById('btn-export-prompt').onclick = function() {
-            var content = document.getElementById('prompt-output').textContent;
-            var blob = new Blob([content], { type: 'text/plain' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'generated-prompt.txt';
-            a.click();
-            URL.revokeObjectURL(url);
-        };
 
         // Auto-refresh Countdown Logic
         let refreshTimer = 10;
@@ -2291,19 +2118,7 @@ if response.choices[0].message.tool_calls:
                     if (wikiSection) {
                         wikiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
-                } else if (target === 'prompt-generator') {
-                    var promptSection = document.getElementById('prompt-generator-section');
-                    if (promptSection) {
-                        promptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
                 }
-            } else if (message.type === 'promptResult') {
-                document.getElementById('prompt-loading').style.display = 'none';
-                document.getElementById('prompt-output-container').style.display = 'block';
-                document.getElementById('prompt-output').textContent = message.data;
-            } else if (message.type === 'promptError') {
-                document.getElementById('prompt-loading').style.display = 'none';
-                alert('Error generating prompt: ' + message.error);
             }
         });
 
@@ -2634,22 +2449,14 @@ vscode.postMessage({ type: 'getAuditLogs', value: { page: 1, pageSize: 10 } });
                     vscode.env.openExternal(vscode.Uri.parse(swaggerUrl));
                     break;
                 }
-                case 'openMetrics': {
-                    const status = await this._gateway.getStatus();
-                    const metricsUrl = `http://${status.config.host}:${status.config.port}/metrics`;
-                    vscode.env.openExternal(vscode.Uri.parse(metricsUrl));
-                    break;
-                }
                 case 'openWiki':
-                    // Open dashboard first, then it will scroll to wiki
-                    await CopilotPanel.createOrShow(this._extensionUri, this._gateway, 'wiki');
+                    // Open wiki as separate panel
+                    await CopilotPanel.openWiki(this._extensionUri, this._gateway);
                     break;
-                case 'openPromptGenerator':
-                    // Open dashboard and scroll to prompt generator
-                    await CopilotPanel.createOrShow(this._extensionUri, this._gateway, 'prompt-generator');
-                    break;
-                case 'openAppsHub':
-                    void vscode.commands.executeCommand('github-copilot-api-vscode.openAppsHub');
+                case 'openUrl':
+                    if (typeof data.value === 'string') {
+                        void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(data.value));
+                    }
                     break;
             }
         });

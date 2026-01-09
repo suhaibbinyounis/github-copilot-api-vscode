@@ -1,7 +1,7 @@
 {
   "name": "github-copilot-api-vscode",
   "displayName": "GitHub Copilot API Gateway",
-  "description": "Universal API Gateway for GitHub Copilot. Expose GPT-4o, Claude 3.5, & Gemini via local OpenAI, Anthropic, & Google compatible APIs. Use Copilot with Cursor, LangChain, & Agents. Includes Enterprise Apps Hub.",
+  "description": "Universal API Gateway for GitHub Copilot. Expose GPT-4o, Claude 3.5, & Gemini via local OpenAI, Anthropic, & Google compatible APIs. Use Copilot with Cursor, LangChain, & Agents.",
   "icon": "media/icon.png",
   "version": "2.1.0",
   "author": {
@@ -28,12 +28,8 @@
   },
   "categories": [
     "Machine Learning",
-    "Programming Languages",
-    "Testing",
-    "Education",
-    "Data Science",
     "AI",
-    "Chat"
+    "Programming Languages"
   ],
   "keywords": [
     "github copilot",
@@ -42,45 +38,24 @@
     "claude",
     "google",
     "gemini",
-    "llama",
-    "meta",
     "api",
     "gateway",
     "proxy",
     "server",
     "http",
-    "websocket",
-    "sse",
-    "realtime",
     "llm",
     "ai",
     "agent",
     "agents",
     "rag",
-    "chat",
-    "completion",
-    "generative ai",
-    "automation",
-    "chatgpt",
-    "gpt",
-    "code",
-    "coding",
     "langchain",
-    "llamaindex",
     "cursor",
-    "aider",
-    "cursor",
-    "aider",
-    "playwright",
-    "large language models",
-    "code generation"
+    "aider"
   ],
   "activationEvents": [
     "onUri",
     "onView:copilotApiGateway",
-    "onView:copilotAppsHub",
-    "onCommand:github-copilot-api-vscode.showServerControls",
-    "onCommand:github-copilot-api-vscode.openAppsHub"
+    "onCommand:github-copilot-api-vscode.showServerControls"
   ],
   "main": "./dist/extension.js",
   "scripts": {
@@ -147,11 +122,6 @@
         "command": "github-copilot-api-vscode.createDesktopShortcut",
         "title": "Copilot API: Create Desktop Shortcut",
         "category": "GitHub Copilot"
-      },
-      {
-        "command": "github-copilot-api-vscode.openAppsHub",
-        "title": "Copilot Apps: Open Apps Hub",
-        "category": "GitHub Copilot"
       }
     ],
     "menus": {
@@ -169,11 +139,6 @@
           "id": "copilot-api-sidebar",
           "title": "Copilot API",
           "icon": "media/icon.svg"
-        },
-        {
-          "id": "copilot-apps-sidebar",
-          "title": "Copilot Apps",
-          "icon": "media/apps-icon.svg"
         }
       ]
     },
@@ -183,13 +148,6 @@
           "type": "webview",
           "id": "copilotApiControls",
           "name": "Controls"
-        }
-      ],
-      "copilot-apps-sidebar": [
-        {
-          "type": "webview",
-          "id": "copilotAppsHub",
-          "name": "Apps Hub"
         }
       ]
     },
