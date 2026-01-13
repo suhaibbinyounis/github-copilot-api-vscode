@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.2",
-    "selfsigned": "^5.4.0",
+    "selfsigned": "^5.5.0",
     "ws": "^8.19.0"
   },
   "devDependencies": {
