@@ -46014,9 +46014,10 @@ var require_x509_cjs = __commonJS({
 // node_modules/selfsigned/index.js
 var require_selfsigned = __commonJS({
   "node_modules/selfsigned/index.js"(exports2) {
-    var { X509CertificateGenerator, X509Certificate, X509ChainBuilder, BasicConstraintsExtension, KeyUsagesExtension, KeyUsageFlags, ExtendedKeyUsageExtension, ExtendedKeyUsage, SubjectAlternativeNameExtension, GeneralName } = require_x509_cjs();
+    var { X509CertificateGenerator, X509Certificate, cryptoProvider, X509ChainBuilder, BasicConstraintsExtension, KeyUsagesExtension, KeyUsageFlags, ExtendedKeyUsageExtension, ExtendedKeyUsage, SubjectAlternativeNameExtension, GeneralName } = require_x509_cjs();
     var nodeCrypto = require("crypto");
     var crypto3 = nodeCrypto.webcrypto;
+    cryptoProvider.set(crypto3);
     function toPositiveHex(hexString) {
       var mostSiginficativeHexAsInt = parseInt(hexString[0], 16);
       if (mostSiginficativeHexAsInt < 8) {
