@@ -74,7 +74,7 @@
     "test": "vscode-test"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.25.2",
+    "@modelcontextprotocol/sdk": "^1.25.3",
     "selfsigned": "^5.4.0",
     "ws": "^8.19.0"
   },
