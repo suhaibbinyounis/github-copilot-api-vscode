@@ -1,9 +1,9 @@
 {
   "name": "github-copilot-api-vscode",
   "displayName": "GitHub Copilot API Gateway",
-  "description": "Universal API Gateway for GitHub Copilot. Expose all Copilot models via local OpenAI, Anthropic, Google & Llama compatible APIs. Use with Cursor, LangChain, Agents & more.",
+  "description": "Universal API Gateway for GitHub Copilot. Expose all Copilot models via local OpenAI, Anthropic, Google & Llama compatible APIs. Use with Clawdbot (Moltbot), Cursor, LangChain, Agents & more.",
   "icon": "media/icon.png",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
@@ -50,7 +50,9 @@
     "rag",
     "langchain",
     "cursor",
-    "aider"
+    "aider",
+    "clawdbot",
+    "moltbot"
   ],
   "activationEvents": [
     "onUri",
@@ -74,13 +76,13 @@
     "test": "vscode-test"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.25.2",
+    "@modelcontextprotocol/sdk": "^1.25.3",
     "selfsigned": "^5.4.0",
     "ws": "^8.19.0"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.19.3",
+    "@types/node": "^22.19.7",
     "@types/vscode": "^1.95.0",
     "@types/ws": "^8.18.1",
     "@vscode/test-cli": "^0.0.12",
@@ -89,7 +91,7 @@
     "eslint": "^9.39.2",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.52.0"
+    "typescript-eslint": "^8.54.0"
   },
   "contributes": {
     "commands": [

@@ -78,8 +78,28 @@ response = client.chat.completions.create(
 - **Build chatbots** with Botpress, Chainlit, or Rasa
 - **Pair program** with [Aider](https://aider.chat) or [Open Interpreter](https://openinterpreter.com)
 - **Generate code** with GPT Engineer or Sweep
+- **Connect [Clawdbot](https://github.com/clawdbot/clawdbot)** to power AI on WhatsApp, Telegram, Discord & Slack
 
 If it speaks OpenAI, it works with this gateway.
+
+### 🤖 Using with Clawdbot (Moltbot)
+
+[Clawdbot](https://github.com/clawdbot/clawdbot) is an open-source AI assistant that brings LLMs to messaging platforms like **WhatsApp**, **Telegram**, **Discord**, and **Slack**. Since it supports any OpenAI-compatible API endpoint, you can use this gateway to power Clawdbot with GitHub Copilot:
+
+1. Start the Copilot API Gateway in VS Code
+2. Expose the API (set host to `0.0.0.0` if Clawdbot runs on another machine)
+3. Configure Clawdbot to use your gateway:
+
+```yaml
+# In your Clawdbot config
+llm:
+  provider: openai
+  base_url: http://YOUR-IP:3030/v1
+  api_key: your-optional-api-key  # or "anything" if auth is disabled
+  model: gpt-4o
+```
+
+Now your WhatsApp/Telegram/Discord/Slack bots are powered by Copilot! 🚀
 
 ---
 
