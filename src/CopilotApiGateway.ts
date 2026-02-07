@@ -934,17 +934,39 @@ export class CopilotApiGateway implements vscode.Disposable {
 			this.logInfo('Starting Cloudflare tunnel...');
 
 			// Use the cloudflared npm package
-			// Compute the correct binary path from extension context (works in VS Code runtime)
-			const { Tunnel, use } = await import('cloudflared');
+			const { Tunnel, use, install } = await import('cloudflared');
+			const fs = await import('fs');
 			const path = await import('path');
-			const extensionPath = this.context?.extensionPath ?? __dirname;
+
+			// Use globalStorageUri for the binary (persists across extension updates)
+			const globalStoragePath = this.context?.globalStorageUri?.fsPath;
+			if (!globalStoragePath) {
+				return { success: false, error: 'Extension context not available' };
+			}
+
+			// Ensure the storage directory exists
+			if (!fs.existsSync(globalStoragePath)) {
+				fs.mkdirSync(globalStoragePath, { recursive: true });
+			}
+
 			const cloudflaredBin = path.join(
-				extensionPath,
-				'node_modules',
-				'cloudflared',
-				'bin',
+				globalStoragePath,
 				process.platform === 'win32' ? 'cloudflared.exe' : 'cloudflared'
 			);
+
+			// Download the binary if it doesn't exist
+			if (!fs.existsSync(cloudflaredBin)) {
+				this.logInfo('Cloudflared binary not found, downloading...');
+				try {
+					await install(cloudflaredBin);
+					this.logInfo('Cloudflared binary downloaded successfully');
+				} catch (downloadError) {
+					const errMsg = downloadError instanceof Error ? downloadError.message : String(downloadError);
+					this.logError('Failed to download cloudflared binary', downloadError);
+					return { success: false, error: `Failed to download cloudflared: ${errMsg}. Check your internet connection.` };
+				}
+			}
+
 			this.logInfo(`Using cloudflared binary: ${cloudflaredBin}`);
 			use(cloudflaredBin);
 

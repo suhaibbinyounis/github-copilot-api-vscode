@@ -4,6 +4,11 @@ All notable changes to the "github-copilot-api-vscode" extension will be documen
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.5.1] - 2026-02-07
+
+### Fixed
+- **Cloudflare Tunnel binary:** Now downloads the cloudflared binary automatically at runtime to extension storage. Works properly for marketplace-installed extensions.
+
 ## [2.5.0] - 2026-02-07
 
 ### Added

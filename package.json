@@ -3,7 +3,7 @@
   "displayName": "GitHub Copilot API Gateway",
   "description": "Universal API Gateway for GitHub Copilot. Expose all Copilot models via local OpenAI, Anthropic, Google & Llama compatible APIs. Use with Clawdbot (Moltbot), Cursor, LangChain, Agents & more.",
   "icon": "media/icon.png",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",

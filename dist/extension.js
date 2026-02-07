@@ -52107,16 +52107,31 @@ var CopilotApiGateway = class {
     }
     try {
       this.logInfo("Starting Cloudflare tunnel...");
-      const { Tunnel, use } = await Promise.resolve().then(() => __toESM(require_lib()));
+      const { Tunnel, use, install } = await Promise.resolve().then(() => __toESM(require_lib()));
+      const fs4 = await import("fs");
       const path4 = await import("path");
-      const extensionPath = this.context?.extensionPath ?? __dirname;
+      const globalStoragePath = this.context?.globalStorageUri?.fsPath;
+      if (!globalStoragePath) {
+        return { success: false, error: "Extension context not available" };
+      }
+      if (!fs4.existsSync(globalStoragePath)) {
+        fs4.mkdirSync(globalStoragePath, { recursive: true });
+      }
       const cloudflaredBin = path4.join(
-        extensionPath,
-        "node_modules",
-        "cloudflared",
-        "bin",
+        globalStoragePath,
         process.platform === "win32" ? "cloudflared.exe" : "cloudflared"
       );
+      if (!fs4.existsSync(cloudflaredBin)) {
+        this.logInfo("Cloudflared binary not found, downloading...");
+        try {
+          await install(cloudflaredBin);
+          this.logInfo("Cloudflared binary downloaded successfully");
+        } catch (downloadError) {
+          const errMsg = downloadError instanceof Error ? downloadError.message : String(downloadError);
+          this.logError("Failed to download cloudflared binary", downloadError);
+          return { success: false, error: `Failed to download cloudflared: ${errMsg}. Check your internet connection.` };
+        }
+      }
       this.logInfo(`Using cloudflared binary: ${cloudflaredBin}`);
       use(cloudflaredBin);
       const localUrl = `http://${this.config.host === "0.0.0.0" ? "127.0.0.1" : this.config.host}:${this.config.port}`;
