@@ -4,6 +4,11 @@ All notable changes to the "github-copilot-api-vscode" extension will be documen
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.10.1] - 2026-03-09
+
+### Fixed
+- Release packaging: removed stale `.vsix` files from repository root so published release contains only the current version.
+
 ## [2.10.0] - 2026-03-09
 
 ### Added
