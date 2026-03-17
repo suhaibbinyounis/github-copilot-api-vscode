@@ -2006,8 +2006,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 			for await (const part of response.stream) {
 				if (cts.token.isCancellationRequested) { break; }
+				let textValue: string | undefined;
 				if (part instanceof vscode.LanguageModelTextPart) {
-					totalContent += part.value;
+					textValue = part.value;
+				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+					textValue = this.extractTextFromPart(part);
+				}
+				if (textValue) {
+					totalContent += textValue;
 					if (!firstPart) {
 						res.write(',\n');
 					}
@@ -2015,7 +2021,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 						candidates: [{
 							content: {
 								role: 'model',
-								parts: [{ text: part.value }]
+								parts: [{ text: textValue }]
 							},
 							finishReason: 'STOP',
 							index: 0
@@ -2203,6 +2209,17 @@ export class CopilotApiGateway implements vscode.Disposable {
 						delta: { type: 'input_json_delta', partial_json: argsStr }
 					})}\n\n`);
 					res.write(`event: content_block_stop\ndata: ${JSON.stringify({ type: 'content_block_stop', index: contentBlockIndex })}\n\n`);
+				} else {
+					// Handle unknown part types (e.g. LanguageModelThinkingPart from reasoning models)
+					const textValue = this.extractTextFromPart(part);
+					if (textValue) {
+						totalContent += textValue;
+						res.write(`event: content_block_delta\ndata: ${JSON.stringify({
+							type: 'content_block_delta',
+							index: contentBlockIndex,
+							delta: { type: 'text_delta', text: textValue }
+						})}\n\n`);
+					}
 				}
 			}
 
@@ -2414,6 +2431,24 @@ export class CopilotApiGateway implements vscode.Disposable {
 					};
 					res.write(`data: ${JSON.stringify(toolCallChunk)}\n\n`);
 					toolCallIndex++;
+				} else {
+					// Handle unknown part types (e.g. LanguageModelThinkingPart from reasoning models)
+					const textValue = this.extractTextFromPart(part);
+					if (textValue) {
+						totalContent += textValue;
+						const chunk = {
+							id: requestId,
+							object: 'chat.completion.chunk',
+							created,
+							model,
+							choices: [{
+								index: 0,
+								delta: { content: textValue },
+								finish_reason: null
+							}]
+						};
+						res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+					}
 				}
 			}
 
@@ -2599,6 +2634,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 			for await (const part of response.stream) {
 				if (part instanceof vscode.LanguageModelTextPart) {
 					result += part.value;
+				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+					const textValue = this.extractTextFromPart(part);
+					if (textValue) { result += textValue; }
 				}
 			}
 			return result;
@@ -2823,13 +2861,19 @@ export class CopilotApiGateway implements vscode.Disposable {
 			// Stream the content
 			for await (const part of lmResponse.stream) {
 				if (cts.token.isCancellationRequested) { break; }
+				let textValue: string | undefined;
 				if (part instanceof vscode.LanguageModelTextPart) {
-					totalContent += part.value;
+					textValue = part.value;
+				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+					textValue = this.extractTextFromPart(part);
+				}
+				if (textValue) {
+					totalContent += textValue;
 					res.write(`event: response.output_text.delta\ndata: ${JSON.stringify({
 						type: 'response.output_text.delta',
 						item_id: messageId,
 						content_index: 0,
-						delta: part.value
+						delta: textValue
 					})}\n\n`);
 				}
 			}
@@ -2992,6 +3036,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 			for await (const part of result.stream) {
 				if (part instanceof vscode.LanguageModelTextPart) {
 					output += part.value;
+				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+					const textValue = this.extractTextFromPart(part);
+					if (textValue) { output += textValue; }
 				}
 			}
 			return output;
@@ -3078,6 +3125,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 			for await (const part of result.stream) {
 				if (part instanceof vscode.LanguageModelTextPart) {
 					output += part.value;
+				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+					const textValue = this.extractTextFromPart(part);
+					if (textValue) { output += textValue; }
 				}
 			}
 			return output;
@@ -3432,6 +3482,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 						name: part.name,
 						arguments: part.input
 					});
+				} else {
+					// Handle unknown part types (e.g. LanguageModelThinkingPart from reasoning models)
+					const textValue = this.extractTextFromPart(part);
+					if (textValue) { textContent += textValue; }
 				}
 			}
 
@@ -3561,8 +3615,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 			for await (const part of lmResponse.stream) {
 				if (cts.token.isCancellationRequested) { break; }
+				let textValue: string | undefined;
 				if (part instanceof vscode.LanguageModelTextPart) {
-					totalContent += part.value;
+					textValue = part.value;
+				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+					textValue = this.extractTextFromPart(part);
+				}
+				if (textValue) {
+					totalContent += textValue;
 					const chunk = {
 						id: completionId,
 						object: 'text_completion',
@@ -3570,7 +3630,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 						model,
 						choices: [{
 							index: 0,
-							text: part.value,
+							text: textValue,
 							finish_reason: null,
 							logprobs: null
 						}]
@@ -3927,6 +3987,28 @@ export class CopilotApiGateway implements vscode.Disposable {
 			}).join('\n');
 		}
 		return String(content);
+	}
+
+	/**
+	 * Extract text from an unknown stream part (e.g. LanguageModelThinkingPart or future part types).
+	 * The VS Code LM API stream type is `AsyncIterable<LanguageModelTextPart | LanguageModelToolCallPart | unknown>`,
+	 * meaning newer part types (like thinking parts from reasoning models such as gpt-5-mini) may appear
+	 * as `unknown`. This method duck-types them to extract any text content they carry.
+	 */
+	private extractTextFromPart(part: unknown): string | undefined {
+		if (!part || typeof part !== 'object') {
+			return undefined;
+		}
+		const p = part as Record<string, unknown>;
+		// Most part types carry text in `.value` (e.g. LanguageModelTextPart, LanguageModelThinkingPart)
+		if (typeof p.value === 'string') {
+			return p.value;
+		}
+		// Some may use `.text`
+		if (typeof p.text === 'string') {
+			return p.text;
+		}
+		return undefined;
 	}
 
 	private resolveModel(model: unknown): string {

@@ -52142,6 +52142,9 @@ var CopilotApiGateway = class {
     const normalized = Number.isFinite(limit) ? Math.max(1, Math.floor(limit)) : 10;
     await this.updateServerConfig({ maxConnectionsPerIp: normalized });
   }
+  async setCloudflaredPath(path4) {
+    await this.updateServerConfig({ cloudflaredPath: path4 });
+  }
   async setMaxConcurrency(limit) {
     const normalized = Number.isFinite(limit) ? Math.max(1, Math.floor(limit)) : 4;
     await this.updateServerConfig({ maxConcurrentRequests: normalized });
@@ -52184,22 +52187,43 @@ var CopilotApiGateway = class {
       if (!fs4.existsSync(globalStoragePath)) {
         fs4.mkdirSync(globalStoragePath, { recursive: true });
       }
-      const cloudflaredBin = path4.join(
-        globalStoragePath,
-        process.platform === "win32" ? "cloudflared.exe" : "cloudflared"
-      );
-      if (!fs4.existsSync(cloudflaredBin)) {
-        this.logInfo("Cloudflared binary not found, downloading...");
+      let cloudflaredBin = "";
+      const customPath = this.config.cloudflaredPath;
+      if (customPath && fs4.existsSync(customPath)) {
+        this.logInfo(`Using custom cloudflared path from configuration: ${customPath}`);
+        cloudflaredBin = customPath;
+      } else {
+        const { execSync } = await import("child_process");
         try {
-          await install(cloudflaredBin);
-          this.logInfo("Cloudflared binary downloaded successfully");
-        } catch (downloadError) {
-          const errMsg = downloadError instanceof Error ? downloadError.message : String(downloadError);
-          this.logError("Failed to download cloudflared binary", downloadError);
-          return { success: false, error: `Failed to download cloudflared: ${errMsg}. Check your internet connection.` };
+          const sysPath = execSync(process.platform === "win32" ? "where cloudflared" : "which cloudflared").toString().split("\n")[0].trim();
+          if (sysPath && fs4.existsSync(sysPath)) {
+            this.logInfo(`Found cloudflared in system PATH: ${sysPath}`);
+            cloudflaredBin = sysPath;
+          }
+        } catch (e) {
         }
       }
-      this.logInfo(`Using cloudflared binary: ${cloudflaredBin}`);
+      if (!cloudflaredBin) {
+        cloudflaredBin = path4.join(
+          globalStoragePath,
+          process.platform === "win32" ? "cloudflared.exe" : "cloudflared"
+        );
+        if (!fs4.existsSync(cloudflaredBin)) {
+          this.logInfo("Cloudflared binary not found locally or in PATH, downloading...");
+          try {
+            await install(cloudflaredBin);
+            this.logInfo("Cloudflared binary downloaded successfully");
+          } catch (downloadError) {
+            const errMsg = downloadError instanceof Error ? downloadError.message : String(downloadError);
+            this.logError("Failed to download cloudflared binary", downloadError);
+            return { success: false, error: `Failed to download cloudflared: ${errMsg}. Check your internet connection.` };
+          }
+        } else {
+          this.logInfo(`Using cached cloudflared binary: ${cloudflaredBin}`);
+        }
+      } else {
+        this.logInfo(`Using chosen cloudflared binary: ${cloudflaredBin}`);
+      }
       use(cloudflaredBin);
       const localUrl = `http://${this.config.host === "0.0.0.0" ? "127.0.0.1" : this.config.host}:${this.config.port}`;
       const tunnelInstance = Tunnel.quick(localUrl);
@@ -52973,8 +52997,14 @@ var CopilotApiGateway = class {
         if (cts.token.isCancellationRequested) {
           break;
         }
+        let textValue;
         if (part instanceof vscode4.LanguageModelTextPart) {
-          totalContent += part.value;
+          textValue = part.value;
+        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+          textValue = this.extractTextFromPart(part);
+        }
+        if (textValue) {
+          totalContent += textValue;
           if (!firstPart) {
             res.write(",\n");
           }
@@ -52982,7 +53012,7 @@ var CopilotApiGateway = class {
             candidates: [{
               content: {
                 role: "model",
-                parts: [{ text: part.value }]
+                parts: [{ text: textValue }]
               },
               finishReason: "STOP",
               index: 0
@@ -53167,6 +53197,19 @@ data: ${JSON.stringify({
 data: ${JSON.stringify({ type: "content_block_stop", index: contentBlockIndex })}
 
 `);
+        } else {
+          const textValue = this.extractTextFromPart(part);
+          if (textValue) {
+            totalContent += textValue;
+            res.write(`event: content_block_delta
+data: ${JSON.stringify({
+              type: "content_block_delta",
+              index: contentBlockIndex,
+              delta: { type: "text_delta", text: textValue }
+            })}
+
+`);
+          }
         }
       }
       if (!cts.token.isCancellationRequested) {
@@ -53363,6 +53406,25 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
 
 `);
           toolCallIndex++;
+        } else {
+          const textValue = this.extractTextFromPart(part);
+          if (textValue) {
+            totalContent += textValue;
+            const chunk = {
+              id: requestId,
+              object: "chat.completion.chunk",
+              created,
+              model,
+              choices: [{
+                index: 0,
+                delta: { content: textValue },
+                finish_reason: null
+              }]
+            };
+            res.write(`data: ${JSON.stringify(chunk)}
+
+`);
+          }
         }
       }
       const finishReason = toolCalls.length > 0 ? "tool_calls" : "stop";
@@ -53516,6 +53578,11 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
       for await (const part of response.stream) {
         if (part instanceof vscode4.LanguageModelTextPart) {
           result += part.value;
+        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+          const textValue = this.extractTextFromPart(part);
+          if (textValue) {
+            result += textValue;
+          }
         }
       }
       return result;
@@ -53718,14 +53785,20 @@ data: ${JSON.stringify({
         if (cts.token.isCancellationRequested) {
           break;
         }
+        let textValue;
         if (part instanceof vscode4.LanguageModelTextPart) {
-          totalContent += part.value;
+          textValue = part.value;
+        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+          textValue = this.extractTextFromPart(part);
+        }
+        if (textValue) {
+          totalContent += textValue;
           res.write(`event: response.output_text.delta
 data: ${JSON.stringify({
             type: "response.output_text.delta",
             item_id: messageId,
             content_index: 0,
-            delta: part.value
+            delta: textValue
           })}
 
 `);
@@ -53881,6 +53954,11 @@ data: ${JSON.stringify({
       for await (const part of result.stream) {
         if (part instanceof vscode4.LanguageModelTextPart) {
           output += part.value;
+        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+          const textValue = this.extractTextFromPart(part);
+          if (textValue) {
+            output += textValue;
+          }
         }
       }
       return output;
@@ -53954,6 +54032,11 @@ data: ${JSON.stringify({
       for await (const part of result.stream) {
         if (part instanceof vscode4.LanguageModelTextPart) {
           output += part.value;
+        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+          const textValue = this.extractTextFromPart(part);
+          if (textValue) {
+            output += textValue;
+          }
         }
       }
       return output;
@@ -54237,6 +54320,11 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
             name: part.name,
             arguments: part.input
           });
+        } else {
+          const textValue = this.extractTextFromPart(part);
+          if (textValue) {
+            textContent += textValue;
+          }
         }
       }
       return {
@@ -54343,8 +54431,14 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
         if (cts.token.isCancellationRequested) {
           break;
         }
+        let textValue;
         if (part instanceof vscode4.LanguageModelTextPart) {
-          totalContent += part.value;
+          textValue = part.value;
+        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+          textValue = this.extractTextFromPart(part);
+        }
+        if (textValue) {
+          totalContent += textValue;
           const chunk = {
             id: completionId,
             object: "text_completion",
@@ -54352,7 +54446,7 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
             model,
             choices: [{
               index: 0,
-              text: part.value,
+              text: textValue,
               finish_reason: null,
               logprobs: null
             }]
@@ -54676,6 +54770,25 @@ ${text} `;
       }).join("\n");
     }
     return String(content);
+  }
+  /**
+   * Extract text from an unknown stream part (e.g. LanguageModelThinkingPart or future part types).
+   * The VS Code LM API stream type is `AsyncIterable<LanguageModelTextPart | LanguageModelToolCallPart | unknown>`,
+   * meaning newer part types (like thinking parts from reasoning models such as gpt-5-mini) may appear
+   * as `unknown`. This method duck-types them to extract any text content they carry.
+   */
+  extractTextFromPart(part) {
+    if (!part || typeof part !== "object") {
+      return void 0;
+    }
+    const p = part;
+    if (typeof p.value === "string") {
+      return p.value;
+    }
+    if (typeof p.text === "string") {
+      return p.text;
+    }
+    return void 0;
   }
   resolveModel(model) {
     if (typeof model === "string" && model.trim()) {
@@ -56092,6 +56205,9 @@ ${text} `;
     if (patch.maxConnectionsPerIp !== void 0) {
       updates.push(Promise.resolve(config2.update("server.maxConnectionsPerIp", patch.maxConnectionsPerIp, vscode4.ConfigurationTarget.Global)));
     }
+    if (patch.cloudflaredPath !== void 0) {
+      updates.push(Promise.resolve(config2.update("tunnel.cloudflaredPath", patch.cloudflaredPath, vscode4.ConfigurationTarget.Global)));
+    }
     if (patch.redactionPatterns !== void 0) {
       updates.push(Promise.resolve(config2.update("server.redactionPatterns", patch.redactionPatterns, vscode4.ConfigurationTarget.Global)));
     }
@@ -56285,6 +56401,7 @@ function getServerConfig() {
   const maxPayloadSizeMb = configuration.get("server.maxPayloadSizeMb", 1);
   const maxConnectionsPerIp = configuration.get("server.maxConnectionsPerIp", 10);
   const mcpEnabled = vscode4.workspace.getConfiguration("githubCopilotApi.mcp").get("enabled", true);
+  const cloudflaredPath = vscode4.workspace.getConfiguration("githubCopilotApi.tunnel").get("cloudflaredPath", "").trim();
   return {
     enabled,
     enableHttp,
@@ -56305,7 +56422,8 @@ function getServerConfig() {
     requestTimeoutSeconds,
     maxPayloadSizeMb,
     maxConnectionsPerIp,
-    mcpEnabled
+    mcpEnabled,
+    cloudflaredPath
   };
 }
 function getErrorMessage(error2) {
@@ -56968,6 +57086,15 @@ for await (const chunk of stream) {
       case "setMaxConnectionsPerIp":
         if (typeof data.value === "number") {
           void gateway2.setMaxConnectionsPerIp(data.value).then(async () => {
+            if (_CopilotPanel.currentPanel) {
+              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
+            }
+          });
+        }
+        break;
+      case "setCloudflaredPath":
+        if (typeof data.value === "string") {
+          void gateway2.setCloudflaredPath(data.value).then(async () => {
             if (_CopilotPanel.currentPanel) {
               _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
             }
@@ -58323,6 +58450,14 @@ print(response.choices[0].message.content)\`;
                 </ul>
             </div>
 
+            <div style="margin-bottom: 16px; border-top: 1px solid var(--vscode-widget-border); padding-top: 16px;">
+                <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px; opacity: 0.8;">CLOUDFLARED BINARY PATH (OPTIONAL)</div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="cloudflared-path-input" value="${config2.cloudflaredPath || ""}" placeholder="Leave empty for auto-download or PATH" style="flex: 1; min-width: 200px;">
+                    <button class="secondary" id="btn-set-cloudflared-path" style="width: auto; padding: 4px 12px; font-size: 11px;">Save Path</button>
+                </div>
+            </div>
+
             <div id="tunnel-status-area" style="margin-bottom: 16px;">
                 ${status.tunnel?.running ? status.tunnel?.url ? `
                     <div style="background: color-mix(in srgb, var(--vscode-testing-iconPassed) 15%, transparent); border: 1px solid var(--vscode-testing-iconPassed); border-radius: 8px; padding: 16px;">
@@ -58973,6 +59108,14 @@ print(response.choices[0].message.content)\`;
             btnSetConnections.onclick = function() {
                 var val = document.getElementById('connections-input').value;
                 vscode.postMessage({ type: 'setMaxConnectionsPerIp', value: Number(val) });
+            };
+        }
+
+        const btnSetCloudflaredPath = document.getElementById('btn-set-cloudflared-path');
+        if (btnSetCloudflaredPath) {
+            btnSetCloudflaredPath.onclick = function() {
+                var val = document.getElementById('cloudflared-path-input').value;
+                vscode.postMessage({ type: 'setCloudflaredPath', value: String(val).trim() });
             };
         }
         document.getElementById('btn-set-concurrency').onclick = function() {
