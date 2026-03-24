@@ -81,7 +81,7 @@
     "@modelcontextprotocol/sdk": "^1.27.1",
     "cloudflared": "^0.7.1",
     "selfsigned": "^5.5.0",
-    "ws": "^8.19.0"
+    "ws": "^8.20.0"
   },
   "overrides": {
     "diff": "^8.0.3",
