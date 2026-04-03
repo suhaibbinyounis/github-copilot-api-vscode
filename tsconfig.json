@@ -7,6 +7,11 @@
 			"ES2022",
 			"DOM"
 		],
+		"types": [
+			"node",
+			"vscode",
+			"ws"
+		],
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"rootDir": "src",
