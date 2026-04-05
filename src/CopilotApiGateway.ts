@@ -118,7 +118,7 @@ export interface AnthropicMessageResponse {
 	id: string;
 	type: 'message';
 	role: 'assistant';
-	content: { type: 'text'; text: string }[];
+	content: ({ type: 'text'; text: string } | { type: 'tool_use'; id: string; name: string; input: Record<string, unknown> })[];
 	model: string;
 	stop_reason: 'end_turn' | 'max_tokens' | 'stop_sequence' | 'tool_use';
 	stop_sequence: string | null;
@@ -1445,6 +1445,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 			return;
 		}
 
+
 		if (!this.config.enableHttp) {
 			throw new ApiError(503, 'HTTP API is disabled. Enable it from the Copilot API controls.', 'service_unavailable', 'http_disabled');
 		}
@@ -1453,6 +1454,29 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		// Get client IP for rate limiting
 		const clientIp = this.getClientIp(req);
+
+        // Root endpoint — responds to both GET and HEAD (used by clients as a connectivity probe)
+        if (url.pathname === '/') {
+            const body = JSON.stringify({
+                service: 'github-copilot-api-vscode',
+                version: this.getVersion(),
+                status: 'running',
+                docs: '/docs',
+                health: '/health',
+                models: '/v1/models'
+            });
+            res.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(body)
+            });
+            // HEAD must send headers only, no body
+            if (req.method !== 'HEAD') {
+                res.end(body);
+            } else {
+                res.end();
+            }
+            return;
+        }		
 
 		// Per-IP connection limiting
 		const currentConnections = this.activeConnectionsPerIp.get(clientIp) || 0;
@@ -1713,6 +1737,41 @@ export class CopilotApiGateway implements vscode.Disposable {
 					responseHeaders: res.getHeaders()
 				});
 				this.sendJson(res, 200, response);
+			}
+			return;
+		}
+
+		// Anthropic Messages Token Count API  (/v1/messages/count_tokens)
+		// Claude Code CLI calls this before every request to check context window usage.
+		// Spec: POST body is same shape as /v1/messages; response is { "input_tokens": N }
+		if (req.method === 'POST' && url.pathname === '/v1/messages/count_tokens') {
+			const body = await this.readJsonBody(req) as AnthropicMessageRequest;
+			try {
+				const copilotModels = await vscode.lm.selectChatModels();
+				const resolvedModel = this.resolveModel(body?.model);
+				const lmModel = copilotModels && copilotModels.length > 0
+					? (this.findModel(resolvedModel, copilotModels) || copilotModels[0])
+					: null;
+
+				let inputTokens = 0;
+				if (lmModel) {
+					// Build full prompt string the same way processAnthropicMessages does
+					const systemText = typeof body?.system === 'string'
+						? body.system
+						: Array.isArray(body?.system)
+							? body.system.map((b: { text?: string }) => b.text || '').join('\n')
+							: '';
+					const parts: string[] = [];
+					if (systemText) { parts.push(`[System]: ${systemText}`); }
+					for (const msg of (body?.messages || [])) {
+						parts.push(this.flattenMessageContent(msg.content));
+					}
+					inputTokens = await lmModel.countTokens(parts.join('\n'));
+				}
+
+				this.sendJson(res, 200, { input_tokens: inputTokens });
+			} catch (err: any) {
+				this.sendJson(res, 200, { input_tokens: 0 });
 			}
 			return;
 		}
@@ -2080,7 +2139,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 				? payload.system.map((b: { text?: string }) => b.text || '').join('\n')
 				: '';
 		if (systemText) {
-			messages.push(vscode.LanguageModelChatMessage.User(this.redactPromptString(systemText)));
+			messages.push(vscode.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemText)}`));
 		}
 
 		for (const msg of payload.messages) {
@@ -3002,7 +3061,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 				? payload.system.map((b: { text?: string }) => b.text || '').join('\n')
 				: '';
 		if (systemTextNS) {
-			messages.push(vscode.LanguageModelChatMessage.User(this.redactPromptString(systemTextNS)));
+			messages.push(vscode.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemTextNS)}`));
 		}
 
 		for (const msg of payload.messages) {
@@ -3019,9 +3078,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		const resolvedModel = this.resolveModel(payload.model);
 
-
 		// Use sendRequest directly to preserve message structure instead of flattening to string
-		const text = await this.runWithConcurrency(async () => {
+		const collected = await this.runWithConcurrency(async () => {
 			const copilotModels = await vscode.lm.selectChatModels();
 			if (!copilotModels || copilotModels.length === 0) {
 				throw new ApiError(503, 'No language model available. Ensure a language model provider (e.g. GitHub Copilot) is installed and signed in.', 'service_unavailable', 'no_models_available');
@@ -3030,45 +3088,81 @@ export class CopilotApiGateway implements vscode.Disposable {
 			if (!lmModel) {
 				throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map(m => m.id).join(', ')}`, 'invalid_request_error', 'model_not_found');
 			}
-			const result = await lmModel.sendRequest(messages, {}, new vscode.CancellationTokenSource().token);
 
-			let output = '';
+			// Build request options — pass tools if provided (Anthropic → VS Code LM format)
+			const options: vscode.LanguageModelChatRequestOptions = {};
+			if (payload.tools && payload.tools.length > 0) {
+				options.tools = payload.tools.map(t => ({
+					name: t.name,
+					description: t.description || '',
+					inputSchema: t.input_schema
+				}));
+				const tc = payload.tool_choice;
+				const tcType = typeof tc === 'string' ? tc : (tc as any)?.type;
+				options.toolMode = (tcType === 'any' || tcType === 'tool')
+					? vscode.LanguageModelChatToolMode.Required
+					: vscode.LanguageModelChatToolMode.Auto;
+			}
+
+			const result = await lmModel.sendRequest(messages, options, new vscode.CancellationTokenSource().token);
+
+			type ContentBlock = AnthropicMessageResponse['content'][number];
+			const contentBlocks: ContentBlock[] = [];
+			let currentText = '';
+
 			for await (const part of result.stream) {
 				if (part instanceof vscode.LanguageModelTextPart) {
-					output += part.value;
-				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+					currentText += part.value;
+				} else if (part instanceof vscode.LanguageModelToolCallPart) {
+					if (currentText) {
+						contentBlocks.push({ type: 'text', text: currentText });
+						currentText = '';
+					}
+					const toolCallId = `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
+					contentBlocks.push({
+						type: 'tool_use',
+						id: toolCallId,
+						name: part.name,
+						input: typeof part.input === 'string'
+							? (JSON.parse(part.input || '{}') as Record<string, unknown>)
+							: ((part.input as Record<string, unknown>) || {})
+					});
+				} else {
 					const textValue = this.extractTextFromPart(part);
-					if (textValue) { output += textValue; }
+					if (textValue) { currentText += textValue; }
 				}
 			}
-			return output;
+			if (currentText) {
+				contentBlocks.push({ type: 'text', text: currentText });
+			}
+
+			return { contentBlocks, lmModel };
 		});
 
-		// Count tokens
-
-
-		// Count tokens
+		// Count tokens using the correctly resolved model
 		let inputTokens = 0;
 		let outputTokens = 0;
 		try {
 			const promptStr = messages.map(m => m.content).join(' ');
-			const copilotModels = await vscode.lm.selectChatModels();
-			if (copilotModels && copilotModels.length > 0) {
-				const lmModel = copilotModels[0];
-				inputTokens = await lmModel.countTokens(promptStr);
-				outputTokens = await lmModel.countTokens(text || '');
-			}
+			const allText = collected.contentBlocks
+				.filter(b => b.type === 'text')
+				.map(b => (b as { type: 'text'; text: string }).text)
+				.join('');
+			inputTokens = await collected.lmModel.countTokens(promptStr);
+			outputTokens = await collected.lmModel.countTokens(allText);
 		} catch (e) {
 			console.error('Anthropic token counting failed:', e);
 		}
+
+		const hasToolCalls = collected.contentBlocks.some(b => b.type === 'tool_use');
 
 		return {
 			id: 'ant-' + randomUUID(),
 			type: 'message',
 			role: 'assistant',
-			content: [{ type: 'text', text: text || '' }],
+			content: collected.contentBlocks.length > 0 ? collected.contentBlocks : [{ type: 'text', text: '' }],
 			model: resolvedModel,
-			stop_reason: 'end_turn',
+			stop_reason: hasToolCalls ? 'tool_use' : 'end_turn',
 			stop_sequence: null,
 			usage: {
 				input_tokens: inputTokens,
@@ -3975,7 +4069,12 @@ export class CopilotApiGateway implements vscode.Disposable {
 					if (p.type === 'tool_result') {
 						const c = p.content;
 						if (typeof c === 'string') { return c; }
-						if (Array.isArray(c)) { return c.map((cp: any) => cp.text || '').join('\n'); }
+						if (Array.isArray(c)) {
+							return c.map((cp: any) => {
+								if (cp.type === 'image') { return '[image omitted]'; }
+								return cp.text || '';
+							}).join('\n');
+						}
 						return '';
 					}
 					// tool_use block: format as a human-readable call summary
@@ -4040,6 +4139,21 @@ export class CopilotApiGateway implements vscode.Disposable {
 		const familyMatch = availableModels.find(m => m.family?.toLowerCase() === requested);
 		if (familyMatch) {
 			return familyMatch;
+		}
+
+		// 3. Claude model alias fallback: strip date suffix (e.g. -20241022) and normalize
+		// separators so "claude-3-5-sonnet-20241022" matches "claude-3.5-sonnet" etc.
+		const dateStripped = requested.replace(/-\d{8}$/, '');
+		const normed = dateStripped.replace(/\./g, '-');
+		const fuzzyMatch = availableModels.find(m => {
+			const mId = m.id.toLowerCase().replace('copilot-', '').replace(/\./g, '-');
+			const mFamily = (m.family || '').toLowerCase().replace('copilot-', '').replace(/\./g, '-');
+			return normed === mId || normed === mFamily ||
+				normed.startsWith(mId + '-') || mId.startsWith(normed + '-') ||
+				normed.startsWith(mFamily + '-') || mFamily.startsWith(normed + '-');
+		});
+		if (fuzzyMatch) {
+			return fuzzyMatch;
 		}
 
 		// No match found - strict mode, no fallbacks
