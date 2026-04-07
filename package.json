@@ -88,7 +88,7 @@
     "serialize-javascript": "^7.0.4"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.5.2",
     "@types/vscode": "1.95.0",
     "@types/ws": "^8.18.1",
     "@vscode/test-cli": "^0.0.12",
