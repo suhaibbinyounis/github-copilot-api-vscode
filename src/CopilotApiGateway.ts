@@ -92,6 +92,21 @@ export interface RequestHistoryEntry {
 	error?: string
 }
 
+interface CopilotHealthStatus {
+	installed: boolean;
+	chatInstalled: boolean;
+	signedIn: boolean;
+	ready: boolean;
+	totalModels: number;
+	vendors: string[];
+}
+
+interface ExtensionBuildInfo {
+	version: string;
+	builtAtIso: string;
+	builtAtDisplay: string;
+}
+
 // --- Anthropic API Interfaces ---
 export type AnthropicContentBlock =
 	| { type: 'text'; text: string }
@@ -325,6 +340,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 	// Production hardening
 	private activeConnectionsPerIp = new Map<string, number>();
 
+	// Map requestId → client IP for auto-populating audit logs
+	private requestIpMap = new Map<string, string>();
+
 	private auditService: AuditService;
 	private mcpService?: McpService;
 	private mcpInitPromise?: Promise<void>;
@@ -334,6 +352,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 	private tunnelChild: ReturnType<typeof import('child_process').spawn> | null = null;
 	private readonly _onDidChangeTunnelStatus = new vscode.EventEmitter<{ running: boolean; url: string | null }>();
 	public readonly onDidChangeTunnelStatus = this._onDidChangeTunnelStatus.event;
+	private cachedChatModels: { models: vscode.LanguageModelChat[]; timestamp: number } | undefined;
+	private chatModelsPromise: Promise<vscode.LanguageModelChat[]> | undefined;
+	private cachedCopilotHealth: { value: CopilotHealthStatus; timestamp: number } | undefined;
+	private copilotHealthPromise: Promise<CopilotHealthStatus> | undefined;
+	private compiledRedactionPatterns: { key: string; patterns: RegExp[] } | undefined;
+	private readonly CHAT_MODELS_CACHE_TTL_MS = 30000;
+	private readonly COPILOT_HEALTH_CACHE_TTL_MS = 30000;
+	private cachedBuildInfo: ExtensionBuildInfo | undefined;
 
 	constructor(private readonly output: vscode.OutputChannel, private readonly statusItem: vscode.StatusBarItem, context: vscode.ExtensionContext) {
 		this.context = context;
@@ -368,6 +394,56 @@ export class CopilotApiGateway implements vscode.Disposable {
 		} catch (error) {
 			console.error('Failed to load lifetime stats:', error);
 		}
+	}
+
+	private async getCachedChatModels(forceRefresh = false): Promise<vscode.LanguageModelChat[]> {
+		const now = Date.now();
+		if (!forceRefresh && this.cachedChatModels && now - this.cachedChatModels.timestamp < this.CHAT_MODELS_CACHE_TTL_MS) {
+			return this.cachedChatModels.models;
+		}
+
+		if (!forceRefresh && this.chatModelsPromise) {
+			return this.chatModelsPromise;
+		}
+
+		this.chatModelsPromise = Promise.resolve(vscode.lm.selectChatModels())
+			.then(models => {
+				this.cachedChatModels = { models, timestamp: Date.now() };
+				return models;
+			})
+			.finally(() => {
+				this.chatModelsPromise = undefined;
+			});
+
+		return this.chatModelsPromise;
+	}
+
+	private getCompiledRedactionPatterns(): RegExp[] {
+		const enabledPatterns = this.config.redactionPatterns.filter(pattern => pattern.enabled);
+		if (enabledPatterns.length === 0) {
+			this.compiledRedactionPatterns = { key: '', patterns: [] };
+			return [];
+		}
+
+		const cacheKey = enabledPatterns
+			.map(pattern => `${pattern.id}:${pattern.pattern}`)
+			.sort()
+			.join('|');
+
+		if (this.compiledRedactionPatterns?.key === cacheKey) {
+			return this.compiledRedactionPatterns.patterns;
+		}
+
+		const patterns = enabledPatterns.flatMap(patternObj => {
+			try {
+				return [new RegExp(patternObj.pattern, 'gi')];
+			} catch {
+				return [];
+			}
+		});
+
+		this.compiledRedactionPatterns = { key: cacheKey, patterns };
+		return patterns;
 	}
 
 	/**
@@ -412,45 +488,55 @@ export class CopilotApiGateway implements vscode.Disposable {
 		};
 	}
 
-	public async getCopilotHealth() {
-		// More robust detection: scan all extensions for ID match (case-insensitive) or explicit name match
-		const allExtensions = vscode.extensions.all;
-		const copilotExt = allExtensions.find(e =>
-			e.id.toLowerCase() === 'github.copilot' ||
-			e.id.toLowerCase() === 'github.copilot-nightly' ||
-			(e.packageJSON?.publisher === 'GitHub' && e.packageJSON?.name === 'copilot')
-		);
-		const copilotChatExt = allExtensions.find(e =>
-			e.id.toLowerCase() === 'github.copilot-chat' ||
-			(e.packageJSON?.publisher === 'GitHub' && e.packageJSON?.name === 'copilot-chat')
-		);
-
-		let signedIn = false;
-		let allModels: vscode.LanguageModelChat[] = [];
-		try {
-			allModels = await vscode.lm.selectChatModels();
-			// Check if copilot models specifically are available
-			const copilotModels = allModels.filter(m => m.vendor === 'copilot');
-			signedIn = copilotModels.length > 0;
-		} catch (e) {
-			signedIn = false;
+	public async getCopilotHealth(): Promise<CopilotHealthStatus> {
+		const now = Date.now();
+		if (this.cachedCopilotHealth && now - this.cachedCopilotHealth.timestamp < this.COPILOT_HEALTH_CACHE_TTL_MS) {
+			return this.cachedCopilotHealth.value;
 		}
 
-		// Gateway is ready if ANY language models are available (not just Copilot)
-		const hasAnyModels = allModels.length > 0;
-		const isReady = hasAnyModels || signedIn;
+		if (this.copilotHealthPromise) {
+			return this.copilotHealthPromise;
+		}
 
-		// Collect unique vendors for status reporting
-		const vendors = [...new Set(allModels.map(m => m.vendor))];
+		// More robust detection: scan all extensions for ID match (case-insensitive) or explicit name match
+		this.copilotHealthPromise = (async () => {
+			const allExtensions = vscode.extensions.all;
+			const copilotExt = allExtensions.find(e =>
+				e.id.toLowerCase() === 'github.copilot' ||
+				e.id.toLowerCase() === 'github.copilot-nightly' ||
+				(e.packageJSON?.publisher === 'GitHub' && e.packageJSON?.name === 'copilot')
+			);
+			const copilotChatExt = allExtensions.find(e =>
+				e.id.toLowerCase() === 'github.copilot-chat' ||
+				(e.packageJSON?.publisher === 'GitHub' && e.packageJSON?.name === 'copilot-chat')
+			);
 
-		return {
-			installed: !!copilotExt || signedIn,
-			chatInstalled: !!copilotChatExt || signedIn,
-			signedIn: signedIn,
-			ready: isReady,
-			totalModels: allModels.length,
-			vendors
-		};
+			let signedIn = false;
+			let allModels: vscode.LanguageModelChat[] = [];
+			try {
+				allModels = await this.getCachedChatModels();
+				const copilotModels = allModels.filter(model => model.vendor === 'copilot');
+				signedIn = copilotModels.length > 0;
+			} catch {
+				signedIn = false;
+			}
+
+			const value: CopilotHealthStatus = {
+				installed: !!copilotExt || signedIn,
+				chatInstalled: !!copilotChatExt || signedIn,
+				signedIn,
+				ready: allModels.length > 0 || signedIn,
+				totalModels: allModels.length,
+				vendors: [...new Set(allModels.map(model => model.vendor))]
+			};
+
+			this.cachedCopilotHealth = { value, timestamp: Date.now() };
+			return value;
+		})().finally(() => {
+			this.copilotHealthPromise = undefined;
+		});
+
+		return this.copilotHealthPromise;
 	}
 
 	public getMcpStatus() {
@@ -550,21 +636,15 @@ export class CopilotApiGateway implements vscode.Disposable {
 	 * Apply redaction patterns to sensitive data
 	 */
 	private redactSensitiveData<T>(data: T): T {
-		const enabledPatterns = this.config.redactionPatterns.filter(p => p.enabled);
-		console.log(`[Redaction] ${this.config.redactionPatterns.length} total patterns, ${enabledPatterns.length} enabled`);
-		if (!enabledPatterns.length) {
+		const compiledPatterns = this.getCompiledRedactionPatterns();
+		if (!compiledPatterns.length) {
 			return data;
 		}
 
 		const redact = (str: string): string => {
 			let result = str;
-			for (const patternObj of enabledPatterns) {
-				try {
-					const regex = new RegExp(patternObj.pattern, 'gi');
-					result = result.replace(regex, '[REDACTED]');
-				} catch {
-					// Invalid regex, skip
-				}
+			for (const regex of compiledPatterns) {
+				result = result.replace(regex, '[REDACTED]');
 			}
 			return result;
 		};
@@ -596,20 +676,15 @@ export class CopilotApiGateway implements vscode.Disposable {
 	private redactMessagesContent(
 		messages: Array<{ role: string; content: unknown; tool_calls?: any[]; tool_call_id?: string }>
 	): Array<{ role: string; content: unknown; tool_calls?: any[]; tool_call_id?: string }> {
-		const enabledPatterns = this.config.redactionPatterns.filter(p => p.enabled);
-		if (!enabledPatterns.length) {
+		const compiledPatterns = this.getCompiledRedactionPatterns();
+		if (!compiledPatterns.length) {
 			return messages;
 		}
 
 		const redactString = (str: string): string => {
 			let result = str;
-			for (const patternObj of enabledPatterns) {
-				try {
-					const regex = new RegExp(patternObj.pattern, 'gi');
-					result = result.replace(regex, '[REDACTED]');
-				} catch {
-					// Invalid regex, skip
-				}
+			for (const regex of compiledPatterns) {
+				result = result.replace(regex, '[REDACTED]');
 			}
 			return result;
 		};
@@ -640,19 +715,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 	 * Redact a simple string prompt before sending to Copilot
 	 */
 	private redactPromptString(prompt: string): string {
-		const enabledPatterns = this.config.redactionPatterns.filter(p => p.enabled);
-		if (!enabledPatterns.length) {
+		const compiledPatterns = this.getCompiledRedactionPatterns();
+		if (!compiledPatterns.length) {
 			return prompt;
 		}
 
 		let result = prompt;
-		for (const patternObj of enabledPatterns) {
-			try {
-				const regex = new RegExp(patternObj.pattern, 'gi');
-				result = result.replace(regex, '[REDACTED]');
-			} catch {
-				// Invalid regex, skip
-			}
+		for (const regex of compiledPatterns) {
+			result = result.replace(regex, '[REDACTED]');
 		}
 		return result;
 	}
@@ -661,6 +731,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 	 * Start the real-time stats updater
 	 */
 	private startStatsUpdater(): void {
+		if (this.statsInterval) {
+			return;
+		}
+
 		// Update stats every 5 seconds
 		this.statsInterval = setInterval(() => {
 			this.updateRealtimeStats();
@@ -672,6 +746,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 	 * Start periodic domain cache refresh for IP allowlist
 	 */
 	private startDomainCacheRefresh(): void {
+		if (this.domainRefreshInterval) {
+			return;
+		}
+
 		// Refresh immediately on startup
 		void this.refreshDomainCache();
 
@@ -679,6 +757,18 @@ export class CopilotApiGateway implements vscode.Disposable {
 		this.domainRefreshInterval = setInterval(() => {
 			void this.refreshDomainCache();
 		}, 5 * 60 * 1000);
+	}
+
+	private stopBackgroundWork(): void {
+		if (this.statsInterval) {
+			clearInterval(this.statsInterval);
+			this.statsInterval = undefined;
+		}
+
+		if (this.domainRefreshInterval) {
+			clearInterval(this.domainRefreshInterval);
+			this.domainRefreshInterval = undefined;
+		}
 	}
 
 	/**
@@ -858,11 +948,26 @@ export class CopilotApiGateway implements vscode.Disposable {
 	}
 
 	public async startServer(): Promise<void> {
-		await this.updateServerConfig({ enabled: true });
+		if (this.httpServer && this.config.enabled) {
+			return;
+		}
+
+		this.config = { ...this.config, enabled: true };
+		this.updateStatusBar('starting');
+		this._onDidChangeStatus.fire();
+		await this.persistServerConfig({ enabled: true });
+		await this.start();
 	}
 
 	public async stopServer(): Promise<void> {
-		await this.updateServerConfig({ enabled: false });
+		if (!this.httpServer && !this.config.enabled) {
+			return;
+		}
+
+		this.config = { ...this.config, enabled: false };
+		this._onDidChangeStatus.fire();
+		await this.persistServerConfig({ enabled: false });
+		await this.stop();
 	}
 
 	public async toggleHttp(): Promise<void> {
@@ -903,6 +1008,43 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 	public getVersion(): string {
 		return this.context?.extension.packageJSON.version || '0.0.1';
+	}
+
+	public getBuildInfo(): ExtensionBuildInfo {
+		if (this.cachedBuildInfo) {
+			return this.cachedBuildInfo;
+		}
+
+		const version = this.getVersion();
+		let builtAt = new Date();
+
+		if (this.context) {
+			const candidates = [
+				path.join(this.context.extensionPath, 'dist', 'extension.js'),
+				path.join(this.context.extensionPath, 'package.json')
+			];
+
+			for (const candidate of candidates) {
+				if (!fs.existsSync(candidate)) {
+					continue;
+				}
+
+				try {
+					builtAt = fs.statSync(candidate).mtime;
+					break;
+				} catch {
+					// Try the next candidate.
+				}
+			}
+		}
+
+		this.cachedBuildInfo = {
+			version,
+			builtAtIso: builtAt.toISOString(),
+			builtAtDisplay: builtAt.toLocaleString('sv-SE', { hour12: false })
+		};
+
+		return this.cachedBuildInfo;
 	}
 
 	public async setHost(host: string): Promise<void> {
@@ -1158,13 +1300,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 			return;
 		}
 
-		// Start intervals only when server starts (deferred from constructor)
-		this.startStatsUpdater();
-		this.startDomainCacheRefresh();
-
 		await this.stop();
 		this.config = getServerConfig();
 		if (!this.config.enabled) {
+			this.stopBackgroundWork();
 			this.updateStatusBar('stopped', 'Server disabled in settings');
 			this._onDidChangeStatus.fire();
 			return;
@@ -1181,6 +1320,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 			const requestStart = Date.now();
 			const requestId = randomUUID().slice(0, 8);
+
+			// Pre-populate IP mapping for error-path logging
+			this.requestIpMap.set(requestId, this.getClientIp(req));
 
 			// Fire start event immediately for Live Log Tail to show pending request
 			this._onDidLogRequestStart.fire({
@@ -1325,6 +1467,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		const address = this.httpServer.address() as AddressInfo | null;
 		if (address) {
+			this.startStatsUpdater();
+			this.startDomainCacheRefresh();
 			const protocol = isHttps ? 'https' : 'http';
 			const location = `${protocol}://${address.address}:${address.port}`;
 			this.logInfo(`${isHttps ? 'HTTPS' : 'HTTP'} server listening on ${location}`);
@@ -1342,6 +1486,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 	}
 
 	async stop(): Promise<void> {
+		this.stopBackgroundWork();
+
 		if (this.wsServer) {
 			await new Promise<void>(resolve => {
 				for (const client of this.wsServer?.clients ?? []) {
@@ -1424,6 +1570,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}
 		await this.mcpService?.dispose();
 		this._onDidChangeStatus.dispose();
+		this._onDidLogRequest.dispose();
+		this._onDidLogRequestStart.dispose();
+		this._onDidChangeTunnelStatus.dispose();
 		this.logInfo('API Gateway shut down successfully.');
 	}
 
@@ -1454,6 +1603,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		// Get client IP for rate limiting
 		const clientIp = this.getClientIp(req);
+		this.requestIpMap.set(requestId, clientIp);
 
         // Root endpoint — responds to both GET and HEAD (used by clients as a connectivity probe)
         if (url.pathname === '/') {
@@ -5485,6 +5635,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 			error?: string;
 			requestHeaders?: Record<string, unknown>;
 			responseHeaders?: Record<string, unknown>;
+			ip?: string;
 		}
 	): void {
 		const isError = status >= 400;
@@ -5511,11 +5662,15 @@ export class CopilotApiGateway implements vscode.Disposable {
 			tokensOut: extra?.tokensOut,
 			error: extra?.error,
 			model: extra?.model,
+			ip: extra?.ip || this.requestIpMap.get(requestId),
 			requestBody: extra?.requestPayload,
 			responseBody: extra?.responsePayload,
 			requestHeaders: extra?.requestHeaders,
 			responseHeaders: extra?.responseHeaders
 		};
+
+		// Clean up IP mapping after logging
+		this.requestIpMap.delete(requestId);
 
 		const redactedEntry = this.redactSensitiveData(logEntry);
 		this.auditService.logRequest(redactedEntry);
@@ -5585,9 +5740,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		return new URL(rawUrl ?? '/', base);
 	}
 
-	private async updateServerConfig(patch: Partial<ApiServerConfig>): Promise<void> {
-		this.config = { ...this.config, ...patch };
-		this._onDidChangeStatus.fire();
+	private async persistServerConfig(patch: Partial<ApiServerConfig>): Promise<void> {
 		const config = vscode.workspace.getConfiguration('githubCopilotApi');
 		const updates: Promise<unknown>[] = [];
 		if (patch.enabled !== undefined) {
@@ -5648,7 +5801,16 @@ export class CopilotApiGateway implements vscode.Disposable {
 		} finally {
 			this.suppressRestart = false;
 		}
+	}
 
+	private async updateServerConfig(patch: Partial<ApiServerConfig>): Promise<void> {
+		this.config = { ...this.config, ...patch };
+		if (patch.redactionPatterns !== undefined) {
+			this.compiledRedactionPatterns = undefined;
+		}
+		this._onDidChangeStatus.fire();
+
+		await this.persistServerConfig(patch);
 		await this.restart();
 	}
 

@@ -438,8 +438,8 @@ var init_parseUtil = __esm({
     init_errors();
     init_en();
     makeIssue = (params) => {
-      const { data, path: path4, errorMaps, issueData } = params;
-      const fullPath = [...path4, ...issueData.path || []];
+      const { data, path: path5, errorMaps, issueData } = params;
+      const fullPath = [...path5, ...issueData.path || []];
       const fullIssue = {
         ...issueData,
         path: fullPath
@@ -719,11 +719,11 @@ var init_types = __esm({
     init_parseUtil();
     init_util();
     ParseInputLazyPath = class {
-      constructor(parent, value, path4, key) {
+      constructor(parent, value, path5, key) {
         this._cachedPath = [];
         this.parent = parent;
         this.data = value;
-        this._path = path4;
+        this._path = path5;
         this._key = key;
       }
       get path() {
@@ -4227,10 +4227,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path4) {
-  if (!path4)
+function getElementAtPath(obj, path5) {
+  if (!path5)
     return obj;
-  return path4.reduce((acc, key) => acc?.[key], obj);
+  return path5.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -4542,11 +4542,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path4, issues) {
+function prefixIssues(path5, issues) {
   return issues.map((iss) => {
     var _a2;
     (_a2 = iss).path ?? (_a2.path = []);
-    iss.path.unshift(path4);
+    iss.path.unshift(path5);
     return iss;
   });
 }
@@ -11613,10 +11613,9 @@ var init_types2 = __esm({
     CursorSchema = string2();
     TaskCreationParamsSchema = looseObject({
       /**
-       * Time in milliseconds to keep task results available after completion.
-       * If null, the task has unlimited lifetime until manually cleaned up.
+       * Requested duration in milliseconds to retain task from creation.
        */
-      ttl: union([number2(), _null3()]).optional(),
+      ttl: number2().optional(),
       /**
        * Time in milliseconds to wait between task status requests.
        */
@@ -11915,7 +11914,11 @@ var init_types2 = __esm({
       /**
        * Present if the client supports task creation.
        */
-      tasks: ClientTasksCapabilitySchema.optional()
+      tasks: ClientTasksCapabilitySchema.optional(),
+      /**
+       * Extensions that the client supports. Keys are extension identifiers (vendor-prefix/extension-name).
+       */
+      extensions: record(string2(), AssertObjectSchema).optional()
     });
     InitializeRequestParamsSchema = BaseRequestParamsSchema.extend({
       /**
@@ -11976,7 +11979,11 @@ var init_types2 = __esm({
       /**
        * Present if the server supports task creation.
        */
-      tasks: ServerTasksCapabilitySchema.optional()
+      tasks: ServerTasksCapabilitySchema.optional(),
+      /**
+       * Extensions that the server supports. Keys are extension identifiers (vendor-prefix/extension-name).
+       */
+      extensions: record(string2(), AssertObjectSchema).optional()
     });
     InitializeResultSchema = ResultSchema.extend({
       /**
@@ -12168,6 +12175,12 @@ var init_types2 = __esm({
        * The MIME type of this resource, if known.
        */
       mimeType: optional(string2()),
+      /**
+       * The size of the raw resource content, in bytes (i.e., before base64 encoding or any tokenization), if known.
+       *
+       * This can be used by Hosts to display file sizes and estimate context window usage.
+       */
+      size: optional(number2()),
       /**
        * Optional annotations for the client.
        */
@@ -13736,6 +13749,10 @@ var init_protocol = __esm({
         this._progressHandlers.clear();
         this._taskProgressTokens.clear();
         this._pendingDebouncedNotifications.clear();
+        for (const info of this._timeoutInfo.values()) {
+          clearTimeout(info.timeoutId);
+        }
+        this._timeoutInfo.clear();
         for (const controller of this._requestHandlerAbortControllers.values()) {
           controller.abort();
         }
@@ -13866,7 +13883,9 @@ var init_protocol = __esm({
             await capturedTransport?.send(errorResponse);
           }
         }).catch((error2) => this._onerror(new Error(`Failed to send response: ${error2}`))).finally(() => {
-          this._requestHandlerAbortControllers.delete(request.id);
+          if (this._requestHandlerAbortControllers.get(request.id) === abortController) {
+            this._requestHandlerAbortControllers.delete(request.id);
+          }
         });
       }
       _onprogress(notification) {
@@ -16497,9 +16516,9 @@ var require_fast_deep_equal = __commonJS({
   }
 });
 
-// node_modules/@modelcontextprotocol/sdk/node_modules/json-schema-traverse/index.js
+// node_modules/@modelcontextprotocol/sdk/node_modules/ajv/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse = __commonJS({
-  "node_modules/@modelcontextprotocol/sdk/node_modules/json-schema-traverse/index.js"(exports2, module2) {
+  "node_modules/@modelcontextprotocol/sdk/node_modules/ajv/node_modules/json-schema-traverse/index.js"(exports2, module2) {
     "use strict";
     var traverse = module2.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -17648,8 +17667,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path4) {
-      let input = path4;
+    function removeDotSegments(path5) {
+      let input = path5;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -17848,8 +17867,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path4, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path4 && path4 !== "/" ? path4 : void 0;
+        const [path5, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path5 && path5 !== "/" ? path5 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -23117,9 +23136,9 @@ var require_subschema2 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/json-schema-traverse/index.js
+// node_modules/ajv-formats/node_modules/ajv/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse2 = __commonJS({
-  "node_modules/ajv-formats/node_modules/json-schema-traverse/index.js"(exports2, module2) {
+  "node_modules/ajv-formats/node_modules/ajv/node_modules/json-schema-traverse/index.js"(exports2, module2) {
     "use strict";
     var traverse = module2.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -26906,12 +26925,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs4, exportName) {
+    function addFormats(ajv, list, fs5, exportName) {
       var _a2;
       var _b;
       (_a2 = (_b = ajv.opts.code).formats) !== null && _a2 !== void 0 ? _a2 : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs4[f]);
+        ajv.addFormat(f, fs5[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -27727,8 +27746,8 @@ var require_windows = __commonJS({
   "node_modules/isexe/windows.js"(exports2, module2) {
     module2.exports = isexe;
     isexe.sync = sync;
-    var fs4 = require("fs");
-    function checkPathExt(path4, options) {
+    var fs5 = require("fs");
+    function checkPathExt(path5, options) {
       var pathext = options.pathExt !== void 0 ? options.pathExt : process.env.PATHEXT;
       if (!pathext) {
         return true;
@@ -27739,25 +27758,25 @@ var require_windows = __commonJS({
       }
       for (var i = 0; i < pathext.length; i++) {
         var p = pathext[i].toLowerCase();
-        if (p && path4.substr(-p.length).toLowerCase() === p) {
+        if (p && path5.substr(-p.length).toLowerCase() === p) {
           return true;
         }
       }
       return false;
     }
-    function checkStat(stat, path4, options) {
+    function checkStat(stat, path5, options) {
       if (!stat.isSymbolicLink() && !stat.isFile()) {
         return false;
       }
-      return checkPathExt(path4, options);
+      return checkPathExt(path5, options);
     }
-    function isexe(path4, options, cb) {
-      fs4.stat(path4, function(er, stat) {
-        cb(er, er ? false : checkStat(stat, path4, options));
+    function isexe(path5, options, cb) {
+      fs5.stat(path5, function(er, stat) {
+        cb(er, er ? false : checkStat(stat, path5, options));
       });
     }
-    function sync(path4, options) {
-      return checkStat(fs4.statSync(path4), path4, options);
+    function sync(path5, options) {
+      return checkStat(fs5.statSync(path5), path5, options);
     }
   }
 });
@@ -27767,14 +27786,14 @@ var require_mode = __commonJS({
   "node_modules/isexe/mode.js"(exports2, module2) {
     module2.exports = isexe;
     isexe.sync = sync;
-    var fs4 = require("fs");
-    function isexe(path4, options, cb) {
-      fs4.stat(path4, function(er, stat) {
+    var fs5 = require("fs");
+    function isexe(path5, options, cb) {
+      fs5.stat(path5, function(er, stat) {
         cb(er, er ? false : checkStat(stat, options));
       });
     }
-    function sync(path4, options) {
-      return checkStat(fs4.statSync(path4), options);
+    function sync(path5, options) {
+      return checkStat(fs5.statSync(path5), options);
     }
     function checkStat(stat, options) {
       return stat.isFile() && checkMode(stat, options);
@@ -27798,7 +27817,7 @@ var require_mode = __commonJS({
 // node_modules/isexe/index.js
 var require_isexe = __commonJS({
   "node_modules/isexe/index.js"(exports2, module2) {
-    var fs4 = require("fs");
+    var fs5 = require("fs");
     var core;
     if (process.platform === "win32" || global.TESTING_WINDOWS) {
       core = require_windows();
@@ -27807,7 +27826,7 @@ var require_isexe = __commonJS({
     }
     module2.exports = isexe;
     isexe.sync = sync;
-    function isexe(path4, options, cb) {
+    function isexe(path5, options, cb) {
       if (typeof options === "function") {
         cb = options;
         options = {};
@@ -27817,7 +27836,7 @@ var require_isexe = __commonJS({
           throw new TypeError("callback not provided");
         }
         return new Promise(function(resolve, reject) {
-          isexe(path4, options || {}, function(er, is) {
+          isexe(path5, options || {}, function(er, is) {
             if (er) {
               reject(er);
             } else {
@@ -27826,7 +27845,7 @@ var require_isexe = __commonJS({
           });
         });
       }
-      core(path4, options || {}, function(er, is) {
+      core(path5, options || {}, function(er, is) {
         if (er) {
           if (er.code === "EACCES" || options && options.ignoreErrors) {
             er = null;
@@ -27836,9 +27855,9 @@ var require_isexe = __commonJS({
         cb(er, is);
       });
     }
-    function sync(path4, options) {
+    function sync(path5, options) {
       try {
-        return core.sync(path4, options || {});
+        return core.sync(path5, options || {});
       } catch (er) {
         if (options && options.ignoreErrors || er.code === "EACCES") {
           return false;
@@ -27854,7 +27873,7 @@ var require_isexe = __commonJS({
 var require_which = __commonJS({
   "node_modules/which/which.js"(exports2, module2) {
     var isWindows = process.platform === "win32" || process.env.OSTYPE === "cygwin" || process.env.OSTYPE === "msys";
-    var path4 = require("path");
+    var path5 = require("path");
     var COLON = isWindows ? ";" : ":";
     var isexe = require_isexe();
     var getNotFoundError = (cmd) => Object.assign(new Error(`not found: ${cmd}`), { code: "ENOENT" });
@@ -27892,7 +27911,7 @@ var require_which = __commonJS({
           return opt.all && found.length ? resolve(found) : reject(getNotFoundError(cmd));
         const ppRaw = pathEnv[i];
         const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
-        const pCmd = path4.join(pathPart, cmd);
+        const pCmd = path5.join(pathPart, cmd);
         const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
         resolve(subStep(p, i, 0));
       });
@@ -27919,7 +27938,7 @@ var require_which = __commonJS({
       for (let i = 0; i < pathEnv.length; i++) {
         const ppRaw = pathEnv[i];
         const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
-        const pCmd = path4.join(pathPart, cmd);
+        const pCmd = path5.join(pathPart, cmd);
         const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
         for (let j = 0; j < pathExt.length; j++) {
           const cur = p + pathExt[j];
@@ -27967,7 +27986,7 @@ var require_path_key = __commonJS({
 var require_resolveCommand = __commonJS({
   "node_modules/cross-spawn/lib/util/resolveCommand.js"(exports2, module2) {
     "use strict";
-    var path4 = require("path");
+    var path5 = require("path");
     var which = require_which();
     var getPathKey = require_path_key();
     function resolveCommandAttempt(parsed, withoutPathExt) {
@@ -27985,7 +28004,7 @@ var require_resolveCommand = __commonJS({
       try {
         resolved = which.sync(parsed.command, {
           path: env3[getPathKey({ env: env3 })],
-          pathExt: withoutPathExt ? path4.delimiter : void 0
+          pathExt: withoutPathExt ? path5.delimiter : void 0
         });
       } catch (e) {
       } finally {
@@ -27994,7 +28013,7 @@ var require_resolveCommand = __commonJS({
         }
       }
       if (resolved) {
-        resolved = path4.resolve(hasCustomCwd ? parsed.options.cwd : "", resolved);
+        resolved = path5.resolve(hasCustomCwd ? parsed.options.cwd : "", resolved);
       }
       return resolved;
     }
@@ -28048,8 +28067,8 @@ var require_shebang_command = __commonJS({
       if (!match) {
         return null;
       }
-      const [path4, argument] = match[0].replace(/#! ?/, "").split(" ");
-      const binary = path4.split("/").pop();
+      const [path5, argument] = match[0].replace(/#! ?/, "").split(" ");
+      const binary = path5.split("/").pop();
       if (binary === "env") {
         return argument;
       }
@@ -28062,16 +28081,16 @@ var require_shebang_command = __commonJS({
 var require_readShebang = __commonJS({
   "node_modules/cross-spawn/lib/util/readShebang.js"(exports2, module2) {
     "use strict";
-    var fs4 = require("fs");
+    var fs5 = require("fs");
     var shebangCommand = require_shebang_command();
     function readShebang(command) {
       const size = 150;
       const buffer = Buffer.alloc(size);
       let fd;
       try {
-        fd = fs4.openSync(command, "r");
-        fs4.readSync(fd, buffer, 0, size, 0);
-        fs4.closeSync(fd);
+        fd = fs5.openSync(command, "r");
+        fs5.readSync(fd, buffer, 0, size, 0);
+        fs5.closeSync(fd);
       } catch (e) {
       }
       return shebangCommand(buffer.toString());
@@ -28084,7 +28103,7 @@ var require_readShebang = __commonJS({
 var require_parse = __commonJS({
   "node_modules/cross-spawn/lib/parse.js"(exports2, module2) {
     "use strict";
-    var path4 = require("path");
+    var path5 = require("path");
     var resolveCommand = require_resolveCommand();
     var escape2 = require_escape();
     var readShebang = require_readShebang();
@@ -28109,7 +28128,7 @@ var require_parse = __commonJS({
       const needsShell = !isExecutableRegExp.test(commandFile);
       if (parsed.options.forceShell || needsShell) {
         const needsDoubleEscapeMetaChars = isCmdShimRegExp.test(commandFile);
-        parsed.command = path4.normalize(parsed.command);
+        parsed.command = path5.normalize(parsed.command);
         parsed.command = escape2.command(parsed.command);
         parsed.args = parsed.args.map((arg) => escape2.argument(arg, needsDoubleEscapeMetaChars));
         const shellCommand = [parsed.command].concat(parsed.args).join(" ");
@@ -28268,9 +28287,6 @@ function getDefaultEnvironment() {
   }
   return env3;
 }
-function isElectron() {
-  return "type" in import_node_process.default;
-}
 var import_cross_spawn, import_node_process, import_node_stream, DEFAULT_INHERITED_ENV_VARS, StdioClientTransport;
 var init_stdio2 = __esm({
   "node_modules/@modelcontextprotocol/sdk/dist/esm/client/stdio.js"() {
@@ -28320,7 +28336,7 @@ var init_stdio2 = __esm({
             },
             stdio: ["pipe", "pipe", this._serverParams.stderr ?? "inherit"],
             shell: false,
-            windowsHide: import_node_process.default.platform === "win32" && isElectron(),
+            windowsHide: import_node_process.default.platform === "win32",
             cwd: this._serverParams.cwd
           });
           this._process.on("error", (error2) => {
@@ -29176,11 +29192,11 @@ function isClientAuthMethod(method) {
 }
 function selectClientAuthMethod(clientInformation, supportedMethods) {
   const hasClientSecret = clientInformation.client_secret !== void 0;
-  if (supportedMethods.length === 0) {
-    return hasClientSecret ? "client_secret_post" : "none";
-  }
-  if ("token_endpoint_auth_method" in clientInformation && clientInformation.token_endpoint_auth_method && isClientAuthMethod(clientInformation.token_endpoint_auth_method) && supportedMethods.includes(clientInformation.token_endpoint_auth_method)) {
+  if ("token_endpoint_auth_method" in clientInformation && clientInformation.token_endpoint_auth_method && isClientAuthMethod(clientInformation.token_endpoint_auth_method) && (supportedMethods.length === 0 || supportedMethods.includes(clientInformation.token_endpoint_auth_method))) {
     return clientInformation.token_endpoint_auth_method;
+  }
+  if (supportedMethods.length === 0) {
+    return hasClientSecret ? "client_secret_basic" : "none";
   }
   if (hasClientSecret && supportedMethods.includes("client_secret_basic")) {
     return "client_secret_basic";
@@ -29292,6 +29308,7 @@ async function authInternal(provider, { serverUrl, authorizationCode, scope, res
     });
   }
   const resource = await selectResourceURL(serverUrl, provider, resourceMetadata);
+  const resolvedScope = scope || resourceMetadata?.scopes_supported?.join(" ") || provider.clientMetadata.scope;
   let clientInformation = await Promise.resolve(provider.clientInformation());
   if (!clientInformation) {
     if (authorizationCode !== void 0) {
@@ -29315,6 +29332,7 @@ async function authInternal(provider, { serverUrl, authorizationCode, scope, res
       const fullInformation = await registerClient(authorizationServerUrl, {
         metadata,
         clientMetadata: provider.clientMetadata,
+        scope: resolvedScope,
         fetchFn
       });
       await provider.saveClientInformation(fullInformation);
@@ -29358,7 +29376,7 @@ async function authInternal(provider, { serverUrl, authorizationCode, scope, res
     clientInformation,
     state,
     redirectUrl: provider.redirectUrl,
-    scope: scope || resourceMetadata?.scopes_supported?.join(" ") || provider.clientMetadata.scope,
+    scope: resolvedScope,
     resource
   });
   await provider.saveCodeVerifier(codeVerifier);
@@ -29676,7 +29694,7 @@ async function fetchToken(provider, authorizationServerUrl, { metadata, resource
     fetchFn
   });
 }
-async function registerClient(authorizationServerUrl, { metadata, clientMetadata, fetchFn }) {
+async function registerClient(authorizationServerUrl, { metadata, clientMetadata, scope, fetchFn }) {
   let registrationUrl;
   if (metadata) {
     if (!metadata.registration_endpoint) {
@@ -29691,7 +29709,10 @@ async function registerClient(authorizationServerUrl, { metadata, clientMetadata
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(clientMetadata)
+    body: JSON.stringify({
+      ...clientMetadata,
+      ...scope !== void 0 ? { scope } : {}
+    })
   });
   if (!response.ok) {
     throw await parseErrorResponse(response);
@@ -32590,13 +32611,13 @@ function __disposeResources(env3) {
   }
   return next();
 }
-function __rewriteRelativeImportExtension(path4, preserveJsx) {
-  if (typeof path4 === "string" && /^\.\.?\//.test(path4)) {
-    return path4.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
+function __rewriteRelativeImportExtension(path5, preserveJsx) {
+  if (typeof path5 === "string" && /^\.\.?\//.test(path5)) {
+    return path5.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
       return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
     });
   }
-  return path4;
+  return path5;
 }
 var extendStatics, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
@@ -42476,14 +42497,14 @@ var require_dependency_container = __commonJS({
           provider = providerOrConstructor;
         }
         if (providers_1.isTokenProvider(provider)) {
-          const path4 = [token];
+          const path5 = [token];
           let tokenProvider = provider;
           while (tokenProvider != null) {
             const currentToken = tokenProvider.useToken;
-            if (path4.includes(currentToken)) {
-              throw new Error(`Token registration cycle detected! ${[...path4, currentToken].join(" -> ")}`);
+            if (path5.includes(currentToken)) {
+              throw new Error(`Token registration cycle detected! ${[...path5, currentToken].join(" -> ")}`);
             }
-            path4.push(currentToken);
+            path5.push(currentToken);
             const registration = this._registry.get(currentToken);
             if (registration && providers_1.isTokenProvider(registration.provider)) {
               tokenProvider = registration.provider;
@@ -45486,12 +45507,12 @@ var require_x509_cjs = __commonJS({
         this.items.set(id, type);
       }
       static create(data) {
-        const extension = new Extension(data);
-        const Type = this.items.get(extension.type);
+        const extension2 = new Extension(data);
+        const Type = this.items.get(extension2.type);
         if (Type) {
           return new Type(data);
         }
-        return extension;
+        return extension2;
       }
     };
     ExtensionFactory.items = /* @__PURE__ */ new Map();
@@ -45749,8 +45770,8 @@ var require_x509_cjs = __commonJS({
         } else {
           const extensions2 = args[0];
           const value = new asn1X509__namespace.Extensions();
-          for (const extension of extensions2) {
-            value.push(asn1Schema.AsnConvert.parse(extension.rawData, asn1X509__namespace.Extension));
+          for (const extension2 of extensions2) {
+            value.push(asn1Schema.AsnConvert.parse(extension2.rawData, asn1X509__namespace.Extension));
           }
           super(asnPkcs9__namespace.id_pkcs9_at_extensionRequest, [asn1Schema.AsnConvert.serialize(value)]);
         }
@@ -45766,8 +45787,8 @@ var require_x509_cjs = __commonJS({
       toTextObject() {
         const obj = this.toTextObjectWithoutValue();
         const extensions2 = this.items.map((o) => o.toTextObject());
-        for (const extension of extensions2) {
-          obj[extension[TextObject.NAME]] = extension;
+        for (const extension2 of extensions2) {
+          obj[extension2[TextObject.NAME]] = extension2;
         }
         return obj;
       }
@@ -46829,20 +46850,20 @@ var require_x509_cjs = __commonJS({
           tslib.__classPrivateFieldSet(this, _X509CrlEntry_extensions, [], "f");
           if (this.asn.crlEntryExtensions) {
             tslib.__classPrivateFieldSet(this, _X509CrlEntry_extensions, this.asn.crlEntryExtensions.map((o) => {
-              const extension = ExtensionFactory.create(asn1Schema.AsnConvert.serialize(o));
-              switch (extension.type) {
+              const extension2 = ExtensionFactory.create(asn1Schema.AsnConvert.serialize(o));
+              switch (extension2.type) {
                 case asn1X509.id_ce_cRLReasons:
                   if (tslib.__classPrivateFieldGet(this, _X509CrlEntry_reason, "f") === void 0) {
-                    tslib.__classPrivateFieldSet(this, _X509CrlEntry_reason, asn1Schema.AsnConvert.parse(extension.value, asn1X509.CRLReason).reason, "f");
+                    tslib.__classPrivateFieldSet(this, _X509CrlEntry_reason, asn1Schema.AsnConvert.parse(extension2.value, asn1X509.CRLReason).reason, "f");
                   }
                   break;
                 case asn1X509.id_ce_invalidityDate:
                   if (tslib.__classPrivateFieldGet(this, _X509CrlEntry_invalidity, "f") === void 0) {
-                    tslib.__classPrivateFieldSet(this, _X509CrlEntry_invalidity, asn1Schema.AsnConvert.parse(extension.value, asn1X509.InvalidityDate).value, "f");
+                    tslib.__classPrivateFieldSet(this, _X509CrlEntry_invalidity, asn1Schema.AsnConvert.parse(extension2.value, asn1X509.InvalidityDate).value, "f");
                   }
                   break;
               }
-              return extension;
+              return extension2;
             }), "f");
           }
         }
@@ -47791,7 +47812,7 @@ var require_permessage_deflate = __commonJS({
     var kBuffers = /* @__PURE__ */ Symbol("buffers");
     var kError = /* @__PURE__ */ Symbol("error");
     var zlibLimiter;
-    var PerMessageDeflate = class {
+    var PerMessageDeflate2 = class {
       /**
        * Creates a PerMessageDeflate instance.
        *
@@ -47802,6 +47823,9 @@ var require_permessage_deflate = __commonJS({
        *     acknowledge disabling of client context takeover
        * @param {Number} [options.concurrencyLimit=10] The number of concurrent
        *     calls to zlib
+       * @param {Boolean} [options.isServer=false] Create the instance in either
+       *     server or client mode
+       * @param {Number} [options.maxPayload=0] The maximum allowed message length
        * @param {(Boolean|Number)} [options.serverMaxWindowBits] Request/confirm the
        *     use of a custom server window size
        * @param {Boolean} [options.serverNoContextTakeover=false] Request/accept
@@ -47812,15 +47836,12 @@ var require_permessage_deflate = __commonJS({
        *     deflate
        * @param {Object} [options.zlibInflateOptions] Options to pass to zlib on
        *     inflate
-       * @param {Boolean} [isServer=false] Create the instance in either server or
-       *     client mode
-       * @param {Number} [maxPayload=0] The maximum allowed message length
        */
-      constructor(options, isServer, maxPayload) {
-        this._maxPayload = maxPayload | 0;
+      constructor(options) {
         this._options = options || {};
         this._threshold = this._options.threshold !== void 0 ? this._options.threshold : 1024;
-        this._isServer = !!isServer;
+        this._maxPayload = this._options.maxPayload | 0;
+        this._isServer = !!this._options.isServer;
         this._deflate = null;
         this._inflate = null;
         this.params = null;
@@ -48129,7 +48150,7 @@ var require_permessage_deflate = __commonJS({
         });
       }
     };
-    module2.exports = PerMessageDeflate;
+    module2.exports = PerMessageDeflate2;
     function deflateOnData(chunk) {
       this[kBuffers].push(chunk);
       this[kTotalLength] += chunk.length;
@@ -48364,7 +48385,7 @@ var require_receiver = __commonJS({
   "node_modules/ws/lib/receiver.js"(exports2, module2) {
     "use strict";
     var { Writable } = require("stream");
-    var PerMessageDeflate = require_permessage_deflate();
+    var PerMessageDeflate2 = require_permessage_deflate();
     var {
       BINARY_TYPES,
       EMPTY_BUFFER,
@@ -48531,7 +48552,7 @@ var require_receiver = __commonJS({
           return;
         }
         const compressed = (buf[0] & 64) === 64;
-        if (compressed && !this._extensions[PerMessageDeflate.extensionName]) {
+        if (compressed && !this._extensions[PerMessageDeflate2.extensionName]) {
           const error2 = this.createError(
             RangeError,
             "RSV1 must be clear",
@@ -48775,7 +48796,7 @@ var require_receiver = __commonJS({
        * @private
        */
       decompress(data, cb) {
-        const perMessageDeflate = this._extensions[PerMessageDeflate.extensionName];
+        const perMessageDeflate = this._extensions[PerMessageDeflate2.extensionName];
         perMessageDeflate.decompress(data, this._fin, (err, buf) => {
           if (err) return cb(err);
           if (buf.length) {
@@ -48957,7 +48978,7 @@ var require_sender = __commonJS({
     "use strict";
     var { Duplex } = require("stream");
     var { randomFillSync } = require("crypto");
-    var PerMessageDeflate = require_permessage_deflate();
+    var PerMessageDeflate2 = require_permessage_deflate();
     var { EMPTY_BUFFER, kWebSocket, NOOP } = require_constants2();
     var { isBlob, isValidStatusCode } = require_validation3();
     var { mask: applyMask, toBuffer } = require_buffer_util();
@@ -49241,7 +49262,7 @@ var require_sender = __commonJS({
        * @public
        */
       send(data, options, cb) {
-        const perMessageDeflate = this._extensions[PerMessageDeflate.extensionName];
+        const perMessageDeflate = this._extensions[PerMessageDeflate2.extensionName];
         let opcode = options.binary ? 2 : 1;
         let rsv1 = options.compress;
         let byteLength;
@@ -49365,7 +49386,7 @@ var require_sender = __commonJS({
           this.sendFrame(_Sender.frame(data, options), cb);
           return;
         }
-        const perMessageDeflate = this._extensions[PerMessageDeflate.extensionName];
+        const perMessageDeflate = this._extensions[PerMessageDeflate2.extensionName];
         this._bufferedBytes += options[kByteLength];
         this._state = DEFLATING;
         perMessageDeflate.compress(data, options.fin, (_, buf) => {
@@ -49803,11 +49824,11 @@ var require_extension2 = __commonJS({
       return offers;
     }
     function format(extensions2) {
-      return Object.keys(extensions2).map((extension) => {
-        let configurations = extensions2[extension];
+      return Object.keys(extensions2).map((extension2) => {
+        let configurations = extensions2[extension2];
         if (!Array.isArray(configurations)) configurations = [configurations];
         return configurations.map((params) => {
-          return [extension].concat(
+          return [extension2].concat(
             Object.keys(params).map((k) => {
               let values = params[k];
               if (!Array.isArray(values)) values = [values];
@@ -49833,7 +49854,7 @@ var require_websocket = __commonJS({
     var { randomBytes, createHash } = require("crypto");
     var { Duplex, Readable } = require("stream");
     var { URL: URL2 } = require("url");
-    var PerMessageDeflate = require_permessage_deflate();
+    var PerMessageDeflate2 = require_permessage_deflate();
     var Receiver2 = require_receiver();
     var Sender2 = require_sender();
     var { isBlob } = require_validation3();
@@ -50041,8 +50062,8 @@ var require_websocket = __commonJS({
           this.emit("close", this._closeCode, this._closeMessage);
           return;
         }
-        if (this._extensions[PerMessageDeflate.extensionName]) {
-          this._extensions[PerMessageDeflate.extensionName].cleanup();
+        if (this._extensions[PerMessageDeflate2.extensionName]) {
+          this._extensions[PerMessageDeflate2.extensionName].cleanup();
         }
         this._receiver.removeAllListeners();
         this._readyState = _WebSocket.CLOSED;
@@ -50204,7 +50225,7 @@ var require_websocket = __commonJS({
           fin: true,
           ...options
         };
-        if (!this._extensions[PerMessageDeflate.extensionName]) {
+        if (!this._extensions[PerMessageDeflate2.extensionName]) {
           opts.compress = false;
         }
         this._sender.send(data || EMPTY_BUFFER, opts, cb);
@@ -50330,7 +50351,7 @@ var require_websocket = __commonJS({
       } else {
         try {
           parsedUrl = new URL2(address);
-        } catch (e) {
+        } catch {
           throw new SyntaxError(`Invalid URL: ${address}`);
         }
       }
@@ -50378,13 +50399,13 @@ var require_websocket = __commonJS({
       opts.path = parsedUrl.pathname + parsedUrl.search;
       opts.timeout = opts.handshakeTimeout;
       if (opts.perMessageDeflate) {
-        perMessageDeflate = new PerMessageDeflate(
-          opts.perMessageDeflate !== true ? opts.perMessageDeflate : {},
-          false,
-          opts.maxPayload
-        );
+        perMessageDeflate = new PerMessageDeflate2({
+          ...opts.perMessageDeflate,
+          isServer: false,
+          maxPayload: opts.maxPayload
+        });
         opts.headers["Sec-WebSocket-Extensions"] = format({
-          [PerMessageDeflate.extensionName]: perMessageDeflate.offer()
+          [PerMessageDeflate2.extensionName]: perMessageDeflate.offer()
         });
       }
       if (protocols.length) {
@@ -50527,19 +50548,19 @@ var require_websocket = __commonJS({
             return;
           }
           const extensionNames = Object.keys(extensions2);
-          if (extensionNames.length !== 1 || extensionNames[0] !== PerMessageDeflate.extensionName) {
+          if (extensionNames.length !== 1 || extensionNames[0] !== PerMessageDeflate2.extensionName) {
             const message = "Server indicated an extension that was not requested";
             abortHandshake(websocket, socket, message);
             return;
           }
           try {
-            perMessageDeflate.accept(extensions2[PerMessageDeflate.extensionName]);
+            perMessageDeflate.accept(extensions2[PerMessageDeflate2.extensionName]);
           } catch (err) {
             const message = "Invalid Sec-WebSocket-Extensions header";
             abortHandshake(websocket, socket, message);
             return;
           }
-          websocket._extensions[PerMessageDeflate.extensionName] = perMessageDeflate;
+          websocket._extensions[PerMessageDeflate2.extensionName] = perMessageDeflate;
         }
         websocket.setSocket(socket, head, {
           allowSynchronousEvents: opts.allowSynchronousEvents,
@@ -50858,9 +50879,9 @@ var require_websocket_server = __commonJS({
     var http = require("http");
     var { Duplex } = require("stream");
     var { createHash } = require("crypto");
-    var extension = require_extension2();
-    var PerMessageDeflate = require_permessage_deflate();
-    var subprotocol = require_subprotocol();
+    var extension2 = require_extension2();
+    var PerMessageDeflate2 = require_permessage_deflate();
+    var subprotocol2 = require_subprotocol();
     var WebSocket2 = require_websocket();
     var { CLOSE_TIMEOUT, GUID, kWebSocket } = require_constants2();
     var keyRegex = /^[+/0-9A-Za-z]{22}==$/;
@@ -51083,7 +51104,7 @@ var require_websocket_server = __commonJS({
         let protocols = /* @__PURE__ */ new Set();
         if (secWebSocketProtocol !== void 0) {
           try {
-            protocols = subprotocol.parse(secWebSocketProtocol);
+            protocols = subprotocol2.parse(secWebSocketProtocol);
           } catch (err) {
             const message = "Invalid Sec-WebSocket-Protocol header";
             abortHandshakeOrEmitwsClientError(this, req, socket, 400, message);
@@ -51093,16 +51114,16 @@ var require_websocket_server = __commonJS({
         const secWebSocketExtensions = req.headers["sec-websocket-extensions"];
         const extensions2 = {};
         if (this.options.perMessageDeflate && secWebSocketExtensions !== void 0) {
-          const perMessageDeflate = new PerMessageDeflate(
-            this.options.perMessageDeflate,
-            true,
-            this.options.maxPayload
-          );
+          const perMessageDeflate = new PerMessageDeflate2({
+            ...this.options.perMessageDeflate,
+            isServer: true,
+            maxPayload: this.options.maxPayload
+          });
           try {
-            const offers = extension.parse(secWebSocketExtensions);
-            if (offers[PerMessageDeflate.extensionName]) {
-              perMessageDeflate.accept(offers[PerMessageDeflate.extensionName]);
-              extensions2[PerMessageDeflate.extensionName] = perMessageDeflate;
+            const offers = extension2.parse(secWebSocketExtensions);
+            if (offers[PerMessageDeflate2.extensionName]) {
+              perMessageDeflate.accept(offers[PerMessageDeflate2.extensionName]);
+              extensions2[PerMessageDeflate2.extensionName] = perMessageDeflate;
             }
           } catch (err) {
             const message = "Invalid or unacceptable Sec-WebSocket-Extensions header";
@@ -51173,10 +51194,10 @@ var require_websocket_server = __commonJS({
             ws._protocol = protocol;
           }
         }
-        if (extensions2[PerMessageDeflate.extensionName]) {
-          const params = extensions2[PerMessageDeflate.extensionName].params;
-          const value = extension.format({
-            [PerMessageDeflate.extensionName]: [params]
+        if (extensions2[PerMessageDeflate2.extensionName]) {
+          const params = extensions2[PerMessageDeflate2.extensionName].params;
+          const value = extension2.format({
+            [PerMessageDeflate2.extensionName]: [params]
           });
           headers.push(`Sec-WebSocket-Extensions: ${value}`);
           ws._extensions = extensions2;
@@ -51246,19 +51267,25 @@ var require_websocket_server = __commonJS({
 // node_modules/ws/wrapper.mjs
 var wrapper_exports = {};
 __export(wrapper_exports, {
+  PerMessageDeflate: () => import_permessage_deflate.default,
   Receiver: () => import_receiver.default,
   Sender: () => import_sender.default,
   WebSocket: () => import_websocket.default,
   WebSocketServer: () => import_websocket_server.default,
   createWebSocketStream: () => import_stream.default,
-  default: () => wrapper_default
+  default: () => wrapper_default,
+  extension: () => import_extension.default,
+  subprotocol: () => import_subprotocol.default
 });
-var import_stream, import_receiver, import_sender, import_websocket, import_websocket_server, wrapper_default;
+var import_stream, import_extension, import_permessage_deflate, import_receiver, import_sender, import_subprotocol, import_websocket, import_websocket_server, wrapper_default;
 var init_wrapper = __esm({
   "node_modules/ws/wrapper.mjs"() {
     import_stream = __toESM(require_stream(), 1);
+    import_extension = __toESM(require_extension2(), 1);
+    import_permessage_deflate = __toESM(require_permessage_deflate(), 1);
     import_receiver = __toESM(require_receiver(), 1);
     import_sender = __toESM(require_sender(), 1);
+    import_subprotocol = __toESM(require_subprotocol(), 1);
     import_websocket = __toESM(require_websocket(), 1);
     import_websocket_server = __toESM(require_websocket_server(), 1);
     wrapper_default = import_websocket.default;
@@ -51653,6 +51680,8 @@ var CopilotApiGateway = class {
   statsInterval;
   // Production hardening
   activeConnectionsPerIp = /* @__PURE__ */ new Map();
+  // Map requestId → client IP for auto-populating audit logs
+  requestIpMap = /* @__PURE__ */ new Map();
   auditService;
   mcpService;
   mcpInitPromise;
@@ -51661,6 +51690,14 @@ var CopilotApiGateway = class {
   tunnelChild = null;
   _onDidChangeTunnelStatus = new vscode4.EventEmitter();
   onDidChangeTunnelStatus = this._onDidChangeTunnelStatus.event;
+  cachedChatModels;
+  chatModelsPromise;
+  cachedCopilotHealth;
+  copilotHealthPromise;
+  compiledRedactionPatterns;
+  CHAT_MODELS_CACHE_TTL_MS = 3e4;
+  COPILOT_HEALTH_CACHE_TTL_MS = 3e4;
+  cachedBuildInfo;
   async initializeStats() {
     try {
       const lifetime = await this.auditService.getLifetimeStats();
@@ -51670,6 +51707,42 @@ var CopilotApiGateway = class {
     } catch (error2) {
       console.error("Failed to load lifetime stats:", error2);
     }
+  }
+  async getCachedChatModels(forceRefresh = false) {
+    const now = Date.now();
+    if (!forceRefresh && this.cachedChatModels && now - this.cachedChatModels.timestamp < this.CHAT_MODELS_CACHE_TTL_MS) {
+      return this.cachedChatModels.models;
+    }
+    if (!forceRefresh && this.chatModelsPromise) {
+      return this.chatModelsPromise;
+    }
+    this.chatModelsPromise = Promise.resolve(vscode4.lm.selectChatModels()).then((models) => {
+      this.cachedChatModels = { models, timestamp: Date.now() };
+      return models;
+    }).finally(() => {
+      this.chatModelsPromise = void 0;
+    });
+    return this.chatModelsPromise;
+  }
+  getCompiledRedactionPatterns() {
+    const enabledPatterns = this.config.redactionPatterns.filter((pattern) => pattern.enabled);
+    if (enabledPatterns.length === 0) {
+      this.compiledRedactionPatterns = { key: "", patterns: [] };
+      return [];
+    }
+    const cacheKey = enabledPatterns.map((pattern) => `${pattern.id}:${pattern.pattern}`).sort().join("|");
+    if (this.compiledRedactionPatterns?.key === cacheKey) {
+      return this.compiledRedactionPatterns.patterns;
+    }
+    const patterns = enabledPatterns.flatMap((patternObj) => {
+      try {
+        return [new RegExp(patternObj.pattern, "gi")];
+      } catch {
+        return [];
+      }
+    });
+    this.compiledRedactionPatterns = { key: cacheKey, patterns };
+    return patterns;
   }
   /**
    * Lazy-load MCP service only when needed
@@ -51709,33 +51782,44 @@ var CopilotApiGateway = class {
     };
   }
   async getCopilotHealth() {
-    const allExtensions = vscode4.extensions.all;
-    const copilotExt = allExtensions.find(
-      (e) => e.id.toLowerCase() === "github.copilot" || e.id.toLowerCase() === "github.copilot-nightly" || e.packageJSON?.publisher === "GitHub" && e.packageJSON?.name === "copilot"
-    );
-    const copilotChatExt = allExtensions.find(
-      (e) => e.id.toLowerCase() === "github.copilot-chat" || e.packageJSON?.publisher === "GitHub" && e.packageJSON?.name === "copilot-chat"
-    );
-    let signedIn = false;
-    let allModels = [];
-    try {
-      allModels = await vscode4.lm.selectChatModels();
-      const copilotModels = allModels.filter((m) => m.vendor === "copilot");
-      signedIn = copilotModels.length > 0;
-    } catch (e) {
-      signedIn = false;
+    const now = Date.now();
+    if (this.cachedCopilotHealth && now - this.cachedCopilotHealth.timestamp < this.COPILOT_HEALTH_CACHE_TTL_MS) {
+      return this.cachedCopilotHealth.value;
     }
-    const hasAnyModels = allModels.length > 0;
-    const isReady = hasAnyModels || signedIn;
-    const vendors = [...new Set(allModels.map((m) => m.vendor))];
-    return {
-      installed: !!copilotExt || signedIn,
-      chatInstalled: !!copilotChatExt || signedIn,
-      signedIn,
-      ready: isReady,
-      totalModels: allModels.length,
-      vendors
-    };
+    if (this.copilotHealthPromise) {
+      return this.copilotHealthPromise;
+    }
+    this.copilotHealthPromise = (async () => {
+      const allExtensions = vscode4.extensions.all;
+      const copilotExt = allExtensions.find(
+        (e) => e.id.toLowerCase() === "github.copilot" || e.id.toLowerCase() === "github.copilot-nightly" || e.packageJSON?.publisher === "GitHub" && e.packageJSON?.name === "copilot"
+      );
+      const copilotChatExt = allExtensions.find(
+        (e) => e.id.toLowerCase() === "github.copilot-chat" || e.packageJSON?.publisher === "GitHub" && e.packageJSON?.name === "copilot-chat"
+      );
+      let signedIn = false;
+      let allModels = [];
+      try {
+        allModels = await this.getCachedChatModels();
+        const copilotModels = allModels.filter((model) => model.vendor === "copilot");
+        signedIn = copilotModels.length > 0;
+      } catch {
+        signedIn = false;
+      }
+      const value = {
+        installed: !!copilotExt || signedIn,
+        chatInstalled: !!copilotChatExt || signedIn,
+        signedIn,
+        ready: allModels.length > 0 || signedIn,
+        totalModels: allModels.length,
+        vendors: [...new Set(allModels.map((model) => model.vendor))]
+      };
+      this.cachedCopilotHealth = { value, timestamp: Date.now() };
+      return value;
+    })().finally(() => {
+      this.copilotHealthPromise = void 0;
+    });
+    return this.copilotHealthPromise;
   }
   getMcpStatus() {
     return {
@@ -51818,19 +51902,14 @@ var CopilotApiGateway = class {
    * Apply redaction patterns to sensitive data
    */
   redactSensitiveData(data) {
-    const enabledPatterns = this.config.redactionPatterns.filter((p) => p.enabled);
-    console.log(`[Redaction] ${this.config.redactionPatterns.length} total patterns, ${enabledPatterns.length} enabled`);
-    if (!enabledPatterns.length) {
+    const compiledPatterns = this.getCompiledRedactionPatterns();
+    if (!compiledPatterns.length) {
       return data;
     }
     const redact = (str) => {
       let result = str;
-      for (const patternObj of enabledPatterns) {
-        try {
-          const regex = new RegExp(patternObj.pattern, "gi");
-          result = result.replace(regex, "[REDACTED]");
-        } catch {
-        }
+      for (const regex of compiledPatterns) {
+        result = result.replace(regex, "[REDACTED]");
       }
       return result;
     };
@@ -51857,18 +51936,14 @@ var CopilotApiGateway = class {
    * This prevents confidential data from ever leaving the user's machine
    */
   redactMessagesContent(messages) {
-    const enabledPatterns = this.config.redactionPatterns.filter((p) => p.enabled);
-    if (!enabledPatterns.length) {
+    const compiledPatterns = this.getCompiledRedactionPatterns();
+    if (!compiledPatterns.length) {
       return messages;
     }
     const redactString = (str) => {
       let result = str;
-      for (const patternObj of enabledPatterns) {
-        try {
-          const regex = new RegExp(patternObj.pattern, "gi");
-          result = result.replace(regex, "[REDACTED]");
-        } catch {
-        }
+      for (const regex of compiledPatterns) {
+        result = result.replace(regex, "[REDACTED]");
       }
       return result;
     };
@@ -51894,17 +51969,13 @@ var CopilotApiGateway = class {
    * Redact a simple string prompt before sending to Copilot
    */
   redactPromptString(prompt) {
-    const enabledPatterns = this.config.redactionPatterns.filter((p) => p.enabled);
-    if (!enabledPatterns.length) {
+    const compiledPatterns = this.getCompiledRedactionPatterns();
+    if (!compiledPatterns.length) {
       return prompt;
     }
     let result = prompt;
-    for (const patternObj of enabledPatterns) {
-      try {
-        const regex = new RegExp(patternObj.pattern, "gi");
-        result = result.replace(regex, "[REDACTED]");
-      } catch {
-      }
+    for (const regex of compiledPatterns) {
+      result = result.replace(regex, "[REDACTED]");
     }
     return result;
   }
@@ -51912,6 +51983,9 @@ var CopilotApiGateway = class {
    * Start the real-time stats updater
    */
   startStatsUpdater() {
+    if (this.statsInterval) {
+      return;
+    }
     this.statsInterval = setInterval(() => {
       this.updateRealtimeStats();
       this._onDidChangeStatus.fire();
@@ -51921,10 +51995,23 @@ var CopilotApiGateway = class {
    * Start periodic domain cache refresh for IP allowlist
    */
   startDomainCacheRefresh() {
+    if (this.domainRefreshInterval) {
+      return;
+    }
     void this.refreshDomainCache();
     this.domainRefreshInterval = setInterval(() => {
       void this.refreshDomainCache();
     }, 5 * 60 * 1e3);
+  }
+  stopBackgroundWork() {
+    if (this.statsInterval) {
+      clearInterval(this.statsInterval);
+      this.statsInterval = void 0;
+    }
+    if (this.domainRefreshInterval) {
+      clearInterval(this.domainRefreshInterval);
+      this.domainRefreshInterval = void 0;
+    }
   }
   /**
    * Update real-time statistics
@@ -52066,10 +52153,23 @@ var CopilotApiGateway = class {
     return { hostname: hostname4, localIPs };
   }
   async startServer() {
-    await this.updateServerConfig({ enabled: true });
+    if (this.httpServer && this.config.enabled) {
+      return;
+    }
+    this.config = { ...this.config, enabled: true };
+    this.updateStatusBar("starting");
+    this._onDidChangeStatus.fire();
+    await this.persistServerConfig({ enabled: true });
+    await this.start();
   }
   async stopServer() {
-    await this.updateServerConfig({ enabled: false });
+    if (!this.httpServer && !this.config.enabled) {
+      return;
+    }
+    this.config = { ...this.config, enabled: false };
+    this._onDidChangeStatus.fire();
+    await this.persistServerConfig({ enabled: false });
+    await this.stop();
   }
   async toggleHttp() {
     await this.updateServerConfig({ enableHttp: !this.config.enableHttp, enabled: true });
@@ -52101,6 +52201,35 @@ var CopilotApiGateway = class {
   }
   getVersion() {
     return this.context?.extension.packageJSON.version || "0.0.1";
+  }
+  getBuildInfo() {
+    if (this.cachedBuildInfo) {
+      return this.cachedBuildInfo;
+    }
+    const version2 = this.getVersion();
+    let builtAt = /* @__PURE__ */ new Date();
+    if (this.context) {
+      const candidates = [
+        path2.join(this.context.extensionPath, "dist", "extension.js"),
+        path2.join(this.context.extensionPath, "package.json")
+      ];
+      for (const candidate of candidates) {
+        if (!fs2.existsSync(candidate)) {
+          continue;
+        }
+        try {
+          builtAt = fs2.statSync(candidate).mtime;
+          break;
+        } catch {
+        }
+      }
+    }
+    this.cachedBuildInfo = {
+      version: version2,
+      builtAtIso: builtAt.toISOString(),
+      builtAtDisplay: builtAt.toLocaleString("sv-SE", { hour12: false })
+    };
+    return this.cachedBuildInfo;
   }
   async setHost(host) {
     const value = (host ?? "").trim();
@@ -52142,8 +52271,8 @@ var CopilotApiGateway = class {
     const normalized = Number.isFinite(limit) ? Math.max(1, Math.floor(limit)) : 10;
     await this.updateServerConfig({ maxConnectionsPerIp: normalized });
   }
-  async setCloudflaredPath(path4) {
-    await this.updateServerConfig({ cloudflaredPath: path4 });
+  async setCloudflaredPath(path5) {
+    await this.updateServerConfig({ cloudflaredPath: path5 });
   }
   async setMaxConcurrency(limit) {
     const normalized = Number.isFinite(limit) ? Math.max(1, Math.floor(limit)) : 4;
@@ -52178,25 +52307,25 @@ var CopilotApiGateway = class {
     try {
       this.logInfo("Starting Cloudflare tunnel...");
       const { Tunnel, use, install } = await Promise.resolve().then(() => __toESM(require_lib()));
-      const fs4 = await import("fs");
-      const path4 = await import("path");
+      const fs5 = await import("fs");
+      const path5 = await import("path");
       const globalStoragePath = this.context?.globalStorageUri?.fsPath;
       if (!globalStoragePath) {
         return { success: false, error: "Extension context not available" };
       }
-      if (!fs4.existsSync(globalStoragePath)) {
-        fs4.mkdirSync(globalStoragePath, { recursive: true });
+      if (!fs5.existsSync(globalStoragePath)) {
+        fs5.mkdirSync(globalStoragePath, { recursive: true });
       }
       let cloudflaredBin = "";
       const customPath = this.config.cloudflaredPath;
-      if (customPath && fs4.existsSync(customPath)) {
+      if (customPath && fs5.existsSync(customPath)) {
         this.logInfo(`Using custom cloudflared path from configuration: ${customPath}`);
         cloudflaredBin = customPath;
       } else {
         const { execSync } = await import("child_process");
         try {
           const sysPath = execSync(process.platform === "win32" ? "where cloudflared" : "which cloudflared").toString().split("\n")[0].trim();
-          if (sysPath && fs4.existsSync(sysPath)) {
+          if (sysPath && fs5.existsSync(sysPath)) {
             this.logInfo(`Found cloudflared in system PATH: ${sysPath}`);
             cloudflaredBin = sysPath;
           }
@@ -52204,11 +52333,11 @@ var CopilotApiGateway = class {
         }
       }
       if (!cloudflaredBin) {
-        cloudflaredBin = path4.join(
+        cloudflaredBin = path5.join(
           globalStoragePath,
           process.platform === "win32" ? "cloudflared.exe" : "cloudflared"
         );
-        if (!fs4.existsSync(cloudflaredBin)) {
+        if (!fs5.existsSync(cloudflaredBin)) {
           this.logInfo("Cloudflared binary not found locally or in PATH, downloading...");
           try {
             await install(cloudflaredBin);
@@ -52301,11 +52430,10 @@ var CopilotApiGateway = class {
     if (this.disposed) {
       return;
     }
-    this.startStatsUpdater();
-    this.startDomainCacheRefresh();
     await this.stop();
     this.config = getServerConfig();
     if (!this.config.enabled) {
+      this.stopBackgroundWork();
       this.updateStatusBar("stopped", "Server disabled in settings");
       this._onDidChangeStatus.fire();
       return;
@@ -52317,6 +52445,7 @@ var CopilotApiGateway = class {
       res.on("close", () => this.connections.delete(res));
       const requestStart = Date.now();
       const requestId = (0, import_crypto.randomUUID)().slice(0, 8);
+      this.requestIpMap.set(requestId, this.getClientIp(req));
       this._onDidLogRequestStart.fire({
         requestId,
         method: req.method || "UNKNOWN",
@@ -52434,6 +52563,8 @@ var CopilotApiGateway = class {
     });
     const address = this.httpServer.address();
     if (address) {
+      this.startStatsUpdater();
+      this.startDomainCacheRefresh();
       const protocol = isHttps ? "https" : "http";
       const location = `${protocol}://${address.address}:${address.port}`;
       this.logInfo(`${isHttps ? "HTTPS" : "HTTP"} server listening on ${location}`);
@@ -52449,6 +52580,7 @@ var CopilotApiGateway = class {
     await this.start();
   }
   async stop() {
+    this.stopBackgroundWork();
     if (this.wsServer) {
       await new Promise((resolve) => {
         for (const client of this.wsServer?.clients ?? []) {
@@ -52516,6 +52648,9 @@ var CopilotApiGateway = class {
     }
     await this.mcpService?.dispose();
     this._onDidChangeStatus.dispose();
+    this._onDidLogRequest.dispose();
+    this._onDidLogRequestStart.dispose();
+    this._onDidChangeTunnelStatus.dispose();
     this.logInfo("API Gateway shut down successfully.");
   }
   async handleHttpRequest(req, res, requestId, requestStart) {
@@ -52536,6 +52671,27 @@ var CopilotApiGateway = class {
     }
     const url2 = this.buildUrl(req.url);
     const clientIp = this.getClientIp(req);
+    this.requestIpMap.set(requestId, clientIp);
+    if (url2.pathname === "/") {
+      const body = JSON.stringify({
+        service: "github-copilot-api-vscode",
+        version: this.getVersion(),
+        status: "running",
+        docs: "/docs",
+        health: "/health",
+        models: "/v1/models"
+      });
+      res.writeHead(200, {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body)
+      });
+      if (req.method !== "HEAD") {
+        res.end(body);
+      } else {
+        res.end();
+      }
+      return;
+    }
     const currentConnections = this.activeConnectionsPerIp.get(clientIp) || 0;
     if (currentConnections >= this.config.maxConnectionsPerIp) {
       this.logRequest(requestId, req.method || "UNKNOWN", url2.pathname, 429, Date.now() - requestStart, {
@@ -52751,6 +52907,30 @@ var CopilotApiGateway = class {
           responseHeaders: res.getHeaders()
         });
         this.sendJson(res, 200, response);
+      }
+      return;
+    }
+    if (req.method === "POST" && url2.pathname === "/v1/messages/count_tokens") {
+      const body = await this.readJsonBody(req);
+      try {
+        const copilotModels = await vscode4.lm.selectChatModels();
+        const resolvedModel = this.resolveModel(body?.model);
+        const lmModel = copilotModels && copilotModels.length > 0 ? this.findModel(resolvedModel, copilotModels) || copilotModels[0] : null;
+        let inputTokens = 0;
+        if (lmModel) {
+          const systemText = typeof body?.system === "string" ? body.system : Array.isArray(body?.system) ? body.system.map((b) => b.text || "").join("\n") : "";
+          const parts = [];
+          if (systemText) {
+            parts.push(`[System]: ${systemText}`);
+          }
+          for (const msg of body?.messages || []) {
+            parts.push(this.flattenMessageContent(msg.content));
+          }
+          inputTokens = await lmModel.countTokens(parts.join("\n"));
+        }
+        this.sendJson(res, 200, { input_tokens: inputTokens });
+      } catch (err) {
+        this.sendJson(res, 200, { input_tokens: 0 });
       }
       return;
     }
@@ -53063,7 +53243,7 @@ var CopilotApiGateway = class {
     const messages = [];
     const systemText = typeof payload.system === "string" ? payload.system : Array.isArray(payload.system) ? payload.system.map((b) => b.text || "").join("\n") : "";
     if (systemText) {
-      messages.push(vscode4.LanguageModelChatMessage.User(this.redactPromptString(systemText)));
+      messages.push(vscode4.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemText)}`));
     }
     for (const msg of payload.messages) {
       const role = msg.role === "user" ? vscode4.LanguageModelChatMessageRole.User : vscode4.LanguageModelChatMessageRole.Assistant;
@@ -53927,7 +54107,7 @@ data: ${JSON.stringify({
     const messages = [];
     const systemTextNS = typeof payload.system === "string" ? payload.system : Array.isArray(payload.system) ? payload.system.map((b) => b.text || "").join("\n") : "";
     if (systemTextNS) {
-      messages.push(vscode4.LanguageModelChatMessage.User(this.redactPromptString(systemTextNS)));
+      messages.push(vscode4.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemTextNS)}`));
     }
     for (const msg of payload.messages) {
       const role = msg.role === "user" ? vscode4.LanguageModelChatMessageRole.User : vscode4.LanguageModelChatMessageRole.Assistant;
@@ -53940,7 +54120,7 @@ data: ${JSON.stringify({
       }
     }
     const resolvedModel = this.resolveModel(payload.model);
-    const text = await this.runWithConcurrency(async () => {
+    const collected = await this.runWithConcurrency(async () => {
       const copilotModels = await vscode4.lm.selectChatModels();
       if (!copilotModels || copilotModels.length === 0) {
         throw new ApiError(503, "No language model available. Ensure a language model provider (e.g. GitHub Copilot) is installed and signed in.", "service_unavailable", "no_models_available");
@@ -53949,40 +54129,65 @@ data: ${JSON.stringify({
       if (!lmModel) {
         throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map((m) => m.id).join(", ")}`, "invalid_request_error", "model_not_found");
       }
-      const result = await lmModel.sendRequest(messages, {}, new vscode4.CancellationTokenSource().token);
-      let output = "";
+      const options = {};
+      if (payload.tools && payload.tools.length > 0) {
+        options.tools = payload.tools.map((t) => ({
+          name: t.name,
+          description: t.description || "",
+          inputSchema: t.input_schema
+        }));
+        const tc = payload.tool_choice;
+        const tcType = typeof tc === "string" ? tc : tc?.type;
+        options.toolMode = tcType === "any" || tcType === "tool" ? vscode4.LanguageModelChatToolMode.Required : vscode4.LanguageModelChatToolMode.Auto;
+      }
+      const result = await lmModel.sendRequest(messages, options, new vscode4.CancellationTokenSource().token);
+      const contentBlocks = [];
+      let currentText = "";
       for await (const part of result.stream) {
         if (part instanceof vscode4.LanguageModelTextPart) {
-          output += part.value;
-        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+          currentText += part.value;
+        } else if (part instanceof vscode4.LanguageModelToolCallPart) {
+          if (currentText) {
+            contentBlocks.push({ type: "text", text: currentText });
+            currentText = "";
+          }
+          const toolCallId = `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`;
+          contentBlocks.push({
+            type: "tool_use",
+            id: toolCallId,
+            name: part.name,
+            input: typeof part.input === "string" ? JSON.parse(part.input || "{}") : part.input || {}
+          });
+        } else {
           const textValue = this.extractTextFromPart(part);
           if (textValue) {
-            output += textValue;
+            currentText += textValue;
           }
         }
       }
-      return output;
+      if (currentText) {
+        contentBlocks.push({ type: "text", text: currentText });
+      }
+      return { contentBlocks, lmModel };
     });
     let inputTokens = 0;
     let outputTokens = 0;
     try {
       const promptStr = messages.map((m) => m.content).join(" ");
-      const copilotModels = await vscode4.lm.selectChatModels();
-      if (copilotModels && copilotModels.length > 0) {
-        const lmModel = copilotModels[0];
-        inputTokens = await lmModel.countTokens(promptStr);
-        outputTokens = await lmModel.countTokens(text || "");
-      }
+      const allText = collected.contentBlocks.filter((b) => b.type === "text").map((b) => b.text).join("");
+      inputTokens = await collected.lmModel.countTokens(promptStr);
+      outputTokens = await collected.lmModel.countTokens(allText);
     } catch (e) {
       console.error("Anthropic token counting failed:", e);
     }
+    const hasToolCalls = collected.contentBlocks.some((b) => b.type === "tool_use");
     return {
       id: "ant-" + (0, import_crypto.randomUUID)(),
       type: "message",
       role: "assistant",
-      content: [{ type: "text", text: text || "" }],
+      content: collected.contentBlocks.length > 0 ? collected.contentBlocks : [{ type: "text", text: "" }],
       model: resolvedModel,
-      stop_reason: "end_turn",
+      stop_reason: hasToolCalls ? "tool_use" : "end_turn",
       stop_sequence: null,
       usage: {
         input_tokens: inputTokens,
@@ -54758,7 +54963,12 @@ ${text} `;
               return c;
             }
             if (Array.isArray(c)) {
-              return c.map((cp) => cp.text || "").join("\n");
+              return c.map((cp) => {
+                if (cp.type === "image") {
+                  return "[image omitted]";
+                }
+                return cp.text || "";
+              }).join("\n");
             }
             return "";
           }
@@ -54813,6 +55023,16 @@ ${text} `;
     const familyMatch = availableModels.find((m) => m.family?.toLowerCase() === requested);
     if (familyMatch) {
       return familyMatch;
+    }
+    const dateStripped = requested.replace(/-\d{8}$/, "");
+    const normed = dateStripped.replace(/\./g, "-");
+    const fuzzyMatch = availableModels.find((m) => {
+      const mId = m.id.toLowerCase().replace("copilot-", "").replace(/\./g, "-");
+      const mFamily = (m.family || "").toLowerCase().replace("copilot-", "").replace(/\./g, "-");
+      return normed === mId || normed === mFamily || normed.startsWith(mId + "-") || mId.startsWith(normed + "-") || normed.startsWith(mFamily + "-") || mFamily.startsWith(normed + "-");
+    });
+    if (fuzzyMatch) {
+      return fuzzyMatch;
     }
     return null;
   }
@@ -56082,7 +56302,7 @@ ${text} `;
       return false;
     }
   }
-  logRequest(requestId, method, path4, status, durationMs, extra) {
+  logRequest(requestId, method, path5, status, durationMs, extra) {
     const isError = status >= 400;
     const tokensIn = extra?.tokensIn ?? 0;
     const tokensOut = extra?.tokensOut ?? 0;
@@ -56091,18 +56311,20 @@ ${text} `;
       timestamp: (/* @__PURE__ */ new Date()).toISOString(),
       requestId,
       method,
-      path: path4,
+      path: path5,
       status,
       durationMs,
       tokensIn: extra?.tokensIn,
       tokensOut: extra?.tokensOut,
       error: extra?.error,
       model: extra?.model,
+      ip: extra?.ip || this.requestIpMap.get(requestId),
       requestBody: extra?.requestPayload,
       responseBody: extra?.responsePayload,
       requestHeaders: extra?.requestHeaders,
       responseHeaders: extra?.responseHeaders
     };
+    this.requestIpMap.delete(requestId);
     const redactedEntry = this.redactSensitiveData(logEntry);
     this.auditService.logRequest(redactedEntry);
     this._onDidLogRequest.fire(redactedEntry);
@@ -56119,7 +56341,7 @@ ${text} `;
     }
     if (this.config.enableLogging) {
       const statusIcon = isError ? "\u274C" : status >= 300 ? "\u26A0\uFE0F" : "\u2705";
-      this.output.appendLine(`[${(/* @__PURE__ */ new Date()).toLocaleTimeString()}] ${statusIcon} ${method} ${path4} ${status} (${durationMs}ms)`);
+      this.output.appendLine(`[${(/* @__PURE__ */ new Date()).toLocaleTimeString()}] ${statusIcon} ${method} ${path5} ${status} (${durationMs}ms)`);
       if (extra?.error) {
         this.output.appendLine(`  Error: ${extra.error}`);
       }
@@ -56158,9 +56380,7 @@ ${text} `;
     const base = `http://${this.config.host}:${this.config.port}`;
     return new URL(rawUrl ?? "/", base);
   }
-  async updateServerConfig(patch) {
-    this.config = { ...this.config, ...patch };
-    this._onDidChangeStatus.fire();
+  async persistServerConfig(patch) {
     const config2 = vscode4.workspace.getConfiguration("githubCopilotApi");
     const updates = [];
     if (patch.enabled !== void 0) {
@@ -56220,6 +56440,14 @@ ${text} `;
     } finally {
       this.suppressRestart = false;
     }
+  }
+  async updateServerConfig(patch) {
+    this.config = { ...this.config, ...patch };
+    if (patch.redactionPatterns !== void 0) {
+      this.compiledRedactionPatterns = void 0;
+    }
+    this._onDidChangeStatus.fire();
+    await this.persistServerConfig(patch);
     await this.restart();
   }
   updateStatusBar(state, detail) {
@@ -56319,8 +56547,8 @@ ${text} `;
   }
 };
 async function ensureCopilotChatReady() {
-  const extension = vscode4.extensions.getExtension(COPILOT_CHAT_EXTENSION_ID);
-  if (!extension) {
+  const extension2 = vscode4.extensions.getExtension(COPILOT_CHAT_EXTENSION_ID);
+  if (!extension2) {
     const choice = await vscode4.window.showWarningMessage(
       "GitHub Copilot Chat extension is required. Install it from the Marketplace to continue.",
       "Open Marketplace",
@@ -56331,9 +56559,9 @@ async function ensureCopilotChatReady() {
     }
     return false;
   }
-  if (!extension.isActive) {
+  if (!extension2.isActive) {
     try {
-      await extension.activate();
+      await extension2.activate();
     } catch (error2) {
       void vscode4.window.showErrorMessage(`Failed to activate GitHub Copilot Chat: ${getErrorMessage(error2)}`);
       return false;
@@ -56435,6 +56663,157 @@ function getErrorMessage(error2) {
 
 // src/CopilotPanel.ts
 var vscode5 = __toESM(require("vscode"));
+
+// src/services/PerfMetrics.ts
+function createEmptyCounterSnapshot() {
+  return {
+    webviewMessagesSent: 0,
+    webviewMessagesReceived: 0,
+    webviewHtmlWrites: 0,
+    dashboardCreates: 0,
+    dashboardReveals: 0,
+    sidebarResolves: 0,
+    statusEvents: 0,
+    sentByTarget: {},
+    sentByType: {},
+    receivedByTarget: {},
+    receivedByType: {},
+    htmlWritesByTarget: {},
+    htmlBytesByTarget: {}
+  };
+}
+function cloneCounterMap(counterMap) {
+  return { ...counterMap };
+}
+function cloneSnapshot(snapshot) {
+  return {
+    ...snapshot,
+    sentByTarget: cloneCounterMap(snapshot.sentByTarget),
+    sentByType: cloneCounterMap(snapshot.sentByType),
+    receivedByTarget: cloneCounterMap(snapshot.receivedByTarget),
+    receivedByType: cloneCounterMap(snapshot.receivedByType),
+    htmlWritesByTarget: cloneCounterMap(snapshot.htmlWritesByTarget),
+    htmlBytesByTarget: cloneCounterMap(snapshot.htmlBytesByTarget)
+  };
+}
+function incrementCounter(counterMap, key, delta = 1) {
+  counterMap[key] = (counterMap[key] ?? 0) + delta;
+}
+function diffCounterMap(current, start) {
+  const keys = /* @__PURE__ */ new Set([...Object.keys(current), ...Object.keys(start)]);
+  const diff = {};
+  for (const key of keys) {
+    const delta = (current[key] ?? 0) - (start[key] ?? 0);
+    if (delta !== 0) {
+      diff[key] = delta;
+    }
+  }
+  return diff;
+}
+function diffSnapshot(current, start) {
+  return {
+    webviewMessagesSent: current.webviewMessagesSent - start.webviewMessagesSent,
+    webviewMessagesReceived: current.webviewMessagesReceived - start.webviewMessagesReceived,
+    webviewHtmlWrites: current.webviewHtmlWrites - start.webviewHtmlWrites,
+    dashboardCreates: current.dashboardCreates - start.dashboardCreates,
+    dashboardReveals: current.dashboardReveals - start.dashboardReveals,
+    sidebarResolves: current.sidebarResolves - start.sidebarResolves,
+    statusEvents: current.statusEvents - start.statusEvents,
+    sentByTarget: diffCounterMap(current.sentByTarget, start.sentByTarget),
+    sentByType: diffCounterMap(current.sentByType, start.sentByType),
+    receivedByTarget: diffCounterMap(current.receivedByTarget, start.receivedByTarget),
+    receivedByType: diffCounterMap(current.receivedByType, start.receivedByType),
+    htmlWritesByTarget: diffCounterMap(current.htmlWritesByTarget, start.htmlWritesByTarget),
+    htmlBytesByTarget: diffCounterMap(current.htmlBytesByTarget, start.htmlBytesByTarget)
+  };
+}
+var PerfMetrics = class {
+  static counters = createEmptyCounterSnapshot();
+  static activePhases = /* @__PURE__ */ new Map();
+  static completedPhases = [];
+  static reset() {
+    this.counters = createEmptyCounterSnapshot();
+    this.activePhases.clear();
+    this.completedPhases = [];
+  }
+  static beginPhase(name) {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      throw new Error("Phase name is required.");
+    }
+    if (this.activePhases.has(trimmedName)) {
+      throw new Error(`Perf phase already active: ${trimmedName}`);
+    }
+    this.activePhases.set(trimmedName, {
+      name: trimmedName,
+      startedAtMs: Date.now(),
+      startedAtIso: (/* @__PURE__ */ new Date()).toISOString(),
+      cpuStart: process.cpuUsage(),
+      counterStart: cloneSnapshot(this.counters)
+    });
+    return void 0;
+  }
+  static endPhase(name) {
+    const trimmedName = name.trim();
+    const phase = this.activePhases.get(trimmedName);
+    if (!phase) {
+      throw new Error(`Perf phase not active: ${trimmedName}`);
+    }
+    this.activePhases.delete(trimmedName);
+    const cpu = process.cpuUsage(phase.cpuStart);
+    const result = {
+      name: trimmedName,
+      startedAt: phase.startedAtIso,
+      endedAt: (/* @__PURE__ */ new Date()).toISOString(),
+      durationMs: Date.now() - phase.startedAtMs,
+      cpuUserMicros: cpu.user,
+      cpuSystemMicros: cpu.system,
+      counters: diffSnapshot(this.counters, phase.counterStart),
+      memory: process.memoryUsage()
+    };
+    this.completedPhases.push(result);
+    return result;
+  }
+  static recordWebviewMessageSent(target, type) {
+    this.counters.webviewMessagesSent += 1;
+    incrementCounter(this.counters.sentByTarget, target);
+    incrementCounter(this.counters.sentByType, `${target}:${type}`);
+  }
+  static recordWebviewMessageReceived(target, type) {
+    this.counters.webviewMessagesReceived += 1;
+    incrementCounter(this.counters.receivedByTarget, target);
+    incrementCounter(this.counters.receivedByType, `${target}:${type}`);
+  }
+  static recordWebviewHtmlWrite(target, htmlLength) {
+    this.counters.webviewHtmlWrites += 1;
+    incrementCounter(this.counters.htmlWritesByTarget, target);
+    incrementCounter(this.counters.htmlBytesByTarget, target, htmlLength);
+  }
+  static recordDashboardCreate() {
+    this.counters.dashboardCreates += 1;
+  }
+  static recordDashboardReveal() {
+    this.counters.dashboardReveals += 1;
+  }
+  static recordSidebarResolve() {
+    this.counters.sidebarResolves += 1;
+  }
+  static recordStatusEvent() {
+    this.counters.statusEvents += 1;
+  }
+  static getReport() {
+    return {
+      generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
+      processUptimeMs: Math.round(process.uptime() * 1e3),
+      totalCpuUsageMicros: process.cpuUsage(),
+      counters: cloneSnapshot(this.counters),
+      activePhases: [...this.activePhases.keys()],
+      completedPhases: [...this.completedPhases]
+    };
+  }
+};
+
+// src/CopilotPanel.ts
 var CopilotPanel = class _CopilotPanel {
   constructor(_extensionUri, _gatewayAccessor) {
     this._extensionUri = _extensionUri;
@@ -56443,6 +56822,8 @@ var CopilotPanel = class _CopilotPanel {
   }
   static viewType = "copilotApiControls";
   _view;
+  _viewDisposables = [];
+  _statusDisposables = [];
   // Full editor panel singleton
   static currentPanel;
   // Track previous state to prevent unnecessary re-renders
@@ -56452,8 +56833,93 @@ var CopilotPanel = class _CopilotPanel {
   _gateway;
   async _init() {
   }
+  dispose() {
+    this._view = void 0;
+    this._disposeDisposables(this._viewDisposables);
+    this._disposeDisposables(this._statusDisposables);
+  }
+  _disposeDisposables(disposables) {
+    for (const disposable of disposables.splice(0)) {
+      disposable.dispose();
+    }
+  }
+  _rememberStructuralState(status) {
+    this._lastRunningState = status.running;
+    this._lastTunnelState = status.tunnel?.running ?? false;
+  }
+  _hasStructuralStateChanged(status) {
+    return this._lastRunningState !== status.running || this._lastTunnelState !== (status.tunnel?.running ?? false);
+  }
+  static _buildStatsSnapshot(status, gateway2) {
+    return {
+      stats: status.stats,
+      realtimeStats: {
+        ...status.realtimeStats,
+        activeConnections: gateway2.getServerStatus().activeConnections
+      }
+    };
+  }
+  static async _postStatsSnapshot(webview, snapshot) {
+    await this._postWebviewMessage("dashboard", webview, { type: "statsSnapshot", data: snapshot });
+  }
+  static _formatSavings(amount) {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
+  }
+  static async _buildAuditSummarySnapshot(gateway2) {
+    const auditService = gateway2.getAuditService();
+    const [lifetimeStats, todayStats] = await Promise.all([
+      auditService.getLifetimeStats(),
+      auditService.getTodayStats()
+    ]);
+    const priceIn = 2 / 1e6;
+    const priceOut = 8 / 1e6;
+    const totalSavings = lifetimeStats.totalTokensIn * priceIn + lifetimeStats.totalTokensOut * priceOut;
+    const todaySavings = todayStats.tokensIn * priceIn + todayStats.tokensOut * priceOut;
+    return {
+      totalSavings: this._formatSavings(totalSavings),
+      todaySavings: this._formatSavings(todaySavings),
+      totalRequests: lifetimeStats.totalRequests || 0,
+      avgLatency: todayStats.avgLatency || 0
+    };
+  }
+  static _getEmptyAuditSummarySnapshot() {
+    return {
+      totalSavings: this._formatSavings(0),
+      todaySavings: this._formatSavings(0),
+      totalRequests: 0,
+      avgLatency: 0
+    };
+  }
+  static _setWebviewHtml(target, webview, html) {
+    PerfMetrics.recordWebviewHtmlWrite(target, html.length);
+    webview.html = html;
+  }
+  static _postWebviewMessage(target, webview, message) {
+    PerfMetrics.recordWebviewMessageSent(target, message.type);
+    return webview.postMessage(message);
+  }
+  static async _refreshCurrentPanelHtml(gateway2) {
+    if (!this.currentPanel) {
+      return;
+    }
+    this._setWebviewHtml("dashboard", this.currentPanel.webview, await this.getPanelHtml(this.currentPanel.webview, gateway2));
+  }
+  async _postStatsSnapshotToVisibleViews(snapshot) {
+    const postTasks = [];
+    if (this._view?.visible) {
+      postTasks.push(_CopilotPanel._postWebviewMessage("sidebar", this._view.webview, { type: "statsSnapshot", data: snapshot }));
+    }
+    if (_CopilotPanel.currentPanel?.visible) {
+      postTasks.push(_CopilotPanel._postWebviewMessage("dashboard", _CopilotPanel.currentPanel.webview, { type: "statsSnapshot", data: snapshot }));
+    }
+    if (postTasks.length > 0) {
+      await Promise.all(postTasks);
+    }
+  }
   async resolveWebviewView(webviewView, context, _token) {
+    this._disposeDisposables(this._viewDisposables);
     this._view = webviewView;
+    PerfMetrics.recordSidebarResolve();
     this._gateway = await this._gatewayAccessor();
     this._hookEvents(this._gateway);
     webviewView.webview.options = {
@@ -56462,11 +56928,22 @@ var CopilotPanel = class _CopilotPanel {
     };
     const updateHtml = async () => {
       if (this._gateway) {
-        webviewView.webview.html = await this._getSidebarHtml(webviewView.webview);
+        const status = await this._gateway.getStatus();
+        this._rememberStructuralState(status);
+        _CopilotPanel._setWebviewHtml("sidebar", webviewView.webview, await this._getSidebarHtml(webviewView.webview, status));
       }
     };
     await updateHtml();
-    webviewView.webview.onDidReceiveMessage(async (data) => {
+    this._viewDisposables.push(
+      webviewView.onDidDispose(() => {
+        if (this._view === webviewView) {
+          this._view = void 0;
+        }
+        this._disposeDisposables(this._viewDisposables);
+      })
+    );
+    this._viewDisposables.push(webviewView.webview.onDidReceiveMessage(async (data) => {
+      PerfMetrics.recordWebviewMessageReceived("sidebar", data.type);
       if (!this._gateway) {
         return;
       }
@@ -56475,10 +56952,14 @@ var CopilotPanel = class _CopilotPanel {
           await _CopilotPanel.createOrShow(this._extensionUri, this._gatewayAccessor);
           break;
         case "startServer":
-          void this._gateway.startServer();
+          void this._gateway.startServer().finally(async () => {
+            await updateHtml();
+          });
           break;
         case "stopServer":
-          void this._gateway.stopServer();
+          void this._gateway.stopServer().finally(async () => {
+            await updateHtml();
+          });
           break;
         case "openSwagger": {
           const status = await this._gateway.getStatus();
@@ -56503,49 +56984,41 @@ var CopilotPanel = class _CopilotPanel {
         default:
           _CopilotPanel.handleMessage(data, this._gateway);
       }
-    });
+    }));
   }
   _hookEvents(gateway2) {
-    gateway2.onDidChangeStatus(async () => {
+    this._disposeDisposables(this._statusDisposables);
+    this._statusDisposables.push(gateway2.onDidChangeStatus(async () => {
+      PerfMetrics.recordStatusEvent();
       const status = await gateway2.getStatus();
-      const tunnelRunning = status.tunnel?.running ?? false;
-      if (this._lastRunningState === status.running && this._lastTunnelState === tunnelRunning) {
-        const activeConnections = gateway2.getServerStatus().activeConnections;
-        if (this._view) {
-          this._view.webview.postMessage({ type: "statsData", data: status.stats });
-          this._view.webview.postMessage({ type: "realtimeStats", data: { ...status.realtimeStats, activeConnections } });
-        }
-        if (_CopilotPanel.currentPanel) {
-          _CopilotPanel.currentPanel.webview.postMessage({ type: "statsData", data: status.stats });
-          _CopilotPanel.currentPanel.webview.postMessage({ type: "realtimeStats", data: { ...status.realtimeStats, activeConnections } });
-        }
+      if (!this._hasStructuralStateChanged(status)) {
+        await this._postStatsSnapshotToVisibleViews(_CopilotPanel._buildStatsSnapshot(status, gateway2));
         return;
       }
-      this._lastRunningState = status.running;
-      this._lastTunnelState = tunnelRunning;
+      this._rememberStructuralState(status);
       if (this._view) {
-        this._view.webview.html = await this._getSidebarHtml(this._view.webview);
+        _CopilotPanel._setWebviewHtml("sidebar", this._view.webview, await this._getSidebarHtml(this._view.webview, status));
       }
       if (_CopilotPanel.currentPanel) {
-        _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
+        _CopilotPanel._setWebviewHtml("dashboard", _CopilotPanel.currentPanel.webview, await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2, status));
       }
-    });
-    gateway2.onDidLogRequest((log) => {
-      if (this._view) {
-        this._view.webview.postMessage({ type: "liveLog", value: log });
+    }));
+    this._statusDisposables.push(gateway2.onDidLogRequest((log) => {
+      if (this._view?.visible) {
+        void _CopilotPanel._postWebviewMessage("sidebar", this._view.webview, { type: "liveLog", value: log });
       }
-      if (_CopilotPanel.currentPanel) {
-        _CopilotPanel.currentPanel.webview.postMessage({ type: "liveLog", value: log });
+      if (_CopilotPanel.currentPanel?.visible) {
+        void _CopilotPanel._postWebviewMessage("dashboard", _CopilotPanel.currentPanel.webview, { type: "liveLog", value: log });
       }
-    });
-    gateway2.onDidLogRequestStart((startLog) => {
-      if (this._view) {
-        this._view.webview.postMessage({ type: "liveLogStart", value: startLog });
+    }));
+    this._statusDisposables.push(gateway2.onDidLogRequestStart((startLog) => {
+      if (this._view?.visible) {
+        void _CopilotPanel._postWebviewMessage("sidebar", this._view.webview, { type: "liveLogStart", value: startLog });
       }
-      if (_CopilotPanel.currentPanel) {
-        _CopilotPanel.currentPanel.webview.postMessage({ type: "liveLogStart", value: startLog });
+      if (_CopilotPanel.currentPanel?.visible) {
+        void _CopilotPanel._postWebviewMessage("dashboard", _CopilotPanel.currentPanel.webview, { type: "liveLogStart", value: startLog });
       }
-    });
+    }));
   }
   /**
    * Opens the dashboard as a full-size editor panel (not a sidebar view).
@@ -56555,13 +57028,17 @@ var CopilotPanel = class _CopilotPanel {
     const column = vscode5.window.activeTextEditor?.viewColumn ?? vscode5.ViewColumn.One;
     const gateway2 = await gatewayAccessor();
     if (_CopilotPanel.currentPanel) {
+      PerfMetrics.recordDashboardReveal();
       _CopilotPanel.currentPanel.reveal(column);
-      _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
+      const status = await gateway2.getStatus();
+      await _CopilotPanel._postStatsSnapshot(_CopilotPanel.currentPanel.webview, _CopilotPanel._buildStatsSnapshot(status, gateway2));
+      void _CopilotPanel._postWebviewMessage("dashboard", _CopilotPanel.currentPanel.webview, { type: "requestRefresh" });
       if (scrollTarget) {
-        _CopilotPanel.currentPanel.webview.postMessage({ type: "scrollTo", target: scrollTarget });
+        _CopilotPanel._postWebviewMessage("dashboard", _CopilotPanel.currentPanel.webview, { type: "scrollTo", target: scrollTarget });
       }
       return;
     }
+    PerfMetrics.recordDashboardCreate();
     const panel = vscode5.window.createWebviewPanel(
       "copilotApiDashboard",
       "Copilot API Dashboard",
@@ -56575,15 +57052,17 @@ var CopilotPanel = class _CopilotPanel {
     _CopilotPanel.currentPanel = panel;
     panel.webview.onDidReceiveMessage(
       (data) => {
+        PerfMetrics.recordWebviewMessageReceived("dashboard", data.type);
         _CopilotPanel.handleMessage(data, gateway2);
       },
       void 0,
       _CopilotPanel.panelDisposables
     );
-    panel.webview.html = await _CopilotPanel.getPanelHtml(panel.webview, gateway2);
+    const initialStatus = await gateway2.getStatus();
+    _CopilotPanel._setWebviewHtml("dashboard", panel.webview, await _CopilotPanel.getPanelHtml(panel.webview, gateway2, initialStatus));
     if (scrollTarget) {
       setTimeout(() => {
-        panel.webview.postMessage({ type: "scrollTo", target: scrollTarget });
+        void _CopilotPanel._postWebviewMessage("dashboard", panel.webview, { type: "scrollTo", target: scrollTarget });
       }, 300);
     }
     panel.onDidDispose(() => {
@@ -56616,7 +57095,7 @@ var CopilotPanel = class _CopilotPanel {
       }
     );
     _CopilotPanel.wikiPanel = panel;
-    panel.webview.html = await _CopilotPanel.getWikiHtml(panel.webview, gateway2);
+    _CopilotPanel._setWebviewHtml("wiki", panel.webview, await _CopilotPanel.getWikiHtml(panel.webview, gateway2));
     panel.onDidDispose(() => {
       _CopilotPanel.wikiPanel = void 0;
     });
@@ -56937,10 +57416,14 @@ for await (const chunk of stream) {
         void vscode5.commands.executeCommand("github-copilot-api-vscode.showServerControls");
         break;
       case "startServer":
-        void gateway2.startServer();
+        void gateway2.startServer().finally(async () => {
+          await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
+        });
         break;
       case "stopServer":
-        void gateway2.stopServer();
+        void gateway2.stopServer().finally(async () => {
+          await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
+        });
         break;
       case "openUrl":
         console.log("[CopilotPanel] Opening URL:", data.value);
@@ -57006,16 +57489,12 @@ for await (const chunk of stream) {
           } else {
             void vscode5.window.showInformationMessage(`Tunnel active at: ${result.url}`);
           }
-          if (_CopilotPanel.currentPanel) {
-            _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-          }
+          await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
         });
         break;
       case "stopTunnel":
         void gateway2.stopTunnel().then(async () => {
-          if (_CopilotPanel.currentPanel) {
-            _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-          }
+          await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
         });
         break;
       case "addRedactionPattern":
@@ -57024,8 +57503,8 @@ for await (const chunk of stream) {
           void gateway2.addRedactionPattern(name, pattern).then(async (success2) => {
             if (!success2) {
               void vscode5.window.showErrorMessage("Invalid regex pattern");
-            } else if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
+            } else {
+              await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
             }
           });
         }
@@ -57033,9 +57512,7 @@ for await (const chunk of stream) {
       case "removeRedactionPattern":
         if (typeof data.value === "string") {
           void gateway2.removeRedactionPattern(data.value).then(async () => {
-            if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-            }
+            await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
           });
         }
         break;
@@ -57050,8 +57527,8 @@ for await (const chunk of stream) {
           void gateway2.addIpAllowlistEntry(data.value).then(async (success2) => {
             if (!success2) {
               void vscode5.window.showErrorMessage("Invalid IP address or CIDR range");
-            } else if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
+            } else {
+              await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
             }
           });
         }
@@ -57059,61 +57536,49 @@ for await (const chunk of stream) {
       case "removeIpAllowlistEntry":
         if (typeof data.value === "string") {
           void gateway2.removeIpAllowlistEntry(data.value).then(async () => {
-            if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-            }
+            await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
           });
         }
         break;
       case "setRequestTimeout":
         if (typeof data.value === "number") {
           void gateway2.setRequestTimeout(data.value).then(async () => {
-            if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-            }
+            await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
           });
         }
         break;
       case "setMaxPayloadSize":
         if (typeof data.value === "number") {
           void gateway2.setMaxPayloadSize(data.value).then(async () => {
-            if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-            }
+            await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
           });
         }
         break;
       case "setMaxConnectionsPerIp":
         if (typeof data.value === "number") {
           void gateway2.setMaxConnectionsPerIp(data.value).then(async () => {
-            if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-            }
+            await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
           });
         }
         break;
       case "setCloudflaredPath":
         if (typeof data.value === "string") {
           void gateway2.setCloudflaredPath(data.value).then(async () => {
-            if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-            }
+            await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
           });
         }
         break;
       case "setMaxConcurrency":
         if (typeof data.value === "number") {
           void gateway2.setMaxConcurrency(data.value).then(async () => {
-            if (_CopilotPanel.currentPanel) {
-              _CopilotPanel.currentPanel.webview.html = await _CopilotPanel.getPanelHtml(_CopilotPanel.currentPanel.webview, gateway2);
-            }
+            await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
           });
         }
         break;
       case "getHistory":
         if (_CopilotPanel.currentPanel) {
           const history = gateway2.getHistory(50);
-          void _CopilotPanel.currentPanel.webview.postMessage({
+          void _CopilotPanel._postWebviewMessage("dashboard", _CopilotPanel.currentPanel.webview, {
             type: "historyData",
             data: history
           });
@@ -57123,11 +57588,11 @@ for await (const chunk of stream) {
         if (_CopilotPanel.currentPanel) {
           const stats = gateway2.getStats();
           const activeConnections = gateway2.getServerStatus().activeConnections;
-          void _CopilotPanel.currentPanel.webview.postMessage({
+          void _CopilotPanel._postWebviewMessage("dashboard", _CopilotPanel.currentPanel.webview, {
             type: "statsData",
             data: stats
           });
-          void _CopilotPanel.currentPanel.webview.postMessage({
+          void _CopilotPanel._postWebviewMessage("dashboard", _CopilotPanel.currentPanel.webview, {
             type: "realtimeStats",
             data: { requestsPerMinute: stats.requestsPerMinute, avgLatencyMs: stats.avgLatencyMs, errorRate: stats.errorRate, activeConnections }
           });
@@ -57136,9 +57601,52 @@ for await (const chunk of stream) {
       case "getAuditStats":
         if (_CopilotPanel.currentPanel) {
           void gateway2.getDailyStats(30).then((stats) => {
-            void _CopilotPanel.currentPanel?.webview.postMessage({
+            const panel = _CopilotPanel.currentPanel;
+            if (!panel) {
+              return;
+            }
+            void _CopilotPanel._postWebviewMessage("dashboard", panel.webview, {
               type: "auditStatsData",
               data: stats
+            });
+          });
+        }
+        break;
+      case "getAuditSnapshot":
+        if (_CopilotPanel.currentPanel) {
+          const val = data.value || {};
+          const page = val.page || 1;
+          const pageSize = val.pageSize || 10;
+          const days = val.days || 30;
+          void Promise.allSettled([
+            _CopilotPanel._buildAuditSummarySnapshot(gateway2),
+            gateway2.getDailyStats(days),
+            gateway2.getAuditLogs(page, pageSize)
+          ]).then((results) => {
+            const panel = _CopilotPanel.currentPanel;
+            if (!panel) {
+              return;
+            }
+            const summary = results[0].status === "fulfilled" ? results[0].value : _CopilotPanel._getEmptyAuditSummarySnapshot();
+            const dailyStats = results[1].status === "fulfilled" ? results[1].value : [];
+            const auditLogs = results[2].status === "fulfilled" ? results[2].value : { total: 0, entries: [] };
+            if (results[0].status === "rejected") {
+              console.error("[CopilotPanel] Error building audit summary snapshot:", results[0].reason);
+            }
+            if (results[1].status === "rejected") {
+              console.error("[CopilotPanel] Error getting audit stats:", results[1].reason);
+            }
+            if (results[2].status === "rejected") {
+              console.error("[CopilotPanel] Error getting audit logs:", results[2].reason);
+            }
+            void _CopilotPanel._postWebviewMessage("dashboard", panel.webview, {
+              type: "auditSnapshotData",
+              summary,
+              dailyStats,
+              logData: auditLogs.entries,
+              page,
+              total: auditLogs.total,
+              pageSize
             });
           });
         }
@@ -57151,7 +57659,11 @@ for await (const chunk of stream) {
           const pageSize = val.pageSize || 10;
           gateway2.getAuditLogs(page, pageSize).then((res) => {
             console.log("[CopilotPanel] Got audit logs:", res.total, "total,", res.entries.length, "entries");
-            void _CopilotPanel.currentPanel?.webview.postMessage({
+            const panel = _CopilotPanel.currentPanel;
+            if (!panel) {
+              return;
+            }
+            void _CopilotPanel._postWebviewMessage("dashboard", panel.webview, {
               type: "auditLogData",
               data: res.entries,
               page,
@@ -57160,7 +57672,11 @@ for await (const chunk of stream) {
             });
           }).catch((err) => {
             console.error("[CopilotPanel] Error getting audit logs:", err);
-            void _CopilotPanel.currentPanel?.webview.postMessage({
+            const panel = _CopilotPanel.currentPanel;
+            if (!panel) {
+              return;
+            }
+            void _CopilotPanel._postWebviewMessage("dashboard", panel.webview, {
               type: "auditLogData",
               data: [],
               page,
@@ -57188,12 +57704,12 @@ for await (const chunk of stream) {
   /**
    * Enhanced sidebar HTML with sections and analytics
    */
-  async _getSidebarHtml(webview) {
+  async _getSidebarHtml(webview, prefetchedStatus) {
     const nonce = getNonce();
     if (!this._gateway) {
       return "<p>Loading...</p>";
     }
-    const status = await this._gateway.getStatus();
+    const status = prefetchedStatus ?? await this._gateway.getStatus();
     const isRunning = status.running;
     const statusColor = isRunning ? "var(--vscode-testing-iconPassed)" : "var(--vscode-testing-iconFailed)";
     const statusText = isRunning ? "Running" : "Stopped";
@@ -57228,11 +57744,11 @@ for await (const chunk of stream) {
       const methodColor = entry.method === "POST" ? "var(--vscode-charts-green)" : "var(--vscode-charts-blue)";
       const statusClass = entry.status && entry.status < 400 ? "success" : "error";
       const statusColor2 = statusClass === "success" ? "var(--vscode-testing-iconPassed)" : "var(--vscode-testing-iconFailed)";
-      const path4 = entry.path?.length > 22 ? "\u2026" + entry.path.slice(-20) : entry.path || "/";
+      const path5 = entry.path?.length > 22 ? "\u2026" + entry.path.slice(-20) : entry.path || "/";
       return `<div class="feed-item">
                 <span class="feed-time">${time3}</span>
                 <span class="feed-method" style="color:${methodColor}">${entry.method || "POST"}</span>
-                <span class="feed-path">${path4}</span>
+                <span class="feed-path">${path5}</span>
                 <span class="feed-status" style="color:${statusColor2}">${entry.status || "\u2014"}</span>
                 <span class="feed-latency">${entry.durationMs || 0}ms</span>
             </div>`;
@@ -57398,7 +57914,7 @@ for await (const chunk of stream) {
     <!-- Primary Actions -->
     <div class="section">
         <div class="section-title">\u26A1 Power Commands</div>
-        <button id="btn-toggle" style="height: 36px; font-size: 13px;">${isRunning ? "\u23F9 Stop Gateway" : "\u25B6 Start Gateway"}</button>
+        <button id="btn-toggle" data-running="${isRunning}" style="height: 36px; font-size: 13px;">${isRunning ? "\u23F9 Stop Gateway" : "\u25B6 Start Gateway"}</button>
         <button id="btn-dashboard" style="height: 36px; font-size: 13px; background: color-mix(in srgb, var(--vscode-charts-blue) 80%, transparent); color: #fff;">\u{1F4CA} Open Full Dashboard</button>
         <button id="btn-swagger" class="secondary" style="height: 32px;">\u{1F4DD} View Swagger Docs</button>
     </div>
@@ -57521,6 +58037,16 @@ print(response.choices[0].message.content)\`;
             });
         }
 
+        function setSidebarToggleState(button, running, pending) {
+            if (!button) {
+                return;
+            }
+
+            button.disabled = !!pending;
+            button.dataset.running = running ? 'true' : 'false';
+            button.textContent = running ? '\u23F9 Stop Gateway' : '\u25B6 Start Gateway';
+        }
+
         // Uptime ticker
         if (isRunning) {
             const uptimeEl = document.getElementById('uptime-display');
@@ -57545,7 +58071,12 @@ print(response.choices[0].message.content)\`;
         document.getElementById('btn-copy-curl')?.addEventListener('click', (e) => copyWithFeedback(e.target, curlCommand));
         document.getElementById('btn-copy-python')?.addEventListener('click', (e) => copyWithFeedback(e.target, pythonCode));
         document.getElementById('btn-dashboard')?.addEventListener('click', () => vscode.postMessage({ type: 'openDashboard' }));
-        document.getElementById('btn-toggle')?.addEventListener('click', () => vscode.postMessage({ type: '${isRunning ? "stopServer" : "startServer"}' }));
+        document.getElementById('btn-toggle')?.addEventListener('click', (event) => {
+            const button = event.currentTarget;
+            const running = button?.dataset?.running === 'true';
+            setSidebarToggleState(button, !running, true);
+            vscode.postMessage({ type: running ? 'stopServer' : 'startServer' });
+        });
         document.getElementById('btn-edit-system-prompt')?.addEventListener('click', () => vscode.postMessage({ type: 'editSystemPrompt' }));
         document.getElementById('btn-swagger')?.addEventListener('click', () => vscode.postMessage({ type: 'openSwagger' }));
         document.getElementById('btn-wiki')?.addEventListener('click', () => vscode.postMessage({ type: 'openWiki' }));
@@ -57630,6 +58161,24 @@ print(response.choices[0].message.content)\`;
 
         window.addEventListener('message', event => {
             const message = event.data;
+            if (message.type === 'statsSnapshot' && message.data) {
+                const snapshot = message.data;
+                if (snapshot.stats) {
+                    const totalEl = document.getElementById('stat-total');
+                    if (totalEl) totalEl.textContent = formatNumber(snapshot.stats.totalRequests || 0);
+                }
+                if (snapshot.realtimeStats) {
+                    const rpmEl = document.getElementById('stat-rpm');
+                    const latencyEl = document.getElementById('stat-latency');
+                    const errEl = document.getElementById('stat-errors');
+                    if (rpmEl) rpmEl.textContent = snapshot.realtimeStats.requestsPerMinute;
+                    if (latencyEl) latencyEl.innerHTML = snapshot.realtimeStats.avgLatencyMs + '<span style="font-size: 10px; opacity: 0.6;">ms</span>';
+                    if (errEl) {
+                        errEl.textContent = (snapshot.realtimeStats.errorRate || 0) + '%';
+                        errEl.style.color = (snapshot.realtimeStats.errorRate || 0) > 0 ? 'var(--vscode-testing-iconFailed)' : 'var(--vscode-testing-iconPassed)';
+                    }
+                }
+            }
             if (message.type === 'realtimeStats' && message.data) {
                 const stats = message.data;
                 const rpmEl = document.getElementById('stat-rpm');
@@ -57671,9 +58220,9 @@ print(response.choices[0].message.content)\`;
     }
     return num.toString();
   }
-  static async getPanelHtml(webview, gateway2) {
+  static async getPanelHtml(webview, gateway2, prefetchedStatus) {
     const nonce = getNonce();
-    const status = await gateway2.getStatus();
+    const status = prefetchedStatus ?? await gateway2.getStatus();
     const config2 = status.config;
     const isRunning = status.running;
     const statusColor = isRunning ? "var(--vscode-testing-iconPassed)" : "var(--vscode-testing-iconFailed)";
@@ -57683,16 +58232,7 @@ print(response.choices[0].message.content)\`;
     const displayHost = config2.host === "0.0.0.0" && networkInfo?.localIPs?.length ? networkInfo.localIPs[0] : config2.host;
     const url2 = `${protocol}://${displayHost}:${config2.port}`;
     const activeConnections = gateway2.getServerStatus().activeConnections;
-    const auditService = gateway2.getAuditService();
-    const lifetimeStats = await auditService.getLifetimeStats();
-    const todayStats = await auditService.getTodayStats();
-    const PRICE_IN = 2 / 1e6;
-    const PRICE_OUT = 8 / 1e6;
-    const savedTotal = lifetimeStats.totalTokensIn * PRICE_IN + lifetimeStats.totalTokensOut * PRICE_OUT;
-    const savedToday = todayStats.tokensIn * PRICE_IN + todayStats.tokensOut * PRICE_OUT;
-    const formatMoney = (amount) => {
-      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
-    };
+    const buildInfo = gateway2.getBuildInfo();
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57755,8 +58295,70 @@ print(response.choices[0].message.content)\`;
         h4 { margin: 0; font-size: 16px; font-weight: 600; color: var(--ui-text-primary); }
         p { margin: 0; font-size: 14px; color: var(--ui-text-muted); line-height: 1.6; }
         
-        .hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; border-bottom: 1px solid var(--ui-border-soft); padding-bottom: 32px; margin-bottom: 8px; }
+        .hero {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border-bottom: 1px solid var(--ui-border-soft);
+            padding-bottom: 32px;
+            margin-bottom: 8px;
+        }
+        .hero-top {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+            gap: 24px;
+            align-items: stretch;
+        }
         .hero p { margin-top: 12px; font-size: 16px; max-width: 600px; }
+        .hero-side {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+        }
+        .hero-meta {
+            background: color-mix(in srgb, var(--ui-bg-card) 85%, transparent);
+            border: 1px solid var(--ui-border-soft);
+            border-radius: 16px;
+            padding: 18px 18px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .hero-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: space-between;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .hero-meta-row + .hero-meta-row {
+            margin-top: 8px;
+        }
+        .hero-meta-label {
+            color: var(--ui-text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .hero-meta-value {
+            color: var(--ui-text-primary);
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            width: 100%;
+        }
+        .hero-actions button {
+            flex: 1;
+            min-width: 0;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .hero-actions .hero-toggle {
+            flex: 1.5;
+        }
         
         .badge {
             display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
@@ -58005,13 +58607,30 @@ print(response.choices[0].message.content)\`;
 
             /* Compact Hero */
             .hero {
-                flex-direction: column;
                 gap: 12px;
-                align-items: stretch;
-                padding-bottom: 0;
-                border-bottom: 1px solid #27272a; /* Zinc 800 */
                 padding-bottom: 12px;
+                border-bottom: 1px solid #27272a; /* Zinc 800 */
                 margin-bottom: 4px;
+            }
+            .hero-top {
+                grid-template-columns: 1fr;
+            }
+            .hero-side {
+                gap: 10px;
+            }
+            .hero-meta {
+                padding: 14px;
+                border-radius: 10px;
+            }
+            .hero-actions {
+                flex-wrap: wrap;
+            }
+            .hero-actions button {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 80px;
+            }
+            .hero-actions .hero-toggle {
+                flex: 1 1 100%;
             }
             .hero h1 { 
                 font-size: 18px; 
@@ -58144,25 +58763,37 @@ print(response.choices[0].message.content)\`;
 <body>
     <div class="page">
         <div class="hero">
-            <div>
-                <h1>Copilot API Dashboard</h1>
-                <p>Monitor and control your local Copilot API Gateway.</p>
-                <div style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; background: color-mix(in srgb, var(--vscode-charts-purple) 15%, transparent); color: var(--vscode-charts-purple); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid color-mix(in srgb, var(--vscode-charts-purple) 30%, transparent);">
-                    <span style="font-size: 14px;">\u2728</span> Fetches ANY language model detected in VS Code
+            <div class="hero-top">
+                <div>
+                    <h1>Copilot API Dashboard</h1>
+                    <p>Monitor and control your local Copilot API Gateway.</p>
+                    <div style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; background: color-mix(in srgb, var(--vscode-charts-purple) 15%, transparent); color: var(--vscode-charts-purple); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid color-mix(in srgb, var(--vscode-charts-purple) 30%, transparent);">
+                        <span style="font-size: 14px;">\u2728</span> Fetches ANY language model detected in VS Code
+                    </div>
                 </div>
-                <div style="margin-top: 12px; font-size: 13px; opacity: 0.9; font-family: var(--vscode-editor-font-family); display: flex; align-items: center; gap: 8px;">
-                    <span style="opacity: 0.6;">Running on:</span>
-                    <strong id="server-url">${url2}</strong>
-                    <button id="btn-copy-url" class="secondary" style="padding: 4px 8px; font-size: 11px; min-width: auto;" title="Copy URL">\u{1F4CB} Copy</button>
+                <div class="hero-side">
+                    <div class="hero-meta">
+                        <div class="hero-meta-row">
+                            <span class="hero-meta-label">Running on</span>
+                            <span class="hero-meta-value"><strong id="server-url">${url2}</strong></span>
+                        </div>
+                        <div class="hero-meta-row">
+                            <span class="hero-meta-label">Build</span>
+                            <span class="hero-meta-value"><strong title="${buildInfo.builtAtIso}">v${buildInfo.version}</strong> <span title="${buildInfo.builtAtIso}">${buildInfo.builtAtDisplay}</span></span>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                            <button id="btn-copy-url" class="secondary" style="padding: 4px 8px; font-size: 11px; min-width: auto;" title="Copy URL">\u{1F4CB} Copy</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; gap: 8px;">
-                <button id="btn-toggle-server" class="${status.running ? "danger" : "success"}" data-running="${status.running}" style="min-width: 140px;">
-                    ${status.running ? "Stop Server" : "Start Server"}
+            <div class="hero-actions">
+                <button id="btn-toggle-server" class="hero-toggle ${status.running ? "danger" : "success"}" data-running="${status.running}">
+                    ${status.running ? "Stop Gateway" : "Start Gateway"}
                 </button>
-                <button class="secondary" id="btn-open-chat" title="Open Copilot Chat" style="min-width: 90px;">\u{1F4AC} Chat</button>
-                <button class="secondary" id="btn-ask-copilot" title="Ask Copilot" style="min-width: 90px;">\u2753 Ask</button>
-                <button class="secondary" id="btn-docs" title="Read Documentation" style="min-width: 90px;">\u{1F4DA} Docs</button>
+                <button class="secondary" id="btn-open-chat" title="Open Copilot Chat">\u{1F4AC} Chat</button>
+                <button class="secondary" id="btn-ask-copilot" title="Ask Copilot">\u2753 Ask</button>
+                <button class="secondary" id="btn-docs" title="Read Documentation">\u{1F4DA} Docs</button>
                 <button class="secondary" id="btn-settings" title="Settings">\u2699\uFE0F</button>
             </div>
         </div>
@@ -58201,18 +58832,18 @@ print(response.choices[0].message.content)\`;
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 24px;">
             <div class="card">
                 <h3 style="font-size: 12px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px;">\u{1F4B8} Est. Savings</h3>
-                <div style="font-size: 28px; font-weight: 600; color: var(--vscode-testing-iconPassed);">${formatMoney(savedTotal)}</div>
-                <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">+${formatMoney(savedToday)} today</div>
+                <div id="audit-savings-total" style="font-size: 28px; font-weight: 600; color: var(--vscode-testing-iconPassed);">...</div>
+                <div id="audit-savings-today" style="font-size: 11px; opacity: 0.6; margin-top: 4px;">Loading...</div>
                 <div style="font-size: 9px; opacity: 0.4; margin-top: 8px;">*Approx. based on GPT-4.1 pricing</div>
             </div>
             <div class="card">
                 <h3 style="font-size: 12px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px;">\u{1F4CA} Traffic</h3>
-                <div style="font-size: 28px; font-weight: 600;">${lifetimeStats.totalRequests || 0}</div>
+                <div id="audit-total-requests" style="font-size: 28px; font-weight: 600;">...</div>
                 <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">Total Requests</div>
             </div>
             <div class="card">
                 <h3 style="font-size: 12px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px;">\u26A1 Latency</h3>
-                <div style="font-size: 28px; font-weight: 600;">${todayStats.avgLatency || 0}<span style="font-size: 14px; opacity: 0.6;">ms</span></div>
+                <div id="audit-today-latency" style="font-size: 28px; font-weight: 600;">...<span style="font-size: 14px; opacity: 0.6;">ms</span></div>
                 <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">Avg Today</div>
             </div>
             <div class="card">
@@ -58551,8 +59182,10 @@ print(response.choices[0].message.content)\`;
                     <thead>
                         <tr style="text-align: left; border-bottom: 1px solid var(--vscode-widget-border);">
                             <th style="padding: 8px 12px; opacity: 0.7;">Time</th>
+                            <th style="padding: 8px 12px; opacity: 0.7;">IP</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Method</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Path</th>
+                            <th style="padding: 8px 12px; opacity: 0.7;">Model</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Status</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Latency</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Tokens</th>
@@ -58561,7 +59194,7 @@ print(response.choices[0].message.content)\`;
                     </thead>
                     <tbody id="audit-table-body">
                         <tr style="border-bottom: 1px solid var(--vscode-widget-border);">
-                            <td style="padding: 8px 12px; opacity: 0.6; font-style: italic;" colspan="7">Loading audit logs...</td>
+                            <td style="padding: 8px 12px; opacity: 0.6; font-style: italic;" colspan="9">Loading audit logs...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -58733,6 +59366,7 @@ print(response.choices[0].message.content)\`;
 
     <script nonce="${nonce}">
         var vscode = acquireVsCodeApi();
+        var auditStatsDays = 30;
 
         // Pagination state - declare at top to avoid hoisting issues
         var currentPage = 1;
@@ -58740,8 +59374,67 @@ print(response.choices[0].message.content)\`;
         var totalLogs = 0;
         var lastLogs = [];
 
+        function renderAuditLogLoading() {
+            document.getElementById('audit-table-body').innerHTML = '<tr><td colspan="9" style="padding: 20px; text-align: center; opacity: 0.7;">Loading...</td></tr>';
+        }
+
+        function requestAuditSnapshot(options) {
+            options = options || {};
+
+            if (typeof options.page === 'number') {
+                currentPage = options.page;
+            }
+            if (typeof options.pageSize === 'number') {
+                pageSize = options.pageSize;
+            }
+            if (options.showLoadingLogs) {
+                renderAuditLogLoading();
+            }
+
+            vscode.postMessage({
+                type: 'getAuditSnapshot',
+                value: {
+                    page: currentPage,
+                    pageSize: pageSize,
+                    days: auditStatsDays
+                }
+            });
+        }
+
+        function updateAuditSummary(summary) {
+            if (!summary) {
+                return;
+            }
+
+            var totalSavingsEl = document.getElementById('audit-savings-total');
+            var todaySavingsEl = document.getElementById('audit-savings-today');
+            var totalRequestsEl = document.getElementById('audit-total-requests');
+            var todayLatencyEl = document.getElementById('audit-today-latency');
+
+            if (totalSavingsEl) totalSavingsEl.textContent = summary.totalSavings;
+            if (todaySavingsEl) todaySavingsEl.textContent = '+' + summary.todaySavings + ' today';
+            if (totalRequestsEl) totalRequestsEl.textContent = String(summary.totalRequests || 0);
+            if (todayLatencyEl) {
+                todayLatencyEl.innerHTML = String(summary.avgLatency || 0) + '<span style="font-size: 14px; opacity: 0.6;">ms</span>';
+            }
+        }
+
+        function setServerToggleState(button, running, pending) {
+            if (!button) {
+                return;
+            }
+
+            button.dataset.running = running ? 'true' : 'false';
+            button.dataset.pending = pending ? 'true' : 'false';
+            button.disabled = !!pending;
+            button.textContent = running ? 'Stop Gateway' : 'Start Gateway';
+            button.classList.toggle('danger', running);
+            button.classList.toggle('success', !running);
+        }
+
         document.getElementById('btn-toggle-server').onclick = function() {
             var running = this.getAttribute('data-running') === 'true';
+            setServerToggleState(this, !running, true);
             vscode.postMessage({ type: running ? 'stopServer' : 'startServer' });
         };
 
@@ -58892,13 +59585,9 @@ print(response.choices[0].message.content)\`;
         // Initialize on load
         // try { initCharts(); } catch (e) { console.error('Failed to init charts', e); }
 
-        // Request initial data
-        setTimeout(() => vscode.postMessage({ type: 'getAuditStats' }), 500);
-
         document.getElementById('btn-refresh-audit').onclick = function() {
             startCountdown(); // Reset timer
-            vscode.postMessage({ type: 'getAuditStats' });
-            vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
+            requestAuditSnapshot({ showLoadingLogs: true });
             this.textContent = '\u{1F504} Loading...';
             setTimeout(() => { this.textContent = '\u{1F504} Refresh'; }, 1000);
         };
@@ -59007,9 +59696,7 @@ print(response.choices[0].message.content)\`;
 
                 if (refreshTimer <= 0) {
                     refreshTimer = 10;
-                    vscode.postMessage({ type: 'getAuditStats' });
-                    // Also refresh current page of logs
-                    vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
+                    requestAuditSnapshot({ showLoadingLogs: false });
                 }
             }, 1000);
         }
@@ -59025,8 +59712,7 @@ print(response.choices[0].message.content)\`;
         // Request fresh stats after a short delay to ensure extension message listener is ready
         setTimeout(function() {
             vscode.postMessage({ type: 'getStats' });
-            vscode.postMessage({ type: 'getAuditStats' });
-            vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
+            requestAuditSnapshot({ showLoadingLogs: true });
         }, 100);
 
         // IP Allowlist handlers
@@ -59190,6 +59876,19 @@ print(response.choices[0].message.content)\`;
             console.log('[Dashboard] Received message:', message.type, message);
             if (message.type === 'historyData') {
                 // Legacy support if needed
+            } else if (message.type === 'statsSnapshot') {
+                if (message.data?.stats) {
+                    updateStats(message.data.stats);
+                }
+                if (message.data?.realtimeStats) {
+                    if (message.data.realtimeStats.requestsPerMinute !== undefined) document.getElementById('stat-rpm').textContent = message.data.realtimeStats.requestsPerMinute;
+                    if (message.data.realtimeStats.avgLatencyMs !== undefined) document.getElementById('stat-latency').innerHTML = message.data.realtimeStats.avgLatencyMs + '<span style="font-size: 10px; opacity: 0.6;">ms</span>';
+                    if (message.data.realtimeStats.errorRate !== undefined) document.getElementById('stat-errors').innerHTML = message.data.realtimeStats.errorRate + '<span style="font-size: 10px; opacity: 0.6;">%</span>';
+                    if (message.data.realtimeStats.activeConnections !== undefined) {
+                        var snapshotConnEl = document.getElementById('stat-connections');
+                        if (snapshotConnEl) snapshotConnEl.textContent = message.data.realtimeStats.activeConnections;
+                    }
+                }
             } else if (message.type === 'statsData') {
                 updateStats(message.data);
             } else if (message.type === 'realtimeStats') {
@@ -59203,6 +59902,10 @@ print(response.choices[0].message.content)\`;
                 }
             } else if (message.type === 'auditStatsData') {
                 updateCharts(message.data);
+            } else if (message.type === 'auditSnapshotData') {
+                updateAuditSummary(message.summary);
+                updateCharts(message.dailyStats);
+                updateLogTable(message.logData, message.page, message.total, message.pageSize);
             } else if (message.type === 'auditLogData') {
                 console.log('[Dashboard] Updating log table with', message.data?.length || 0, 'entries');
                 updateLogTable(message.data, message.page, message.total, message.pageSize);
@@ -59210,6 +59913,9 @@ print(response.choices[0].message.content)\`;
                 appendLogStart(message.value);
             } else if (message.type === 'liveLog') {
                 appendLog(message.value);
+            } else if (message.type === 'requestRefresh') {
+                vscode.postMessage({ type: 'getStats' });
+                requestAuditSnapshot({ showLoadingLogs: false });
             } else if (message.type === 'scrollTo') {
                 // Scroll to a specific section
                 var target = message.target;
@@ -59227,16 +59933,14 @@ print(response.choices[0].message.content)\`;
         document.getElementById('btn-prev-page').onclick = function() {
             if (currentPage > 1) {
                 currentPage--;
-                vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
-                document.getElementById('audit-table-body').innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; opacity: 0.7;">Loading...</td></tr>';
+                requestAuditSnapshot({ showLoadingLogs: true });
             }
         };
 
         document.getElementById('btn-next-page').onclick = function() {
             if (currentPage * pageSize < totalLogs) {
                 currentPage++;
-                vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
-                document.getElementById('audit-table-body').innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; opacity: 0.7;">Loading...</td></tr>';
+                requestAuditSnapshot({ showLoadingLogs: true });
             }
         };
 
@@ -59385,7 +60089,7 @@ print(response.choices[0].message.content)\`;
             tbody.innerHTML = '';
 
             if (!logs || logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="padding: 24px; text-align: center; opacity: 0.6; font-style: italic;">No audit logs found.<br><span style="font-size: 11px; opacity: 0.8; margin-top: 4px; display: block;">Make a request to generate logs.</span></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="padding: 24px; text-align: center; opacity: 0.6; font-style: italic;">No audit logs found.<br><span style="font-size: 11px; opacity: 0.8; margin-top: 4px; display: block;">Make a request to generate logs.</span></td></tr>';
                 return;
             }
 
@@ -59397,8 +60101,10 @@ print(response.choices[0].message.content)\`;
                 return \`
                 <tr style="border-bottom: 1px solid var(--vscode-widget-border);">
                     <td style="padding: 8px 12px; white-space: nowrap; opacity: 0.8;">\${time}</td>
+                    <td style="padding: 8px 12px; white-space: nowrap; font-family: var(--vscode-editor-font-family); font-size: 11px; opacity: 0.8;">\${log.ip || '-'}</td>
                     <td style="padding: 8px 12px; white-space: nowrap;"><span style="padding: 2px 6px; border-radius: 4px; background: var(--vscode-textCodeBlock-background); font-size: 11px; font-family: var(--vscode-editor-font-family);">\${log.method || 'UNK'}</span></td>
                     <td style="padding: 8px 12px; word-break: break-all; font-family: var(--vscode-editor-font-family);">\${log.path || '/'}</td>
+                    <td style="padding: 8px 12px; white-space: nowrap;"><span style="padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--vscode-charts-blue) 15%, transparent); font-size: 11px; font-family: var(--vscode-editor-font-family);">\${log.model || '-'}</span></td>
                     <td style="padding: 8px 12px; color: \${statusColor}; font-weight: 600;">\${log.status || 0}</td>
                     <td style="padding: 8px 12px;">\${log.durationMs || 0}ms</td>
                     <td style="padding: 8px 12px;" title="\${(log.tokensIn || 0) + (log.tokensOut || 0)} tokens">\${formatNumber ? formatNumber((log.tokensIn || 0) + (log.tokensOut || 0)) : 0}</td>
@@ -59510,10 +60216,6 @@ setInterval(function () {
     vscode.postMessage({ type: 'getStats' });
 }, 5000);
 
-// Load audit data on page load
-// Load audit data on page load
-vscode.postMessage({ type: 'getAuditStats' });
-vscode.postMessage({ type: 'getAuditLogs', value: { page: 1, pageSize: 10 } });
 </script>
     </body>
     </html>`;
@@ -59558,11 +60260,89 @@ open "${linkUrl}"
   }
 }
 
+// src/services/ExtensionHostProfiler.ts
+var fs4 = __toESM(require("fs/promises"));
+var inspector = __toESM(require("inspector"));
+var path4 = __toESM(require("path"));
+var ExtensionHostProfiler = class {
+  activeProfile;
+  async start(label) {
+    const trimmedLabel = label.trim();
+    if (!trimmedLabel) {
+      throw new Error("CPU profile label is required.");
+    }
+    if (this.activeProfile) {
+      throw new Error(`CPU profile already running: ${this.activeProfile.label}`);
+    }
+    const session = new inspector.Session();
+    session.connect();
+    await this.post(session, "Profiler.enable");
+    await this.post(session, "Profiler.start");
+    this.activeProfile = {
+      label: trimmedLabel,
+      session,
+      startedAtMs: Date.now(),
+      startedAtIso: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    return {
+      label: trimmedLabel,
+      startedAt: this.activeProfile.startedAtIso
+    };
+  }
+  async stop(outputPath) {
+    const activeProfile = this.activeProfile;
+    if (!activeProfile) {
+      throw new Error("No CPU profile is currently running.");
+    }
+    const trimmedOutputPath = outputPath.trim();
+    if (!trimmedOutputPath) {
+      throw new Error("CPU profile output path is required.");
+    }
+    this.activeProfile = void 0;
+    try {
+      const result = await this.post(activeProfile.session, "Profiler.stop");
+      await this.post(activeProfile.session, "Profiler.disable");
+      await fs4.mkdir(path4.dirname(trimmedOutputPath), { recursive: true });
+      await fs4.writeFile(trimmedOutputPath, JSON.stringify(result.profile), "utf8");
+      return {
+        label: activeProfile.label,
+        startedAt: activeProfile.startedAtIso,
+        endedAt: (/* @__PURE__ */ new Date()).toISOString(),
+        durationMs: Date.now() - activeProfile.startedAtMs,
+        outputPath: trimmedOutputPath
+      };
+    } finally {
+      activeProfile.session.disconnect();
+    }
+  }
+  dispose() {
+    if (!this.activeProfile) {
+      return;
+    }
+    this.activeProfile.session.disconnect();
+    this.activeProfile = void 0;
+  }
+  post(session, method, params) {
+    return new Promise((resolve, reject) => {
+      session.post(method, params ?? {}, (error2, result) => {
+        if (error2) {
+          reject(error2);
+          return;
+        }
+        resolve(result ?? {});
+      });
+    });
+  }
+};
+
 // src/extension.ts
 var gateway;
+var gatewayPromise;
 function activate(context) {
   const output = vscode7.window.createOutputChannel("GitHub Copilot API Server");
+  const extensionHostProfiler = new ExtensionHostProfiler();
   context.subscriptions.push(output);
+  context.subscriptions.push(extensionHostProfiler);
   const statusItem = vscode7.window.createStatusBarItem(vscode7.StatusBarAlignment.Left, 100);
   statusItem.command = "github-copilot-api-vscode.showServerControls";
   context.subscriptions.push(statusItem);
@@ -59655,33 +60435,40 @@ Server is stopped. Click to start or manage.
     if (gateway) {
       return gateway;
     }
-    const gw = new CopilotApiGateway(output, statusItem, context);
-    gateway = gw;
-    context.subscriptions.push(gw);
-    context.subscriptions.push(gw.onDidChangeStatus(async () => {
-      await updateStatusBar();
-      const status = await gw.getStatus();
-      if (status.running && !wasRunning) {
-        const config3 = vscode7.workspace.getConfiguration("githubCopilotApi.server");
-        if (config3.get("showNotifications", true)) {
-          const displayHost = status.config.host === "0.0.0.0" && status.networkInfo?.localIPs?.length ? status.networkInfo.localIPs[0] : status.config.host;
-          const protocol = status.isHttps ? "https" : "http";
-          const selection = await vscode7.window.showInformationMessage(
-            `GitHub Copilot API Server started at ${protocol}://${displayHost}:${status.config.port}`,
-            "Open Dashboard"
-          );
-          if (selection === "Open Dashboard") {
-            void vscode7.commands.executeCommand("github-copilot-api-vscode.openDashboard");
+    if (gatewayPromise) {
+      return gatewayPromise;
+    }
+    gatewayPromise = (async () => {
+      const gw = new CopilotApiGateway(output, statusItem, context);
+      gateway = gw;
+      context.subscriptions.push(gw);
+      context.subscriptions.push(gw.onDidChangeStatus(async () => {
+        await updateStatusBar();
+        const status = await gw.getStatus();
+        if (status.running && !wasRunning) {
+          const config3 = vscode7.workspace.getConfiguration("githubCopilotApi.server");
+          if (config3.get("showNotifications", true)) {
+            const displayHost = status.config.host === "0.0.0.0" && status.networkInfo?.localIPs?.length ? status.networkInfo.localIPs[0] : status.config.host;
+            const protocol = status.isHttps ? "https" : "http";
+            const selection = await vscode7.window.showInformationMessage(
+              `GitHub Copilot API Server started at ${protocol}://${displayHost}:${status.config.port}`,
+              "Open Dashboard"
+            );
+            if (selection === "Open Dashboard") {
+              void vscode7.commands.executeCommand("github-copilot-api-vscode.openDashboard");
+            }
           }
         }
-      }
-      wasRunning = status.running;
-    }));
-    await updateStatusBar();
-    return gw;
+        wasRunning = status.running;
+      }));
+      await updateStatusBar();
+      return gw;
+    })();
+    return gatewayPromise;
   };
   const provider = new CopilotPanel(context.extensionUri, getGateway);
   context.subscriptions.push(
+    provider,
     vscode7.window.registerWebviewViewProvider(CopilotPanel.viewType, provider)
   );
   const showServerControls = vscode7.commands.registerCommand("github-copilot-api-vscode.showServerControls", async () => {
@@ -59897,29 +60684,52 @@ Server is stopped. Click to start or manage.
     });
   });
   const openDashboard = vscode7.commands.registerCommand("github-copilot-api-vscode.openDashboard", () => {
-    CopilotPanel.createOrShow(context.extensionUri, getGateway);
+    return CopilotPanel.createOrShow(context.extensionUri, getGateway);
+  });
+  const resetPerfMetricsCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.resetMetrics", () => {
+    PerfMetrics.reset();
+    return PerfMetrics.getReport();
+  });
+  const beginPerfPhaseCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.beginPhase", (rawName) => {
+    const phaseName = typeof rawName === "string" ? rawName : "";
+    return PerfMetrics.beginPhase(phaseName);
+  });
+  const endPerfPhaseCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.endPhase", (rawName) => {
+    const phaseName = typeof rawName === "string" ? rawName : "";
+    return PerfMetrics.endPhase(phaseName);
+  });
+  const getPerfMetricsCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.getMetrics", () => {
+    return PerfMetrics.getReport();
+  });
+  const startCpuProfileCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.startCpuProfile", async (rawLabel) => {
+    const label = typeof rawLabel === "string" ? rawLabel : "";
+    return extensionHostProfiler.start(label);
+  });
+  const stopCpuProfileCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.stopCpuProfile", async (rawOutputPath) => {
+    const outputPath = typeof rawOutputPath === "string" ? rawOutputPath : "";
+    return extensionHostProfiler.stop(outputPath);
   });
   const createShortcutCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.createDesktopShortcut", async () => {
     await createDesktopShortcut();
   });
   context.subscriptions.push(vscode7.window.registerUriHandler({
     handleUri(uri) {
-      const path4 = uri.path;
-      output.appendLine(`[URI Handler] Received URI: ${uri.toString()} (path: ${path4})`);
-      if (path4 === "/dashboard") {
+      const path5 = uri.path;
+      output.appendLine(`[URI Handler] Received URI: ${uri.toString()} (path: ${path5})`);
+      if (path5 === "/dashboard") {
         CopilotPanel.createOrShow(context.extensionUri, getGateway);
-      } else if (path4 === "/start") {
+      } else if (path5 === "/start") {
         void getGateway().then((gw) => gw.startServer().then(() => {
           void vscode7.window.showInformationMessage("Copilot API Server started via shortcut");
         }));
-      } else if (path4 === "/stop") {
+      } else if (path5 === "/stop") {
         if (gateway) {
           void gateway.stopServer().then(() => {
             void vscode7.window.showInformationMessage("Copilot API Server stopped via shortcut");
           });
         }
       } else {
-        void vscode7.window.showWarningMessage(`Unknown shortcut path: ${path4}`);
+        void vscode7.window.showWarningMessage(`Unknown shortcut path: ${path5}`);
       }
     }
   }));
@@ -59965,7 +60775,21 @@ Server is stopped. Click to start or manage.
       }
     }
   }));
-  context.subscriptions.push(openChatCommand, askChatCommand, askSelectionCommand, createShortcutCommand, openDashboard, showServerControls, editSystemPrompt);
+  context.subscriptions.push(
+    openChatCommand,
+    askChatCommand,
+    askSelectionCommand,
+    createShortcutCommand,
+    openDashboard,
+    showServerControls,
+    editSystemPrompt,
+    resetPerfMetricsCommand,
+    beginPerfPhaseCommand,
+    endPerfPhaseCommand,
+    getPerfMetricsCommand,
+    startCpuProfileCommand,
+    stopCpuProfileCommand
+  );
 }
 function deactivate() {
 }

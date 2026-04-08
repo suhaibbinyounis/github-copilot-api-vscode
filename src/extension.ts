@@ -5,12 +5,17 @@ import { CopilotApiGateway, ensureCopilotChatReady, getErrorMessage, normalizePr
 
 import { CopilotPanel } from './CopilotPanel';
 import { createDesktopShortcut } from './commands/createDesktopShortcut';
+import { ExtensionHostProfiler } from './services/ExtensionHostProfiler';
+import { PerfMetrics } from './services/PerfMetrics';
 
 let gateway: CopilotApiGateway | undefined;
+let gatewayPromise: Promise<CopilotApiGateway> | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
 	const output = vscode.window.createOutputChannel('GitHub Copilot API Server');
+	const extensionHostProfiler = new ExtensionHostProfiler();
 	context.subscriptions.push(output);
+	context.subscriptions.push(extensionHostProfiler);
 
 	const statusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
 	statusItem.command = 'github-copilot-api-vscode.showServerControls';
@@ -122,44 +127,54 @@ Server is stopped. Click to start or manage.
 			return gateway;
 		}
 
-		const gw = new CopilotApiGateway(output, statusItem, context);
-		gateway = gw;
-		context.subscriptions.push(gw);
+		if (gatewayPromise) {
+			return gatewayPromise;
+		}
 
-		// Hook up listeners
-		context.subscriptions.push(gw.onDidChangeStatus(async () => {
-			await updateStatusBar();
 
-			// Notifications
-			const status = await gw.getStatus();
-			if (status.running && !wasRunning) {
-				const config = vscode.workspace.getConfiguration('githubCopilotApi.server');
-				if (config.get<boolean>('showNotifications', true)) {
-					// Show actual LAN IP instead of 0.0.0.0 when bound to all interfaces
-					const displayHost = (status.config.host === '0.0.0.0' && status.networkInfo?.localIPs?.length)
-						? status.networkInfo.localIPs[0]
-						: status.config.host;
-					const protocol = status.isHttps ? 'https' : 'http';
-					const selection = await vscode.window.showInformationMessage(
-						`GitHub Copilot API Server started at ${protocol}://${displayHost}:${status.config.port}`,
-						'Open Dashboard'
-					);
-					if (selection === 'Open Dashboard') {
-						void vscode.commands.executeCommand('github-copilot-api-vscode.openDashboard');
+		gatewayPromise = (async () => {
+			const gw = new CopilotApiGateway(output, statusItem, context);
+			gateway = gw;
+			context.subscriptions.push(gw);
+
+			// Hook up listeners
+			context.subscriptions.push(gw.onDidChangeStatus(async () => {
+				await updateStatusBar();
+
+				// Notifications
+				const status = await gw.getStatus();
+				if (status.running && !wasRunning) {
+					const config = vscode.workspace.getConfiguration('githubCopilotApi.server');
+					if (config.get<boolean>('showNotifications', true)) {
+						// Show actual LAN IP instead of 0.0.0.0 when bound to all interfaces
+						const displayHost = (status.config.host === '0.0.0.0' && status.networkInfo?.localIPs?.length)
+							? status.networkInfo.localIPs[0]
+							: status.config.host;
+						const protocol = status.isHttps ? 'https' : 'http';
+						const selection = await vscode.window.showInformationMessage(
+							`GitHub Copilot API Server started at ${protocol}://${displayHost}:${status.config.port}`,
+							'Open Dashboard'
+						);
+						if (selection === 'Open Dashboard') {
+							void vscode.commands.executeCommand('github-copilot-api-vscode.openDashboard');
+						}
 					}
 				}
-			}
-			wasRunning = status.running;
-		}));
+				wasRunning = status.running;
+			}));
 
-		// Initial status update after creation
-		await updateStatusBar();
-		return gw;
+			// Initial status update after creation
+			await updateStatusBar();
+			return gw;
+		})();
+
+		return gatewayPromise;
 	};
 
 	// Initialize Provider with lazy accessor
 	const provider = new CopilotPanel(context.extensionUri, getGateway);
 	context.subscriptions.push(
+		provider,
 		vscode.window.registerWebviewViewProvider(CopilotPanel.viewType, provider)
 	);
 
@@ -419,7 +434,36 @@ Server is stopped. Click to start or manage.
 
 
 	const openDashboard = vscode.commands.registerCommand('github-copilot-api-vscode.openDashboard', () => {
-		CopilotPanel.createOrShow(context.extensionUri, getGateway);
+		return CopilotPanel.createOrShow(context.extensionUri, getGateway);
+	});
+
+	const resetPerfMetricsCommand = vscode.commands.registerCommand('github-copilot-api-vscode.perf.resetMetrics', () => {
+		PerfMetrics.reset();
+		return PerfMetrics.getReport();
+	});
+
+	const beginPerfPhaseCommand = vscode.commands.registerCommand('github-copilot-api-vscode.perf.beginPhase', (rawName?: unknown) => {
+		const phaseName = typeof rawName === 'string' ? rawName : '';
+		return PerfMetrics.beginPhase(phaseName);
+	});
+
+	const endPerfPhaseCommand = vscode.commands.registerCommand('github-copilot-api-vscode.perf.endPhase', (rawName?: unknown) => {
+		const phaseName = typeof rawName === 'string' ? rawName : '';
+		return PerfMetrics.endPhase(phaseName);
+	});
+
+	const getPerfMetricsCommand = vscode.commands.registerCommand('github-copilot-api-vscode.perf.getMetrics', () => {
+		return PerfMetrics.getReport();
+	});
+
+	const startCpuProfileCommand = vscode.commands.registerCommand('github-copilot-api-vscode.perf.startCpuProfile', async (rawLabel?: unknown) => {
+		const label = typeof rawLabel === 'string' ? rawLabel : '';
+		return extensionHostProfiler.start(label);
+	});
+
+	const stopCpuProfileCommand = vscode.commands.registerCommand('github-copilot-api-vscode.perf.stopCpuProfile', async (rawOutputPath?: unknown) => {
+		const outputPath = typeof rawOutputPath === 'string' ? rawOutputPath : '';
+		return extensionHostProfiler.stop(outputPath);
 	});
 
 	const createShortcutCommand = vscode.commands.registerCommand('github-copilot-api-vscode.createDesktopShortcut', async () => {
@@ -508,7 +552,21 @@ Server is stopped. Click to start or manage.
 	}));
 
 
-	context.subscriptions.push(openChatCommand, askChatCommand, askSelectionCommand, createShortcutCommand, openDashboard, showServerControls, editSystemPrompt);
+	context.subscriptions.push(
+		openChatCommand,
+		askChatCommand,
+		askSelectionCommand,
+		createShortcutCommand,
+		openDashboard,
+		showServerControls,
+		editSystemPrompt,
+		resetPerfMetricsCommand,
+		beginPerfPhaseCommand,
+		endPerfPhaseCommand,
+		getPerfMetricsCommand,
+		startCpuProfileCommand,
+		stopCpuProfileCommand,
+	);
 }
 
 export function deactivate() {

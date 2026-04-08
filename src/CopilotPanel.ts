@@ -1,9 +1,26 @@
 import * as vscode from 'vscode';
 import { CopilotApiGateway } from './CopilotApiGateway';
+import { PerfMetrics } from './services/PerfMetrics';
 
-export class CopilotPanel implements vscode.WebviewViewProvider {
+type GatewayStatus = Awaited<ReturnType<CopilotApiGateway['getStatus']>>;
+type StatsSnapshot = {
+    stats: GatewayStatus['stats'];
+    realtimeStats: GatewayStatus['realtimeStats'] & { activeConnections: number };
+};
+type AuditSummarySnapshot = {
+    totalSavings: string;
+    todaySavings: string;
+    totalRequests: number;
+    avgLatency: number;
+};
+
+type WebviewTarget = 'sidebar' | 'dashboard' | 'wiki';
+
+export class CopilotPanel implements vscode.WebviewViewProvider, vscode.Disposable {
     public static readonly viewType = 'copilotApiControls';
     private _view?: vscode.WebviewView;
+    private _viewDisposables: vscode.Disposable[] = [];
+    private _statusDisposables: vscode.Disposable[] = [];
 
     // Full editor panel singleton
     private static currentPanel: vscode.WebviewPanel | undefined;
@@ -29,12 +46,115 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
         // Actually, for the sidebar, resolveWebviewView will be called.
     }
 
+    public dispose(): void {
+        this._view = undefined;
+        this._disposeDisposables(this._viewDisposables);
+        this._disposeDisposables(this._statusDisposables);
+    }
+
+    private _disposeDisposables(disposables: vscode.Disposable[]): void {
+        for (const disposable of disposables.splice(0)) {
+            disposable.dispose();
+        }
+    }
+
+    private _rememberStructuralState(status: GatewayStatus): void {
+        this._lastRunningState = status.running;
+        this._lastTunnelState = status.tunnel?.running ?? false;
+    }
+
+    private _hasStructuralStateChanged(status: GatewayStatus): boolean {
+        return this._lastRunningState !== status.running || this._lastTunnelState !== (status.tunnel?.running ?? false);
+    }
+
+    private static _buildStatsSnapshot(status: GatewayStatus, gateway: CopilotApiGateway): StatsSnapshot {
+        return {
+            stats: status.stats,
+            realtimeStats: {
+                ...status.realtimeStats,
+                activeConnections: gateway.getServerStatus().activeConnections
+            }
+        };
+    }
+
+    private static async _postStatsSnapshot(webview: vscode.Webview, snapshot: StatsSnapshot): Promise<void> {
+        await this._postWebviewMessage('dashboard', webview, { type: 'statsSnapshot', data: snapshot });
+    }
+
+    private static _formatSavings(amount: number): string {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    }
+
+    private static async _buildAuditSummarySnapshot(gateway: CopilotApiGateway): Promise<AuditSummarySnapshot> {
+        const auditService = gateway.getAuditService();
+        const [lifetimeStats, todayStats] = await Promise.all([
+            auditService.getLifetimeStats(),
+            auditService.getTodayStats()
+        ]);
+
+        const priceIn = 2.0 / 1_000_000;
+        const priceOut = 8.0 / 1_000_000;
+        const totalSavings = (lifetimeStats.totalTokensIn * priceIn) + (lifetimeStats.totalTokensOut * priceOut);
+        const todaySavings = (todayStats.tokensIn * priceIn) + (todayStats.tokensOut * priceOut);
+
+        return {
+            totalSavings: this._formatSavings(totalSavings),
+            todaySavings: this._formatSavings(todaySavings),
+            totalRequests: lifetimeStats.totalRequests || 0,
+            avgLatency: todayStats.avgLatency || 0
+        };
+    }
+
+    private static _getEmptyAuditSummarySnapshot(): AuditSummarySnapshot {
+        return {
+            totalSavings: this._formatSavings(0),
+            todaySavings: this._formatSavings(0),
+            totalRequests: 0,
+            avgLatency: 0
+        };
+    }
+
+    private static _setWebviewHtml(target: WebviewTarget, webview: vscode.Webview, html: string): void {
+        PerfMetrics.recordWebviewHtmlWrite(target, html.length);
+        webview.html = html;
+    }
+
+    private static _postWebviewMessage<T extends { type: string }>(target: WebviewTarget, webview: vscode.Webview, message: T): Thenable<boolean> {
+        PerfMetrics.recordWebviewMessageSent(target, message.type);
+        return webview.postMessage(message);
+    }
+
+    private static async _refreshCurrentPanelHtml(gateway: CopilotApiGateway): Promise<void> {
+        if (!this.currentPanel) {
+            return;
+        }
+
+        this._setWebviewHtml('dashboard', this.currentPanel.webview, await this.getPanelHtml(this.currentPanel.webview, gateway));
+    }
+
+    private async _postStatsSnapshotToVisibleViews(snapshot: StatsSnapshot): Promise<void> {
+        const postTasks: Thenable<boolean>[] = [];
+
+        if (this._view?.visible) {
+            postTasks.push(CopilotPanel._postWebviewMessage('sidebar', this._view.webview, { type: 'statsSnapshot', data: snapshot }));
+        }
+        if (CopilotPanel.currentPanel?.visible) {
+            postTasks.push(CopilotPanel._postWebviewMessage('dashboard', CopilotPanel.currentPanel.webview, { type: 'statsSnapshot', data: snapshot }));
+        }
+
+        if (postTasks.length > 0) {
+            await Promise.all(postTasks);
+        }
+    }
+
     public async resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken,
     ) {
+        this._disposeDisposables(this._viewDisposables);
         this._view = webviewView;
+        PerfMetrics.recordSidebarResolve();
 
         // When view is resolved (visible), we MUST have the gateway
         this._gateway = await this._gatewayAccessor();
@@ -47,23 +167,41 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
 
         const updateHtml = async () => {
             if (this._gateway) {
-                webviewView.webview.html = await this._getSidebarHtml(webviewView.webview);
+                const status = await this._gateway.getStatus();
+                this._rememberStructuralState(status);
+                CopilotPanel._setWebviewHtml('sidebar', webviewView.webview, await this._getSidebarHtml(webviewView.webview, status));
             }
         };
 
         await updateHtml();
 
-        webviewView.webview.onDidReceiveMessage(async data => {
+        this._viewDisposables.push(
+            webviewView.onDidDispose(() => {
+                if (this._view === webviewView) {
+                    this._view = undefined;
+                }
+                this._disposeDisposables(this._viewDisposables);
+            })
+        );
+
+        this._viewDisposables.push(webviewView.webview.onDidReceiveMessage(async data => {
+            PerfMetrics.recordWebviewMessageReceived('sidebar', data.type);
             if (!this._gateway) { return; }
             switch (data.type) {
                 case 'openDashboard':
                     await CopilotPanel.createOrShow(this._extensionUri, this._gatewayAccessor);
                     break;
                 case 'startServer':
-                    void this._gateway.startServer();
+                            void this._gateway.startServer()
+                                .finally(async () => {
+                                    await updateHtml();
+                                });
                     break;
                 case 'stopServer':
-                    void this._gateway.stopServer();
+                            void this._gateway.stopServer()
+                                .finally(async () => {
+                                    await updateHtml();
+                                });
                     break;
                 case 'openSwagger': {
                     const status = await this._gateway.getStatus();
@@ -88,61 +226,52 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
                 default:
                     CopilotPanel.handleMessage(data, this._gateway);
             }
-        });
+        }));
     }
 
     private _hookEvents(gateway: CopilotApiGateway) {
-        gateway.onDidChangeStatus(async () => {
+        this._disposeDisposables(this._statusDisposables);
+
+        this._statusDisposables.push(gateway.onDidChangeStatus(async () => {
+            PerfMetrics.recordStatusEvent();
             const status = await gateway.getStatus();
 
             // Check if critical state changed (Running vs Stopped, or Tunnel state)
             // If just stats changed, send data update message instead of re-rendering HTML
-            const tunnelRunning = status.tunnel?.running ?? false;
-            if (this._lastRunningState === status.running && this._lastTunnelState === tunnelRunning) {
-                // State is stable, just update stats/UI via message
-                const activeConnections = gateway.getServerStatus().activeConnections;
-                if (this._view) {
-                    this._view.webview.postMessage({ type: 'statsData', data: status.stats });
-                    // Also send realtime stats with activeConnections
-                    this._view.webview.postMessage({ type: 'realtimeStats', data: { ...status.realtimeStats, activeConnections } });
-                }
-                if (CopilotPanel.currentPanel) {
-                    CopilotPanel.currentPanel.webview.postMessage({ type: 'statsData', data: status.stats });
-                    CopilotPanel.currentPanel.webview.postMessage({ type: 'realtimeStats', data: { ...status.realtimeStats, activeConnections } });
-                }
+            if (!this._hasStructuralStateChanged(status)) {
+                await this._postStatsSnapshotToVisibleViews(CopilotPanel._buildStatsSnapshot(status, gateway));
                 return;
             }
 
             // Critical state change (Start/Stop or Tunnel change) - Re-render HTML
-            this._lastRunningState = status.running;
-            this._lastTunnelState = tunnelRunning;
+            this._rememberStructuralState(status);
 
             if (this._view) {
-                this._view.webview.html = await this._getSidebarHtml(this._view.webview);
+                CopilotPanel._setWebviewHtml('sidebar', this._view.webview, await this._getSidebarHtml(this._view.webview, status));
             }
             // Also update the full panel if it's open
             if (CopilotPanel.currentPanel) {
-                CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
+                CopilotPanel._setWebviewHtml('dashboard', CopilotPanel.currentPanel.webview, await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway, status));
             }
-        });
-        gateway.onDidLogRequest(log => {
+        }));
+        this._statusDisposables.push(gateway.onDidLogRequest(log => {
             // console.log('[CopilotPanel] onDidLogRequest fired', log.requestId);
-            if (this._view) {
-                this._view.webview.postMessage({ type: 'liveLog', value: log });
+            if (this._view?.visible) {
+                void CopilotPanel._postWebviewMessage('sidebar', this._view.webview, { type: 'liveLog', value: log });
             }
-            if (CopilotPanel.currentPanel) {
-                CopilotPanel.currentPanel.webview.postMessage({ type: 'liveLog', value: log });
+            if (CopilotPanel.currentPanel?.visible) {
+                void CopilotPanel._postWebviewMessage('dashboard', CopilotPanel.currentPanel.webview, { type: 'liveLog', value: log });
             }
-        });
-        gateway.onDidLogRequestStart(startLog => {
+        }));
+        this._statusDisposables.push(gateway.onDidLogRequestStart(startLog => {
             // Show pending request immediately in Live Log Tail
-            if (this._view) {
-                this._view.webview.postMessage({ type: 'liveLogStart', value: startLog });
+            if (this._view?.visible) {
+                void CopilotPanel._postWebviewMessage('sidebar', this._view.webview, { type: 'liveLogStart', value: startLog });
             }
-            if (CopilotPanel.currentPanel) {
-                CopilotPanel.currentPanel.webview.postMessage({ type: 'liveLogStart', value: startLog });
+            if (CopilotPanel.currentPanel?.visible) {
+                void CopilotPanel._postWebviewMessage('dashboard', CopilotPanel.currentPanel.webview, { type: 'liveLogStart', value: startLog });
             }
-        });
+        }));
     }
 
     /**
@@ -154,15 +283,19 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
         const gateway = await gatewayAccessor(); // Force init for dashboard
 
         if (CopilotPanel.currentPanel) {
+            PerfMetrics.recordDashboardReveal();
             CopilotPanel.currentPanel.reveal(column);
-            // Update HTML in case state changed
-            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
+            const status = await gateway.getStatus();
+            await CopilotPanel._postStatsSnapshot(CopilotPanel.currentPanel.webview, CopilotPanel._buildStatsSnapshot(status, gateway));
+            void CopilotPanel._postWebviewMessage('dashboard', CopilotPanel.currentPanel.webview, { type: 'requestRefresh' });
             // If scroll target provided, send message to scroll
             if (scrollTarget) {
-                CopilotPanel.currentPanel.webview.postMessage({ type: 'scrollTo', target: scrollTarget });
+                CopilotPanel._postWebviewMessage('dashboard', CopilotPanel.currentPanel.webview, { type: 'scrollTo', target: scrollTarget });
             }
             return;
         }
+
+        PerfMetrics.recordDashboardCreate();
 
         const panel = vscode.window.createWebviewPanel(
             'copilotApiDashboard',
@@ -180,18 +313,20 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
         // Set up message listener BEFORE setting HTML to prevent race condition
         panel.webview.onDidReceiveMessage(
             data => {
+                PerfMetrics.recordWebviewMessageReceived('dashboard', data.type);
                 CopilotPanel.handleMessage(data, gateway);
             },
             undefined,
             CopilotPanel.panelDisposables
         );
 
-        panel.webview.html = await CopilotPanel.getPanelHtml(panel.webview, gateway);
+        const initialStatus = await gateway.getStatus();
+        CopilotPanel._setWebviewHtml('dashboard', panel.webview, await CopilotPanel.getPanelHtml(panel.webview, gateway, initialStatus));
 
         // If scroll target provided, send message after a short delay to ensure DOM is ready
         if (scrollTarget) {
             setTimeout(() => {
-                panel.webview.postMessage({ type: 'scrollTo', target: scrollTarget });
+                void CopilotPanel._postWebviewMessage('dashboard', panel.webview, { type: 'scrollTo', target: scrollTarget });
             }, 300);
         }
 
@@ -230,7 +365,7 @@ export class CopilotPanel implements vscode.WebviewViewProvider {
         );
 
         CopilotPanel.wikiPanel = panel;
-        panel.webview.html = await CopilotPanel.getWikiHtml(panel.webview, gateway);
+        CopilotPanel._setWebviewHtml('wiki', panel.webview, await CopilotPanel.getWikiHtml(panel.webview, gateway));
 
         panel.onDidDispose(() => {
             CopilotPanel.wikiPanel = undefined;
@@ -561,10 +696,16 @@ for await (const chunk of stream) {
                 void vscode.commands.executeCommand('github-copilot-api-vscode.showServerControls');
                 break;
             case 'startServer':
-                void gateway.startServer();
+                void gateway.startServer()
+                    .finally(async () => {
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
+                    });
                 break;
             case 'stopServer':
-                void gateway.stopServer();
+                void gateway.stopServer()
+                    .finally(async () => {
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
+                    });
                 break;
             case 'openUrl':
                 console.log('[CopilotPanel] Opening URL:', data.value);
@@ -630,16 +771,12 @@ for await (const chunk of stream) {
                     } else {
                         void vscode.window.showInformationMessage(`Tunnel active at: ${result.url}`);
                     }
-                    if (CopilotPanel.currentPanel) {
-                        CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                    }
+                    await CopilotPanel._refreshCurrentPanelHtml(gateway);
                 });
                 break;
             case 'stopTunnel':
                 void gateway.stopTunnel().then(async () => {
-                    if (CopilotPanel.currentPanel) {
-                        CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                    }
+                    await CopilotPanel._refreshCurrentPanelHtml(gateway);
                 });
                 break;
             case 'addRedactionPattern':
@@ -648,8 +785,8 @@ for await (const chunk of stream) {
                     void gateway.addRedactionPattern(name, pattern).then(async success => {
                         if (!success) {
                             void vscode.window.showErrorMessage('Invalid regex pattern');
-                        } else if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
+                        } else {
+                            await CopilotPanel._refreshCurrentPanelHtml(gateway);
                         }
                     });
                 }
@@ -657,9 +794,7 @@ for await (const chunk of stream) {
             case 'removeRedactionPattern':
                 if (typeof data.value === 'string') {
                     void gateway.removeRedactionPattern(data.value).then(async () => {
-                        if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                        }
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
                     });
                 }
                 break;
@@ -676,8 +811,8 @@ for await (const chunk of stream) {
                     void gateway.addIpAllowlistEntry(data.value).then(async success => {
                         if (!success) {
                             void vscode.window.showErrorMessage('Invalid IP address or CIDR range');
-                        } else if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
+                        } else {
+                            await CopilotPanel._refreshCurrentPanelHtml(gateway);
                         }
                     });
                 }
@@ -685,61 +820,49 @@ for await (const chunk of stream) {
             case 'removeIpAllowlistEntry':
                 if (typeof data.value === 'string') {
                     void gateway.removeIpAllowlistEntry(data.value).then(async () => {
-                        if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                        }
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
                     });
                 }
                 break;
             case 'setRequestTimeout':
                 if (typeof data.value === 'number') {
                     void gateway.setRequestTimeout(data.value).then(async () => {
-                        if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                        }
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
                     });
                 }
                 break;
             case 'setMaxPayloadSize':
                 if (typeof data.value === 'number') {
                     void gateway.setMaxPayloadSize(data.value).then(async () => {
-                        if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                        }
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
                     });
                 }
                 break;
             case 'setMaxConnectionsPerIp':
                 if (typeof data.value === 'number') {
                     void gateway.setMaxConnectionsPerIp(data.value).then(async () => {
-                        if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                        }
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
                     });
                 }
                 break;
             case 'setCloudflaredPath':
                 if (typeof data.value === 'string') {
                     void gateway.setCloudflaredPath(data.value).then(async () => {
-                        if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                        }
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
                     });
                 }
                 break;
             case 'setMaxConcurrency':
                 if (typeof data.value === 'number') {
                     void gateway.setMaxConcurrency(data.value).then(async () => {
-                        if (CopilotPanel.currentPanel) {
-                            CopilotPanel.currentPanel.webview.html = await CopilotPanel.getPanelHtml(CopilotPanel.currentPanel.webview, gateway);
-                        }
+                        await CopilotPanel._refreshCurrentPanelHtml(gateway);
                     });
                 }
                 break;
             case 'getHistory':
                 if (CopilotPanel.currentPanel) {
                     const history = gateway.getHistory(50);
-                    void CopilotPanel.currentPanel.webview.postMessage({
+                    void CopilotPanel._postWebviewMessage('dashboard', CopilotPanel.currentPanel.webview, {
                         type: 'historyData',
                         data: history
                     });
@@ -750,12 +873,12 @@ for await (const chunk of stream) {
                 if (CopilotPanel.currentPanel) {
                     const stats = gateway.getStats();
                     const activeConnections = gateway.getServerStatus().activeConnections;
-                    void CopilotPanel.currentPanel.webview.postMessage({
+                    void CopilotPanel._postWebviewMessage('dashboard', CopilotPanel.currentPanel.webview, {
                         type: 'statsData',
                         data: stats
                     });
                     // Also send realtime stats with activeConnections for connections card
-                    void CopilotPanel.currentPanel.webview.postMessage({
+                    void CopilotPanel._postWebviewMessage('dashboard', CopilotPanel.currentPanel.webview, {
                         type: 'realtimeStats',
                         data: { requestsPerMinute: stats.requestsPerMinute, avgLatencyMs: stats.avgLatencyMs, errorRate: stats.errorRate, activeConnections }
                     });
@@ -765,9 +888,60 @@ for await (const chunk of stream) {
                 if (CopilotPanel.currentPanel) {
                     // Send daily stats for charts
                     void gateway.getDailyStats(30).then(stats => {
-                        void CopilotPanel.currentPanel?.webview.postMessage({
+                        const panel = CopilotPanel.currentPanel;
+                        if (!panel) {
+                            return;
+                        }
+                        void CopilotPanel._postWebviewMessage('dashboard', panel.webview, {
                             type: 'auditStatsData',
                             data: stats
+                        });
+                    });
+                }
+                break;
+            case 'getAuditSnapshot':
+                if (CopilotPanel.currentPanel) {
+                    const val = data.value as any || {};
+                    const page = val.page || 1;
+                    const pageSize = val.pageSize || 10;
+                    const days = val.days || 30;
+
+                    void Promise.allSettled([
+                        CopilotPanel._buildAuditSummarySnapshot(gateway),
+                        gateway.getDailyStats(days),
+                        gateway.getAuditLogs(page, pageSize)
+                    ]).then(results => {
+                        const panel = CopilotPanel.currentPanel;
+                        if (!panel) {
+                            return;
+                        }
+
+                        const summary = results[0].status === 'fulfilled'
+                            ? results[0].value
+                            : CopilotPanel._getEmptyAuditSummarySnapshot();
+                        const dailyStats = results[1].status === 'fulfilled' ? results[1].value : [];
+                        const auditLogs = results[2].status === 'fulfilled'
+                            ? results[2].value
+                            : { total: 0, entries: [] };
+
+                        if (results[0].status === 'rejected') {
+                            console.error('[CopilotPanel] Error building audit summary snapshot:', results[0].reason);
+                        }
+                        if (results[1].status === 'rejected') {
+                            console.error('[CopilotPanel] Error getting audit stats:', results[1].reason);
+                        }
+                        if (results[2].status === 'rejected') {
+                            console.error('[CopilotPanel] Error getting audit logs:', results[2].reason);
+                        }
+
+                        void CopilotPanel._postWebviewMessage('dashboard', panel.webview, {
+                            type: 'auditSnapshotData',
+                            summary,
+                            dailyStats,
+                            logData: auditLogs.entries,
+                            page,
+                            total: auditLogs.total,
+                            pageSize
                         });
                     });
                 }
@@ -780,7 +954,11 @@ for await (const chunk of stream) {
                     const pageSize = val.pageSize || 10;
                     gateway.getAuditLogs(page, pageSize).then(res => {
                         console.log('[CopilotPanel] Got audit logs:', res.total, 'total,', res.entries.length, 'entries');
-                        void CopilotPanel.currentPanel?.webview.postMessage({
+                        const panel = CopilotPanel.currentPanel;
+                        if (!panel) {
+                            return;
+                        }
+                        void CopilotPanel._postWebviewMessage('dashboard', panel.webview, {
                             type: 'auditLogData',
                             data: res.entries,
                             page: page,
@@ -790,7 +968,11 @@ for await (const chunk of stream) {
                     }).catch(err => {
                         console.error('[CopilotPanel] Error getting audit logs:', err);
                         // Send empty result on error
-                        void CopilotPanel.currentPanel?.webview.postMessage({
+                        const panel = CopilotPanel.currentPanel;
+                        if (!panel) {
+                            return;
+                        }
+                        void CopilotPanel._postWebviewMessage('dashboard', panel.webview, {
                             type: 'auditLogData',
                             data: [],
                             page: page,
@@ -819,12 +1001,12 @@ for await (const chunk of stream) {
     /**
      * Enhanced sidebar HTML with sections and analytics
      */
-    private async _getSidebarHtml(webview: vscode.Webview): Promise<string> {
+    private async _getSidebarHtml(webview: vscode.Webview, prefetchedStatus?: GatewayStatus): Promise<string> {
         const nonce = getNonce();
         if (!this._gateway) {
             return '<p>Loading...</p>';
         }
-        const status = await this._gateway.getStatus();
+        const status = prefetchedStatus ?? await this._gateway.getStatus();
         const isRunning = status.running;
         const statusColor = isRunning ? 'var(--vscode-testing-iconPassed)' : 'var(--vscode-testing-iconFailed)';
         const statusText = isRunning ? 'Running' : 'Stopped';
@@ -1048,7 +1230,7 @@ for await (const chunk of stream) {
     <!-- Primary Actions -->
     <div class="section">
         <div class="section-title">⚡ Power Commands</div>
-        <button id="btn-toggle" style="height: 36px; font-size: 13px;">${isRunning ? '⏹ Stop Gateway' : '▶ Start Gateway'}</button>
+        <button id="btn-toggle" data-running="${isRunning}" style="height: 36px; font-size: 13px;">${isRunning ? '⏹ Stop Gateway' : '▶ Start Gateway'}</button>
         <button id="btn-dashboard" style="height: 36px; font-size: 13px; background: color-mix(in srgb, var(--vscode-charts-blue) 80%, transparent); color: #fff;">📊 Open Full Dashboard</button>
         <button id="btn-swagger" class="secondary" style="height: 32px;">📝 View Swagger Docs</button>
     </div>
@@ -1171,6 +1353,16 @@ print(response.choices[0].message.content)\`;
             });
         }
 
+        function setSidebarToggleState(button, running, pending) {
+            if (!button) {
+                return;
+            }
+
+            button.disabled = !!pending;
+            button.dataset.running = running ? 'true' : 'false';
+            button.textContent = running ? '⏹ Stop Gateway' : '▶ Start Gateway';
+        }
+
         // Uptime ticker
         if (isRunning) {
             const uptimeEl = document.getElementById('uptime-display');
@@ -1195,7 +1387,12 @@ print(response.choices[0].message.content)\`;
         document.getElementById('btn-copy-curl')?.addEventListener('click', (e) => copyWithFeedback(e.target, curlCommand));
         document.getElementById('btn-copy-python')?.addEventListener('click', (e) => copyWithFeedback(e.target, pythonCode));
         document.getElementById('btn-dashboard')?.addEventListener('click', () => vscode.postMessage({ type: 'openDashboard' }));
-        document.getElementById('btn-toggle')?.addEventListener('click', () => vscode.postMessage({ type: '${isRunning ? 'stopServer' : 'startServer'}' }));
+        document.getElementById('btn-toggle')?.addEventListener('click', (event) => {
+            const button = event.currentTarget;
+            const running = button?.dataset?.running === 'true';
+            setSidebarToggleState(button, !running, true);
+            vscode.postMessage({ type: running ? 'stopServer' : 'startServer' });
+        });
         document.getElementById('btn-edit-system-prompt')?.addEventListener('click', () => vscode.postMessage({ type: 'editSystemPrompt' }));
         document.getElementById('btn-swagger')?.addEventListener('click', () => vscode.postMessage({ type: 'openSwagger' }));
         document.getElementById('btn-wiki')?.addEventListener('click', () => vscode.postMessage({ type: 'openWiki' }));
@@ -1280,6 +1477,24 @@ print(response.choices[0].message.content)\`;
 
         window.addEventListener('message', event => {
             const message = event.data;
+            if (message.type === 'statsSnapshot' && message.data) {
+                const snapshot = message.data;
+                if (snapshot.stats) {
+                    const totalEl = document.getElementById('stat-total');
+                    if (totalEl) totalEl.textContent = formatNumber(snapshot.stats.totalRequests || 0);
+                }
+                if (snapshot.realtimeStats) {
+                    const rpmEl = document.getElementById('stat-rpm');
+                    const latencyEl = document.getElementById('stat-latency');
+                    const errEl = document.getElementById('stat-errors');
+                    if (rpmEl) rpmEl.textContent = snapshot.realtimeStats.requestsPerMinute;
+                    if (latencyEl) latencyEl.innerHTML = snapshot.realtimeStats.avgLatencyMs + '<span style="font-size: 10px; opacity: 0.6;">ms</span>';
+                    if (errEl) {
+                        errEl.textContent = (snapshot.realtimeStats.errorRate || 0) + '%';
+                        errEl.style.color = (snapshot.realtimeStats.errorRate || 0) > 0 ? 'var(--vscode-testing-iconFailed)' : 'var(--vscode-testing-iconPassed)';
+                    }
+                }
+            }
             if (message.type === 'realtimeStats' && message.data) {
                 const stats = message.data;
                 const rpmEl = document.getElementById('stat-rpm');
@@ -1323,9 +1538,9 @@ print(response.choices[0].message.content)\`;
         return num.toString();
     }
 
-    private static async getPanelHtml(webview: vscode.Webview, gateway: CopilotApiGateway): Promise<string> {
+    private static async getPanelHtml(webview: vscode.Webview, gateway: CopilotApiGateway, prefetchedStatus?: GatewayStatus): Promise<string> {
         const nonce = getNonce();
-        const status = await gateway.getStatus();
+        const status = prefetchedStatus ?? await gateway.getStatus();
         const config = status.config;
         const isRunning = status.running;
         const statusColor = isRunning ? 'var(--vscode-testing-iconPassed)' : 'var(--vscode-testing-iconFailed)';
@@ -1338,22 +1553,7 @@ print(response.choices[0].message.content)\`;
             : config.host;
         const url = `${protocol}://${displayHost}:${config.port}`;
         const activeConnections = gateway.getServerStatus().activeConnections;
-
-        // Calculate Savings
-        const auditService = gateway.getAuditService();
-        const lifetimeStats = await auditService.getLifetimeStats();
-        const todayStats = await auditService.getTodayStats();
-
-        // GPT-4.1 Pricing (approximate, as of 2025)
-        const PRICE_IN = 2.00 / 1000000;
-        const PRICE_OUT = 8.00 / 1000000;
-
-        const savedTotal = (lifetimeStats.totalTokensIn * PRICE_IN) + (lifetimeStats.totalTokensOut * PRICE_OUT);
-        const savedToday = (todayStats.tokensIn * PRICE_IN) + (todayStats.tokensOut * PRICE_OUT);
-
-        const formatMoney = (amount: number) => {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-        };
+        const buildInfo = gateway.getBuildInfo();
 
         return `<!DOCTYPE html>
 <html lang="en">
@@ -1417,8 +1617,70 @@ print(response.choices[0].message.content)\`;
         h4 { margin: 0; font-size: 16px; font-weight: 600; color: var(--ui-text-primary); }
         p { margin: 0; font-size: 14px; color: var(--ui-text-muted); line-height: 1.6; }
         
-        .hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; border-bottom: 1px solid var(--ui-border-soft); padding-bottom: 32px; margin-bottom: 8px; }
+        .hero {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border-bottom: 1px solid var(--ui-border-soft);
+            padding-bottom: 32px;
+            margin-bottom: 8px;
+        }
+        .hero-top {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+            gap: 24px;
+            align-items: stretch;
+        }
         .hero p { margin-top: 12px; font-size: 16px; max-width: 600px; }
+        .hero-side {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+        }
+        .hero-meta {
+            background: color-mix(in srgb, var(--ui-bg-card) 85%, transparent);
+            border: 1px solid var(--ui-border-soft);
+            border-radius: 16px;
+            padding: 18px 18px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .hero-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: space-between;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .hero-meta-row + .hero-meta-row {
+            margin-top: 8px;
+        }
+        .hero-meta-label {
+            color: var(--ui-text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .hero-meta-value {
+            color: var(--ui-text-primary);
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            width: 100%;
+        }
+        .hero-actions button {
+            flex: 1;
+            min-width: 0;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .hero-actions .hero-toggle {
+            flex: 1.5;
+        }
         
         .badge {
             display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
@@ -1667,13 +1929,30 @@ print(response.choices[0].message.content)\`;
 
             /* Compact Hero */
             .hero {
-                flex-direction: column;
                 gap: 12px;
-                align-items: stretch;
-                padding-bottom: 0;
-                border-bottom: 1px solid #27272a; /* Zinc 800 */
                 padding-bottom: 12px;
+                border-bottom: 1px solid #27272a; /* Zinc 800 */
                 margin-bottom: 4px;
+            }
+            .hero-top {
+                grid-template-columns: 1fr;
+            }
+            .hero-side {
+                gap: 10px;
+            }
+            .hero-meta {
+                padding: 14px;
+                border-radius: 10px;
+            }
+            .hero-actions {
+                flex-wrap: wrap;
+            }
+            .hero-actions button {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 80px;
+            }
+            .hero-actions .hero-toggle {
+                flex: 1 1 100%;
             }
             .hero h1 { 
                 font-size: 18px; 
@@ -1806,25 +2085,37 @@ print(response.choices[0].message.content)\`;
 <body>
     <div class="page">
         <div class="hero">
-            <div>
-                <h1>Copilot API Dashboard</h1>
-                <p>Monitor and control your local Copilot API Gateway.</p>
-                <div style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; background: color-mix(in srgb, var(--vscode-charts-purple) 15%, transparent); color: var(--vscode-charts-purple); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid color-mix(in srgb, var(--vscode-charts-purple) 30%, transparent);">
-                    <span style="font-size: 14px;">✨</span> Fetches ANY language model detected in VS Code
+            <div class="hero-top">
+                <div>
+                    <h1>Copilot API Dashboard</h1>
+                    <p>Monitor and control your local Copilot API Gateway.</p>
+                    <div style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; background: color-mix(in srgb, var(--vscode-charts-purple) 15%, transparent); color: var(--vscode-charts-purple); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid color-mix(in srgb, var(--vscode-charts-purple) 30%, transparent);">
+                        <span style="font-size: 14px;">✨</span> Fetches ANY language model detected in VS Code
+                    </div>
                 </div>
-                <div style="margin-top: 12px; font-size: 13px; opacity: 0.9; font-family: var(--vscode-editor-font-family); display: flex; align-items: center; gap: 8px;">
-                    <span style="opacity: 0.6;">Running on:</span>
-                    <strong id="server-url">${url}</strong>
-                    <button id="btn-copy-url" class="secondary" style="padding: 4px 8px; font-size: 11px; min-width: auto;" title="Copy URL">📋 Copy</button>
+                <div class="hero-side">
+                    <div class="hero-meta">
+                        <div class="hero-meta-row">
+                            <span class="hero-meta-label">Running on</span>
+                            <span class="hero-meta-value"><strong id="server-url">${url}</strong></span>
+                        </div>
+                        <div class="hero-meta-row">
+                            <span class="hero-meta-label">Build</span>
+                            <span class="hero-meta-value"><strong title="${buildInfo.builtAtIso}">v${buildInfo.version}</strong> <span title="${buildInfo.builtAtIso}">${buildInfo.builtAtDisplay}</span></span>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                            <button id="btn-copy-url" class="secondary" style="padding: 4px 8px; font-size: 11px; min-width: auto;" title="Copy URL">📋 Copy</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; gap: 8px;">
-                <button id="btn-toggle-server" class="${status.running ? 'danger' : 'success'}" data-running="${status.running}" style="min-width: 140px;">
-                    ${status.running ? 'Stop Server' : 'Start Server'}
+            <div class="hero-actions">
+                <button id="btn-toggle-server" class="hero-toggle ${status.running ? 'danger' : 'success'}" data-running="${status.running}">
+                    ${status.running ? 'Stop Gateway' : 'Start Gateway'}
                 </button>
-                <button class="secondary" id="btn-open-chat" title="Open Copilot Chat" style="min-width: 90px;">💬 Chat</button>
-                <button class="secondary" id="btn-ask-copilot" title="Ask Copilot" style="min-width: 90px;">❓ Ask</button>
-                <button class="secondary" id="btn-docs" title="Read Documentation" style="min-width: 90px;">📚 Docs</button>
+                <button class="secondary" id="btn-open-chat" title="Open Copilot Chat">💬 Chat</button>
+                <button class="secondary" id="btn-ask-copilot" title="Ask Copilot">❓ Ask</button>
+                <button class="secondary" id="btn-docs" title="Read Documentation">📚 Docs</button>
                 <button class="secondary" id="btn-settings" title="Settings">⚙️</button>
             </div>
         </div>
@@ -1863,18 +2154,18 @@ print(response.choices[0].message.content)\`;
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 24px;">
             <div class="card">
                 <h3 style="font-size: 12px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px;">💸 Est. Savings</h3>
-                <div style="font-size: 28px; font-weight: 600; color: var(--vscode-testing-iconPassed);">${formatMoney(savedTotal)}</div>
-                <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">+${formatMoney(savedToday)} today</div>
+                <div id="audit-savings-total" style="font-size: 28px; font-weight: 600; color: var(--vscode-testing-iconPassed);">...</div>
+                <div id="audit-savings-today" style="font-size: 11px; opacity: 0.6; margin-top: 4px;">Loading...</div>
                 <div style="font-size: 9px; opacity: 0.4; margin-top: 8px;">*Approx. based on GPT-4.1 pricing</div>
             </div>
             <div class="card">
                 <h3 style="font-size: 12px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px;">📊 Traffic</h3>
-                <div style="font-size: 28px; font-weight: 600;">${lifetimeStats.totalRequests || 0}</div>
+                <div id="audit-total-requests" style="font-size: 28px; font-weight: 600;">...</div>
                 <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">Total Requests</div>
             </div>
             <div class="card">
                 <h3 style="font-size: 12px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px;">⚡ Latency</h3>
-                <div style="font-size: 28px; font-weight: 600;">${todayStats.avgLatency || 0}<span style="font-size: 14px; opacity: 0.6;">ms</span></div>
+                <div id="audit-today-latency" style="font-size: 28px; font-weight: 600;">...<span style="font-size: 14px; opacity: 0.6;">ms</span></div>
                 <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">Avg Today</div>
             </div>
             <div class="card">
@@ -2213,8 +2504,10 @@ print(response.choices[0].message.content)\`;
                     <thead>
                         <tr style="text-align: left; border-bottom: 1px solid var(--vscode-widget-border);">
                             <th style="padding: 8px 12px; opacity: 0.7;">Time</th>
+                            <th style="padding: 8px 12px; opacity: 0.7;">IP</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Method</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Path</th>
+                            <th style="padding: 8px 12px; opacity: 0.7;">Model</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Status</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Latency</th>
                             <th style="padding: 8px 12px; opacity: 0.7;">Tokens</th>
@@ -2223,7 +2516,7 @@ print(response.choices[0].message.content)\`;
                     </thead>
                     <tbody id="audit-table-body">
                         <tr style="border-bottom: 1px solid var(--vscode-widget-border);">
-                            <td style="padding: 8px 12px; opacity: 0.6; font-style: italic;" colspan="7">Loading audit logs...</td>
+                            <td style="padding: 8px 12px; opacity: 0.6; font-style: italic;" colspan="9">Loading audit logs...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -2395,6 +2688,7 @@ print(response.choices[0].message.content)\`;
 
     <script nonce="${nonce}">
         var vscode = acquireVsCodeApi();
+        var auditStatsDays = 30;
 
         // Pagination state - declare at top to avoid hoisting issues
         var currentPage = 1;
@@ -2402,8 +2696,67 @@ print(response.choices[0].message.content)\`;
         var totalLogs = 0;
         var lastLogs = [];
 
+        function renderAuditLogLoading() {
+            document.getElementById('audit-table-body').innerHTML = '<tr><td colspan="9" style="padding: 20px; text-align: center; opacity: 0.7;">Loading...</td></tr>';
+        }
+
+        function requestAuditSnapshot(options) {
+            options = options || {};
+
+            if (typeof options.page === 'number') {
+                currentPage = options.page;
+            }
+            if (typeof options.pageSize === 'number') {
+                pageSize = options.pageSize;
+            }
+            if (options.showLoadingLogs) {
+                renderAuditLogLoading();
+            }
+
+            vscode.postMessage({
+                type: 'getAuditSnapshot',
+                value: {
+                    page: currentPage,
+                    pageSize: pageSize,
+                    days: auditStatsDays
+                }
+            });
+        }
+
+        function updateAuditSummary(summary) {
+            if (!summary) {
+                return;
+            }
+
+            var totalSavingsEl = document.getElementById('audit-savings-total');
+            var todaySavingsEl = document.getElementById('audit-savings-today');
+            var totalRequestsEl = document.getElementById('audit-total-requests');
+            var todayLatencyEl = document.getElementById('audit-today-latency');
+
+            if (totalSavingsEl) totalSavingsEl.textContent = summary.totalSavings;
+            if (todaySavingsEl) todaySavingsEl.textContent = '+' + summary.todaySavings + ' today';
+            if (totalRequestsEl) totalRequestsEl.textContent = String(summary.totalRequests || 0);
+            if (todayLatencyEl) {
+                todayLatencyEl.innerHTML = String(summary.avgLatency || 0) + '<span style="font-size: 14px; opacity: 0.6;">ms</span>';
+            }
+        }
+
+        function setServerToggleState(button, running, pending) {
+            if (!button) {
+                return;
+            }
+
+            button.dataset.running = running ? 'true' : 'false';
+            button.dataset.pending = pending ? 'true' : 'false';
+            button.disabled = !!pending;
+            button.textContent = running ? 'Stop Gateway' : 'Start Gateway';
+            button.classList.toggle('danger', running);
+            button.classList.toggle('success', !running);
+        }
+
         document.getElementById('btn-toggle-server').onclick = function() {
             var running = this.getAttribute('data-running') === 'true';
+            setServerToggleState(this, !running, true);
             vscode.postMessage({ type: running ? 'stopServer' : 'startServer' });
         };
 
@@ -2554,13 +2907,9 @@ print(response.choices[0].message.content)\`;
         // Initialize on load
         // try { initCharts(); } catch (e) { console.error('Failed to init charts', e); }
 
-        // Request initial data
-        setTimeout(() => vscode.postMessage({ type: 'getAuditStats' }), 500);
-
         document.getElementById('btn-refresh-audit').onclick = function() {
             startCountdown(); // Reset timer
-            vscode.postMessage({ type: 'getAuditStats' });
-            vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
+            requestAuditSnapshot({ showLoadingLogs: true });
             this.textContent = '🔄 Loading...';
             setTimeout(() => { this.textContent = '🔄 Refresh'; }, 1000);
         };
@@ -2669,9 +3018,7 @@ print(response.choices[0].message.content)\`;
 
                 if (refreshTimer <= 0) {
                     refreshTimer = 10;
-                    vscode.postMessage({ type: 'getAuditStats' });
-                    // Also refresh current page of logs
-                    vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
+                    requestAuditSnapshot({ showLoadingLogs: false });
                 }
             }, 1000);
         }
@@ -2687,8 +3034,7 @@ print(response.choices[0].message.content)\`;
         // Request fresh stats after a short delay to ensure extension message listener is ready
         setTimeout(function() {
             vscode.postMessage({ type: 'getStats' });
-            vscode.postMessage({ type: 'getAuditStats' });
-            vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
+            requestAuditSnapshot({ showLoadingLogs: true });
         }, 100);
 
         // IP Allowlist handlers
@@ -2852,6 +3198,19 @@ print(response.choices[0].message.content)\`;
             console.log('[Dashboard] Received message:', message.type, message);
             if (message.type === 'historyData') {
                 // Legacy support if needed
+            } else if (message.type === 'statsSnapshot') {
+                if (message.data?.stats) {
+                    updateStats(message.data.stats);
+                }
+                if (message.data?.realtimeStats) {
+                    if (message.data.realtimeStats.requestsPerMinute !== undefined) document.getElementById('stat-rpm').textContent = message.data.realtimeStats.requestsPerMinute;
+                    if (message.data.realtimeStats.avgLatencyMs !== undefined) document.getElementById('stat-latency').innerHTML = message.data.realtimeStats.avgLatencyMs + '<span style="font-size: 10px; opacity: 0.6;">ms</span>';
+                    if (message.data.realtimeStats.errorRate !== undefined) document.getElementById('stat-errors').innerHTML = message.data.realtimeStats.errorRate + '<span style="font-size: 10px; opacity: 0.6;">%</span>';
+                    if (message.data.realtimeStats.activeConnections !== undefined) {
+                        var snapshotConnEl = document.getElementById('stat-connections');
+                        if (snapshotConnEl) snapshotConnEl.textContent = message.data.realtimeStats.activeConnections;
+                    }
+                }
             } else if (message.type === 'statsData') {
                 updateStats(message.data);
             } else if (message.type === 'realtimeStats') {
@@ -2865,6 +3224,10 @@ print(response.choices[0].message.content)\`;
                 }
             } else if (message.type === 'auditStatsData') {
                 updateCharts(message.data);
+            } else if (message.type === 'auditSnapshotData') {
+                updateAuditSummary(message.summary);
+                updateCharts(message.dailyStats);
+                updateLogTable(message.logData, message.page, message.total, message.pageSize);
             } else if (message.type === 'auditLogData') {
                 console.log('[Dashboard] Updating log table with', message.data?.length || 0, 'entries');
                 updateLogTable(message.data, message.page, message.total, message.pageSize);
@@ -2872,6 +3235,9 @@ print(response.choices[0].message.content)\`;
                 appendLogStart(message.value);
             } else if (message.type === 'liveLog') {
                 appendLog(message.value);
+            } else if (message.type === 'requestRefresh') {
+                vscode.postMessage({ type: 'getStats' });
+                requestAuditSnapshot({ showLoadingLogs: false });
             } else if (message.type === 'scrollTo') {
                 // Scroll to a specific section
                 var target = message.target;
@@ -2889,16 +3255,14 @@ print(response.choices[0].message.content)\`;
         document.getElementById('btn-prev-page').onclick = function() {
             if (currentPage > 1) {
                 currentPage--;
-                vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
-                document.getElementById('audit-table-body').innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; opacity: 0.7;">Loading...</td></tr>';
+                requestAuditSnapshot({ showLoadingLogs: true });
             }
         };
 
         document.getElementById('btn-next-page').onclick = function() {
             if (currentPage * pageSize < totalLogs) {
                 currentPage++;
-                vscode.postMessage({ type: 'getAuditLogs', value: { page: currentPage, pageSize: pageSize } });
-                document.getElementById('audit-table-body').innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; opacity: 0.7;">Loading...</td></tr>';
+                requestAuditSnapshot({ showLoadingLogs: true });
             }
         };
 
@@ -3047,7 +3411,7 @@ print(response.choices[0].message.content)\`;
             tbody.innerHTML = '';
 
             if (!logs || logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="padding: 24px; text-align: center; opacity: 0.6; font-style: italic;">No audit logs found.<br><span style="font-size: 11px; opacity: 0.8; margin-top: 4px; display: block;">Make a request to generate logs.</span></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="padding: 24px; text-align: center; opacity: 0.6; font-style: italic;">No audit logs found.<br><span style="font-size: 11px; opacity: 0.8; margin-top: 4px; display: block;">Make a request to generate logs.</span></td></tr>';
                 return;
             }
 
@@ -3059,8 +3423,10 @@ print(response.choices[0].message.content)\`;
                 return \`
                 <tr style="border-bottom: 1px solid var(--vscode-widget-border);">
                     <td style="padding: 8px 12px; white-space: nowrap; opacity: 0.8;">\${time}</td>
+                    <td style="padding: 8px 12px; white-space: nowrap; font-family: var(--vscode-editor-font-family); font-size: 11px; opacity: 0.8;">\${log.ip || '-'}</td>
                     <td style="padding: 8px 12px; white-space: nowrap;"><span style="padding: 2px 6px; border-radius: 4px; background: var(--vscode-textCodeBlock-background); font-size: 11px; font-family: var(--vscode-editor-font-family);">\${log.method || 'UNK'}</span></td>
                     <td style="padding: 8px 12px; word-break: break-all; font-family: var(--vscode-editor-font-family);">\${log.path || '/'}</td>
+                    <td style="padding: 8px 12px; white-space: nowrap;"><span style="padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--vscode-charts-blue) 15%, transparent); font-size: 11px; font-family: var(--vscode-editor-font-family);">\${log.model || '-'}</span></td>
                     <td style="padding: 8px 12px; color: \${statusColor}; font-weight: 600;">\${log.status || 0}</td>
                     <td style="padding: 8px 12px;">\${log.durationMs || 0}ms</td>
                     <td style="padding: 8px 12px;" title="\${(log.tokensIn || 0) + (log.tokensOut || 0)} tokens">\${formatNumber ? formatNumber((log.tokensIn || 0) + (log.tokensOut || 0)) : 0}</td>
@@ -3172,10 +3538,6 @@ setInterval(function () {
     vscode.postMessage({ type: 'getStats' });
 }, 5000);
 
-// Load audit data on page load
-// Load audit data on page load
-vscode.postMessage({ type: 'getAuditStats' });
-vscode.postMessage({ type: 'getAuditLogs', value: { page: 1, pageSize: 10 } });
 </script>
     </body>
     </html>`;
