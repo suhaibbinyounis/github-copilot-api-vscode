@@ -76,7 +76,8 @@
     "lint": "eslint src",
     "perf:bench": "node perf/run-runtime-bench.cjs",
     "perf:profile": "npm run compile && node perf/run-dashboard-profile.cjs",
-    "perf:all": "npm run perf:bench && npm run perf:profile",
+    "perf:request-tracking": "npm run compile && node perf/run-request-tracking-validation.cjs",
+    "perf:all": "npm run perf:bench && npm run perf:profile && npm run perf:request-tracking",
     "workflow": "./workflow.sh",
     "test": "vscode-test"
   },

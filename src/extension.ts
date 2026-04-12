@@ -456,6 +456,12 @@ Server is stopped. Click to start or manage.
 		return PerfMetrics.getReport();
 	});
 
+	const validateRequestTrackingCommand = vscode.commands.registerCommand('github-copilot-api-vscode.perf.validateRequestTracking', async (rawIterations?: unknown) => {
+		const gw = await getGateway();
+		const iterations = typeof rawIterations === 'number' ? rawIterations : 25;
+		return gw.validateFastPathRequestTracking(iterations);
+	});
+
 	const startCpuProfileCommand = vscode.commands.registerCommand('github-copilot-api-vscode.perf.startCpuProfile', async (rawLabel?: unknown) => {
 		const label = typeof rawLabel === 'string' ? rawLabel : '';
 		return extensionHostProfiler.start(label);
@@ -564,6 +570,7 @@ Server is stopped. Click to start or manage.
 		beginPerfPhaseCommand,
 		endPerfPhaseCommand,
 		getPerfMetricsCommand,
+		validateRequestTrackingCommand,
 		startCpuProfileCommand,
 		stopCpuProfileCommand,
 	);

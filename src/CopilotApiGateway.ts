@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { EventEmitter } from 'events';
 import { createServer, type IncomingMessage, type ServerResponse } from 'http';
 import { createServer as createHttpsServer } from 'https';
 import type { AddressInfo } from 'net';
@@ -544,6 +545,140 @@ export class CopilotApiGateway implements vscode.Disposable {
 			enabled: vscode.workspace.getConfiguration('githubCopilotApi.mcp').get<boolean>('enabled', true),
 			servers: this.mcpService?.getConnectedServers() ?? [],
 			tools: this.mcpService?.getTools() ?? []
+		};
+	}
+
+	private getRequestTrackingSnapshot() {
+		return {
+			requestIpMapSize: this.requestIpMap.size,
+			activeConnectionsPerIpSize: this.activeConnectionsPerIp.size,
+			activeRequests: this.activeRequests
+		};
+	}
+
+	public async validateFastPathRequestTracking(iterations = 25) {
+		const originalConfig = this.config;
+		const originalSelectChatModels = vscode.lm.selectChatModels;
+
+		this.config = {
+			...this.config,
+			enableHttp: true,
+			apiKey: '',
+			rateLimitPerMinute: Number.MAX_SAFE_INTEGER,
+			ipAllowlist: [],
+			maxConnectionsPerIp: Number.MAX_SAFE_INTEGER
+		};
+
+		(vscode.lm as typeof vscode.lm & { selectChatModels: typeof vscode.lm.selectChatModels }).selectChatModels = async () => [];
+
+		try {
+			const initialState = this.getRequestTrackingSnapshot();
+			const validatedEndpoints = [
+				'GET /',
+				'HEAD /',
+				'GET /health',
+				'GET /docs',
+				'GET /openapi.json',
+				'GET /v1/models',
+				'POST /v1/messages/count_tokens'
+			];
+
+			for (let index = 0; index < iterations; index += 1) {
+				const responses = await Promise.all([
+					this.exerciseSyntheticRequestLifecycle('GET', '/'),
+					this.exerciseSyntheticRequestLifecycle('HEAD', '/'),
+					this.exerciseSyntheticRequestLifecycle('GET', '/health'),
+					this.exerciseSyntheticRequestLifecycle('GET', '/docs'),
+					this.exerciseSyntheticRequestLifecycle('GET', '/openapi.json'),
+					this.exerciseSyntheticRequestLifecycle('GET', '/v1/models'),
+					this.exerciseSyntheticRequestLifecycle('POST', '/v1/messages/count_tokens', {
+						model: 'gpt-4o-copilot',
+						messages: [{ role: 'user', content: 'ping' }]
+					})
+				]);
+
+				for (const response of responses) {
+					if (response.statusCode !== 200) {
+						throw new Error(`Expected fast-path endpoint to return 200, got ${response.statusCode}`);
+					}
+				}
+			}
+
+			await new Promise(resolve => setImmediate(resolve));
+
+			return {
+				iterations,
+				validatedEndpoints,
+				initialState,
+				finalState: this.getRequestTrackingSnapshot()
+			};
+		} finally {
+			(vscode.lm as typeof vscode.lm & { selectChatModels: typeof vscode.lm.selectChatModels }).selectChatModels = originalSelectChatModels;
+			this.config = originalConfig;
+		}
+	}
+
+	private async exerciseSyntheticRequestLifecycle(method: string, requestUrl: string, body?: unknown): Promise<{ statusCode: number; body: string }> {
+		const req = new EventEmitter() as any;
+		req.method = method;
+		req.url = requestUrl;
+		req.headers = {};
+		req.socket = { remoteAddress: '127.0.0.1' } as any;
+
+		const responseHeaders = new Map<string, unknown>();
+		let responseBody = '';
+
+		const res = new EventEmitter() as any;
+
+		res.headersSent = false;
+		res.statusCode = 200;
+		res.writableEnded = false;
+		res.setHeader = (name: string, value: unknown) => {
+			responseHeaders.set(name.toLowerCase(), value);
+			return res;
+		};
+		res.getHeaders = () => Object.fromEntries(responseHeaders.entries());
+		res.writeHead = (status: number, headers?: Record<string, unknown>) => {
+			res.statusCode = status;
+			res.headersSent = true;
+			if (headers) {
+				for (const [key, value] of Object.entries(headers)) {
+					responseHeaders.set(key.toLowerCase(), value);
+				}
+			}
+			return res;
+		};
+		res.end = (chunk?: string | Buffer) => {
+			if (chunk !== undefined) {
+				responseBody += Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
+			}
+			res.headersSent = true;
+			res.writableEnded = true;
+			res.emit('finish');
+			res.emit('close');
+			return res;
+		};
+
+		const requestStart = Date.now();
+		const requestId = randomUUID().slice(0, 8);
+		this.requestIpMap.set(requestId, this.getClientIp(req as IncomingMessage));
+		res.once('close', () => {
+			this.requestIpMap.delete(requestId);
+		});
+
+		const requestPromise = this.handleHttpRequest(req as IncomingMessage, res as ServerResponse, requestId, requestStart);
+		if (body !== undefined) {
+			queueMicrotask(() => {
+				const payload = Buffer.from(JSON.stringify(body), 'utf8');
+				req.emit('data', payload);
+				req.emit('end');
+			});
+		}
+
+		await requestPromise;
+		return {
+			statusCode: res.statusCode,
+			body: responseBody
 		};
 	}
 
@@ -1321,8 +1456,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 			const requestStart = Date.now();
 			const requestId = randomUUID().slice(0, 8);
 
-			// Pre-populate IP mapping for error-path logging
+			// Track the client IP for audit logging and always clear it when the response closes.
 			this.requestIpMap.set(requestId, this.getClientIp(req));
+			res.once('close', () => {
+				this.requestIpMap.delete(requestId);
+			});
 
 			// Fire start event immediately for Live Log Tail to show pending request
 			this._onDidLogRequestStart.fire({
@@ -1603,7 +1741,6 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		// Get client IP for rate limiting
 		const clientIp = this.getClientIp(req);
-		this.requestIpMap.set(requestId, clientIp);
 
         // Root endpoint — responds to both GET and HEAD (used by clients as a connectivity probe)
         if (url.pathname === '/') {
@@ -5668,9 +5805,6 @@ export class CopilotApiGateway implements vscode.Disposable {
 			requestHeaders: extra?.requestHeaders,
 			responseHeaders: extra?.responseHeaders
 		};
-
-		// Clean up IP mapping after logging
-		this.requestIpMap.delete(requestId);
 
 		const redactedEntry = this.redactSensitiveData(logEntry);
 		this.auditService.logRequest(redactedEntry);

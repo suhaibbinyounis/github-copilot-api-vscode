@@ -49846,7 +49846,7 @@ var require_extension2 = __commonJS({
 var require_websocket = __commonJS({
   "node_modules/ws/lib/websocket.js"(exports2, module2) {
     "use strict";
-    var EventEmitter2 = require("events");
+    var EventEmitter3 = require("events");
     var https = require("https");
     var http = require("http");
     var net = require("net");
@@ -49878,7 +49878,7 @@ var require_websocket = __commonJS({
     var protocolVersions = [8, 13];
     var readyStates = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
     var subprotocolRegex = /^[!#$%&'*+\-.0-9A-Z^_`|a-z~]+$/;
-    var WebSocket2 = class _WebSocket extends EventEmitter2 {
+    var WebSocket2 = class _WebSocket extends EventEmitter3 {
       /**
        * Create a new `WebSocket`.
        *
@@ -50875,7 +50875,7 @@ var require_subprotocol = __commonJS({
 var require_websocket_server = __commonJS({
   "node_modules/ws/lib/websocket-server.js"(exports2, module2) {
     "use strict";
-    var EventEmitter2 = require("events");
+    var EventEmitter3 = require("events");
     var http = require("http");
     var { Duplex } = require("stream");
     var { createHash } = require("crypto");
@@ -50888,7 +50888,7 @@ var require_websocket_server = __commonJS({
     var RUNNING = 0;
     var CLOSING = 1;
     var CLOSED = 2;
-    var WebSocketServer2 = class extends EventEmitter2 {
+    var WebSocketServer2 = class extends EventEmitter3 {
       /**
        * Create a `WebSocketServer` instance.
        *
@@ -51303,6 +51303,7 @@ var vscode7 = __toESM(require("vscode"));
 
 // src/CopilotApiGateway.ts
 var import_crypto = require("crypto");
+var import_events = require("events");
 var import_http = require("http");
 var import_https = require("https");
 var os = __toESM(require("os"));
@@ -51826,6 +51827,124 @@ var CopilotApiGateway = class {
       enabled: vscode4.workspace.getConfiguration("githubCopilotApi.mcp").get("enabled", true),
       servers: this.mcpService?.getConnectedServers() ?? [],
       tools: this.mcpService?.getTools() ?? []
+    };
+  }
+  getRequestTrackingSnapshot() {
+    return {
+      requestIpMapSize: this.requestIpMap.size,
+      activeConnectionsPerIpSize: this.activeConnectionsPerIp.size,
+      activeRequests: this.activeRequests
+    };
+  }
+  async validateFastPathRequestTracking(iterations = 25) {
+    const originalConfig = this.config;
+    const originalSelectChatModels = vscode4.lm.selectChatModels;
+    this.config = {
+      ...this.config,
+      enableHttp: true,
+      apiKey: "",
+      rateLimitPerMinute: Number.MAX_SAFE_INTEGER,
+      ipAllowlist: [],
+      maxConnectionsPerIp: Number.MAX_SAFE_INTEGER
+    };
+    vscode4.lm.selectChatModels = async () => [];
+    try {
+      const initialState = this.getRequestTrackingSnapshot();
+      const validatedEndpoints = [
+        "GET /",
+        "HEAD /",
+        "GET /health",
+        "GET /docs",
+        "GET /openapi.json",
+        "GET /v1/models",
+        "POST /v1/messages/count_tokens"
+      ];
+      for (let index = 0; index < iterations; index += 1) {
+        const responses = await Promise.all([
+          this.exerciseSyntheticRequestLifecycle("GET", "/"),
+          this.exerciseSyntheticRequestLifecycle("HEAD", "/"),
+          this.exerciseSyntheticRequestLifecycle("GET", "/health"),
+          this.exerciseSyntheticRequestLifecycle("GET", "/docs"),
+          this.exerciseSyntheticRequestLifecycle("GET", "/openapi.json"),
+          this.exerciseSyntheticRequestLifecycle("GET", "/v1/models"),
+          this.exerciseSyntheticRequestLifecycle("POST", "/v1/messages/count_tokens", {
+            model: "gpt-4o-copilot",
+            messages: [{ role: "user", content: "ping" }]
+          })
+        ]);
+        for (const response of responses) {
+          if (response.statusCode !== 200) {
+            throw new Error(`Expected fast-path endpoint to return 200, got ${response.statusCode}`);
+          }
+        }
+      }
+      await new Promise((resolve) => setImmediate(resolve));
+      return {
+        iterations,
+        validatedEndpoints,
+        initialState,
+        finalState: this.getRequestTrackingSnapshot()
+      };
+    } finally {
+      vscode4.lm.selectChatModels = originalSelectChatModels;
+      this.config = originalConfig;
+    }
+  }
+  async exerciseSyntheticRequestLifecycle(method, requestUrl, body) {
+    const req = new import_events.EventEmitter();
+    req.method = method;
+    req.url = requestUrl;
+    req.headers = {};
+    req.socket = { remoteAddress: "127.0.0.1" };
+    const responseHeaders = /* @__PURE__ */ new Map();
+    let responseBody = "";
+    const res = new import_events.EventEmitter();
+    res.headersSent = false;
+    res.statusCode = 200;
+    res.writableEnded = false;
+    res.setHeader = (name, value) => {
+      responseHeaders.set(name.toLowerCase(), value);
+      return res;
+    };
+    res.getHeaders = () => Object.fromEntries(responseHeaders.entries());
+    res.writeHead = (status, headers) => {
+      res.statusCode = status;
+      res.headersSent = true;
+      if (headers) {
+        for (const [key, value] of Object.entries(headers)) {
+          responseHeaders.set(key.toLowerCase(), value);
+        }
+      }
+      return res;
+    };
+    res.end = (chunk) => {
+      if (chunk !== void 0) {
+        responseBody += Buffer.isBuffer(chunk) ? chunk.toString("utf8") : String(chunk);
+      }
+      res.headersSent = true;
+      res.writableEnded = true;
+      res.emit("finish");
+      res.emit("close");
+      return res;
+    };
+    const requestStart = Date.now();
+    const requestId = (0, import_crypto.randomUUID)().slice(0, 8);
+    this.requestIpMap.set(requestId, this.getClientIp(req));
+    res.once("close", () => {
+      this.requestIpMap.delete(requestId);
+    });
+    const requestPromise = this.handleHttpRequest(req, res, requestId, requestStart);
+    if (body !== void 0) {
+      queueMicrotask(() => {
+        const payload = Buffer.from(JSON.stringify(body), "utf8");
+        req.emit("data", payload);
+        req.emit("end");
+      });
+    }
+    await requestPromise;
+    return {
+      statusCode: res.statusCode,
+      body: responseBody
     };
   }
   /**
@@ -52446,6 +52565,9 @@ var CopilotApiGateway = class {
       const requestStart = Date.now();
       const requestId = (0, import_crypto.randomUUID)().slice(0, 8);
       this.requestIpMap.set(requestId, this.getClientIp(req));
+      res.once("close", () => {
+        this.requestIpMap.delete(requestId);
+      });
       this._onDidLogRequestStart.fire({
         requestId,
         method: req.method || "UNKNOWN",
@@ -52671,7 +52793,6 @@ var CopilotApiGateway = class {
     }
     const url2 = this.buildUrl(req.url);
     const clientIp = this.getClientIp(req);
-    this.requestIpMap.set(requestId, clientIp);
     if (url2.pathname === "/") {
       const body = JSON.stringify({
         service: "github-copilot-api-vscode",
@@ -56324,7 +56445,6 @@ ${text} `;
       requestHeaders: extra?.requestHeaders,
       responseHeaders: extra?.responseHeaders
     };
-    this.requestIpMap.delete(requestId);
     const redactedEntry = this.redactSensitiveData(logEntry);
     this.auditService.logRequest(redactedEntry);
     this._onDidLogRequest.fire(redactedEntry);
@@ -60701,6 +60821,11 @@ Server is stopped. Click to start or manage.
   const getPerfMetricsCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.getMetrics", () => {
     return PerfMetrics.getReport();
   });
+  const validateRequestTrackingCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.validateRequestTracking", async (rawIterations) => {
+    const gw = await getGateway();
+    const iterations = typeof rawIterations === "number" ? rawIterations : 25;
+    return gw.validateFastPathRequestTracking(iterations);
+  });
   const startCpuProfileCommand = vscode7.commands.registerCommand("github-copilot-api-vscode.perf.startCpuProfile", async (rawLabel) => {
     const label = typeof rawLabel === "string" ? rawLabel : "";
     return extensionHostProfiler.start(label);
@@ -60787,6 +60912,7 @@ Server is stopped. Click to start or manage.
     beginPerfPhaseCommand,
     endPerfPhaseCommand,
     getPerfMetricsCommand,
+    validateRequestTrackingCommand,
     startCpuProfileCommand,
     stopCpuProfileCommand
   );
