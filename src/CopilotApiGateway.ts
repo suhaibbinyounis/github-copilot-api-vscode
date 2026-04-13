@@ -3406,14 +3406,26 @@ export class CopilotApiGateway implements vscode.Disposable {
 						currentText = '';
 					}
 					const toolCallId = `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
-					contentBlocks.push({
-						type: 'tool_use',
-						id: toolCallId,
-						name: part.name,
-						input: typeof part.input === 'string'
-							? (JSON.parse(part.input || '{}') as Record<string, unknown>)
-							: ((part.input as Record<string, unknown>) || {})
-					});
+
+let parsedInput: Record<string, unknown>;
+
+if (typeof part.input === 'string') {
+	try {
+		parsedInput = JSON.parse(part.input || '{}') as Record<string, unknown>;
+	} catch (e) {
+		console.error('Invalid JSON in tool input:', part.input);
+		parsedInput = {};
+	}
+} else {
+	parsedInput = (part.input as Record<string, unknown>) || {};
+}
+
+contentBlocks.push({
+	type: 'tool_use',
+	id: toolCallId,
+	name: part.name,
+	input: parsedInput
+});
 				} else {
 					const textValue = this.extractTextFromPart(part);
 					if (textValue) { currentText += textValue; }
