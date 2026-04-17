@@ -116,4 +116,4 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [0.0.6]
 
-- Initial release
+- Initial release<!-- pair extraordinaire -->

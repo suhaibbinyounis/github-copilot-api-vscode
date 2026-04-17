@@ -16516,9 +16516,9 @@ var require_fast_deep_equal = __commonJS({
   }
 });
 
-// node_modules/@modelcontextprotocol/sdk/node_modules/ajv/node_modules/json-schema-traverse/index.js
+// node_modules/@modelcontextprotocol/sdk/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse = __commonJS({
-  "node_modules/@modelcontextprotocol/sdk/node_modules/ajv/node_modules/json-schema-traverse/index.js"(exports2, module2) {
+  "node_modules/@modelcontextprotocol/sdk/node_modules/json-schema-traverse/index.js"(exports2, module2) {
     "use strict";
     var traverse = module2.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -23136,9 +23136,9 @@ var require_subschema2 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/node_modules/json-schema-traverse/index.js
+// node_modules/ajv-formats/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse2 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/node_modules/json-schema-traverse/index.js"(exports2, module2) {
+  "node_modules/ajv-formats/node_modules/json-schema-traverse/index.js"(exports2, module2) {
     "use strict";
     var traverse = module2.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -30146,6 +30146,7 @@ var init_McpService = __esm({
         this.output = output;
         this.vscodeTools = new VSCodeToolProvider();
       }
+      output;
       clients = /* @__PURE__ */ new Map();
       cachedTools = [];
       disposables = [];
@@ -51595,6 +51596,10 @@ var ApiError = class extends Error {
     this.details = details;
     this.name = "ApiError";
   }
+  status;
+  type;
+  code;
+  details;
 };
 var DEFAULT_REDACTION_PATTERNS = [
   { id: "ssn", name: "US Social Security", pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b", enabled: false, isBuiltin: true },
@@ -51630,6 +51635,8 @@ var CopilotApiGateway = class {
     this.initializeStats().catch((err) => console.error("Failed to initialize stats:", err));
     setImmediate(() => this.loadHistory());
   }
+  output;
+  statusItem;
   httpServer;
   wsServer;
   disposables = [];
@@ -56940,6 +56947,8 @@ var CopilotPanel = class _CopilotPanel {
     this._gatewayAccessor = _gatewayAccessor;
     void this._init();
   }
+  _extensionUri;
+  _gatewayAccessor;
   static viewType = "copilotApiControls";
   _view;
   _viewDisposables = [];
