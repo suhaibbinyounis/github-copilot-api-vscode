@@ -29,7 +29,7 @@
 
 <p align="center">
   <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/releases/latest">
-    <img src="https://img.shields.io/github/v/release/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&label=Latest%20Release&color=brightgreen" alt="Latest Release">
+    <img src="https://img.shields.io/github/package-json/v/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&label=Version&color=brightgreen" alt="Version">
   </a>
   <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/network/members">
     <img src="https://img.shields.io/github/forks/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&color=blue" alt="Forks">
@@ -41,7 +41,7 @@
     <img src="https://img.shields.io/github/contributors/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&color=purple" alt="Contributors">
   </a>
   <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/commits/main">
-    <img src="https://img.shields.io/github/last-commit/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&color=teal" alt="Last Commit">
+    <img src="https://img.shields.io/github/last-commit/suhaibbinyounis/github-copilot-api-vscode/main?style=flat-square&logo=github&color=teal" alt="Last Commit">
   </a>
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
 </p>
