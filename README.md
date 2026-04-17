@@ -58,6 +58,16 @@
   <img src="demo.gif" alt="GitHub Copilot API Gateway Demo" width="800">
 </p>
 
+<p align="center">
+  <a href="https://star-history.com/#suhaibbinyounis/github-copilot-api-vscode&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=suhaibbinyounis/github-copilot-api-vscode&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=suhaibbinyounis/github-copilot-api-vscode&type=Date" />
+      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=suhaibbinyounis/github-copilot-api-vscode&type=Date" width="800" />
+    </picture>
+  </a>
+</p>
+
 ---
 
 ## ⚡ Quick Start
@@ -249,21 +259,7 @@ For advanced options (TLS, IP allowlisting, audit logging), see [CONTRIBUTING.md
 
 ---
 
-## 📈 Trending
 
-<details>
-  <summary>View Star History</summary>
-  
-  <a href="https://star-history.com/#suhaibbinyounis/github-copilot-api-vscode&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=suhaibbinyounis/github-copilot-api-vscode&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=suhaibbinyounis/github-copilot-api-vscode&type=Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=suhaibbinyounis/github-copilot-api-vscode&type=Date" />
-    </picture>
-  </a>
-</details>
-
----
 
 ## 🛡️ Trust & Transparency
 
