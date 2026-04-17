@@ -11,10 +11,7 @@
 
 <p align="center">
   <a href="https://marketplace.visualstudio.com/items?itemName=suhaibbinyounis.github-copilot-api-vscode">
-    <img src="https://img.shields.io/visual-studio-marketplace/v/suhaibbinyounis.github-copilot-api-vscode?style=for-the-badge&logo=visual-studio-code&logoColor=white&label=VS%20Code" alt="VS Code Marketplace">
-  </a>
-  <a href="https://marketplace.visualstudio.com/items?itemName=suhaibbinyounis.github-copilot-api-vscode">
-    <img src="https://img.shields.io/visual-studio-marketplace/i/suhaibbinyounis.github-copilot-api-vscode?style=for-the-badge&logo=visual-studio-code&logoColor=white&label=Installs" alt="VS Code Installs">
+    <img src="https://img.shields.io/badge/VS%20Code-Marketplace-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" alt="VS Code Marketplace">
   </a>
   <a href="https://open-vsx.org/extension/suhaibbinyounis/github-copilot-api-vscode">
     <img src="https://img.shields.io/open-vsx/v/suhaibbinyounis/github-copilot-api-vscode?style=for-the-badge&logo=eclipse-ide&logoColor=white&label=Open%20VSX" alt="Open VSX">
