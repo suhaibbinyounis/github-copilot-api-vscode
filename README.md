@@ -28,6 +28,25 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/releases/latest">
+    <img src="https://img.shields.io/github/v/release/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&label=Latest%20Release&color=brightgreen" alt="Latest Release">
+  </a>
+  <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/network/members">
+    <img src="https://img.shields.io/github/forks/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&color=blue" alt="Forks">
+  </a>
+  <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/issues">
+    <img src="https://img.shields.io/github/issues/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&color=orange" alt="Open Issues">
+  </a>
+  <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&color=purple" alt="Contributors">
+  </a>
+  <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/commits/main">
+    <img src="https://img.shields.io/github/last-commit/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&color=teal" alt="Last Commit">
+  </a>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white" alt="OpenAI">
   <img src="https://img.shields.io/badge/Anthropic-191919?style=flat-square&logo=anthropic&logoColor=white" alt="Anthropic">
   <img src="https://img.shields.io/badge/Google-4285F4?style=flat-square&logo=google&logoColor=white" alt="Google">
