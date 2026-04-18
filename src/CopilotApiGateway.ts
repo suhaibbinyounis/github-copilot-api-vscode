@@ -4445,16 +4445,26 @@ export class CopilotApiGateway implements vscode.Disposable {
 			return null;
 		}
 
+		// Prioritize 'copilot' vendor over 'copilotcli' for identically named models
+		// so that standard chat streams don't sink into CLI stubs.
+		const sortedModels = [...availableModels].sort((a, b) => {
+			if (a.vendor === 'copilot' && b.vendor !== 'copilot') { return -1; }
+			if (a.vendor !== 'copilot' && b.vendor === 'copilot') { return 1; }
+			if (a.vendor === 'copilotcli' && b.vendor !== 'copilotcli') { return 1; }
+			if (a.vendor !== 'copilotcli' && b.vendor === 'copilotcli') { return -1; }
+			return 0;
+		});
+
 		const requested = requestedModel.toLowerCase();
 
 		// 1. Exact match on model id
-		const exactMatch = availableModels.find(m => m.id.toLowerCase() === requested);
+		const exactMatch = sortedModels.find(m => m.id.toLowerCase() === requested);
 		if (exactMatch) {
 			return exactMatch;
 		}
 
 		// 2. Exact match on family (e.g., "gpt-4o" matches family "gpt-4o")
-		const familyMatch = availableModels.find(m => m.family?.toLowerCase() === requested);
+		const familyMatch = sortedModels.find(m => m.family?.toLowerCase() === requested);
 		if (familyMatch) {
 			return familyMatch;
 		}
@@ -4463,7 +4473,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		// separators so "claude-3-5-sonnet-20241022" matches "claude-3.5-sonnet" etc.
 		const dateStripped = requested.replace(/-\d{8}$/, '');
 		const normed = dateStripped.replace(/\./g, '-');
-		const fuzzyMatch = availableModels.find(m => {
+		const fuzzyMatch = sortedModels.find(m => {
 			const mId = m.id.toLowerCase().replace('copilot-', '').replace(/\./g, '-');
 			const mFamily = (m.family || '').toLowerCase().replace('copilot-', '').replace(/\./g, '-');
 			return normed === mId || normed === mFamily ||
