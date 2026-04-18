@@ -3501,16 +3501,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 
 
+		const copilotModels = await vscode.lm.selectChatModels();
+		const lmModel = this.findModel(resolvedModel, copilotModels);
+		if (!lmModel) {
+			throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map(m => m.id).join(', ')}`, 'invalid_request_error', 'model_not_found');
+		}
+
 		// Use sendRequest directly to preserve message structure instead of flattening to string
 		const text = await this.runWithConcurrency(async () => {
-			const copilotModels = await vscode.lm.selectChatModels();
-			if (!copilotModels || copilotModels.length === 0) {
-				throw new ApiError(503, 'No language model available. Ensure a language model provider (e.g. GitHub Copilot) is installed and signed in.', 'service_unavailable', 'no_models_available');
-			}
-			const lmModel = this.findModel(resolvedModel, copilotModels);
-			if (!lmModel) {
-				throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map(m => m.id).join(', ')}`, 'invalid_request_error', 'model_not_found');
-			}
 			const result = await lmModel.sendRequest(messages, {}, new vscode.CancellationTokenSource().token);
 
 			let output = '';
@@ -3526,16 +3524,13 @@ export class CopilotApiGateway implements vscode.Disposable {
 		});
 
 		// Count tokens
-
-
-		// Count tokens
 		let inputTokens = 0;
 		let outputTokens = 0;
 		try {
 			const promptStr = messages.map(m => m.content).join(' ');
-			if (selectedModel) {
-				inputTokens = await selectedModel.countTokens(promptStr);
-				outputTokens = await selectedModel.countTokens(text || '');
+			if (lmModel) {
+				inputTokens = await lmModel.countTokens(promptStr);
+				outputTokens = await lmModel.countTokens(text || '');
 			}
 		} catch (e) {
 			console.error('Google token counting failed:', e);
