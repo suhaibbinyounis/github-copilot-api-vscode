@@ -4386,18 +4386,18 @@ export class CopilotApiGateway implements vscode.Disposable {
 		return String(content);
 	}
 
-	/**
-	 * Extract text from an unknown stream part (e.g. LanguageModelThinkingPart or future part types).
-	 * The VS Code LM API stream type is `AsyncIterable<LanguageModelTextPart | LanguageModelToolCallPart | unknown>`,
-	 * meaning newer part types (like thinking parts from reasoning models such as gpt-5-mini) may appear
-	 * as `unknown`. This method duck-types them to extract any text content they carry.
-	 */
 	private extractTextFromPart(part: unknown): string | undefined {
 		if (!part || typeof part !== 'object') {
-			return undefined;
+			return typeof part === 'string' ? part : undefined;
 		}
 		const p = part as Record<string, unknown>;
-		// Most part types carry text in `.value` (e.g. LanguageModelTextPart, LanguageModelThinkingPart)
+		
+		// Ignore VS Code internal stateful markers
+		if (p.mimeType === 'stateful_marker') {
+			return undefined;
+		}
+
+		// Most part types carry text in `.value` (e.g. LanguageModelTextPart)
 		if (typeof p.value === 'string') {
 			return p.value;
 		}
@@ -4405,6 +4405,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 		if (typeof p.text === 'string') {
 			return p.text;
 		}
+		// Future proofing for reasoning models
+		if (typeof p.content === 'string') {
+			return p.content;
+		}
+		if (typeof p.thinking === 'string') {
+			return p.thinking;
+		}
+		
 		return undefined;
 	}
 
