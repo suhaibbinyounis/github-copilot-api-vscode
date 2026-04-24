@@ -2429,16 +2429,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 			messages.push(vscode.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemText)}`));
 		}
 
-		for (const msg of payload.messages) {
-			const role = msg.role === 'user' ? vscode.LanguageModelChatMessageRole.User : vscode.LanguageModelChatMessageRole.Assistant;
-			const content = this.flattenMessageContent(msg.content);
-			const redactedContent = this.redactPromptString(content);
-
-			if (role === vscode.LanguageModelChatMessageRole.User) {
-				messages.push(vscode.LanguageModelChatMessage.User(redactedContent));
-			} else {
-				messages.push(vscode.LanguageModelChatMessage.Assistant(redactedContent));
-			}
+		for (const lmMsg of this.anthropicMessagesToLmMessages(payload.messages)) {
+			messages.push(lmMsg);
 		}
 
 		const resolvedModel = this.resolveModel(payload.model);
@@ -3351,16 +3343,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 			messages.push(vscode.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemTextNS)}`));
 		}
 
-		for (const msg of payload.messages) {
-			const role = msg.role === 'user' ? vscode.LanguageModelChatMessageRole.User : vscode.LanguageModelChatMessageRole.Assistant;
-			const content = this.flattenMessageContent(msg.content);
-			const redactedContent = this.redactPromptString(content);
-
-			if (role === vscode.LanguageModelChatMessageRole.User) {
-				messages.push(vscode.LanguageModelChatMessage.User(redactedContent));
-			} else {
-				messages.push(vscode.LanguageModelChatMessage.Assistant(redactedContent));
-			}
+		for (const lmMsg of this.anthropicMessagesToLmMessages(payload.messages)) {
+			messages.push(lmMsg);
 		}
 
 		const resolvedModel = this.resolveModel(payload.model);
@@ -4375,6 +4359,101 @@ export class CopilotApiGateway implements vscode.Disposable {
 			}).join('\n');
 		}
 		return String(content);
+	}
+
+	/**
+	 * Convert an Anthropic message array into VS Code LanguageModelChatMessage objects,
+	 * preserving tool_use / tool_result structure so the underlying model sees properly
+	 * typed parts instead of plain-text summaries like "[Tool call: Bash(...)]". This
+	 * prevents the model from learning to emit tool calls as text on subsequent turns.
+	 *
+	 * Mapping:
+	 *  - user   message with plain text / text blocks  → LanguageModelChatMessage.User(string)
+	 *  - user   message with tool_result blocks        → LanguageModelChatMessage.User([LanguageModelToolResultPart, ...])
+	 *  - assistant message with plain text / text blks → LanguageModelChatMessage.Assistant(string)
+	 *  - assistant message with tool_use blocks        → LanguageModelChatMessage.Assistant([LanguageModelToolCallPart, ...])
+	 */
+	private anthropicMessagesToLmMessages(
+		anthropicMessages: AnthropicMessageRequest['messages']
+	): vscode.LanguageModelChatMessage[] {
+		const result: vscode.LanguageModelChatMessage[] = [];
+
+		for (const msg of anthropicMessages) {
+			const isUser = msg.role === 'user';
+			const contentArr: AnthropicContentBlock[] = Array.isArray(msg.content)
+				? (msg.content as AnthropicContentBlock[])
+				: [{ type: 'text', text: typeof msg.content === 'string' ? msg.content : '' }];
+
+			if (isUser) {
+				// Check if this user turn is purely tool_result blocks
+				const toolResultBlocks = contentArr.filter(p => p.type === 'tool_result') as Array<{
+					type: 'tool_result'; tool_use_id: string;
+					content: string | { type: 'text'; text: string }[];
+				}>;
+
+				if (toolResultBlocks.length > 0) {
+					// Build a user message carrying LanguageModelToolResultPart items
+					const parts: (vscode.LanguageModelToolResultPart | vscode.LanguageModelTextPart)[] = [];
+					for (const blk of contentArr) {
+						if (blk.type === 'tool_result') {
+							const tr = blk as { type: 'tool_result'; tool_use_id: string; content: string | { type: 'text'; text: string }[] };
+							const resultText = typeof tr.content === 'string'
+								? tr.content
+								: Array.isArray(tr.content)
+									? tr.content.map((c: { type: string; text?: string }) => c.text || '').join('\n')
+									: '';
+							parts.push(new vscode.LanguageModelToolResultPart(
+								tr.tool_use_id,
+								[new vscode.LanguageModelTextPart(this.redactPromptString(resultText))]
+							));
+						} else if (blk.type === 'text' && (blk as { type: 'text'; text: string }).text) {
+							parts.push(new vscode.LanguageModelTextPart(
+								this.redactPromptString((blk as { type: 'text'; text: string }).text)
+							));
+						}
+					}
+					result.push(vscode.LanguageModelChatMessage.User(parts));
+				} else {
+					// Plain user text
+					const text = this.flattenMessageContent(msg.content);
+					result.push(vscode.LanguageModelChatMessage.User(this.redactPromptString(text)));
+				}
+			} else {
+				// Assistant turn — check for tool_use blocks
+				const toolUseBlocks = contentArr.filter(p => p.type === 'tool_use') as Array<{
+					type: 'tool_use'; id: string; name: string; input: any;
+				}>;
+
+				if (toolUseBlocks.length > 0) {
+					// Build an assistant message carrying LanguageModelToolCallPart items
+					const parts: (vscode.LanguageModelToolCallPart | vscode.LanguageModelTextPart)[] = [];
+					for (const blk of contentArr) {
+						if (blk.type === 'tool_use') {
+							const tu = blk as { type: 'tool_use'; id: string; name: string; input: any };
+							const inputObj: Record<string, unknown> = typeof tu.input === 'string'
+								? (() => { try { return JSON.parse(tu.input); } catch { return {}; } })()
+								: (tu.input as Record<string, unknown> ?? {});
+							parts.push(new vscode.LanguageModelToolCallPart(
+								tu.id,
+								tu.name,
+								inputObj
+							));
+						} else if (blk.type === 'text' && (blk as { type: 'text'; text: string }).text) {
+							parts.push(new vscode.LanguageModelTextPart(
+								this.redactPromptString((blk as { type: 'text'; text: string }).text)
+							));
+						}
+					}
+					result.push(vscode.LanguageModelChatMessage.Assistant(parts));
+				} else {
+					// Plain assistant text
+					const text = this.flattenMessageContent(msg.content);
+					result.push(vscode.LanguageModelChatMessage.Assistant(this.redactPromptString(text)));
+				}
+			}
+		}
+
+		return result;
 	}
 
 	private extractTextFromPart(part: unknown): string | undefined {
