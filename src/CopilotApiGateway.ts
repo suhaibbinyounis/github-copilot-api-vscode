@@ -2430,14 +2430,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}
 
 		for (const msg of payload.messages) {
-			const role = msg.role === 'user' ? vscode.LanguageModelChatMessageRole.User : vscode.LanguageModelChatMessageRole.Assistant;
-			const content = this.flattenMessageContent(msg.content);
-			const redactedContent = this.redactPromptString(content);
-
-			if (role === vscode.LanguageModelChatMessageRole.User) {
-				messages.push(vscode.LanguageModelChatMessage.User(redactedContent));
+			const parts = this.convertAnthropicContentToLMParts(msg.content, msg.role);
+			if (msg.role === 'user') {
+				messages.push(vscode.LanguageModelChatMessage.User(parts as (vscode.LanguageModelTextPart | vscode.LanguageModelToolResultPart)[]));
 			} else {
-				messages.push(vscode.LanguageModelChatMessage.Assistant(redactedContent));
+				messages.push(vscode.LanguageModelChatMessage.Assistant(parts as (vscode.LanguageModelTextPart | vscode.LanguageModelToolCallPart)[]));
 			}
 		}
 
@@ -3352,14 +3349,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}
 
 		for (const msg of payload.messages) {
-			const role = msg.role === 'user' ? vscode.LanguageModelChatMessageRole.User : vscode.LanguageModelChatMessageRole.Assistant;
-			const content = this.flattenMessageContent(msg.content);
-			const redactedContent = this.redactPromptString(content);
-
-			if (role === vscode.LanguageModelChatMessageRole.User) {
-				messages.push(vscode.LanguageModelChatMessage.User(redactedContent));
+			const parts = this.convertAnthropicContentToLMParts(msg.content, msg.role);
+			if (msg.role === 'user') {
+				messages.push(vscode.LanguageModelChatMessage.User(parts as (vscode.LanguageModelTextPart | vscode.LanguageModelToolResultPart)[]));
 			} else {
-				messages.push(vscode.LanguageModelChatMessage.Assistant(redactedContent));
+				messages.push(vscode.LanguageModelChatMessage.Assistant(parts as (vscode.LanguageModelTextPart | vscode.LanguageModelToolCallPart)[]));
 			}
 		}
 
@@ -4334,6 +4328,75 @@ export class CopilotApiGateway implements vscode.Disposable {
 			const text = this.flattenMessageContent(content);
 			return `[${cleanedRole}]\n${text} `;
 		}).join('\n\n');
+	}
+
+	/**
+	 * Converts Anthropic message content blocks to VS Code LM message parts,
+	 * preserving tool_use and tool_result as structured parts rather than flattening to text.
+	 *
+	 * - assistant messages: text → LanguageModelTextPart, tool_use → LanguageModelToolCallPart
+	 * - user messages: text → LanguageModelTextPart, tool_result → LanguageModelToolResultPart
+	 */
+	private convertAnthropicContentToLMParts(
+		content: unknown,
+		role: 'user' | 'assistant'
+	): vscode.LanguageModelTextPart[] | (vscode.LanguageModelTextPart | vscode.LanguageModelToolCallPart)[] | (vscode.LanguageModelTextPart | vscode.LanguageModelToolResultPart)[] {
+		if (typeof content === 'string') {
+			return [new vscode.LanguageModelTextPart(content)];
+		}
+		if (!Array.isArray(content)) {
+			return [new vscode.LanguageModelTextPart(String(content ?? ''))];
+		}
+
+		const parts: (vscode.LanguageModelTextPart | vscode.LanguageModelToolCallPart | vscode.LanguageModelToolResultPart)[] = [];
+
+		for (const block of content) {
+			if (typeof block === 'string') {
+				if (block) { parts.push(new vscode.LanguageModelTextPart(block)); }
+				continue;
+			}
+			if (!block || typeof block !== 'object') { continue; }
+			const b = block as Record<string, unknown>;
+
+			if (b.type === 'text' && typeof b.text === 'string') {
+				if (b.text) { parts.push(new vscode.LanguageModelTextPart(b.text)); }
+			} else if (b.type === 'tool_use' && role === 'assistant') {
+				// Preserve structured tool call for assistant messages
+				const callId = typeof b.id === 'string' ? b.id : `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
+				let input: object;
+				if (typeof b.input === 'string') {
+					try { input = JSON.parse(b.input || '{}'); } catch { input = {}; }
+				} else {
+					input = (b.input as object) ?? {};
+				}
+				parts.push(new vscode.LanguageModelToolCallPart(callId, String(b.name ?? ''), input));
+			} else if (b.type === 'tool_result' && role === 'user') {
+				// Preserve structured tool result for user messages
+				const callId = typeof b.tool_use_id === 'string' ? b.tool_use_id : '';
+				const resultContent = b.content;
+				let resultParts: vscode.LanguageModelTextPart[];
+				if (typeof resultContent === 'string') {
+					resultParts = resultContent ? [new vscode.LanguageModelTextPart(resultContent)] : [];
+				} else if (Array.isArray(resultContent)) {
+					resultParts = (resultContent as any[]).flatMap((cp: any) => {
+						if (cp?.type === 'image') { return [new vscode.LanguageModelTextPart('[image omitted]')]; }
+						return cp?.text ? [new vscode.LanguageModelTextPart(cp.text)] : [];
+					});
+				} else {
+					resultParts = [];
+				}
+				parts.push(new vscode.LanguageModelToolResultPart(callId, resultParts));
+			} else if (typeof b.text === 'string') {
+				// Fallback: any block with a text property
+				if (b.text) { parts.push(new vscode.LanguageModelTextPart(b.text)); }
+			}
+		}
+
+		// Ensure we always return at least one part so the message is non-empty
+		if (parts.length === 0) {
+			return [new vscode.LanguageModelTextPart('')];
+		}
+		return parts as any;
 	}
 
 	private flattenMessageContent(content: unknown): string {

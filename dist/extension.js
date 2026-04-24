@@ -53374,13 +53374,11 @@ var CopilotApiGateway = class {
       messages.push(vscode4.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemText)}`));
     }
     for (const msg of payload.messages) {
-      const role = msg.role === "user" ? vscode4.LanguageModelChatMessageRole.User : vscode4.LanguageModelChatMessageRole.Assistant;
-      const content = this.flattenMessageContent(msg.content);
-      const redactedContent = this.redactPromptString(content);
-      if (role === vscode4.LanguageModelChatMessageRole.User) {
-        messages.push(vscode4.LanguageModelChatMessage.User(redactedContent));
+      const parts = this.convertAnthropicContentToLMParts(msg.content, msg.role);
+      if (msg.role === "user") {
+        messages.push(vscode4.LanguageModelChatMessage.User(parts));
       } else {
-        messages.push(vscode4.LanguageModelChatMessage.Assistant(redactedContent));
+        messages.push(vscode4.LanguageModelChatMessage.Assistant(parts));
       }
     }
     const resolvedModel = this.resolveModel(payload.model);
@@ -54238,13 +54236,11 @@ data: ${JSON.stringify({
       messages.push(vscode4.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemTextNS)}`));
     }
     for (const msg of payload.messages) {
-      const role = msg.role === "user" ? vscode4.LanguageModelChatMessageRole.User : vscode4.LanguageModelChatMessageRole.Assistant;
-      const content = this.flattenMessageContent(msg.content);
-      const redactedContent = this.redactPromptString(content);
-      if (role === vscode4.LanguageModelChatMessageRole.User) {
-        messages.push(vscode4.LanguageModelChatMessage.User(redactedContent));
+      const parts = this.convertAnthropicContentToLMParts(msg.content, msg.role);
+      if (msg.role === "user") {
+        messages.push(vscode4.LanguageModelChatMessage.User(parts));
       } else {
-        messages.push(vscode4.LanguageModelChatMessage.Assistant(redactedContent));
+        messages.push(vscode4.LanguageModelChatMessage.Assistant(parts));
       }
     }
     const resolvedModel = this.resolveModel(payload.model);
@@ -54280,11 +54276,22 @@ data: ${JSON.stringify({
             currentText = "";
           }
           const toolCallId = `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`;
+          let parsedInput;
+          if (typeof part.input === "string") {
+            try {
+              parsedInput = JSON.parse(part.input || "{}");
+            } catch (e) {
+              console.error("Invalid JSON in tool input for tool:", part.name, "| input length:", String(part.input).length);
+              parsedInput = {};
+            }
+          } else {
+            parsedInput = part.input || {};
+          }
           contentBlocks.push({
             type: "tool_use",
             id: toolCallId,
             name: part.name,
-            input: typeof part.input === "string" ? JSON.parse(part.input || "{}") : part.input || {}
+            input: parsedInput
           });
         } else {
           const textValue = this.extractTextFromPart(part);
@@ -54351,15 +54358,12 @@ data: ${JSON.stringify({
         return "";
       }).join(" ");
     }).join("\n");
+    const copilotModels = await vscode4.lm.selectChatModels();
+    const lmModel = this.findModel(resolvedModel, copilotModels);
+    if (!lmModel) {
+      throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map((m) => m.id).join(", ")}`, "invalid_request_error", "model_not_found");
+    }
     const text = await this.runWithConcurrency(async () => {
-      const copilotModels = await vscode4.lm.selectChatModels();
-      if (!copilotModels || copilotModels.length === 0) {
-        throw new ApiError(503, "No language model available. Ensure a language model provider (e.g. GitHub Copilot) is installed and signed in.", "service_unavailable", "no_models_available");
-      }
-      const lmModel = this.findModel(resolvedModel, copilotModels);
-      if (!lmModel) {
-        throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map((m) => m.id).join(", ")}`, "invalid_request_error", "model_not_found");
-      }
       const result = await lmModel.sendRequest(messages, {}, new vscode4.CancellationTokenSource().token);
       let output = "";
       for await (const part of result.stream) {
@@ -54378,9 +54382,7 @@ data: ${JSON.stringify({
     let outputTokens = 0;
     try {
       const promptStr2 = messages.map((m) => m.content).join(" ");
-      const copilotModels = await vscode4.lm.selectChatModels();
-      if (copilotModels && copilotModels.length > 0) {
-        const lmModel = copilotModels[0];
+      if (lmModel) {
         inputTokens = await lmModel.countTokens(promptStr2);
         outputTokens = await lmModel.countTokens(text || "");
       }
@@ -54497,9 +54499,8 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
     let promptTokens = 0;
     let completionTokens = 0;
     try {
-      const copilotModels2 = await vscode4.lm.selectChatModels();
-      if (copilotModels2 && copilotModels2.length > 0) {
-        const lmModel = copilotModels2[0];
+      if (selectedModel) {
+        const lmModel = selectedModel;
         const inputStr = messages.map((m) => {
           return typeof m.content === "string" ? m.content : JSON.stringify(m.content);
         }).join("\n");
@@ -54627,7 +54628,9 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
           lmMessages.push(vscode4.LanguageModelChatMessage.User(content));
       }
     }
-    const options = {};
+    const options = {
+      justification: "Copilot API Gateway"
+    };
     if (tools && tools.length > 0) {
       options.tools = tools;
       if (toolChoice === "required" || toolChoice === "any") {
@@ -54697,13 +54700,11 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
     let promptTokens = 0;
     let completionTokens = 0;
     try {
-      const copilotModels2 = await vscode4.lm.selectChatModels();
-      if (copilotModels2 && copilotModels2.length > 0) {
-        const lmModel = copilotModels2[0];
+      if (selectedModel) {
         const inputStr = prompt;
-        promptTokens = await lmModel.countTokens(inputStr);
+        promptTokens = await selectedModel.countTokens(inputStr);
         const outputStr = text || "";
-        completionTokens = await lmModel.countTokens(outputStr);
+        completionTokens = await selectedModel.countTokens(outputStr);
       }
     } catch (e) {
       console.error("Token counting failed:", e);
@@ -55068,6 +55069,77 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
 ${text} `;
     }).join("\n\n");
   }
+  /**
+   * Converts Anthropic message content blocks to VS Code LM message parts,
+   * preserving tool_use and tool_result as structured parts rather than flattening to text.
+   *
+   * - assistant messages: text → LanguageModelTextPart, tool_use → LanguageModelToolCallPart
+   * - user messages: text → LanguageModelTextPart, tool_result → LanguageModelToolResultPart
+   */
+  convertAnthropicContentToLMParts(content, role) {
+    if (typeof content === "string") {
+      return [new vscode4.LanguageModelTextPart(content)];
+    }
+    if (!Array.isArray(content)) {
+      return [new vscode4.LanguageModelTextPart(String(content ?? ""))];
+    }
+    const parts = [];
+    for (const block of content) {
+      if (typeof block === "string") {
+        if (block) {
+          parts.push(new vscode4.LanguageModelTextPart(block));
+        }
+        continue;
+      }
+      if (!block || typeof block !== "object") {
+        continue;
+      }
+      const b = block;
+      if (b.type === "text" && typeof b.text === "string") {
+        if (b.text) {
+          parts.push(new vscode4.LanguageModelTextPart(b.text));
+        }
+      } else if (b.type === "tool_use" && role === "assistant") {
+        const callId = typeof b.id === "string" ? b.id : `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`;
+        let input;
+        if (typeof b.input === "string") {
+          try {
+            input = JSON.parse(b.input || "{}");
+          } catch {
+            input = {};
+          }
+        } else {
+          input = b.input ?? {};
+        }
+        parts.push(new vscode4.LanguageModelToolCallPart(callId, String(b.name ?? ""), input));
+      } else if (b.type === "tool_result" && role === "user") {
+        const callId = typeof b.tool_use_id === "string" ? b.tool_use_id : "";
+        const resultContent = b.content;
+        let resultParts;
+        if (typeof resultContent === "string") {
+          resultParts = resultContent ? [new vscode4.LanguageModelTextPart(resultContent)] : [];
+        } else if (Array.isArray(resultContent)) {
+          resultParts = resultContent.flatMap((cp) => {
+            if (cp?.type === "image") {
+              return [new vscode4.LanguageModelTextPart("[image omitted]")];
+            }
+            return cp?.text ? [new vscode4.LanguageModelTextPart(cp.text)] : [];
+          });
+        } else {
+          resultParts = [];
+        }
+        parts.push(new vscode4.LanguageModelToolResultPart(callId, resultParts));
+      } else if (typeof b.text === "string") {
+        if (b.text) {
+          parts.push(new vscode4.LanguageModelTextPart(b.text));
+        }
+      }
+    }
+    if (parts.length === 0) {
+      return [new vscode4.LanguageModelTextPart("")];
+    }
+    return parts;
+  }
   flattenMessageContent(content) {
     if (typeof content === "string") {
       return content;
@@ -55109,22 +55181,32 @@ ${text} `;
     }
     return String(content);
   }
-  /**
-   * Extract text from an unknown stream part (e.g. LanguageModelThinkingPart or future part types).
-   * The VS Code LM API stream type is `AsyncIterable<LanguageModelTextPart | LanguageModelToolCallPart | unknown>`,
-   * meaning newer part types (like thinking parts from reasoning models such as gpt-5-mini) may appear
-   * as `unknown`. This method duck-types them to extract any text content they carry.
-   */
   extractTextFromPart(part) {
     if (!part || typeof part !== "object") {
-      return void 0;
+      return typeof part === "string" ? part : void 0;
     }
     const p = part;
+    if (p.mimeType === "stateful_marker") {
+      return void 0;
+    }
     if (typeof p.value === "string") {
       return p.value;
     }
     if (typeof p.text === "string") {
       return p.text;
+    }
+    if (typeof p.content === "string") {
+      return p.content;
+    }
+    if (typeof p.thinking === "string") {
+      return p.thinking;
+    }
+    try {
+      if (Object.keys(p).length > 0) {
+        this.logInfo(`[Diagnostic] Unknown stream part ignored: ${JSON.stringify(p)}`);
+      }
+    } catch (e) {
+      this.logInfo(`[Diagnostic] Unknown unstringifiable stream part ignored.`);
     }
     return void 0;
   }
@@ -55143,18 +55225,33 @@ ${text} `;
     if (!availableModels || availableModels.length === 0) {
       return null;
     }
+    const sortedModels = [...availableModels].sort((a, b) => {
+      if (a.vendor === "copilot" && b.vendor !== "copilot") {
+        return -1;
+      }
+      if (a.vendor !== "copilot" && b.vendor === "copilot") {
+        return 1;
+      }
+      if (a.vendor === "copilotcli" && b.vendor !== "copilotcli") {
+        return 1;
+      }
+      if (a.vendor !== "copilotcli" && b.vendor === "copilotcli") {
+        return -1;
+      }
+      return 0;
+    });
     const requested = requestedModel.toLowerCase();
-    const exactMatch = availableModels.find((m) => m.id.toLowerCase() === requested);
+    const exactMatch = sortedModels.find((m) => m.id.toLowerCase() === requested);
     if (exactMatch) {
       return exactMatch;
     }
-    const familyMatch = availableModels.find((m) => m.family?.toLowerCase() === requested);
+    const familyMatch = sortedModels.find((m) => m.family?.toLowerCase() === requested);
     if (familyMatch) {
       return familyMatch;
     }
-    const dateStripped = requested.replace(/-\d{8}$/, "");
-    const normed = dateStripped.replace(/\./g, "-");
-    const fuzzyMatch = availableModels.find((m) => {
+    const cleaned = requested.replace(/-\d{8}$/, "").replace(/-preview-\d{4}$/, "").replace(/-\d{3}$/, "");
+    const normed = cleaned.replace(/\./g, "-");
+    const fuzzyMatch = sortedModels.find((m) => {
       const mId = m.id.toLowerCase().replace("copilot-", "").replace(/\./g, "-");
       const mFamily = (m.family || "").toLowerCase().replace("copilot-", "").replace(/\./g, "-");
       return normed === mId || normed === mFamily || normed.startsWith(mId + "-") || mId.startsWith(normed + "-") || normed.startsWith(mFamily + "-") || mFamily.startsWith(normed + "-");
