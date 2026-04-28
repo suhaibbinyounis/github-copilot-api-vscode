@@ -52368,6 +52368,15 @@ var CopilotApiGateway = class {
     const normalized = Number.isFinite(port) ? Math.max(1, Math.min(65535, Math.floor(port))) : this.config.port;
     await this.updateServerConfig({ port: normalized, enabled: true });
   }
+  async setHostPort(host, port) {
+    const value = (host ?? "").trim();
+    const normalized = Number.isFinite(port) ? Math.max(1, Math.min(65535, Math.floor(port))) : this.config.port;
+    const patch = { port: normalized, enabled: true };
+    if (value) {
+      patch.host = value;
+    }
+    await this.updateServerConfig(patch);
+  }
   async toggleMcp(enabled) {
     this.suppressRestart = true;
     await vscode4.workspace.getConfiguration("githubCopilotApi.mcp").update("enabled", enabled, vscode4.ConfigurationTarget.Global);
@@ -53373,15 +53382,8 @@ var CopilotApiGateway = class {
     if (systemText) {
       messages.push(vscode4.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemText)}`));
     }
-    for (const msg of payload.messages) {
-      const role = msg.role === "user" ? vscode4.LanguageModelChatMessageRole.User : vscode4.LanguageModelChatMessageRole.Assistant;
-      const content = this.flattenMessageContent(msg.content);
-      const redactedContent = this.redactPromptString(content);
-      if (role === vscode4.LanguageModelChatMessageRole.User) {
-        messages.push(vscode4.LanguageModelChatMessage.User(redactedContent));
-      } else {
-        messages.push(vscode4.LanguageModelChatMessage.Assistant(redactedContent));
-      }
+    for (const lmMsg of this.anthropicMessagesToLmMessages(payload.messages)) {
+      messages.push(lmMsg);
     }
     const resolvedModel = this.resolveModel(payload.model);
     const promptStr = messages.map((m) => {
@@ -54237,15 +54239,8 @@ data: ${JSON.stringify({
     if (systemTextNS) {
       messages.push(vscode4.LanguageModelChatMessage.User(`[System]: ${this.redactPromptString(systemTextNS)}`));
     }
-    for (const msg of payload.messages) {
-      const role = msg.role === "user" ? vscode4.LanguageModelChatMessageRole.User : vscode4.LanguageModelChatMessageRole.Assistant;
-      const content = this.flattenMessageContent(msg.content);
-      const redactedContent = this.redactPromptString(content);
-      if (role === vscode4.LanguageModelChatMessageRole.User) {
-        messages.push(vscode4.LanguageModelChatMessage.User(redactedContent));
-      } else {
-        messages.push(vscode4.LanguageModelChatMessage.Assistant(redactedContent));
-      }
+    for (const lmMsg of this.anthropicMessagesToLmMessages(payload.messages)) {
+      messages.push(lmMsg);
     }
     const resolvedModel = this.resolveModel(payload.model);
     const collected = await this.runWithConcurrency(async () => {
@@ -54280,11 +54275,22 @@ data: ${JSON.stringify({
             currentText = "";
           }
           const toolCallId = `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`;
+          let parsedInput;
+          if (typeof part.input === "string") {
+            try {
+              parsedInput = JSON.parse(part.input || "{}");
+            } catch (e) {
+              console.error("Invalid JSON in tool input for tool:", part.name, "| input length:", String(part.input).length);
+              parsedInput = {};
+            }
+          } else {
+            parsedInput = part.input || {};
+          }
           contentBlocks.push({
             type: "tool_use",
             id: toolCallId,
             name: part.name,
-            input: typeof part.input === "string" ? JSON.parse(part.input || "{}") : part.input || {}
+            input: parsedInput
           });
         } else {
           const textValue = this.extractTextFromPart(part);
@@ -54351,15 +54357,12 @@ data: ${JSON.stringify({
         return "";
       }).join(" ");
     }).join("\n");
+    const copilotModels = await vscode4.lm.selectChatModels();
+    const lmModel = this.findModel(resolvedModel, copilotModels);
+    if (!lmModel) {
+      throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map((m) => m.id).join(", ")}`, "invalid_request_error", "model_not_found");
+    }
     const text = await this.runWithConcurrency(async () => {
-      const copilotModels = await vscode4.lm.selectChatModels();
-      if (!copilotModels || copilotModels.length === 0) {
-        throw new ApiError(503, "No language model available. Ensure a language model provider (e.g. GitHub Copilot) is installed and signed in.", "service_unavailable", "no_models_available");
-      }
-      const lmModel = this.findModel(resolvedModel, copilotModels);
-      if (!lmModel) {
-        throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map((m) => m.id).join(", ")}`, "invalid_request_error", "model_not_found");
-      }
       const result = await lmModel.sendRequest(messages, {}, new vscode4.CancellationTokenSource().token);
       let output = "";
       for await (const part of result.stream) {
@@ -54378,9 +54381,7 @@ data: ${JSON.stringify({
     let outputTokens = 0;
     try {
       const promptStr2 = messages.map((m) => m.content).join(" ");
-      const copilotModels = await vscode4.lm.selectChatModels();
-      if (copilotModels && copilotModels.length > 0) {
-        const lmModel = copilotModels[0];
+      if (lmModel) {
         inputTokens = await lmModel.countTokens(promptStr2);
         outputTokens = await lmModel.countTokens(text || "");
       }
@@ -54497,9 +54498,8 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
     let promptTokens = 0;
     let completionTokens = 0;
     try {
-      const copilotModels2 = await vscode4.lm.selectChatModels();
-      if (copilotModels2 && copilotModels2.length > 0) {
-        const lmModel = copilotModels2[0];
+      if (selectedModel) {
+        const lmModel = selectedModel;
         const inputStr = messages.map((m) => {
           return typeof m.content === "string" ? m.content : JSON.stringify(m.content);
         }).join("\n");
@@ -54627,7 +54627,9 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
           lmMessages.push(vscode4.LanguageModelChatMessage.User(content));
       }
     }
-    const options = {};
+    const options = {
+      justification: "Copilot API Gateway"
+    };
     if (tools && tools.length > 0) {
       options.tools = tools;
       if (toolChoice === "required" || toolChoice === "any") {
@@ -54697,13 +54699,11 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
     let promptTokens = 0;
     let completionTokens = 0;
     try {
-      const copilotModels2 = await vscode4.lm.selectChatModels();
-      if (copilotModels2 && copilotModels2.length > 0) {
-        const lmModel = copilotModels2[0];
+      if (selectedModel) {
         const inputStr = prompt;
-        promptTokens = await lmModel.countTokens(inputStr);
+        promptTokens = await selectedModel.countTokens(inputStr);
         const outputStr = text || "";
-        completionTokens = await lmModel.countTokens(outputStr);
+        completionTokens = await selectedModel.countTokens(outputStr);
       }
     } catch (e) {
       console.error("Token counting failed:", e);
@@ -55110,21 +55110,105 @@ ${text} `;
     return String(content);
   }
   /**
-   * Extract text from an unknown stream part (e.g. LanguageModelThinkingPart or future part types).
-   * The VS Code LM API stream type is `AsyncIterable<LanguageModelTextPart | LanguageModelToolCallPart | unknown>`,
-   * meaning newer part types (like thinking parts from reasoning models such as gpt-5-mini) may appear
-   * as `unknown`. This method duck-types them to extract any text content they carry.
+   * Convert an Anthropic message array into VS Code LanguageModelChatMessage objects,
+   * preserving tool_use / tool_result structure so the underlying model sees properly
+   * typed parts instead of plain-text summaries like "[Tool call: Bash(...)]". This
+   * prevents the model from learning to emit tool calls as text on subsequent turns.
+   *
+   * Mapping:
+   *  - user   message with plain text / text blocks  → LanguageModelChatMessage.User(string)
+   *  - user   message with tool_result blocks        → LanguageModelChatMessage.User([LanguageModelToolResultPart, ...])
+   *  - assistant message with plain text / text blks → LanguageModelChatMessage.Assistant(string)
+   *  - assistant message with tool_use blocks        → LanguageModelChatMessage.Assistant([LanguageModelToolCallPart, ...])
    */
+  anthropicMessagesToLmMessages(anthropicMessages) {
+    const result = [];
+    for (const msg of anthropicMessages) {
+      const isUser = msg.role === "user";
+      const contentArr = Array.isArray(msg.content) ? msg.content : [{ type: "text", text: typeof msg.content === "string" ? msg.content : "" }];
+      if (isUser) {
+        const toolResultBlocks = contentArr.filter((p) => p.type === "tool_result");
+        if (toolResultBlocks.length > 0) {
+          const parts = [];
+          for (const blk of contentArr) {
+            if (blk.type === "tool_result") {
+              const tr = blk;
+              const resultText = typeof tr.content === "string" ? tr.content : Array.isArray(tr.content) ? tr.content.map((c) => c.text || "").join("\n") : "";
+              parts.push(new vscode4.LanguageModelToolResultPart(
+                tr.tool_use_id,
+                [new vscode4.LanguageModelTextPart(this.redactPromptString(resultText))]
+              ));
+            } else if (blk.type === "text" && blk.text) {
+              parts.push(new vscode4.LanguageModelTextPart(
+                this.redactPromptString(blk.text)
+              ));
+            }
+          }
+          result.push(vscode4.LanguageModelChatMessage.User(parts));
+        } else {
+          const text = this.flattenMessageContent(msg.content);
+          result.push(vscode4.LanguageModelChatMessage.User(this.redactPromptString(text)));
+        }
+      } else {
+        const toolUseBlocks = contentArr.filter((p) => p.type === "tool_use");
+        if (toolUseBlocks.length > 0) {
+          const parts = [];
+          for (const blk of contentArr) {
+            if (blk.type === "tool_use") {
+              const tu = blk;
+              const inputObj = typeof tu.input === "string" ? (() => {
+                try {
+                  return JSON.parse(tu.input);
+                } catch {
+                  return {};
+                }
+              })() : tu.input ?? {};
+              parts.push(new vscode4.LanguageModelToolCallPart(
+                tu.id,
+                tu.name,
+                inputObj
+              ));
+            } else if (blk.type === "text" && blk.text) {
+              parts.push(new vscode4.LanguageModelTextPart(
+                this.redactPromptString(blk.text)
+              ));
+            }
+          }
+          result.push(vscode4.LanguageModelChatMessage.Assistant(parts));
+        } else {
+          const text = this.flattenMessageContent(msg.content);
+          result.push(vscode4.LanguageModelChatMessage.Assistant(this.redactPromptString(text)));
+        }
+      }
+    }
+    return result;
+  }
   extractTextFromPart(part) {
     if (!part || typeof part !== "object") {
-      return void 0;
+      return typeof part === "string" ? part : void 0;
     }
     const p = part;
+    if (p.mimeType === "stateful_marker") {
+      return void 0;
+    }
     if (typeof p.value === "string") {
       return p.value;
     }
     if (typeof p.text === "string") {
       return p.text;
+    }
+    if (typeof p.content === "string") {
+      return p.content;
+    }
+    if (typeof p.thinking === "string") {
+      return p.thinking;
+    }
+    try {
+      if (Object.keys(p).length > 0) {
+        this.logInfo(`[Diagnostic] Unknown stream part ignored: ${JSON.stringify(p)}`);
+      }
+    } catch (e) {
+      this.logInfo(`[Diagnostic] Unknown unstringifiable stream part ignored.`);
     }
     return void 0;
   }
@@ -55143,18 +55227,33 @@ ${text} `;
     if (!availableModels || availableModels.length === 0) {
       return null;
     }
+    const sortedModels = [...availableModels].sort((a, b) => {
+      if (a.vendor === "copilot" && b.vendor !== "copilot") {
+        return -1;
+      }
+      if (a.vendor !== "copilot" && b.vendor === "copilot") {
+        return 1;
+      }
+      if (a.vendor === "copilotcli" && b.vendor !== "copilotcli") {
+        return 1;
+      }
+      if (a.vendor !== "copilotcli" && b.vendor === "copilotcli") {
+        return -1;
+      }
+      return 0;
+    });
     const requested = requestedModel.toLowerCase();
-    const exactMatch = availableModels.find((m) => m.id.toLowerCase() === requested);
+    const exactMatch = sortedModels.find((m) => m.id.toLowerCase() === requested);
     if (exactMatch) {
       return exactMatch;
     }
-    const familyMatch = availableModels.find((m) => m.family?.toLowerCase() === requested);
+    const familyMatch = sortedModels.find((m) => m.family?.toLowerCase() === requested);
     if (familyMatch) {
       return familyMatch;
     }
-    const dateStripped = requested.replace(/-\d{8}$/, "");
-    const normed = dateStripped.replace(/\./g, "-");
-    const fuzzyMatch = availableModels.find((m) => {
+    const cleaned = requested.replace(/-\d{8}$/, "").replace(/-preview-\d{4}$/, "").replace(/-\d{3}$/, "");
+    const normed = cleaned.replace(/\./g, "-");
+    const fuzzyMatch = sortedModels.find((m) => {
       const mId = m.id.toLowerCase().replace("copilot-", "").replace(/\./g, "-");
       const mFamily = (m.family || "").toLowerCase().replace("copilot-", "").replace(/\./g, "-");
       return normed === mId || normed === mFamily || normed.startsWith(mId + "-") || mId.startsWith(normed + "-") || normed.startsWith(mFamily + "-") || mFamily.startsWith(normed + "-");
@@ -57598,6 +57697,23 @@ for await (const chunk of stream) {
           void gateway2.setPort(data.value);
         }
         break;
+      case "setHostPort":
+        if (data.value && typeof data.value === "object") {
+          const value = data.value;
+          const port = typeof value.port === "number" ? value.port : typeof value.port === "string" ? Number(value.port.trim()) : NaN;
+          if (typeof value.host === "string" && Number.isInteger(port) && port >= 1 && port <= 65535) {
+            void gateway2.setHostPort(value.host, port).then(() => {
+              void vscode5.window.setStatusBarMessage(`$(check) Copilot API endpoint saved: ${value.host}:${port}`, 3e3);
+            }).catch((error2) => {
+              void vscode5.window.showErrorMessage(`Failed to save host/port: ${error2 instanceof Error ? error2.message : String(error2)}`);
+            }).finally(async () => {
+              await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
+            });
+          } else {
+            void vscode5.window.showErrorMessage("Enter a valid port between 1 and 65535");
+          }
+        }
+        break;
       case "setModel":
         if (typeof data.value === "string") {
           void gateway2.setDefaultModel(data.value);
@@ -59078,7 +59194,7 @@ print(response.choices[0].message.content)\`;
                             </div>
                             <div style="width: 80px; flex-shrink: 0;">
                                 <span style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 8px; opacity: 0.8; letter-spacing: 0.05em;">PORT</span>
-                                <input type="number" id="custom-port" value="${config2.port}" style="width: 100%; box-sizing: border-box; text-align: center;">
+                                <input type="number" id="custom-port" value="${config2.port}" min="1" max="65535" step="1" style="width: 100%; box-sizing: border-box; text-align: center;">
                             </div>
                         </div>
                         <button id="btn-save-host" class="secondary" style="width: auto; height: 32px; font-size: 13px;">Save Host/Port</button>
@@ -59898,7 +60014,7 @@ print(response.choices[0].message.content)\`;
             btnSaveHost.onclick = function() {
                 var h = document.getElementById('custom-host').value;
                 var p = document.getElementById('custom-port').value;
-                vscode.postMessage({ type: 'setHostPort', value: { host: h, port: Number(p) || 3000 } });
+                vscode.postMessage({ type: 'setHostPort', value: { host: h, port: p } });
             };
         }
 

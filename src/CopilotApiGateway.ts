@@ -1195,6 +1195,16 @@ export class CopilotApiGateway implements vscode.Disposable {
 		await this.updateServerConfig({ port: normalized, enabled: true });
 	}
 
+	public async setHostPort(host: string, port: number): Promise<void> {
+		const value = (host ?? '').trim();
+		const normalized = Number.isFinite(port) ? Math.max(1, Math.min(65535, Math.floor(port))) : this.config.port;
+		const patch: Partial<ApiServerConfig> = { port: normalized, enabled: true };
+		if (value) {
+			patch.host = value;
+		}
+		await this.updateServerConfig(patch);
+	}
+
 	public async toggleMcp(enabled: boolean): Promise<void> {
 		this.suppressRestart = true;
 		await vscode.workspace.getConfiguration('githubCopilotApi.mcp').update('enabled', enabled, vscode.ConfigurationTarget.Global);

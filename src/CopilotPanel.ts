@@ -751,6 +751,30 @@ for await (const chunk of stream) {
                     void gateway.setPort(data.value);
                 }
                 break;
+            case 'setHostPort':
+                if (data.value && typeof data.value === 'object') {
+                    const value = data.value as { host?: unknown; port?: unknown };
+                    const port = typeof value.port === 'number'
+                        ? value.port
+                        : typeof value.port === 'string'
+                            ? Number(value.port.trim())
+                            : NaN;
+                    if (typeof value.host === 'string' && Number.isInteger(port) && port >= 1 && port <= 65535) {
+                        void gateway.setHostPort(value.host, port)
+                            .then(() => {
+                                void vscode.window.setStatusBarMessage(`$(check) Copilot API endpoint saved: ${value.host}:${port}`, 3000);
+                            })
+                            .catch(error => {
+                                void vscode.window.showErrorMessage(`Failed to save host/port: ${error instanceof Error ? error.message : String(error)}`);
+                            })
+                            .finally(async () => {
+                                await CopilotPanel._refreshCurrentPanelHtml(gateway);
+                            });
+                    } else {
+                        void vscode.window.showErrorMessage('Enter a valid port between 1 and 65535');
+                    }
+                }
+                break;
             case 'setModel':
                 if (typeof data.value === 'string') {
                     void gateway.setDefaultModel(data.value);
@@ -2271,7 +2295,7 @@ print(response.choices[0].message.content)\`;
                             </div>
                             <div style="width: 80px; flex-shrink: 0;">
                                 <span style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 8px; opacity: 0.8; letter-spacing: 0.05em;">PORT</span>
-                                <input type="number" id="custom-port" value="${config.port}" style="width: 100%; box-sizing: border-box; text-align: center;">
+                                <input type="number" id="custom-port" value="${config.port}" min="1" max="65535" step="1" style="width: 100%; box-sizing: border-box; text-align: center;">
                             </div>
                         </div>
                         <button id="btn-save-host" class="secondary" style="width: auto; height: 32px; font-size: 13px;">Save Host/Port</button>
@@ -3091,7 +3115,7 @@ print(response.choices[0].message.content)\`;
             btnSaveHost.onclick = function() {
                 var h = document.getElementById('custom-host').value;
                 var p = document.getElementById('custom-port').value;
-                vscode.postMessage({ type: 'setHostPort', value: { host: h, port: Number(p) || 3000 } });
+                vscode.postMessage({ type: 'setHostPort', value: { host: h, port: p } });
             };
         }
 
