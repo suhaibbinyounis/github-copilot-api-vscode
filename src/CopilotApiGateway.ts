@@ -11,7 +11,11 @@ import * as path from 'path';
 import { AuditService, AuditEntry } from './services/AuditService';
 import type { McpService } from './McpService';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
-import { getStructuredAnthropicToolPairIndexes, normalizeAnthropicContent } from './anthropicToolPairs';
+import {
+	getAnthropicToolUseId,
+	getStructuredAnthropicToolPairIndexes,
+	normalizeAnthropicContent
+} from './anthropicToolPairs';
 
 const COPILOT_CHAT_EXTENSION_ID = 'GitHub.copilot-chat';
 const COPILOT_CHAT_SEARCH_QUERY = '@id:GitHub.copilot-chat';
@@ -2535,7 +2539,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 						hasToolCalls = true;
 					}
 					contentBlockIndex++;
-					const toolCallId = `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
+					const toolCallId = getAnthropicToolUseId(
+						part.callId,
+						() => `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`
+					);
 					const argsStr = typeof part.input === 'string' ? part.input : JSON.stringify(part.input);
 					res.write(`event: content_block_start\ndata: ${JSON.stringify({
 						type: 'content_block_start',
@@ -3390,7 +3397,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 						contentBlocks.push({ type: 'text', text: currentText });
 						currentText = '';
 					}
-					const toolCallId = `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
+					const toolCallId = getAnthropicToolUseId(
+						part.callId,
+						() => `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`
+					);
 
 					let parsedInput: Record<string, unknown>;
 					if (typeof part.input === 'string') {

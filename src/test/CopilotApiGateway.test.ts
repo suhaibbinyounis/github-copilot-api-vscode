@@ -1,7 +1,11 @@
 /// <reference types="mocha" />
 
 import * as assert from 'assert';
-import { getStructuredAnthropicToolPairIndexes, type AnthropicToolPairMessage } from '../anthropicToolPairs.js';
+import {
+	getAnthropicToolUseId,
+	getStructuredAnthropicToolPairIndexes,
+	type AnthropicToolPairMessage
+} from '../anthropicToolPairs.js';
 
 suite('CopilotApiGateway Anthropic tool message handling', () => {
 	test('does not preserve orphan tool_result blocks as structured tool results', () => {
@@ -62,5 +66,17 @@ suite('CopilotApiGateway Anthropic tool message handling', () => {
 
 		assert.equal(pairs.assistantIndexes.has(0), false);
 		assert.equal(pairs.userIndexes.has(1), false);
+	});
+
+	test('preserves VS Code tool call ids for Anthropic tool_use blocks', () => {
+		const toolUseId = getAnthropicToolUseId('call_from_vscode', () => 'toolu_fallback');
+
+		assert.equal(toolUseId, 'call_from_vscode');
+	});
+
+	test('falls back to a generated Anthropic tool_use id when VS Code omits callId', () => {
+		const toolUseId = getAnthropicToolUseId('', () => 'toolu_fallback');
+
+		assert.equal(toolUseId, 'toolu_fallback');
 	});
 });

@@ -13,6 +13,17 @@ export interface AnthropicToolPairIndexes {
 	userIndexes: Set<number>;
 }
 
+export function getAnthropicToolUseId(
+	callId: string | undefined,
+	fallbackFactory: () => string
+): string {
+	if (typeof callId === 'string' && callId.trim() !== '') {
+		return callId;
+	}
+
+	return fallbackFactory();
+}
+
 export function normalizeAnthropicContent(content: string | AnthropicToolPairContentBlock[]): AnthropicToolPairContentBlock[] {
 	return Array.isArray(content)
 		? content

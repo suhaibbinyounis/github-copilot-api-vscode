@@ -51585,6 +51585,12 @@ var AuditService = class {
 };
 
 // src/anthropicToolPairs.ts
+function getAnthropicToolUseId(callId, fallbackFactory) {
+  if (typeof callId === "string" && callId.trim() !== "") {
+    return callId;
+  }
+  return fallbackFactory();
+}
 function normalizeAnthropicContent(content) {
   return Array.isArray(content) ? content : [{ type: "text", text: typeof content === "string" ? content : "" }];
 }
@@ -53539,7 +53545,10 @@ data: ${JSON.stringify({ type: "content_block_stop", index: contentBlockIndex })
             hasToolCalls = true;
           }
           contentBlockIndex++;
-          const toolCallId = `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`;
+          const toolCallId = getAnthropicToolUseId(
+            part.callId,
+            () => `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`
+          );
           const argsStr = typeof part.input === "string" ? part.input : JSON.stringify(part.input);
           res.write(`event: content_block_start
 data: ${JSON.stringify({
@@ -54328,7 +54337,10 @@ data: ${JSON.stringify({
             contentBlocks.push({ type: "text", text: currentText });
             currentText = "";
           }
-          const toolCallId = `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`;
+          const toolCallId = getAnthropicToolUseId(
+            part.callId,
+            () => `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`
+          );
           let parsedInput;
           if (typeof part.input === "string") {
             try {
