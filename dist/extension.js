@@ -52437,6 +52437,15 @@ var CopilotApiGateway = class {
     const normalized = Number.isFinite(port) ? Math.max(1, Math.min(65535, Math.floor(port))) : this.config.port;
     await this.updateServerConfig({ port: normalized, enabled: true });
   }
+  async setHostPort(host, port) {
+    const value = (host ?? "").trim();
+    const normalized = Number.isFinite(port) ? Math.max(1, Math.min(65535, Math.floor(port))) : this.config.port;
+    const patch = { port: normalized, enabled: true };
+    if (value) {
+      patch.host = value;
+    }
+    await this.updateServerConfig(patch);
+  }
   async toggleMcp(enabled) {
     this.suppressRestart = true;
     await vscode4.workspace.getConfiguration("githubCopilotApi.mcp").update("enabled", enabled, vscode4.ConfigurationTarget.Global);
@@ -57765,6 +57774,23 @@ for await (const chunk of stream) {
           void gateway2.setPort(data.value);
         }
         break;
+      case "setHostPort":
+        if (data.value && typeof data.value === "object") {
+          const value = data.value;
+          const port = typeof value.port === "number" ? value.port : typeof value.port === "string" ? Number(value.port.trim()) : NaN;
+          if (typeof value.host === "string" && Number.isInteger(port) && port >= 1 && port <= 65535) {
+            void gateway2.setHostPort(value.host, port).then(() => {
+              void vscode5.window.setStatusBarMessage(`$(check) Copilot API endpoint saved: ${value.host}:${port}`, 3e3);
+            }).catch((error2) => {
+              void vscode5.window.showErrorMessage(`Failed to save host/port: ${error2 instanceof Error ? error2.message : String(error2)}`);
+            }).finally(async () => {
+              await _CopilotPanel._refreshCurrentPanelHtml(gateway2);
+            });
+          } else {
+            void vscode5.window.showErrorMessage("Enter a valid port between 1 and 65535");
+          }
+        }
+        break;
       case "setModel":
         if (typeof data.value === "string") {
           void gateway2.setDefaultModel(data.value);
@@ -59245,7 +59271,7 @@ print(response.choices[0].message.content)\`;
                             </div>
                             <div style="width: 80px; flex-shrink: 0;">
                                 <span style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 8px; opacity: 0.8; letter-spacing: 0.05em;">PORT</span>
-                                <input type="number" id="custom-port" value="${config2.port}" style="width: 100%; box-sizing: border-box; text-align: center;">
+                                <input type="number" id="custom-port" value="${config2.port}" min="1" max="65535" step="1" style="width: 100%; box-sizing: border-box; text-align: center;">
                             </div>
                         </div>
                         <button id="btn-save-host" class="secondary" style="width: auto; height: 32px; font-size: 13px;">Save Host/Port</button>
@@ -60065,7 +60091,7 @@ print(response.choices[0].message.content)\`;
             btnSaveHost.onclick = function() {
                 var h = document.getElementById('custom-host').value;
                 var p = document.getElementById('custom-port').value;
-                vscode.postMessage({ type: 'setHostPort', value: { host: h, port: Number(p) || 3000 } });
+                vscode.postMessage({ type: 'setHostPort', value: { host: h, port: p } });
             };
         }
 
