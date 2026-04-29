@@ -8,3 +8,4 @@ out/
 *.vsix
 *.cpuprofile
 bun.lock
+coverage/

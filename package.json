@@ -79,7 +79,8 @@
     "perf:request-tracking": "npm run compile && node perf/run-request-tracking-validation.cjs",
     "perf:all": "npm run perf:bench && npm run perf:profile && npm run perf:request-tracking",
     "workflow": "./workflow.sh",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "test:coverage": "vscode-test --coverage --coverage-reporter lcov --coverage-reporter text"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
