@@ -51584,6 +51584,75 @@ var AuditService = class {
   }
 };
 
+// src/anthropicToolPairs.ts
+function getAnthropicToolUseId(callId, fallbackFactory) {
+  if (typeof callId === "string" && callId.trim() !== "") {
+    return callId;
+  }
+  return fallbackFactory();
+}
+function normalizeAnthropicContent(content) {
+  return Array.isArray(content) ? content : [{ type: "text", text: typeof content === "string" ? content : "" }];
+}
+function getToolUseIds(content) {
+  return content.filter((block) => block.type === "tool_use").map((block) => block.id);
+}
+function getToolResultIds(content) {
+  return content.filter((block) => block.type === "tool_result").map((block) => block.tool_use_id);
+}
+function hasContiguousLeadingToolResults(content) {
+  let hasSeenNonToolResult = false;
+  for (const block of content) {
+    if (block.type === "tool_result") {
+      if (hasSeenNonToolResult) {
+        return false;
+      }
+      continue;
+    }
+    if (block.type === "text" && block.text.trim() === "") {
+      continue;
+    }
+    hasSeenNonToolResult = true;
+  }
+  return true;
+}
+function hasSameUniqueIds(expectedIds, actualIds) {
+  if (expectedIds.length === 0 || expectedIds.length !== actualIds.length) {
+    return false;
+  }
+  const expected = new Set(expectedIds);
+  const actual = new Set(actualIds);
+  if (expected.size !== expectedIds.length || actual.size !== actualIds.length) {
+    return false;
+  }
+  return actualIds.every((id) => expected.has(id));
+}
+function getStructuredAnthropicToolPairIndexes(messages) {
+  const assistantIndexes = /* @__PURE__ */ new Set();
+  const userIndexes = /* @__PURE__ */ new Set();
+  for (let index = 0; index < messages.length; index++) {
+    const message = messages[index];
+    if (message.role !== "assistant") {
+      continue;
+    }
+    const toolUseIds = getToolUseIds(normalizeAnthropicContent(message.content));
+    if (toolUseIds.length === 0) {
+      continue;
+    }
+    const nextMessage = messages[index + 1];
+    if (!nextMessage || nextMessage.role !== "user") {
+      continue;
+    }
+    const nextContent = normalizeAnthropicContent(nextMessage.content);
+    const toolResultIds = getToolResultIds(nextContent);
+    if (toolResultIds.length > 0 && hasContiguousLeadingToolResults(nextContent) && hasSameUniqueIds(toolUseIds, toolResultIds)) {
+      assistantIndexes.add(index);
+      userIndexes.add(index + 1);
+    }
+  }
+  return { assistantIndexes, userIndexes };
+}
+
 // src/CopilotApiGateway.ts
 var COPILOT_CHAT_EXTENSION_ID = "GitHub.copilot-chat";
 var COPILOT_CHAT_SEARCH_QUERY = "@id:GitHub.copilot-chat";
@@ -53485,7 +53554,10 @@ data: ${JSON.stringify({ type: "content_block_stop", index: contentBlockIndex })
             hasToolCalls = true;
           }
           contentBlockIndex++;
-          const toolCallId = `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`;
+          const toolCallId = getAnthropicToolUseId(
+            part.callId,
+            () => `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`
+          );
           const argsStr = typeof part.input === "string" ? part.input : JSON.stringify(part.input);
           res.write(`event: content_block_start
 data: ${JSON.stringify({
@@ -54274,7 +54346,10 @@ data: ${JSON.stringify({
             contentBlocks.push({ type: "text", text: currentText });
             currentText = "";
           }
-          const toolCallId = `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`;
+          const toolCallId = getAnthropicToolUseId(
+            part.callId,
+            () => `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`
+          );
           let parsedInput;
           if (typeof part.input === "string") {
             try {
@@ -55123,12 +55198,14 @@ ${text} `;
    */
   anthropicMessagesToLmMessages(anthropicMessages) {
     const result = [];
-    for (const msg of anthropicMessages) {
+    const structuredToolPairs = getStructuredAnthropicToolPairIndexes(anthropicMessages);
+    for (let messageIndex = 0; messageIndex < anthropicMessages.length; messageIndex++) {
+      const msg = anthropicMessages[messageIndex];
       const isUser = msg.role === "user";
-      const contentArr = Array.isArray(msg.content) ? msg.content : [{ type: "text", text: typeof msg.content === "string" ? msg.content : "" }];
+      const contentArr = normalizeAnthropicContent(msg.content);
       if (isUser) {
         const toolResultBlocks = contentArr.filter((p) => p.type === "tool_result");
-        if (toolResultBlocks.length > 0) {
+        if (toolResultBlocks.length > 0 && structuredToolPairs.userIndexes.has(messageIndex)) {
           const parts = [];
           for (const blk of contentArr) {
             if (blk.type === "tool_result") {
@@ -55151,7 +55228,7 @@ ${text} `;
         }
       } else {
         const toolUseBlocks = contentArr.filter((p) => p.type === "tool_use");
-        if (toolUseBlocks.length > 0) {
+        if (toolUseBlocks.length > 0 && structuredToolPairs.assistantIndexes.has(messageIndex)) {
           const parts = [];
           for (const blk of contentArr) {
             if (blk.type === "tool_use") {
