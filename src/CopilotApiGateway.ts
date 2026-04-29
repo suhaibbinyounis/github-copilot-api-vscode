@@ -11,6 +11,7 @@ import * as path from 'path';
 import { AuditService, AuditEntry } from './services/AuditService';
 import type { McpService } from './McpService';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
+import { getStructuredAnthropicToolPairIndexes, normalizeAnthropicContent } from './anthropicToolPairs';
 
 const COPILOT_CHAT_EXTENSION_ID = 'GitHub.copilot-chat';
 const COPILOT_CHAT_SEARCH_QUERY = '@id:GitHub.copilot-chat';
@@ -4377,21 +4378,21 @@ export class CopilotApiGateway implements vscode.Disposable {
 		anthropicMessages: AnthropicMessageRequest['messages']
 	): vscode.LanguageModelChatMessage[] {
 		const result: vscode.LanguageModelChatMessage[] = [];
+		const structuredToolPairs = getStructuredAnthropicToolPairIndexes(anthropicMessages);
 
-		for (const msg of anthropicMessages) {
+		for (let messageIndex = 0; messageIndex < anthropicMessages.length; messageIndex++) {
+			const msg = anthropicMessages[messageIndex];
 			const isUser = msg.role === 'user';
-			const contentArr: AnthropicContentBlock[] = Array.isArray(msg.content)
-				? (msg.content as AnthropicContentBlock[])
-				: [{ type: 'text', text: typeof msg.content === 'string' ? msg.content : '' }];
+			const contentArr = normalizeAnthropicContent(msg.content);
 
 			if (isUser) {
-				// Check if this user turn is purely tool_result blocks
+				// Only preserve tool results as structured parts when the preceding tool call is complete.
 				const toolResultBlocks = contentArr.filter(p => p.type === 'tool_result') as Array<{
 					type: 'tool_result'; tool_use_id: string;
 					content: string | { type: 'text'; text: string }[];
 				}>;
 
-				if (toolResultBlocks.length > 0) {
+				if (toolResultBlocks.length > 0 && structuredToolPairs.userIndexes.has(messageIndex)) {
 					// Build a user message carrying LanguageModelToolResultPart items
 					const parts: (vscode.LanguageModelToolResultPart | vscode.LanguageModelTextPart)[] = [];
 					for (const blk of contentArr) {
@@ -4424,7 +4425,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 					type: 'tool_use'; id: string; name: string; input: any;
 				}>;
 
-				if (toolUseBlocks.length > 0) {
+				if (toolUseBlocks.length > 0 && structuredToolPairs.assistantIndexes.has(messageIndex)) {
 					// Build an assistant message carrying LanguageModelToolCallPart items
 					const parts: (vscode.LanguageModelToolCallPart | vscode.LanguageModelTextPart)[] = [];
 					for (const blk of contentArr) {
