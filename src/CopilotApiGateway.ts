@@ -13,10 +13,13 @@ import type { McpService } from './McpService';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
 import {
 	applyStructuredAnthropicToolPairLimit,
+	flattenAnthropicMessageForTextHistory,
+	flattenAnthropicToolResultContent,
 	getAnthropicToolUseId,
 	getAnthropicToolHistoryDebugInfo,
 	getStructuredAnthropicToolPairIndexes,
-	normalizeAnthropicContent
+	normalizeAnthropicContent,
+	type AnthropicToolResultContent
 } from './anthropicToolPairs';
 
 const COPILOT_CHAT_EXTENSION_ID = 'GitHub.copilot-chat';
@@ -120,7 +123,7 @@ interface ExtensionBuildInfo {
 export type AnthropicContentBlock =
 	| { type: 'text'; text: string }
 	| { type: 'tool_use'; id: string; name: string; input: any }
-	| { type: 'tool_result'; tool_use_id: string; content: string | { type: 'text'; text: string }[] };
+	| { type: 'tool_result'; tool_use_id: string; content: AnthropicToolResultContent };
 
 export interface AnthropicMessageRequest {
 	model: string;
@@ -4457,7 +4460,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 				// Only preserve tool results as structured parts when the preceding tool call is complete.
 				const toolResultBlocks = contentArr.filter(p => p.type === 'tool_result') as Array<{
 					type: 'tool_result'; tool_use_id: string;
-					content: string | { type: 'text'; text: string }[];
+					content: AnthropicToolResultContent;
 				}>;
 
 				if (toolResultBlocks.length > 0 && structuredToolPairs.userIndexes.has(messageIndex)) {
@@ -4465,12 +4468,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 					const parts: (vscode.LanguageModelToolResultPart | vscode.LanguageModelTextPart)[] = [];
 					for (const blk of contentArr) {
 						if (blk.type === 'tool_result') {
-							const tr = blk as { type: 'tool_result'; tool_use_id: string; content: string | { type: 'text'; text: string }[] };
-							const resultText = typeof tr.content === 'string'
-								? tr.content
-								: Array.isArray(tr.content)
-									? tr.content.map((c: { type: string; text?: string }) => c.text || '').join('\n')
-									: '';
+							const tr = blk as { type: 'tool_result'; tool_use_id: string; content: AnthropicToolResultContent };
+							const resultText = flattenAnthropicToolResultContent(tr.content);
 							parts.push(new vscode.LanguageModelToolResultPart(
 								tr.tool_use_id,
 								[new vscode.LanguageModelTextPart(this.redactPromptString(resultText))]
@@ -4484,7 +4483,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 					result.push(vscode.LanguageModelChatMessage.User(parts));
 				} else {
 					// Plain user text
-					const text = this.flattenMessageContent(msg.content);
+					const text = flattenAnthropicMessageForTextHistory(msg);
 					result.push(vscode.LanguageModelChatMessage.User(this.redactPromptString(text)));
 				}
 			} else {
@@ -4516,7 +4515,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 					result.push(vscode.LanguageModelChatMessage.Assistant(parts));
 				} else {
 					// Plain assistant text
-					const text = this.flattenMessageContent(msg.content);
+					const text = flattenAnthropicMessageForTextHistory(msg);
 					result.push(vscode.LanguageModelChatMessage.Assistant(this.redactPromptString(text)));
 				}
 			}

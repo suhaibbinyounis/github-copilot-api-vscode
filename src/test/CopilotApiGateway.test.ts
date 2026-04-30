@@ -3,6 +3,7 @@
 import * as assert from 'assert';
 import {
 	applyStructuredAnthropicToolPairLimit,
+	flattenAnthropicMessageForTextHistory,
 	getAnthropicToolUseId,
 	getAnthropicToolHistoryDebugInfo,
 	getStructuredAnthropicToolPairIndexes,
@@ -155,5 +156,81 @@ suite('CopilotApiGateway Anthropic tool message handling', () => {
 		assert.equal(limited.userIndexes.has(1), false);
 		assert.equal(limited.assistantIndexes.has(2), true);
 		assert.equal(limited.userIndexes.has(3), true);
+	});
+
+	test('drops all structured tool pairs when the limit is zero', () => {
+		const pairs = getStructuredAnthropicToolPairIndexes([
+			{
+				role: 'assistant',
+				content: [
+					{ type: 'tool_use', id: 'toolu_old', name: 'read_file', input: { path: 'old.txt' } },
+				],
+			},
+			{
+				role: 'user',
+				content: [
+					{ type: 'tool_result', tool_use_id: 'toolu_old', content: 'old' },
+				],
+			},
+			{
+				role: 'assistant',
+				content: [
+					{ type: 'tool_use', id: 'toolu_new', name: 'read_file', input: { path: 'new.txt' } },
+				],
+			},
+			{
+				role: 'user',
+				content: [
+					{ type: 'tool_result', tool_use_id: 'toolu_new', content: 'new' },
+				],
+			},
+		]);
+
+		const limited = applyStructuredAnthropicToolPairLimit(pairs, 0);
+
+		assert.deepEqual([...limited.assistantIndexes], []);
+		assert.deepEqual([...limited.userIndexes], []);
+	});
+
+	test('downgrades assistant tool_use history without pseudo tool call syntax', () => {
+		const flattened = flattenAnthropicMessageForTextHistory({
+			role: 'assistant',
+			content: [
+				{ type: 'text', text: 'I will inspect the file.' },
+				{ type: 'tool_use', id: 'toolu_1', name: 'Read', input: { file_path: '/tmp/demo' } },
+			],
+		});
+
+		assert.equal(flattened, 'I will inspect the file.');
+		assert.equal(flattened.includes('[Tool call:'), false);
+	});
+
+	test('keeps tool result text when downgrading user tool history', () => {
+		const flattened = flattenAnthropicMessageForTextHistory({
+			role: 'user',
+			content: [
+				{ type: 'tool_result', tool_use_id: 'toolu_1', content: 'line 1\nline 2' },
+			],
+		});
+
+		assert.equal(flattened, 'line 1\nline 2');
+	});
+
+	test('preserves image placeholders when downgrading user tool history', () => {
+		const flattened = flattenAnthropicMessageForTextHistory({
+			role: 'user',
+			content: [
+				{
+					type: 'tool_result',
+					tool_use_id: 'toolu_1',
+					content: [
+						{ type: 'image', source: { type: 'base64', media_type: 'image/png', data: 'abc' } },
+						{ type: 'text', text: 'OCR result' },
+					],
+				},
+			],
+		});
+
+		assert.equal(flattened, '[image omitted]\nOCR result');
 	});
 });

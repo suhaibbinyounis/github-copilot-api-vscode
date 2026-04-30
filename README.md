@@ -46,7 +46,7 @@
   <a href="https://github.com/suhaibbinyounis/github-copilot-api-vscode/actions/workflows/ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/suhaibbinyounis/github-copilot-api-vscode/ci.yml?branch=main&style=flat-square&logo=github&label=Build" alt="CI Status">
   </a>
-  <img src="media/coverage.svg" alt="Coverage">
+  <img src="https://img.shields.io/badge/Coverage-89.38%25-dfb317?style=flat-square" alt="Coverage">
   <img src="https://img.shields.io/github/repo-size/suhaibbinyounis/github-copilot-api-vscode?style=flat-square&logo=github&color=blue" alt="Repo Size">
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
 </p>
