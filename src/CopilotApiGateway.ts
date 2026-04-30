@@ -12,13 +12,16 @@ import { AuditService, AuditEntry } from './services/AuditService';
 import type { McpService } from './McpService';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
 import {
+	applyStructuredAnthropicToolPairLimit,
 	getAnthropicToolUseId,
+	getAnthropicToolHistoryDebugInfo,
 	getStructuredAnthropicToolPairIndexes,
 	normalizeAnthropicContent
 } from './anthropicToolPairs';
 
 const COPILOT_CHAT_EXTENSION_ID = 'GitHub.copilot-chat';
 const COPILOT_CHAT_SEARCH_QUERY = '@id:GitHub.copilot-chat';
+const MAX_STRUCTURED_ANTHROPIC_TOOL_PAIRS = 8;
 
 export class ApiError extends Error {
 	constructor(
@@ -2081,19 +2084,21 @@ export class CopilotApiGateway implements vscode.Disposable {
 		// Anthropic Messages API
 		if (req.method === 'POST' && url.pathname === '/v1/messages') {
 			const body = await this.readJsonBody(req) as AnthropicMessageRequest;
+			const anthropicDebug = this.buildAnthropicDebugPayload(body, requestId);
 			// Model validation
 			if (body?.model && !this.resolveModel(body.model)) {
 				throw new ApiError(400, `Model '${body.model}' is not supported.`, 'invalid_request_error', 'model_not_found');
 			}
 
 			if (body?.stream === true) {
-				await this.processStreamingAnthropicMessages(body, req, res, requestId, requestStart);
+				await this.processStreamingAnthropicMessages(body, req, res, requestId, requestStart, anthropicDebug);
 			} else {
 				try {
 					const response = await this.processAnthropicMessages(body);
 					this.logRequest(requestId, req.method, url.pathname, 200, Date.now() - requestStart, {
 						requestPayload: body,
 						responsePayload: response,
+						debugPayload: anthropicDebug,
 						tokensIn: response?.usage?.input_tokens,
 						tokensOut: response?.usage?.output_tokens,
 						model: body?.model,
@@ -2103,6 +2108,21 @@ export class CopilotApiGateway implements vscode.Disposable {
 					this.sendJson(res, 200, response);
 				} catch (error: any) {
 					const apiError = error instanceof ApiError ? error : new ApiError(500, error.message || 'Internal Server Error', 'api_error');
+					this.logRequest(requestId, req.method, url.pathname, apiError.status, Date.now() - requestStart, {
+						requestPayload: body,
+						responsePayload: {
+							type: 'error',
+							error: {
+								type: apiError.code || 'api_error',
+								message: apiError.message
+							}
+						},
+						debugPayload: anthropicDebug,
+						error: apiError.message,
+						model: body?.model,
+						requestHeaders: req.headers,
+						responseHeaders: res.getHeaders()
+					});
 					this.sendJson(res, apiError.status, {
 						type: 'error',
 						error: {
@@ -2432,7 +2452,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}
 	}
 
-	private async processStreamingAnthropicMessages(payload: AnthropicMessageRequest, req: IncomingMessage, res: ServerResponse, logRequestId?: string, logRequestStart?: number): Promise<void> {
+	private async processStreamingAnthropicMessages(
+		payload: AnthropicMessageRequest,
+		req: IncomingMessage,
+		res: ServerResponse,
+		logRequestId?: string,
+		logRequestStart?: number,
+		debugPayload?: unknown
+	): Promise<void> {
 		const messages: vscode.LanguageModelChatMessage[] = [];
 
 		const systemText = typeof payload.system === 'string'
@@ -2613,6 +2640,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 				this.logRequest(logRequestId, 'POST', '/v1/messages', 200, Date.now() - (logRequestStart || 0), {
 					requestPayload: payload,
 					responsePayload: { id: messageId, type: 'message', content: [{ type: 'text', text: totalContent }] },
+					debugPayload,
 					tokensIn: inputTokens,
 					tokensOut: outputTokens,
 					model: resolvedModel
@@ -2623,6 +2651,23 @@ export class CopilotApiGateway implements vscode.Disposable {
 			if (cts.token.isCancellationRequested) { return; }
 			console.error('Anthropic streaming error:', error);
 			const apiError = error instanceof ApiError ? error : new ApiError(500, error.message || 'Internal Server Error', 'server_error');
+			if (logRequestId) {
+				this.logRequest(logRequestId, 'POST', '/v1/messages', apiError.status, Date.now() - (logRequestStart || 0), {
+					requestPayload: payload,
+					responsePayload: {
+						type: 'error',
+						error: {
+							type: apiError.code || 'api_error',
+							message: apiError.message
+						}
+					},
+					debugPayload,
+					error: apiError.message,
+					model: payload?.model,
+					requestHeaders: req.headers,
+					responseHeaders: res.getHeaders()
+				});
+			}
 			res.write(`event: error\ndata: ${JSON.stringify({ type: 'error', error: { type: apiError.code || 'api_error', message: apiError.message } })}\n\n`);
 			res.end();
 		} finally {
@@ -4398,7 +4443,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 		anthropicMessages: AnthropicMessageRequest['messages']
 	): vscode.LanguageModelChatMessage[] {
 		const result: vscode.LanguageModelChatMessage[] = [];
-		const structuredToolPairs = getStructuredAnthropicToolPairIndexes(anthropicMessages);
+		const structuredToolPairs = applyStructuredAnthropicToolPairLimit(
+			getStructuredAnthropicToolPairIndexes(anthropicMessages),
+			MAX_STRUCTURED_ANTHROPIC_TOOL_PAIRS
+		);
 
 		for (let messageIndex = 0; messageIndex < anthropicMessages.length; messageIndex++) {
 			const msg = anthropicMessages[messageIndex];
@@ -4475,6 +4523,28 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}
 
 		return result;
+	}
+
+	private buildAnthropicDebugPayload(
+		body: AnthropicMessageRequest,
+		requestId: string
+	): Record<string, unknown> {
+		const historyDebug = getAnthropicToolHistoryDebugInfo(
+			body?.messages || [],
+			MAX_STRUCTURED_ANTHROPIC_TOOL_PAIRS
+		);
+		return {
+			requestId,
+			model: body?.model,
+			stream: body?.stream === true,
+			maxStructuredToolPairs: MAX_STRUCTURED_ANTHROPIC_TOOL_PAIRS,
+			messageCount: historyDebug.messageCount,
+			structuredAssistantIndexes: historyDebug.structuredAssistantIndexes,
+			structuredUserIndexes: historyDebug.structuredUserIndexes,
+			leadingOrphanToolResultIds: historyDebug.leadingOrphanToolResultIds,
+			orphanToolResultIds: historyDebug.orphanToolResultIds,
+			messages: historyDebug.messages
+		};
 	}
 
 	private extractTextFromPart(part: unknown): string | undefined {
@@ -5902,6 +5972,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		extra?: {
 			requestPayload?: unknown;
 			responsePayload?: unknown;
+			debugPayload?: unknown;
 			tokensIn?: number;
 			tokensOut?: number;
 			model?: string;
@@ -5938,6 +6009,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 			ip: extra?.ip || this.requestIpMap.get(requestId),
 			requestBody: extra?.requestPayload,
 			responseBody: extra?.responsePayload,
+			debug: extra?.debugPayload,
 			requestHeaders: extra?.requestHeaders,
 			responseHeaders: extra?.responseHeaders
 		};
@@ -5967,6 +6039,13 @@ export class CopilotApiGateway implements vscode.Disposable {
 			this.output.appendLine(`[${new Date().toLocaleTimeString()}] ${statusIcon} ${method} ${path} ${status} (${durationMs}ms)`);
 			if (extra?.error) {
 				this.output.appendLine(`  Error: ${extra.error}`);
+			}
+			if (extra?.debugPayload) {
+				try {
+					this.output.appendLine(`  Debug: ${JSON.stringify(extra.debugPayload)}`);
+				} catch {
+					this.output.appendLine('  Debug: [unserializable]');
+				}
 			}
 		}
 	}

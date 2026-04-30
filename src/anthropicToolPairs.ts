@@ -13,6 +13,25 @@ export interface AnthropicToolPairIndexes {
 	userIndexes: Set<number>;
 }
 
+export interface AnthropicToolHistoryMessageDebug {
+	index: number;
+	role: 'user' | 'assistant';
+	blockTypes: string[];
+	toolUseIds: string[];
+	toolResultIds: string[];
+	hasLeadingOrphanToolResult: boolean;
+	structuredMode: 'structured' | 'text';
+}
+
+export interface AnthropicToolHistoryDebugInfo {
+	messageCount: number;
+	structuredAssistantIndexes: number[];
+	structuredUserIndexes: number[];
+	leadingOrphanToolResultIds: string[];
+	orphanToolResultIds: string[];
+	messages: AnthropicToolHistoryMessageDebug[];
+}
+
 export function getAnthropicToolUseId(
 	callId: string | undefined,
 	fallbackFactory: () => string
@@ -110,4 +129,85 @@ export function getStructuredAnthropicToolPairIndexes(
 	}
 
 	return { assistantIndexes, userIndexes };
+}
+
+export function applyStructuredAnthropicToolPairLimit(
+	pairs: AnthropicToolPairIndexes,
+	maxStructuredPairs: number
+): AnthropicToolPairIndexes {
+	if (!Number.isFinite(maxStructuredPairs) || maxStructuredPairs < 0) {
+		return {
+			assistantIndexes: new Set(pairs.assistantIndexes),
+			userIndexes: new Set(pairs.userIndexes)
+		};
+	}
+
+	const sortedAssistantIndexes = [...pairs.assistantIndexes].sort((left, right) => left - right);
+	if (sortedAssistantIndexes.length <= maxStructuredPairs) {
+		return {
+			assistantIndexes: new Set(pairs.assistantIndexes),
+			userIndexes: new Set(pairs.userIndexes)
+		};
+	}
+
+	const keptAssistantIndexes = sortedAssistantIndexes.slice(-maxStructuredPairs);
+	return {
+		assistantIndexes: new Set(keptAssistantIndexes),
+		userIndexes: new Set(keptAssistantIndexes.map(index => index + 1))
+	};
+}
+
+export function getAnthropicToolHistoryDebugInfo(
+	messages: readonly AnthropicToolPairMessage[]
+	,
+	maxStructuredPairs?: number
+): AnthropicToolHistoryDebugInfo {
+	const structuredPairs = maxStructuredPairs === undefined
+		? getStructuredAnthropicToolPairIndexes(messages)
+		: applyStructuredAnthropicToolPairLimit(
+			getStructuredAnthropicToolPairIndexes(messages),
+			maxStructuredPairs
+		);
+	const messageDebug: AnthropicToolHistoryMessageDebug[] = [];
+	const orphanToolResultIds: string[] = [];
+	const leadingOrphanToolResultIds: string[] = [];
+
+	for (let index = 0; index < messages.length; index++) {
+		const message = messages[index];
+		const content = normalizeAnthropicContent(message.content);
+		const toolUseIds = getToolUseIds(content);
+		const toolResultIds = getToolResultIds(content);
+		const structuredMode = message.role === 'assistant'
+			? (structuredPairs.assistantIndexes.has(index) ? 'structured' : 'text')
+			: (structuredPairs.userIndexes.has(index) ? 'structured' : 'text');
+		const hasLeadingOrphanToolResult = message.role === 'user'
+			&& toolResultIds.length > 0
+			&& !structuredPairs.userIndexes.has(index);
+
+		if (hasLeadingOrphanToolResult) {
+			orphanToolResultIds.push(...toolResultIds);
+			if (index === 0) {
+				leadingOrphanToolResultIds.push(...toolResultIds);
+			}
+		}
+
+		messageDebug.push({
+			index,
+			role: message.role,
+			blockTypes: content.map(block => block.type),
+			toolUseIds,
+			toolResultIds,
+			hasLeadingOrphanToolResult,
+			structuredMode
+		});
+	}
+
+	return {
+		messageCount: messages.length,
+		structuredAssistantIndexes: [...structuredPairs.assistantIndexes],
+		structuredUserIndexes: [...structuredPairs.userIndexes],
+		leadingOrphanToolResultIds,
+		orphanToolResultIds,
+		messages: messageDebug
+	};
 }

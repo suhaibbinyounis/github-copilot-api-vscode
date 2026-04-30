@@ -2,7 +2,9 @@
 
 import * as assert from 'assert';
 import {
+	applyStructuredAnthropicToolPairLimit,
 	getAnthropicToolUseId,
+	getAnthropicToolHistoryDebugInfo,
 	getStructuredAnthropicToolPairIndexes,
 	type AnthropicToolPairMessage
 } from '../anthropicToolPairs.js';
@@ -78,5 +80,80 @@ suite('CopilotApiGateway Anthropic tool message handling', () => {
 		const toolUseId = getAnthropicToolUseId('', () => 'toolu_fallback');
 
 		assert.equal(toolUseId, 'toolu_fallback');
+	});
+
+	test('reports leading orphan tool_result blocks in debug info', () => {
+		const debugInfo = getAnthropicToolHistoryDebugInfo([
+			{
+				role: 'user',
+				content: [
+					{ type: 'tool_result', tool_use_id: 'toolu_orphan', content: 'done' },
+				],
+			},
+		]);
+
+		assert.deepEqual(debugInfo.leadingOrphanToolResultIds, ['toolu_orphan']);
+		assert.deepEqual(debugInfo.orphanToolResultIds, ['toolu_orphan']);
+		assert.equal(debugInfo.messages[0].structuredMode, 'text');
+		assert.equal(debugInfo.messages[0].hasLeadingOrphanToolResult, true);
+	});
+
+	test('reports structured tool pairs in debug info', () => {
+		const debugInfo = getAnthropicToolHistoryDebugInfo([
+			{
+				role: 'assistant',
+				content: [
+					{ type: 'tool_use', id: 'toolu_1', name: 'read_file', input: { path: 'README.md' } },
+				],
+			},
+			{
+				role: 'user',
+				content: [
+					{ type: 'tool_result', tool_use_id: 'toolu_1', content: 'contents' },
+				],
+			},
+		]);
+
+		assert.deepEqual(debugInfo.structuredAssistantIndexes, [0]);
+		assert.deepEqual(debugInfo.structuredUserIndexes, [1]);
+		assert.deepEqual(debugInfo.leadingOrphanToolResultIds, []);
+		assert.equal(debugInfo.messages[0].structuredMode, 'structured');
+		assert.equal(debugInfo.messages[1].structuredMode, 'structured');
+	});
+
+	test('limits structured tool pairs to the most recent pairs', () => {
+		const pairs = getStructuredAnthropicToolPairIndexes([
+			{
+				role: 'assistant',
+				content: [
+					{ type: 'tool_use', id: 'toolu_old', name: 'read_file', input: { path: 'old.txt' } },
+				],
+			},
+			{
+				role: 'user',
+				content: [
+					{ type: 'tool_result', tool_use_id: 'toolu_old', content: 'old' },
+				],
+			},
+			{
+				role: 'assistant',
+				content: [
+					{ type: 'tool_use', id: 'toolu_new', name: 'read_file', input: { path: 'new.txt' } },
+				],
+			},
+			{
+				role: 'user',
+				content: [
+					{ type: 'tool_result', tool_use_id: 'toolu_new', content: 'new' },
+				],
+			},
+		]);
+
+		const limited = applyStructuredAnthropicToolPairLimit(pairs, 1);
+
+		assert.equal(limited.assistantIndexes.has(0), false);
+		assert.equal(limited.userIndexes.has(1), false);
+		assert.equal(limited.assistantIndexes.has(2), true);
+		assert.equal(limited.userIndexes.has(3), true);
 	});
 });
