@@ -1,7 +1,13 @@
+export type AnthropicToolResultContentPart =
+	| { type: 'text'; text: string }
+	| { type: 'image'; source?: unknown };
+
+export type AnthropicToolResultContent = string | AnthropicToolResultContentPart[];
+
 export type AnthropicToolPairContentBlock =
 	| { type: 'text'; text: string }
 	| { type: 'tool_use'; id: string; name: string; input: any }
-	| { type: 'tool_result'; tool_use_id: string; content: string | { type: 'text'; text: string }[] };
+	| { type: 'tool_result'; tool_use_id: string; content: AnthropicToolResultContent };
 
 export interface AnthropicToolPairMessage {
 	role: 'user' | 'assistant';
@@ -11,6 +17,25 @@ export interface AnthropicToolPairMessage {
 export interface AnthropicToolPairIndexes {
 	assistantIndexes: Set<number>;
 	userIndexes: Set<number>;
+}
+
+export interface AnthropicToolHistoryMessageDebug {
+	index: number;
+	role: 'user' | 'assistant';
+	blockTypes: string[];
+	toolUseIds: string[];
+	toolResultIds: string[];
+	hasLeadingOrphanToolResult: boolean;
+	structuredMode: 'structured' | 'text';
+}
+
+export interface AnthropicToolHistoryDebugInfo {
+	messageCount: number;
+	structuredAssistantIndexes: number[];
+	structuredUserIndexes: number[];
+	leadingOrphanToolResultIds: string[];
+	orphanToolResultIds: string[];
+	messages: AnthropicToolHistoryMessageDebug[];
 }
 
 export function getAnthropicToolUseId(
@@ -30,6 +55,43 @@ export function normalizeAnthropicContent(content: string | AnthropicToolPairCon
 		: [{ type: 'text', text: typeof content === 'string' ? content : '' }];
 }
 
+export function flattenAnthropicToolResultContent(content: AnthropicToolResultContent): string {
+	if (typeof content === 'string') {
+		return content;
+	}
+	if (!Array.isArray(content)) {
+		return '';
+	}
+	return content.map(block => block.type === 'image' ? '[image omitted]' : (block.text || '')).join('\n');
+}
+
+export function flattenAnthropicMessageForTextHistory(message: AnthropicToolPairMessage): string {
+	if (typeof message.content === 'string') {
+		return message.content;
+	}
+
+	const content = normalizeAnthropicContent(message.content);
+	const parts: string[] = [];
+
+	for (const block of content) {
+		if (block.type === 'text') {
+			if (block.text) {
+				parts.push(block.text);
+			}
+			continue;
+		}
+
+		if (block.type === 'tool_result') {
+			const resultText = flattenAnthropicToolResultContent(block.content);
+			if (resultText) {
+				parts.push(resultText);
+			}
+		}
+	}
+
+	return parts.join('\n');
+}
+
 function getToolUseIds(content: AnthropicToolPairContentBlock[]): string[] {
 	return content
 		.filter((block): block is { type: 'tool_use'; id: string; name: string; input: any } => block.type === 'tool_use')
@@ -38,7 +100,7 @@ function getToolUseIds(content: AnthropicToolPairContentBlock[]): string[] {
 
 function getToolResultIds(content: AnthropicToolPairContentBlock[]): string[] {
 	return content
-		.filter((block): block is { type: 'tool_result'; tool_use_id: string; content: string | { type: 'text'; text: string }[] } => block.type === 'tool_result')
+		.filter((block): block is { type: 'tool_result'; tool_use_id: string; content: AnthropicToolResultContent } => block.type === 'tool_result')
 		.map(block => block.tool_use_id);
 }
 
@@ -110,4 +172,92 @@ export function getStructuredAnthropicToolPairIndexes(
 	}
 
 	return { assistantIndexes, userIndexes };
+}
+
+export function applyStructuredAnthropicToolPairLimit(
+	pairs: AnthropicToolPairIndexes,
+	maxStructuredPairs: number
+): AnthropicToolPairIndexes {
+	if (!Number.isFinite(maxStructuredPairs) || maxStructuredPairs < 0) {
+		return {
+			assistantIndexes: new Set(pairs.assistantIndexes),
+			userIndexes: new Set(pairs.userIndexes)
+		};
+	}
+
+	if (maxStructuredPairs === 0) {
+		return {
+			assistantIndexes: new Set(),
+			userIndexes: new Set()
+		};
+	}
+
+	const sortedAssistantIndexes = [...pairs.assistantIndexes].sort((left, right) => left - right);
+	if (sortedAssistantIndexes.length <= maxStructuredPairs) {
+		return {
+			assistantIndexes: new Set(pairs.assistantIndexes),
+			userIndexes: new Set(pairs.userIndexes)
+		};
+	}
+
+	const keptAssistantIndexes = sortedAssistantIndexes.slice(-maxStructuredPairs);
+	return {
+		assistantIndexes: new Set(keptAssistantIndexes),
+		userIndexes: new Set(keptAssistantIndexes.map(index => index + 1))
+	};
+}
+
+export function getAnthropicToolHistoryDebugInfo(
+	messages: readonly AnthropicToolPairMessage[]
+	,
+	maxStructuredPairs?: number
+): AnthropicToolHistoryDebugInfo {
+	const structuredPairs = maxStructuredPairs === undefined
+		? getStructuredAnthropicToolPairIndexes(messages)
+		: applyStructuredAnthropicToolPairLimit(
+			getStructuredAnthropicToolPairIndexes(messages),
+			maxStructuredPairs
+		);
+	const messageDebug: AnthropicToolHistoryMessageDebug[] = [];
+	const orphanToolResultIds: string[] = [];
+	const leadingOrphanToolResultIds: string[] = [];
+
+	for (let index = 0; index < messages.length; index++) {
+		const message = messages[index];
+		const content = normalizeAnthropicContent(message.content);
+		const toolUseIds = getToolUseIds(content);
+		const toolResultIds = getToolResultIds(content);
+		const structuredMode = message.role === 'assistant'
+			? (structuredPairs.assistantIndexes.has(index) ? 'structured' : 'text')
+			: (structuredPairs.userIndexes.has(index) ? 'structured' : 'text');
+		const hasLeadingOrphanToolResult = message.role === 'user'
+			&& toolResultIds.length > 0
+			&& !structuredPairs.userIndexes.has(index);
+
+		if (hasLeadingOrphanToolResult) {
+			orphanToolResultIds.push(...toolResultIds);
+			if (index === 0) {
+				leadingOrphanToolResultIds.push(...toolResultIds);
+			}
+		}
+
+		messageDebug.push({
+			index,
+			role: message.role,
+			blockTypes: content.map(block => block.type),
+			toolUseIds,
+			toolResultIds,
+			hasLeadingOrphanToolResult,
+			structuredMode
+		});
+	}
+
+	return {
+		messageCount: messages.length,
+		structuredAssistantIndexes: [...structuredPairs.assistantIndexes],
+		structuredUserIndexes: [...structuredPairs.userIndexes],
+		leadingOrphanToolResultIds,
+		orphanToolResultIds,
+		messages: messageDebug
+	};
 }

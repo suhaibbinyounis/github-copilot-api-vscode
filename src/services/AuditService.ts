@@ -19,6 +19,7 @@ export interface AuditEntry {
     responseHeaders?: Record<string, unknown>;
     requestBody?: unknown;
     responseBody?: unknown;
+    debug?: unknown;
 }
 
 export interface DailyStats {
