@@ -3866,7 +3866,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 					if (msg.tool_calls && msg.tool_calls.length > 0) {
 						// Assistant message with tool calls - include tool call info
 						const toolCallInfo = msg.tool_calls.map((tc: any) =>
-							`[Called function: $ { tc.function?.name || tc.name } (${tc.function?.arguments || JSON.stringify(tc.arguments)})]`
+							`[Called function: ${tc.function?.name || tc.name} (${tc.function?.arguments || JSON.stringify(tc.arguments)})]`
 						).join('\n');
 						lmMessages.push(vscode.LanguageModelChatMessage.Assistant(toolCallInfo));
 					} else {
