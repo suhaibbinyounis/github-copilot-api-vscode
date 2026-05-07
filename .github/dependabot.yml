@@ -5,7 +5,14 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
-    
+    ignore:
+      # @types/vscode must stay pinned to the minimum engine version (1.95.0)
+      # to ensure TypeScript catches any accidental use of APIs not available
+      # on older VS Code installs. Only bump this intentionally alongside
+      # a deliberate engines.vscode minimum version increase.
+      - dependency-name: "@types/vscode"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
