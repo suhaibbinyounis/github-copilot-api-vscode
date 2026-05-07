@@ -13,7 +13,10 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        # Node 22+ required for lint-staged v17 (needs >= 22.22.1).
+        # VS Code 1.95+ compatibility is unaffected — the compiled .vsix runs
+        # inside VS Code's own Node host, not the CI build environment.
+        node-version: [22.x]
 
     steps:
     - uses: actions/checkout@v4
