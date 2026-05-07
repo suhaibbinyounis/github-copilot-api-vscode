@@ -35,7 +35,7 @@ async function main() {
 		sourcesContent: false,
 		platform: 'node',
 		outfile: 'dist/extension.js',
-		external: ['vscode', '@microsoft/applicationinsights-*'],
+		external: ['vscode'],
 		logLevel: 'silent',
 		// Performance optimizations
 		treeShaking: true,

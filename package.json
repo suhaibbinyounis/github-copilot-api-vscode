@@ -84,6 +84,9 @@
     "test:badge": "make-coverage-badge --output-path ./media/coverage.svg"
   },
   "dependencies": {
+    "@microsoft/applicationinsights-common": "^3.4.1",
+    "@microsoft/applicationinsights-core-js": "^3.4.1",
+    "@microsoft/applicationinsights-web": "^3.4.1",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@vscode/extension-telemetry": "^1.5.1",
     "cloudflared": "^0.7.1",
