@@ -3674,7 +3674,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 						role: 'assistant',
 						content: result.content || null,
 						tool_calls: result.toolCalls.map((tc: any) => ({
-							id: `call_${randomUUID().slice(0, 24)} `,
+							id: `call_${randomUUID().slice(0, 24)}`,
 							type: 'function',
 							function: {
 								name: tc.name,
@@ -3697,13 +3697,13 @@ export class CopilotApiGateway implements vscode.Disposable {
 							const toolResult = await mcp.callTool(serverName, toolName, tc.arguments);
 							messages.push({
 								role: 'tool',
-								tool_call_id: `call_${randomUUID().slice(0, 24)} `, // Best effort ID mapping
+								tool_call_id: `call_${randomUUID().slice(0, 24)}`, // Best effort ID mapping
 								content: JSON.stringify(toolResult)
 							});
 						} catch (error: any) {
 							messages.push({
 								role: 'tool',
-								tool_call_id: `call_${randomUUID().slice(0, 24)} `,
+								tool_call_id: `call_${randomUUID().slice(0, 24)}`,
 								content: `Error executing MCP tool: ${error.message} `
 							});
 						}
@@ -3756,7 +3756,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 							role: 'assistant',
 							content: result.content || null,
 							tool_calls: result.toolCalls.map((tc: any, idx: number) => ({
-								id: `call_${randomUUID().slice(0, 24)} `,
+								id: `call_${randomUUID().slice(0, 24)}`,
 								type: 'function',
 								function: {
 									name: tc.name,
@@ -3866,7 +3866,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 					if (msg.tool_calls && msg.tool_calls.length > 0) {
 						// Assistant message with tool calls - include tool call info
 						const toolCallInfo = msg.tool_calls.map((tc: any) =>
-							`[Called function: $ { tc.function?.name || tc.name } (${tc.function?.arguments || JSON.stringify(tc.arguments)})]`
+							`[Called function: ${tc.function?.name || tc.name} (${tc.function?.arguments || JSON.stringify(tc.arguments)})]`
 						).join('\n');
 						lmMessages.push(vscode.LanguageModelChatMessage.Assistant(toolCallInfo));
 					} else {
