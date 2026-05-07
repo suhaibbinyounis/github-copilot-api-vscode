@@ -3,7 +3,7 @@
   "displayName": "GitHub Copilot API Gateway",
   "description": "Free & open-source universal API Gateway for all VS Code language models. Auto-discovers GitHub Copilot, Gemini, Ollama & any AI extension — exposing them via local OpenAI, Anthropic, Google & Llama compatible APIs. One endpoint, every model. Use with Cursor, LangChain, Agents & more.",
   "icon": "media/icon.png",
-  "version": "2.12.4",
+  "version": "2.12.5",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
@@ -85,6 +85,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "@vscode/extension-telemetry": "^1.5.1",
     "cloudflared": "^0.7.1",
     "selfsigned": "^5.5.0",
     "ws": "^8.20.0"

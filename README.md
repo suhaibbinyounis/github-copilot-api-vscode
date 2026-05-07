@@ -99,7 +99,7 @@ response = client.chat.completions.create(
 )
 ```
 
-> 🔒 **Your data stays local.** This extension runs entirely on your machine — no third-party servers, no telemetry, no data collection. The full source code is available on [GitHub](https://github.com/suhaibbinyounis/github-copilot-api-vscode) for you to audit.
+> 🔒 **Your prompts stay private.** All AI requests are processed entirely on your machine through VS Code's Copilot extension — your prompts and API keys never leave your machine. The extension collects anonymous, aggregate usage metrics (server start/stop events, command usage, error types) to help improve reliability. This telemetry is **fully optional** and respects your VS Code `telemetry.telemetryLevel` setting — set it to `off` to disable all data collection. The full source code is available on [GitHub](https://github.com/suhaibbinyounis/github-copilot-api-vscode) for you to audit.
 
 ---
 
@@ -271,8 +271,8 @@ For advanced options (TLS, IP allowlisting, audit logging), see [CONTRIBUTING.md
 This project is **100% free and open-source** under the [MIT License](LICENSE).
 
 - 🔍 **Full source code** available on [GitHub](https://github.com/suhaibbinyounis/github-copilot-api-vscode)
-- 🚫 **No telemetry** — zero data collection, no analytics, no tracking
-- 🔒 **Runs locally** — your prompts and API keys never leave your machine
+- 📊 **Anonymous telemetry** — collects aggregate extension health metrics only (no prompts, no file paths, no PII). Respects your VS Code `telemetry.telemetryLevel` setting — disable via `"telemetry.telemetryLevel": "off"` in VS Code settings.
+- 🔒 **Prompts stay local** — your AI requests and API keys never leave your machine
 - ✅ **Community-driven** — contributions welcome via [CONTRIBUTING.md](CONTRIBUTING.md)
 - 🛡️ **Security** — report vulnerabilities via [SECURITY.md](SECURITY.md)
 

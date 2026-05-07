@@ -7,11 +7,25 @@ import { CopilotPanel } from './CopilotPanel';
 import { createDesktopShortcut } from './commands/createDesktopShortcut';
 import { ExtensionHostProfiler } from './services/ExtensionHostProfiler';
 import { PerfMetrics } from './services/PerfMetrics';
+import {
+	initTelemetry,
+	telemetryActivate,
+	telemetryCommand,
+	telemetryServerError,
+	telemetryServerStarted,
+	telemetryServerStopped,
+	telemetryTunnelStarted,
+	telemetryTunnelStopped,
+} from './services/TelemetryService';
 
 let gateway: CopilotApiGateway | undefined;
 let gatewayPromise: Promise<CopilotApiGateway> | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
+	// Telemetry — automatically respects vscode telemetry.telemetryLevel setting
+	initTelemetry(context);
+	telemetryActivate();
+
 	const output = vscode.window.createOutputChannel('GitHub Copilot API Server');
 	const extensionHostProfiler = new ExtensionHostProfiler();
 	context.subscriptions.push(output);
@@ -144,6 +158,16 @@ Server is stopped. Click to start or manage.
 				// Notifications
 				const status = await gw.getStatus();
 				if (status.running && !wasRunning) {
+					// Track server start (sanitized — no IPs, no API keys)
+					telemetryServerStarted({
+						port: String(status.config.port),
+						host: status.config.host === '0.0.0.0' ? 'all-interfaces'
+							: status.config.host === '127.0.0.1' || status.config.host === 'localhost' ? 'localhost'
+							: 'custom',
+						isHttps: String(status.isHttps),
+						autoStart: String(autoStart),
+					});
+
 					const config = vscode.workspace.getConfiguration('githubCopilotApi.server');
 					if (config.get<boolean>('showNotifications', true)) {
 						// Show actual LAN IP instead of 0.0.0.0 when bound to all interfaces
@@ -159,6 +183,9 @@ Server is stopped. Click to start or manage.
 							void vscode.commands.executeCommand('github-copilot-api-vscode.openDashboard');
 						}
 					}
+				} else if (wasRunning && !status.running) {
+					// Track server stop
+					telemetryServerStopped();
 				}
 				wasRunning = status.running;
 			}));
@@ -330,6 +357,7 @@ Server is stopped. Click to start or manage.
 			void vscode.commands.executeCommand('github-copilot-api-vscode.editSystemPrompt');
 		} else if (selection.label.includes('Start Tunnel')) {
 			const result = await gw.startTunnel();
+			telemetryTunnelStarted(String(result.success));
 			if (result.success) {
 				void vscode.window.showInformationMessage(`Tunnel active at: ${result.url}`);
 			} else {
@@ -341,6 +369,7 @@ Server is stopped. Click to start or manage.
 				await vscode.env.clipboard.writeText(status.tunnel.url);
 				void vscode.window.showInformationMessage(`Copied: ${status.tunnel.url}`);
 			} else if (action === 'Stop Tunnel') {
+				telemetryTunnelStopped();
 				await gw.stopTunnel();
 				void vscode.window.showInformationMessage('Tunnel stopped.');
 			}
@@ -362,13 +391,21 @@ Server is stopped. Click to start or manage.
 		// If auto-start is requested, initialize immediately
 		getGateway().then(gw => {
 			return gw.start().catch(error => {
-				output.appendLine(`[${new Date().toISOString()}] ERROR Failed to start API server: ${getErrorMessage(error)}`);
-				void vscode.window.showErrorMessage(`Failed to start Copilot API server: ${getErrorMessage(error)}`);
+				const msg = getErrorMessage(error);
+				// Categorize error type without leaking message content
+				const errorType = msg.includes('EADDRINUSE') ? 'port_in_use'
+					: msg.includes('permission') || msg.includes('EACCES') ? 'permission_denied'
+					: msg.includes('copilot') || msg.includes('Copilot') ? 'copilot_unavailable'
+					: 'unknown';
+				telemetryServerError(errorType);
+				output.appendLine(`[${new Date().toISOString()}] ERROR Failed to start API server: ${msg}`);
+				void vscode.window.showErrorMessage(`Failed to start Copilot API server: ${msg}`);
 			});
 		});
 	}
 
 	const openChatCommand = vscode.commands.registerCommand('github-copilot-api-vscode.openCopilotChat', async () => {
+		telemetryCommand('openCopilotChat');
 		if (!await ensureCopilotChatReady()) {
 			return;
 		}
@@ -434,6 +471,7 @@ Server is stopped. Click to start or manage.
 
 
 	const openDashboard = vscode.commands.registerCommand('github-copilot-api-vscode.openDashboard', () => {
+		telemetryCommand('openDashboard');
 		return CopilotPanel.createOrShow(context.extensionUri, getGateway);
 	});
 
