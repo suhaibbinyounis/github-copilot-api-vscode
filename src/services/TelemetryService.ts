@@ -14,7 +14,7 @@ import * as vscode from 'vscode';
 // `telemetry.telemetryLevel` VS Code setting — no data is sent if the user
 // has opted out of telemetry.
 // ─────────────────────────────────────────────────────────────────────────────
-const CONNECTION_STRING = 'InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/';
+const CONNECTION_STRING = 'InstrumentationKey=0cd16943-5132-4204-91da-961cfeb4c886;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=edf9eba3-8dc8-4911-a81e-2d7a1d9ef160';
 
 let reporter: TelemetryReporter | undefined;
 
