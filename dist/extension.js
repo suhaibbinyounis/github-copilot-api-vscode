@@ -67237,6 +67237,5425 @@ var require_dsClientFactory = __commonJS({
   }
 });
 
+// node_modules/@microsoft/applicationinsights-common/dist/es5/applicationinsights-common.js
+var require_applicationinsights_common = __commonJS({
+  "node_modules/@microsoft/applicationinsights-common/dist/es5/applicationinsights-common.js"(exports2, module2) {
+    (function(global2, factory) {
+      typeof exports2 === "object" && typeof module2 !== "undefined" ? factory(exports2) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory((global2.Microsoft = global2.Microsoft || {}, global2.Microsoft.ApplicationInsights = global2.Microsoft.ApplicationInsights || {})));
+    })(exports2, (function(exports3) {
+      "use strict";
+      // @__NO_SIDE_EFFECTS__
+      function _pureAssign(func1, func2) {
+        return func1 || func2;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _pureRef(value, name) {
+        return value[name];
+      }
+      var UNDEF_VALUE = void 0;
+      var NULL_VALUE = null;
+      var EMPTY = "";
+      var FUNCTION = "function";
+      var OBJECT = "object";
+      var PROTOTYPE = "prototype";
+      var __PROTO__ = "__proto__";
+      var UNDEFINED = "undefined";
+      var CONSTRUCTOR = "constructor";
+      var SYMBOL = "Symbol";
+      var LENGTH = "length";
+      var NAME = "name";
+      var CALL = "call";
+      var TO_STRING = "toString";
+      var GET_OWN_PROPERTY_DESCRIPTOR = "getOwnPropertyDescriptor";
+      var GET_OWN_PROPERTY_SYMBOLS = "getOwnPropertySymbols";
+      var ObjClass$1 = /* @__PURE__ */ _pureAssign(Object);
+      var ObjProto$1 = /* @__PURE__ */ _pureRef(ObjClass$1, PROTOTYPE);
+      var StrCls = /* @__PURE__ */ _pureAssign(String);
+      var StrProto = /* @__PURE__ */ _pureRef(StrCls, PROTOTYPE);
+      var MathCls = /* @__PURE__ */ _pureAssign(Math);
+      var ArrCls = /* @__PURE__ */ _pureAssign(Array);
+      var ArrProto = /* @__PURE__ */ _pureRef(ArrCls, PROTOTYPE);
+      var ArrSlice = /* @__PURE__ */ _pureRef(ArrProto, "slice");
+      var POLYFILL_TAG = "_polyfill";
+      var POLYFILL_TYPE_NAME = "__nw21$polytype__";
+      function safe(func, argArray) {
+        try {
+          return {
+            v: func.apply(this, argArray)
+          };
+        } catch (e) {
+          return { e };
+        }
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createIs(theType) {
+        return function(value) {
+          return typeof value === theType;
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createObjIs(theName) {
+        var theType = "[object " + theName + "]";
+        return function(value) {
+          return !!(value && /* @__PURE__ */ objToString(value) === theType);
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function objToString(value) {
+        return ObjProto$1[TO_STRING].call(value);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isUndefined(value) {
+        return typeof value === UNDEFINED || value === UNDEFINED;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isStrictUndefined(arg) {
+        return arg === UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isNullOrUndefined(value) {
+        return value === NULL_VALUE || /* @__PURE__ */ isUndefined(value);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isStrictNullOrUndefined(value) {
+        return value === NULL_VALUE || value === UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isDefined(arg) {
+        return !!arg || arg !== UNDEF_VALUE;
+      }
+      var isString = /* @__PURE__ */ _createIs("string");
+      var isFunction = /* @__PURE__ */ _createIs(FUNCTION);
+      // @__NO_SIDE_EFFECTS__
+      function isObject2(value) {
+        if (!value && /* @__PURE__ */ isNullOrUndefined(value)) {
+          return false;
+        }
+        return !!value && typeof value === OBJECT;
+      }
+      var isArray = /* @__PURE__ */ _pureRef(ArrCls, "isArray");
+      var isError = /* @__PURE__ */ _createObjIs("Error");
+      function _returnNothing() {
+        return;
+      }
+      function _returnEmptyArray() {
+        return [];
+      }
+      var asString = /* @__PURE__ */ _pureAssign(StrCls);
+      var ERROR_TYPE = "[object Error]";
+      // @__NO_SIDE_EFFECTS__
+      function dumpObj(object3, format) {
+        var propertyValueDump = EMPTY;
+        var objType = ObjProto$1[TO_STRING][CALL](object3);
+        if (objType === ERROR_TYPE) {
+          object3 = { stack: asString(object3.stack), message: asString(object3.message), name: asString(object3.name) };
+        }
+        try {
+          propertyValueDump = JSON.stringify(object3, NULL_VALUE, format ? typeof format === "number" ? format : 4 : UNDEF_VALUE);
+          propertyValueDump = (propertyValueDump ? propertyValueDump.replace(/"(\w+)"\s*:\s{0,1}/g, "$1: ") : NULL_VALUE) || asString(object3);
+        } catch (e) {
+          propertyValueDump = " - " + /* @__PURE__ */ dumpObj(e, format);
+        }
+        return objType + ": " + propertyValueDump;
+      }
+      function throwError(message) {
+        throw new Error(message);
+      }
+      function throwTypeError(message) {
+        throw new TypeError(message);
+      }
+      function _throwIfNullOrUndefined(obj) {
+        if (/* @__PURE__ */ isStrictNullOrUndefined(obj)) {
+          throwTypeError("Cannot convert undefined or null to object");
+        }
+      }
+      function _throwIfNotString(value) {
+        if (!isString(value)) {
+          throwTypeError("'" + /* @__PURE__ */ dumpObj(value) + "' is not a string");
+        }
+      }
+      // @__NO_SIDE_EFFECTS__
+      function objHasOwnProperty(obj, prop) {
+        return !!obj && ObjProto$1.hasOwnProperty[CALL](obj, prop);
+      }
+      var _objGetOwnPropertyDescriptor$2 = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, GET_OWN_PROPERTY_DESCRIPTOR), _returnNothing);
+      var objHasOwn = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "hasOwn"), polyObjHasOwn);
+      // @__NO_SIDE_EFFECTS__
+      function polyObjHasOwn(obj, prop) {
+        _throwIfNullOrUndefined(obj);
+        return /* @__PURE__ */ objHasOwnProperty(obj, prop) || !!_objGetOwnPropertyDescriptor$2(obj, prop);
+      }
+      function objForEachKey(theObject, callbackfn, thisArg) {
+        if (theObject && (/* @__PURE__ */ isObject2(theObject) || isFunction(theObject))) {
+          for (var prop in theObject) {
+            if (objHasOwn(theObject, prop)) {
+              if (callbackfn[CALL](thisArg || theObject, prop, theObject[prop]) === -1) {
+                break;
+              }
+            }
+          }
+        }
+      }
+      function arrForEach(theArray, callbackfn, thisArg) {
+        if (theArray) {
+          var len = theArray[LENGTH] >>> 0;
+          for (var idx = 0; idx < len; idx++) {
+            if (idx in theArray) {
+              if (callbackfn[CALL](thisArg || theArray, theArray[idx], idx, theArray) === -1) {
+                break;
+              }
+            }
+          }
+        }
+      }
+      var _unwrapFunction = _unwrapFunctionWithPoly;
+      // @__NO_SIDE_EFFECTS__
+      function _unwrapFunctionWithPoly(funcName, clsProto, polyFunc) {
+        var clsFn = clsProto ? clsProto[funcName] : NULL_VALUE;
+        return function(thisArg) {
+          var theFunc = (thisArg ? thisArg[funcName] : NULL_VALUE) || clsFn;
+          if (theFunc || polyFunc) {
+            var theArgs = arguments;
+            return (theFunc || polyFunc).apply(thisArg, theFunc ? ArrSlice[CALL](theArgs, 1) : theArgs);
+          }
+          throwTypeError('"' + asString(funcName) + '" not defined for ' + /* @__PURE__ */ dumpObj(thisArg));
+        };
+      }
+      function _objPropertyIsEnum(obj, propKey) {
+        var desc;
+        var fn = ObjClass$1.getOwnPropertyDescriptor;
+        if (!/* @__PURE__ */ isStrictNullOrUndefined(obj) && fn) {
+          desc = safe(fn, [obj, propKey]).v || NULL_VALUE;
+        }
+        if (!desc) {
+          desc = safe(function() {
+            for (var key in obj) {
+              if (key === propKey) {
+                return { enumerable: true };
+              }
+            }
+          }).v;
+        }
+        return desc && desc.enumerable || false;
+      }
+      var objPropertyIsEnumerable = /* @__PURE__ */ _unwrapFunctionWithPoly("propertyIsEnumerable", NULL_VALUE, _objPropertyIsEnum);
+      var _objGetOwnPropertyDescriptor$1 = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, GET_OWN_PROPERTY_DESCRIPTOR), _returnNothing);
+      var _objGetOwnPropertySymbols = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, GET_OWN_PROPERTY_SYMBOLS), _returnEmptyArray);
+      var propMap = {
+        e: "enumerable",
+        c: "configurable",
+        v: "value",
+        w: "writable",
+        g: "get",
+        s: "set"
+      };
+      // @__NO_SIDE_EFFECTS__
+      function _createProp(value) {
+        var prop = {};
+        prop[propMap["c"]] = true;
+        prop[propMap["e"]] = true;
+        if (value.l) {
+          prop.get = function() {
+            return value.l.v;
+          };
+          var desc = _objGetOwnPropertyDescriptor$1(value.l, "v");
+          if (desc && desc.set) {
+            prop.set = function(newValue) {
+              value.l.v = newValue;
+            };
+          }
+        }
+        objForEachKey(value, function(key, value2) {
+          prop[propMap[key]] = /* @__PURE__ */ isStrictUndefined(value2) ? prop[propMap[key]] : value2;
+        });
+        return prop;
+      }
+      var objDefineProp = /* @__PURE__ */ _pureRef(ObjClass$1, "defineProperty");
+      var objDefineProperties = /* @__PURE__ */ _pureRef(ObjClass$1, "defineProperties");
+      function objDefine(target, key, propDesc) {
+        return objDefineProp(target, key, /* @__PURE__ */ _createProp(propDesc));
+      }
+      function objDefineProps(target, propDescMap) {
+        var props = {};
+        objForEachKey(propDescMap, function(key, value) {
+          props[key] = /* @__PURE__ */ _createProp(value);
+        });
+        arrForEach(_objGetOwnPropertySymbols(propDescMap), function(sym) {
+          if (objPropertyIsEnumerable(propDescMap, sym)) {
+            props[sym] = /* @__PURE__ */ _createProp(propDescMap[sym]);
+          }
+        });
+        return objDefineProperties(target, props);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createKeyValueMap(values, keyType, valueType, completeFn, writable) {
+        var theMap = {};
+        objForEachKey(values, function(key, value) {
+          _assignMapValue(theMap, key, keyType ? value : key);
+          _assignMapValue(theMap, value, valueType ? value : key);
+        });
+        return completeFn ? completeFn(theMap) : theMap;
+      }
+      function _assignMapValue(theMap, key, value, writable) {
+        objDefineProp(theMap, key, {
+          value,
+          enumerable: true,
+          writable: false
+        });
+      }
+      var _objFreeze = /* @__PURE__ */ _pureRef(ObjClass$1, "freeze");
+      function _doNothing(value) {
+        return value;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getProto(value) {
+        _throwIfNullOrUndefined(value);
+        return value[__PROTO__] || NULL_VALUE;
+      }
+      var objAssign = /* @__PURE__ */ _pureRef(ObjClass$1, "assign");
+      var objKeys = /* @__PURE__ */ _pureRef(ObjClass$1, "keys");
+      var objFreeze = /* @__PURE__ */ _pureAssign(_objFreeze, _doNothing);
+      var objGetPrototypeOf = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "getPrototypeOf"), _getProto);
+      // @__NO_SIDE_EFFECTS__
+      function createEnum(values) {
+        return /* @__PURE__ */ _createKeyValueMap(values, 1, 0, objFreeze);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createEnumKeyMap(values) {
+        return /* @__PURE__ */ _createKeyValueMap(values, 0, 0, objFreeze);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createSimpleMap(values) {
+        var mapClass = {};
+        objForEachKey(values, function(key, value) {
+          _assignMapValue(mapClass, key, value[1]);
+          _assignMapValue(mapClass, value[0], value[1]);
+        });
+        return objFreeze(mapClass);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createTypeMap(values) {
+        return /* @__PURE__ */ createSimpleMap(values);
+      }
+      var _wellKnownSymbolMap = /* @__PURE__ */ createEnumKeyMap({
+        asyncIterator: 0,
+        hasInstance: 1,
+        isConcatSpreadable: 2,
+        iterator: 3,
+        match: 4,
+        matchAll: 5,
+        replace: 6,
+        search: 7,
+        species: 8,
+        split: 9,
+        toPrimitive: 10,
+        toStringTag: 11,
+        unscopables: 12
+      });
+      var GLOBAL_CONFIG_KEY = "__tsUtils$gblCfg";
+      var _globalCfg;
+      // @__NO_SIDE_EFFECTS__
+      function _getGlobalValue() {
+        var result;
+        if (typeof globalThis !== UNDEFINED) {
+          result = globalThis;
+        }
+        if (!result && typeof self !== UNDEFINED) {
+          result = self;
+        }
+        if (!result && typeof window !== UNDEFINED) {
+          result = window;
+        }
+        if (!result && typeof global !== UNDEFINED) {
+          result = global;
+        }
+        return result;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getGlobalConfig() {
+        if (!_globalCfg) {
+          var gbl = safe(_getGlobalValue).v || {};
+          _globalCfg = gbl[GLOBAL_CONFIG_KEY] = gbl[GLOBAL_CONFIG_KEY] || {};
+        }
+        return _globalCfg;
+      }
+      var mathMin = /* @__PURE__ */ _pureRef(MathCls, "min");
+      var mathMax = /* @__PURE__ */ _pureRef(MathCls, "max");
+      var strSlice = /* @__PURE__ */ _unwrapFunction("slice", StrProto);
+      var strSubstring = /* @__PURE__ */ _unwrapFunction("substring", StrProto);
+      var strSubstr = /* @__PURE__ */ _unwrapFunctionWithPoly("substr", StrProto, polyStrSubstr);
+      // @__NO_SIDE_EFFECTS__
+      function polyStrSubstr(value, start, length) {
+        _throwIfNullOrUndefined(value);
+        if (length < 0) {
+          return EMPTY;
+        }
+        start = start || 0;
+        if (start < 0) {
+          start = mathMax(start + value[LENGTH], 0);
+        }
+        if (/* @__PURE__ */ isUndefined(length)) {
+          return strSlice(value, start);
+        }
+        return strSlice(value, start, start + length);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function strLeft(value, count) {
+        return strSubstring(value, 0, count);
+      }
+      function _tagAsPolyfill(target, polyfillTypeName) {
+        if (target) {
+          safe(function() {
+            target[POLYFILL_TAG] = true;
+            target[POLYFILL_TYPE_NAME] = polyfillTypeName;
+          });
+          safe(objDefine, [target, POLYFILL_TAG, {
+            v: true,
+            w: false,
+            e: false
+          }]);
+          safe(objDefine, [target, POLYFILL_TYPE_NAME, {
+            v: polyfillTypeName,
+            w: false,
+            e: false
+          }]);
+        }
+        return target;
+      }
+      var objCreate = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "create"), polyObjCreate);
+      // @__NO_SIDE_EFFECTS__
+      function polyObjCreate(obj, properties) {
+        var newObj = null;
+        function tempFunc() {
+        }
+        if (!/* @__PURE__ */ isStrictNullOrUndefined(obj)) {
+          var type = typeof obj;
+          if (type !== OBJECT && type !== FUNCTION) {
+            throwTypeError("Prototype must be an Object or function: " + /* @__PURE__ */ dumpObj(obj));
+          }
+          tempFunc[PROTOTYPE] = obj;
+          safe(function() {
+            tempFunc[__PROTO__] = obj;
+          });
+          newObj = new tempFunc();
+        } else {
+          newObj = {};
+        }
+        if (properties) {
+          safe(objDefineProperties, [newObj, properties]);
+        }
+        return newObj;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function utcNow() {
+        return (Date.now || polyUtcNow)();
+      }
+      // @__NO_SIDE_EFFECTS__
+      function polyUtcNow() {
+        return (/* @__PURE__ */ new Date()).getTime();
+      }
+      function fnApply(fn, thisArg, argArray) {
+        return fn.apply(thisArg, argArray);
+      }
+      var _globalLazyTestHooks;
+      function _initTestHooks() {
+        _globalLazyTestHooks = /* @__PURE__ */ _getGlobalConfig();
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getLazy(cb, argArray) {
+        var lazyValue = {};
+        !_globalLazyTestHooks && _initTestHooks();
+        lazyValue.b = _globalLazyTestHooks.lzy;
+        objDefineProp(lazyValue, "v", {
+          configurable: true,
+          get: function() {
+            var result = fnApply(cb, null, argArray);
+            if (!_globalLazyTestHooks.lzy) {
+              objDefineProp(lazyValue, "v", {
+                value: result
+              });
+            }
+            lazyValue.b = _globalLazyTestHooks.lzy;
+            return result;
+          }
+        });
+        return lazyValue;
+      }
+      var mathRandom = /* @__PURE__ */ _pureRef(MathCls, "random");
+      var _uniqueInstanceId = /* @__PURE__ */ getLazy(function() {
+        var value = (/* @__PURE__ */ utcNow()).toString(36).slice(2);
+        while (value.length < 16) {
+          value += mathRandom().toString(36).slice(2);
+        }
+        value = value.substring(0, 16);
+        return value;
+      });
+      var UNIQUE_REGISTRY_ID = "_urid";
+      var POLY_SYM = "$nw21sym";
+      var _polySymbols;
+      var _polyId = 0;
+      // @__NO_SIDE_EFFECTS__
+      function _globalSymbolRegistry() {
+        if (!_polySymbols) {
+          var gblCfg = /* @__PURE__ */ _getGlobalConfig();
+          _polySymbols = gblCfg.gblSym = gblCfg.gblSym || { k: {}, s: {} };
+        }
+        return _polySymbols;
+      }
+      var _wellKnownSymbolCache;
+      // @__NO_SIDE_EFFECTS__
+      function polyNewSymbol(description) {
+        var uniqueId = "_" + _polyId++ + "_" + _uniqueInstanceId.v;
+        var symString = SYMBOL + "(" + description + ")";
+        function _setProp(name, value) {
+          objDefine(theSymbol, name, {
+            v: value,
+            e: false,
+            w: false
+          });
+        }
+        var theSymbol = objCreate(null);
+        _setProp("description", asString(description));
+        _setProp(TO_STRING, function() {
+          return symString + POLY_SYM + uniqueId;
+        });
+        _setProp("valueOf", function() {
+          return theSymbol;
+        });
+        _setProp("v", symString);
+        _setProp("_uid", uniqueId);
+        return _tagAsPolyfill(theSymbol, "symbol");
+      }
+      // @__NO_SIDE_EFFECTS__
+      function polySymbolFor(key) {
+        var registry2 = /* @__PURE__ */ _globalSymbolRegistry();
+        if (!objHasOwn(registry2.k, key)) {
+          var newSymbol_1 = /* @__PURE__ */ polyNewSymbol(key);
+          var regId_1 = objKeys(registry2.s).length;
+          newSymbol_1[UNIQUE_REGISTRY_ID] = function() {
+            return regId_1 + "_" + newSymbol_1[TO_STRING]();
+          };
+          registry2.k[key] = newSymbol_1;
+          registry2.s[newSymbol_1[UNIQUE_REGISTRY_ID]()] = asString(key);
+        }
+        return registry2.k[key];
+      }
+      // @__NO_SIDE_EFFECTS__
+      function polyGetKnownSymbol(name) {
+        !_wellKnownSymbolCache && (_wellKnownSymbolCache = {});
+        var result;
+        var knownName = _wellKnownSymbolMap[name];
+        if (knownName) {
+          result = _wellKnownSymbolCache[knownName] = _wellKnownSymbolCache[knownName] || /* @__PURE__ */ polyNewSymbol(SYMBOL + "." + knownName);
+        }
+        return result;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createCachedValue(value) {
+        return objDefineProp({
+          toJSON: function() {
+            return value;
+          }
+        }, "v", { value });
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getDeferred(cb, argArray) {
+        var theValue = {
+          toJSON: function() {
+            return theValue.v;
+          }
+        };
+        return objDefineProp(theValue, "v", {
+          get: function() {
+            var result = fnApply(cb, null, argArray);
+            cb = NULL_VALUE;
+            objDefineProp(theValue, "v", { value: result });
+            return result;
+          },
+          configurable: true
+        });
+      }
+      var WINDOW = "window";
+      var _cachedGlobal;
+      function _getGlobalInstFn(getFn, theArgs) {
+        var cachedValue;
+        return function() {
+          !_globalLazyTestHooks && _initTestHooks();
+          if (!cachedValue || _globalLazyTestHooks.lzy) {
+            cachedValue = /* @__PURE__ */ createCachedValue(safe(getFn, theArgs).v);
+          }
+          return cachedValue.v;
+        };
+      }
+      function getGlobal(useCached) {
+        !_globalLazyTestHooks && _initTestHooks();
+        if (!_cachedGlobal || useCached === false || _globalLazyTestHooks.lzy) {
+          _cachedGlobal = /* @__PURE__ */ createCachedValue(safe(_getGlobalValue).v || NULL_VALUE);
+        }
+        return _cachedGlobal.v;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getInst(name, useCached) {
+        var gbl;
+        if (!_cachedGlobal || useCached === false) {
+          gbl = getGlobal(useCached);
+        } else {
+          gbl = _cachedGlobal.v;
+        }
+        if (gbl && gbl[name]) {
+          return gbl[name];
+        }
+        if (name === WINDOW) {
+          try {
+            return window;
+          } catch (e) {
+          }
+        }
+        return NULL_VALUE;
+      }
+      var getDocument = /* @__PURE__ */ _getGlobalInstFn(getInst, ["document"]);
+      // @__NO_SIDE_EFFECTS__
+      function hasWindow() {
+        return !!/* @__PURE__ */ getWindow();
+      }
+      var getWindow = /* @__PURE__ */ _getGlobalInstFn(getInst, [WINDOW]);
+      // @__NO_SIDE_EFFECTS__
+      function hasNavigator() {
+        return !!/* @__PURE__ */ getNavigator();
+      }
+      var getNavigator = /* @__PURE__ */ _getGlobalInstFn(getInst, ["navigator"]);
+      var _symbol2;
+      var _symbolFor;
+      // @__NO_SIDE_EFFECTS__
+      function _initSymbol() {
+        _symbol2 = /* @__PURE__ */ createCachedValue(safe(getInst, [SYMBOL]).v);
+        return _symbol2;
+      }
+      function _getSymbolKey(key) {
+        var gblSym = (!_globalLazyTestHooks.lzy ? _symbol2 : 0) || /* @__PURE__ */ _initSymbol();
+        return gblSym.v ? gblSym.v[key] : UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getKnownSymbol(name, noPoly) {
+        var knownName = _wellKnownSymbolMap[name];
+        !_globalLazyTestHooks && _initTestHooks();
+        var sym = (!_globalLazyTestHooks.lzy ? _symbol2 : 0) || /* @__PURE__ */ _initSymbol();
+        return sym.v ? sym.v[knownName || name] : !noPoly ? /* @__PURE__ */ polyGetKnownSymbol(name) : UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function newSymbol(description, noPoly) {
+        !_globalLazyTestHooks && _initTestHooks();
+        var sym = (!_globalLazyTestHooks.lzy ? _symbol2 : 0) || /* @__PURE__ */ _initSymbol();
+        return sym.v ? sym.v(description) : !noPoly ? /* @__PURE__ */ polyNewSymbol(description) : NULL_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function symbolFor(key) {
+        !_globalLazyTestHooks && _initTestHooks();
+        _symbolFor = (!_globalLazyTestHooks.lzy ? _symbolFor : 0) || /* @__PURE__ */ createCachedValue(safe(_getSymbolKey, ["for"]).v);
+        return (_symbolFor.v || polySymbolFor)(key);
+      }
+      var arrIndexOf = /* @__PURE__ */ _unwrapFunction("indexOf", ArrProto);
+      var arrMap = /* @__PURE__ */ _unwrapFunction("map", ArrProto);
+      var arrReduce = /* @__PURE__ */ _unwrapFunction("reduce", ArrProto);
+      var _isProtoArray;
+      var objSetPrototypeOf = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "setPrototypeOf"), _polyObjSetPrototypeOf);
+      function _polyObjSetPrototypeOf(obj, proto) {
+        var _a3;
+        !_isProtoArray && (_isProtoArray = /* @__PURE__ */ createCachedValue((_a3 = {}, _a3[__PROTO__] = [], _a3) instanceof Array));
+        _isProtoArray.v ? obj[__PROTO__] = proto : objForEachKey(proto, function(key, value) {
+          return obj[key] = value;
+        });
+        return obj;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createCustomError(name, d, b) {
+        safe(objDefine, [d, NAME, { v: name, c: true, e: false }]);
+        d = objSetPrototypeOf(d, b);
+        function __() {
+          this[CONSTRUCTOR] = d;
+          safe(objDefine, [this, NAME, { v: name, c: true, e: false }]);
+        }
+        d[PROTOTYPE] = b === NULL_VALUE ? objCreate(b) : (__[PROTOTYPE] = b[PROTOTYPE], new __());
+        return d;
+      }
+      function _setName(baseClass, name) {
+        name && (baseClass[NAME] = name);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createCustomError(name, constructCb, errorBase, superArgsFn) {
+        var theBaseClass = errorBase || Error;
+        var orgName = theBaseClass[PROTOTYPE][NAME];
+        var captureFn = Error.captureStackTrace;
+        return /* @__PURE__ */ _createCustomError(name, function() {
+          var _this = this;
+          var theArgs = arguments;
+          try {
+            safe(_setName, [theBaseClass, name]);
+            var _self = fnApply(theBaseClass, _this, superArgsFn ? superArgsFn(theArgs) : ArrSlice[CALL](theArgs)) || _this;
+            if (_self !== _this) {
+              var orgProto = objGetPrototypeOf(_this);
+              if (orgProto !== objGetPrototypeOf(_self)) {
+                objSetPrototypeOf(_self, orgProto);
+              }
+            }
+            captureFn && captureFn(_self, _this[CONSTRUCTOR]);
+            constructCb && constructCb(_self, theArgs);
+            return _self;
+          } finally {
+            safe(_setName, [theBaseClass, orgName]);
+          }
+        }, theBaseClass);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createTrimFn(exp) {
+        return function _doTrim(value) {
+          _throwIfNullOrUndefined(value);
+          if (value && value.replace) {
+            value = value.replace(exp, EMPTY);
+          }
+          return value;
+        };
+      }
+      var polyStrTrim = /* @__PURE__ */ _createTrimFn(/^\s+|(?=\s)\s+$/g);
+      var strTrim = /* @__PURE__ */ _unwrapFunctionWithPoly("trim", StrProto, polyStrTrim);
+      var mathFloor = /* @__PURE__ */ _pureRef(MathCls, "floor");
+      // @__NO_SIDE_EFFECTS__
+      function safeGetDeferred(cb, defValue, argArray) {
+        return /* @__PURE__ */ getDeferred(function() {
+          var result = safe(cb, argArray);
+          return result.e ? defValue : result.v;
+        });
+      }
+      var _fnToString;
+      var _objCtrFnString;
+      var _gblWindow;
+      // @__NO_SIDE_EFFECTS__
+      function isPlainObject3(value) {
+        if (!value || typeof value !== OBJECT) {
+          return false;
+        }
+        if (!_gblWindow) {
+          _gblWindow = /* @__PURE__ */ hasWindow() ? getWindow() : true;
+        }
+        var result = false;
+        if (value !== _gblWindow) {
+          if (!_objCtrFnString) {
+            _fnToString = Function[PROTOTYPE][TO_STRING];
+            _objCtrFnString = _fnToString[CALL](ObjClass$1);
+          }
+          try {
+            var proto = objGetPrototypeOf(value);
+            result = !proto;
+            if (!result) {
+              if (/* @__PURE__ */ objHasOwnProperty(proto, CONSTRUCTOR)) {
+                proto = proto[CONSTRUCTOR];
+              }
+              result = !!(proto && typeof proto === FUNCTION && _fnToString[CALL](proto) === _objCtrFnString);
+            }
+          } catch (ex) {
+          }
+        }
+        return result;
+      }
+      var strSplit = /* @__PURE__ */ _unwrapFunction("split", StrProto);
+      var _perf;
+      // @__NO_SIDE_EFFECTS__
+      function getPerformance() {
+        !_globalLazyTestHooks && _initTestHooks();
+        if (!_perf || _globalLazyTestHooks.lzy) {
+          _perf = /* @__PURE__ */ createCachedValue(safe(getInst, ["performance"]).v);
+        }
+        return _perf.v;
+      }
+      var mathRound = /* @__PURE__ */ _pureRef(MathCls, "round");
+      var objGetOwnPropertyDescriptor = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, GET_OWN_PROPERTY_DESCRIPTOR), _returnNothing);
+      var strEndsWith = /* @__PURE__ */ _unwrapFunctionWithPoly("endsWith", StrProto, polyStrEndsWith);
+      // @__NO_SIDE_EFFECTS__
+      function polyStrEndsWith(value, searchString, length) {
+        _throwIfNotString(value);
+        var searchValue = isString(searchString) ? searchString : asString(searchString);
+        var end = !/* @__PURE__ */ isUndefined(length) && length < value[LENGTH] ? length : value[LENGTH];
+        return strSubstring(value, end - searchValue[LENGTH], end) === searchValue;
+      }
+      var strIndexOf = /* @__PURE__ */ _unwrapFunction("indexOf", StrProto);
+      var REF = "ref";
+      var UNREF = "unref";
+      var HAS_REF = "hasRef";
+      var ENABLED = "enabled";
+      // @__NO_SIDE_EFFECTS__
+      function _createTimerHandler(startTimer, refreshFn, cancelFn) {
+        var ref = true;
+        var timerId = startTimer ? refreshFn(NULL_VALUE) : NULL_VALUE;
+        var theTimerHandler;
+        function _unref() {
+          ref = false;
+          timerId && timerId[UNREF] && timerId[UNREF]();
+          return theTimerHandler;
+        }
+        function _cancel() {
+          timerId && cancelFn(timerId);
+          timerId = NULL_VALUE;
+        }
+        function _refresh() {
+          timerId = refreshFn(timerId);
+          if (!ref) {
+            _unref();
+          }
+          return theTimerHandler;
+        }
+        function _setEnabled(value) {
+          !value && timerId && _cancel();
+          value && !timerId && _refresh();
+        }
+        theTimerHandler = {
+          cancel: _cancel,
+          refresh: _refresh
+        };
+        theTimerHandler[HAS_REF] = function() {
+          if (timerId && timerId[HAS_REF]) {
+            return timerId[HAS_REF]();
+          }
+          return ref;
+        };
+        theTimerHandler[REF] = function() {
+          ref = true;
+          timerId && timerId[REF] && timerId[REF]();
+          return theTimerHandler;
+        };
+        theTimerHandler[UNREF] = _unref;
+        theTimerHandler = objDefineProp(theTimerHandler, ENABLED, {
+          get: function() {
+            return !!timerId;
+          },
+          set: _setEnabled
+        });
+        return {
+          h: theTimerHandler,
+          dn: function() {
+            timerId = NULL_VALUE;
+          }
+        };
+      }
+      var _setTimeoutFn;
+      var _clearTimeoutFn;
+      function _resolveTimeoutFn(timeoutFn) {
+        var result = isFunction(timeoutFn) ? timeoutFn : _setTimeoutFn;
+        if (!result) {
+          var globalOverrides = (/* @__PURE__ */ _getGlobalConfig()).tmOut || [];
+          if (isArray(globalOverrides) && globalOverrides.length > 0 && isFunction(globalOverrides[0])) {
+            result = globalOverrides[0];
+          }
+        }
+        return result || setTimeout;
+      }
+      function _resolveClearTimeoutFn(timeoutFn) {
+        var result = isFunction(timeoutFn) ? timeoutFn : _clearTimeoutFn;
+        if (!result) {
+          var globalOverrides = (/* @__PURE__ */ _getGlobalConfig()).tmOut || [];
+          if (isArray(globalOverrides) && globalOverrides.length > 1 && isFunction(globalOverrides[1])) {
+            result = globalOverrides[1];
+          }
+        }
+        return result || clearTimeout;
+      }
+      function _createTimeoutWith(startTimer, overrideFn, theArgs) {
+        var isArr = isArray(overrideFn);
+        var len = isArr ? overrideFn.length : 0;
+        var setFn = _resolveTimeoutFn(len > 0 ? overrideFn[0] : !isArr ? overrideFn : UNDEF_VALUE);
+        var clearFn = _resolveClearTimeoutFn(len > 1 ? overrideFn[1] : UNDEF_VALUE);
+        var timerFn = theArgs[0];
+        theArgs[0] = function() {
+          handler.dn();
+          fnApply(timerFn, UNDEF_VALUE, ArrSlice[CALL](arguments));
+        };
+        var handler = /* @__PURE__ */ _createTimerHandler(startTimer, function(timerId) {
+          if (timerId) {
+            if (timerId.refresh) {
+              timerId.refresh();
+              return timerId;
+            }
+            fnApply(clearFn, UNDEF_VALUE, [timerId]);
+          }
+          return fnApply(setFn, UNDEF_VALUE, theArgs);
+        }, function(timerId) {
+          fnApply(clearFn, UNDEF_VALUE, [timerId]);
+        });
+        return handler.h;
+      }
+      function scheduleTimeout(callback, timeout) {
+        return _createTimeoutWith(true, UNDEF_VALUE, ArrSlice[CALL](arguments));
+      }
+      var createEnumStyle = createEnum;
+      var createValueMap = createTypeMap;
+      var _DYN_TO_LOWER_CASE = "toLowerCase";
+      var _DYN_LENGTH = "length";
+      var _DYN_WARN_TO_CONSOLE = "warnToConsole";
+      var _DYN_THROW_INTERNAL = "throwInternal";
+      var _DYN_WATCH = "watch";
+      var _DYN_APPLY = "apply";
+      var _DYN_PUSH = "push";
+      var _DYN_SPLICE = "splice";
+      var _DYN_LOGGER = "logger";
+      var _DYN_CANCEL = "cancel";
+      var _DYN_IDENTIFIER = "identifier";
+      var _DYN_STRINGIFY = "stringify";
+      var _DYN_TRACE_ID = "traceId";
+      var _DYN_SPAN_ID = "spanId";
+      var _DYN_TRACE_FLAGS = "traceFlags";
+      var _DYN_NAME = "name";
+      var _DYN_TIME = "time";
+      var _DYN_VALUE = "value";
+      var _DYN_UNLOAD = "unload";
+      var _DYN_REASON = "reason";
+      var _DYN_FLUSH = "flush";
+      var _DYN_LOGGING_LEVEL_CONSOL4 = "loggingLevelConsole";
+      var _DYN_JOIN = "join";
+      var _DYN_MESSAGE_ID = "messageId";
+      var _DYN_MESSAGE = "message";
+      var _DYN_DIAG_LOG = "diagLog";
+      var _DYN_SPLIT = "split";
+      var _DYN_DATA = "data";
+      var _DYN_CONFIG = "config";
+      var _DYN_REPLACE = "replace";
+      var _DYN_HOST = "host";
+      var _DYN_EXCEPTION = "exception";
+      var _DYN_TYPE = "type";
+      var _DYN_MATCH = "match";
+      var _DYN_SET_TRACE_FLAGS = "setTraceFlags";
+      var _DYN_PATHNAME = "pathname";
+      var _DYN_TRACE_STATE = "traceState";
+      var _DYN_COUNT = "count";
+      var _DYN_PRE_TRIGGER_DATE = "preTriggerDate";
+      var _DYN_GET_UTCDATE = "getUTCDate";
+      var _DYN_BASE_DATA = "baseData";
+      var _DYN_PROPERTIES = "properties";
+      var _DYN_USER_AGENT = "userAgent";
+      var _DYN_DURATION = "duration";
+      var _DYN_TO_STRING = "toString";
+      var _DYN_HANDLER = "handler";
+      var _DYN_EVT_NAME = "evtName";
+      var _DYN_CONCAT = "concat";
+      var _DYN_INGESTIONENDPOINT = "ingestionendpoint";
+      var _DYN_CREATE_EVENT = "createEvent";
+      var _DYN_SUBSTRING = "substring";
+      var _DYN_REMOVE_ITEM = "removeItem";
+      var _DYN_GET_ATTRIBUTE = "getAttribute";
+      var _DYN_CORRELATION_HEADER_E8 = "correlationHeaderExcludePatterns";
+      var _DYN_MEASUREMENTS = "measurements";
+      var _DYN_SIZE_IN_BYTES = "sizeInBytes";
+      var _DYN_TYPE_NAME = "typeName";
+      var _DYN_EXCEPTIONS = "exceptions";
+      var _DYN_SEVERITY_LEVEL = "severityLevel";
+      var _DYN_PROBLEM_GROUP = "problemGroup";
+      var _DYN_PARSED_STACK = "parsedStack";
+      var _DYN_HAS_FULL_STACK = "hasFullStack";
+      var _DYN_ASSEMBLY = "assembly";
+      var _DYN_FILE_NAME = "fileName";
+      var _DYN_LINE = "line";
+      var _DYN_AI_DATA_CONTRACT = "aiDataContract";
+      var aggregationErrorType;
+      function throwAggregationError(message, sourceErrors) {
+        if (!aggregationErrorType) {
+          aggregationErrorType = /* @__PURE__ */ createCustomError("AggregationError", function(self2, args) {
+            if (args[_DYN_LENGTH] > 1) {
+              self2.errors = args[1];
+            }
+          });
+        }
+        var theMessage = message || "One or more errors occurred.";
+        arrForEach(sourceErrors, function(srcError, idx) {
+          theMessage += "\n".concat(idx, " > ").concat(/* @__PURE__ */ dumpObj(srcError));
+        });
+        throw new aggregationErrorType(theMessage, sourceErrors || []);
+      }
+      var strShimFunction = "function";
+      var strShimObject = "object";
+      var strShimUndefined = "undefined";
+      var strShimPrototype = "prototype";
+      var ObjClass = Object;
+      var ObjProto = ObjClass[strShimPrototype];
+      (getGlobal() || {})["Symbol"];
+      (getGlobal() || {})["Reflect"];
+      var strHasOwnProperty = "hasOwnProperty";
+      var __objAssignFnImpl = function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s) {
+            if (ObjProto[strHasOwnProperty].call(s, p)) {
+              t[p] = s[p];
+            }
+          }
+        }
+        return t;
+      };
+      var __assignFn = objAssign || __objAssignFnImpl;
+      var extendStaticsFn = function(d, b) {
+        extendStaticsFn = ObjClass["setPrototypeOf"] || { __proto__: [] } instanceof Array && function(d2, b2) {
+          d2.__proto__ = b2;
+        } || function(d2, b2) {
+          for (var p in b2) {
+            if (b2[strHasOwnProperty](p)) {
+              d2[p] = b2[p];
+            }
+          }
+        };
+        return extendStaticsFn(d, b);
+      };
+      function __extendsFn(d, b) {
+        if (typeof b !== strShimFunction && b !== null) {
+          throwTypeError("Class extends value " + String(b) + " is not a constructor or null");
+        }
+        extendStaticsFn(d, b);
+        function __() {
+          this.constructor = d;
+        }
+        d[strShimPrototype] = b === null ? objCreate(b) : (__[strShimPrototype] = b[strShimPrototype], new __());
+      }
+      var _a$1;
+      var Constructor = "constructor";
+      var Prototype = "prototype";
+      var strFunction = "function";
+      var DynInstFuncTable = "_dynInstFuncs";
+      var DynProxyTag = "_isDynProxy";
+      var DynClassName = "_dynClass";
+      var DynClassNamePrefix = "_dynCls$";
+      var DynInstChkTag = "_dynInstChk";
+      var DynAllowInstChkTag = DynInstChkTag;
+      var DynProtoDefaultOptions = "_dfOpts";
+      var UnknownValue = "_unknown_";
+      var str__Proto = "__proto__";
+      var DynProtoBaseProto = "_dyn" + str__Proto;
+      var DynProtoGlobalSettings = "__dynProto$Gbl";
+      var DynProtoCurrent = "_dynInstProto";
+      var strUseBaseInst = "useBaseInst";
+      var strSetInstFuncs = "setInstFuncs";
+      var Obj = Object;
+      var _objGetPrototypeOf = Obj["getPrototypeOf"];
+      var _objGetOwnProps = Obj["getOwnPropertyNames"];
+      var _gbl = getGlobal();
+      var _gblInst = _gbl[DynProtoGlobalSettings] || (_gbl[DynProtoGlobalSettings] = {
+        o: (_a$1 = {}, _a$1[strSetInstFuncs] = true, _a$1[strUseBaseInst] = true, _a$1),
+        n: 1e3
+      });
+      function _isObjectOrArrayPrototype(target) {
+        return target && (target === Obj[Prototype] || target === Array[Prototype]);
+      }
+      function _isObjectArrayOrFunctionPrototype(target) {
+        return _isObjectOrArrayPrototype(target) || target === Function[Prototype];
+      }
+      function _getObjProto$1(target) {
+        var newProto;
+        if (target) {
+          if (_objGetPrototypeOf) {
+            return _objGetPrototypeOf(target);
+          }
+          var curProto = target[str__Proto] || target[Prototype] || (target[Constructor] ? target[Constructor][Prototype] : null);
+          newProto = target[DynProtoBaseProto] || curProto;
+          if (!/* @__PURE__ */ objHasOwnProperty(target, DynProtoBaseProto)) {
+            delete target[DynProtoCurrent];
+            newProto = target[DynProtoBaseProto] = target[DynProtoCurrent] || target[DynProtoBaseProto];
+            target[DynProtoCurrent] = curProto;
+          }
+        }
+        return newProto;
+      }
+      function _forEachProp(target, func) {
+        var props = [];
+        if (_objGetOwnProps) {
+          props = _objGetOwnProps(target);
+        } else {
+          for (var name_1 in target) {
+            if (typeof name_1 === "string" && /* @__PURE__ */ objHasOwnProperty(target, name_1)) {
+              props.push(name_1);
+            }
+          }
+        }
+        if (props && props.length > 0) {
+          for (var lp = 0; lp < props.length; lp++) {
+            func(props[lp]);
+          }
+        }
+      }
+      function _isDynamicCandidate(target, funcName, skipOwn) {
+        return funcName !== Constructor && typeof target[funcName] === strFunction && (skipOwn || /* @__PURE__ */ objHasOwnProperty(target, funcName)) && funcName !== str__Proto && funcName !== Prototype;
+      }
+      function _throwTypeError(message) {
+        throwTypeError("DynamicProto: " + message);
+      }
+      function _getInstanceFuncs(thisTarget) {
+        var instFuncs = objCreate(null);
+        _forEachProp(thisTarget, function(name) {
+          if (!instFuncs[name] && _isDynamicCandidate(thisTarget, name, false)) {
+            instFuncs[name] = thisTarget[name];
+          }
+        });
+        return instFuncs;
+      }
+      function _hasVisited(values, value) {
+        for (var lp = values.length - 1; lp >= 0; lp--) {
+          if (values[lp] === value) {
+            return true;
+          }
+        }
+        return false;
+      }
+      function _getBaseFuncs(classProto, thisTarget, instFuncs, useBaseInst) {
+        function _instFuncProxy(target, funcHost, funcName) {
+          var theFunc = funcHost[funcName];
+          if (theFunc[DynProxyTag] && useBaseInst) {
+            var instFuncTable = target[DynInstFuncTable] || {};
+            if (instFuncTable[DynAllowInstChkTag] !== false) {
+              theFunc = (instFuncTable[funcHost[DynClassName]] || {})[funcName] || theFunc;
+            }
+          }
+          return function() {
+            return theFunc.apply(target, arguments);
+          };
+        }
+        var baseFuncs = objCreate(null);
+        _forEachProp(instFuncs, function(name) {
+          baseFuncs[name] = _instFuncProxy(thisTarget, instFuncs, name);
+        });
+        var baseProto = _getObjProto$1(classProto);
+        var visited = [];
+        while (baseProto && !_isObjectArrayOrFunctionPrototype(baseProto) && !_hasVisited(visited, baseProto)) {
+          _forEachProp(baseProto, function(name) {
+            if (!baseFuncs[name] && _isDynamicCandidate(baseProto, name, !_objGetPrototypeOf)) {
+              baseFuncs[name] = _instFuncProxy(thisTarget, baseProto, name);
+            }
+          });
+          visited.push(baseProto);
+          baseProto = _getObjProto$1(baseProto);
+        }
+        return baseFuncs;
+      }
+      function _getInstFunc(target, funcName, proto, currentDynProtoProxy) {
+        var instFunc = null;
+        if (target && /* @__PURE__ */ objHasOwnProperty(proto, DynClassName)) {
+          var instFuncTable = target[DynInstFuncTable] || objCreate(null);
+          instFunc = (instFuncTable[proto[DynClassName]] || objCreate(null))[funcName];
+          if (!instFunc) {
+            _throwTypeError("Missing [" + funcName + "] " + strFunction);
+          }
+          if (!instFunc[DynInstChkTag] && instFuncTable[DynAllowInstChkTag] !== false) {
+            var canAddInst = !/* @__PURE__ */ objHasOwnProperty(target, funcName);
+            var objProto = _getObjProto$1(target);
+            var visited = [];
+            while (canAddInst && objProto && !_isObjectArrayOrFunctionPrototype(objProto) && !_hasVisited(visited, objProto)) {
+              var protoFunc = objProto[funcName];
+              if (protoFunc) {
+                canAddInst = protoFunc === currentDynProtoProxy;
+                break;
+              }
+              visited.push(objProto);
+              objProto = _getObjProto$1(objProto);
+            }
+            try {
+              if (canAddInst) {
+                target[funcName] = instFunc;
+              }
+              instFunc[DynInstChkTag] = 1;
+            } catch (e) {
+              instFuncTable[DynAllowInstChkTag] = false;
+            }
+          }
+        }
+        return instFunc;
+      }
+      function _getProtoFunc(funcName, proto, currentDynProtoProxy) {
+        var protoFunc = proto[funcName];
+        if (protoFunc === currentDynProtoProxy) {
+          protoFunc = _getObjProto$1(proto)[funcName];
+        }
+        if (typeof protoFunc !== strFunction) {
+          _throwTypeError("[" + funcName + "] is not a " + strFunction);
+        }
+        return protoFunc;
+      }
+      function _populatePrototype(proto, className, target, baseInstFuncs, setInstanceFunc) {
+        function _createDynamicPrototype(proto2, funcName) {
+          var dynProtoProxy = function() {
+            var instFunc = _getInstFunc(this, funcName, proto2, dynProtoProxy) || _getProtoFunc(funcName, proto2, dynProtoProxy);
+            return instFunc.apply(this, arguments);
+          };
+          dynProtoProxy[DynProxyTag] = 1;
+          return dynProtoProxy;
+        }
+        if (!_isObjectOrArrayPrototype(proto)) {
+          var instFuncTable = target[DynInstFuncTable] = target[DynInstFuncTable] || objCreate(null);
+          if (!_isObjectOrArrayPrototype(instFuncTable)) {
+            var instFuncs_1 = instFuncTable[className] = instFuncTable[className] || objCreate(null);
+            if (instFuncTable[DynAllowInstChkTag] !== false) {
+              instFuncTable[DynAllowInstChkTag] = !!setInstanceFunc;
+            }
+            if (!_isObjectOrArrayPrototype(instFuncs_1)) {
+              _forEachProp(target, function(name) {
+                if (_isDynamicCandidate(target, name, false) && target[name] !== baseInstFuncs[name]) {
+                  instFuncs_1[name] = target[name];
+                  delete target[name];
+                  if (!/* @__PURE__ */ objHasOwnProperty(proto, name) || proto[name] && !proto[name][DynProxyTag]) {
+                    proto[name] = _createDynamicPrototype(proto, name);
+                  }
+                }
+              });
+            }
+          }
+        }
+      }
+      function _checkPrototype(classProto, thisTarget) {
+        if (_objGetPrototypeOf) {
+          var visited = [];
+          var thisProto = _getObjProto$1(thisTarget);
+          while (thisProto && !_isObjectArrayOrFunctionPrototype(thisProto) && !_hasVisited(visited, thisProto)) {
+            if (thisProto === classProto) {
+              return true;
+            }
+            visited.push(thisProto);
+            thisProto = _getObjProto$1(thisProto);
+          }
+          return false;
+        }
+        return true;
+      }
+      function _getObjName(target, unknownValue) {
+        if (/* @__PURE__ */ objHasOwnProperty(target, Prototype)) {
+          return target.name || unknownValue || UnknownValue;
+        }
+        return ((target || {})[Constructor] || {}).name || unknownValue || UnknownValue;
+      }
+      function dynamicProto(theClass, target, delegateFunc, options) {
+        if (!/* @__PURE__ */ objHasOwnProperty(theClass, Prototype)) {
+          _throwTypeError("theClass is an invalid class definition.");
+        }
+        var classProto = theClass[Prototype];
+        if (!_checkPrototype(classProto, target)) {
+          _throwTypeError("[" + _getObjName(theClass) + "] not in hierarchy of [" + _getObjName(target) + "]");
+        }
+        var className = null;
+        if (/* @__PURE__ */ objHasOwnProperty(classProto, DynClassName)) {
+          className = classProto[DynClassName];
+        } else {
+          className = DynClassNamePrefix + _getObjName(theClass, "_") + "$" + _gblInst.n;
+          _gblInst.n++;
+          classProto[DynClassName] = className;
+        }
+        var perfOptions = dynamicProto[DynProtoDefaultOptions];
+        var useBaseInst = !!perfOptions[strUseBaseInst];
+        if (useBaseInst && options && options[strUseBaseInst] !== void 0) {
+          useBaseInst = !!options[strUseBaseInst];
+        }
+        var instFuncs = _getInstanceFuncs(target);
+        var baseFuncs = _getBaseFuncs(classProto, target, instFuncs, useBaseInst);
+        delegateFunc(target, baseFuncs);
+        var setInstanceFunc = !!_objGetPrototypeOf && !!perfOptions[strSetInstFuncs];
+        if (setInstanceFunc && options) {
+          setInstanceFunc = !!options[strSetInstFuncs];
+        }
+        _populatePrototype(classProto, className, target, instFuncs, setInstanceFunc !== false);
+      }
+      dynamicProto[DynProtoDefaultOptions] = _gblInst.o;
+      var UNDEFINED_VALUE = void 0;
+      var STR_EMPTY = "";
+      var STR_DISABLED = "disabled";
+      var STR_EXTENSION_CONFIG = "extensionConfig";
+      var STR_NOT_DYNAMIC_ERROR = "Not dynamic - ";
+      var STR_REDACTED = "REDACTED";
+      var DEFAULT_SENSITIVE_PARAMS = ["sig", "Signature", "AWSAccessKeyId", "X-Goog-Signature"];
+      var STR_VERSION = "version";
+      var strGetPrototypeOf = "getPrototypeOf";
+      var rCamelCase = /-([a-z])/g;
+      var rNormalizeInvalid = /([^\w\d_$])/g;
+      var rLeadingNumeric = /^(\d+[\w\d_$])/;
+      var _ProtoNameTag;
+      var _getObjProto = Object[strGetPrototypeOf];
+      // @__NO_SIDE_EFFECTS__
+      function normalizeJsName(name) {
+        var value = name;
+        if (value && isString(value)) {
+          value = value[_DYN_REPLACE](rCamelCase, function(_all, letter) {
+            return letter.toUpperCase();
+          });
+          value = value[_DYN_REPLACE](rNormalizeInvalid, "_");
+          value = value[_DYN_REPLACE](rLeadingNumeric, function(_all, match) {
+            return "_" + match;
+          });
+        }
+        return value;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function strContains(value, search) {
+        if (value && search) {
+          return strIndexOf(value, search) !== -1;
+        }
+        return false;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function toISOString(date5) {
+        return date5 && date5.toISOString() || STR_EMPTY;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getExceptionName(object3) {
+        if (isError(object3)) {
+          return object3[_DYN_NAME];
+        }
+        return STR_EMPTY;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createClassFromInterface(defaults) {
+        return (
+          /** @class */
+          /* @__PURE__ */ (function() {
+            function class_1() {
+              var _this = this;
+              if (defaults) {
+                objForEachKey(defaults, function(field, value) {
+                  _this[field] = value;
+                });
+              }
+            }
+            return class_1;
+          })()
+        );
+      }
+      function setObjStringTag(target, nameOrFunc) {
+        safe(objDefine, [target, /* @__PURE__ */ getKnownSymbol(11), isFunction(nameOrFunc) ? { g: nameOrFunc, e: false } : { v: nameOrFunc, w: false, e: false }]);
+        return target;
+      }
+      function setProtoTypeName(target, name) {
+        if (target) {
+          var proto_1 = _getObjProto(target);
+          var done_1 = false;
+          if (proto_1) {
+            safe(function() {
+              var newProto = setObjStringTag(objCreate(proto_1), name);
+              if (!_ProtoNameTag) {
+                _ProtoNameTag = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ newSymbol("ai$ProtoName"));
+              }
+              objDefine(newProto, _ProtoNameTag.v, {
+                v: true,
+                w: false,
+                e: false
+              });
+              objSetPrototypeOf(target, newProto);
+              done_1 = true;
+            });
+          }
+          if (!done_1) {
+            safe(setObjStringTag, [target, name]);
+          }
+        }
+        return target;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function stringToBoolOrDefault(str, defaultValue) {
+        if (defaultValue === void 0) {
+          defaultValue = false;
+        }
+        if (str === void 0 || str === null) {
+          return defaultValue;
+        }
+        return str.toString()[_DYN_TO_LOWER_CASE]() === "true";
+      }
+      // @__NO_SIDE_EFFECTS__
+      function msToTimeSpan(totalms) {
+        if (/* @__PURE__ */ isTimeSpan(totalms)) {
+          return totalms;
+        }
+        if (isNaN(totalms) || totalms < 0) {
+          totalms = 0;
+        }
+        totalms = mathRound(totalms);
+        var ms = STR_EMPTY + totalms % 1e3;
+        var sec = STR_EMPTY + mathFloor(totalms / 1e3) % 60;
+        var min = STR_EMPTY + mathFloor(totalms / (1e3 * 60)) % 60;
+        var hour = STR_EMPTY + mathFloor(totalms / (1e3 * 60 * 60)) % 24;
+        var days = mathFloor(totalms / (1e3 * 60 * 60 * 24));
+        ms = ms[_DYN_LENGTH] === 1 ? "00" + ms : ms[_DYN_LENGTH] === 2 ? "0" + ms : ms;
+        sec = sec[_DYN_LENGTH] < 2 ? "0" + sec : sec;
+        min = min[_DYN_LENGTH] < 2 ? "0" + min : min;
+        hour = hour[_DYN_LENGTH] < 2 ? "0" + hour : hour;
+        return (days > 0 ? days + "." : STR_EMPTY) + hour + ":" + min + ":" + sec + "." + ms;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getExtensionByName(extensions2, identifier2) {
+        var extension2 = null;
+        arrForEach(extensions2, function(value) {
+          if (value[_DYN_IDENTIFIER] === identifier2) {
+            extension2 = value;
+            return -1;
+          }
+        });
+        return extension2;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isCrossOriginError(message, url2, lineNumber, columnNumber, error2) {
+        return !error2 && isString(message) && (message === "Script error." || message === "Script error");
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isTimeSpan(value) {
+        var result = false;
+        if (isString(value)) {
+          var parts = strSplit(value, ":");
+          if (parts[_DYN_LENGTH] === 3) {
+            var daysHours = strSplit(parts[0], ".");
+            if (daysHours[_DYN_LENGTH] === 2) {
+              result = !isNaN(parseInt(daysHours[0] || "0")) && !isNaN(parseInt(daysHours[1] || "0"));
+            } else {
+              result = !isNaN(parseInt(daysHours[0] || "0"));
+            }
+            result = result && !isNaN(parseInt(parts[1] || "0"));
+            var secondsParts = strSplit(parts[2], ".");
+            if (secondsParts[_DYN_LENGTH] === 2) {
+              result = result && !isNaN(parseInt(secondsParts[0] || "0")) && !isNaN(parseInt(secondsParts[1] || "0"));
+            } else {
+              result = result && !isNaN(parseInt(secondsParts[0] || "0"));
+            }
+          }
+        }
+        return result;
+      }
+      var strLocation = "location";
+      var strConsole = "console";
+      var strJSON = "JSON";
+      var strCrypto = "crypto";
+      var strMsCrypto = "msCrypto";
+      var strMsie = "msie";
+      var strTrident = "trident/";
+      var _isTrident;
+      var _navUserAgentCheck;
+      var _enableMocks = false;
+      var _beaconsSupported;
+      var _userAgent;
+      // @__NO_SIDE_EFFECTS__
+      function getUserAgentString() {
+        if (!_userAgent) {
+          _userAgent = /* @__PURE__ */ getLazy(function() {
+            var nav = getNavigator() || {};
+            return nav[_DYN_USER_AGENT] || STR_EMPTY;
+          });
+        }
+        return _userAgent.v;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getLocation(checkForMock) {
+        if (checkForMock && _enableMocks) {
+          var mockLocation = /* @__PURE__ */ getInst("__mockLocation");
+          if (mockLocation) {
+            return mockLocation;
+          }
+        }
+        if (typeof location === strShimObject && location) {
+          return location;
+        }
+        return /* @__PURE__ */ getInst(strLocation);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getConsole() {
+        if (typeof console !== strShimUndefined) {
+          return console;
+        }
+        return /* @__PURE__ */ getInst(strConsole);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function hasJSON() {
+        return Boolean(typeof JSON === strShimObject && JSON || /* @__PURE__ */ getInst(strJSON) !== null);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getJSON() {
+        if (/* @__PURE__ */ hasJSON()) {
+          return JSON || /* @__PURE__ */ getInst(strJSON);
+        }
+        return null;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getCrypto() {
+        return /* @__PURE__ */ getInst(strCrypto);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getMsCrypto() {
+        return /* @__PURE__ */ getInst(strMsCrypto);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isIE() {
+        var userAgent = /* @__PURE__ */ getUserAgentString();
+        if (!_isTrident || userAgent !== _navUserAgentCheck) {
+          _navUserAgentCheck = userAgent;
+          var lwrUserAgent = _navUserAgentCheck[_DYN_TO_LOWER_CASE]();
+          _isTrident = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ strContains(lwrUserAgent, strMsie) || /* @__PURE__ */ strContains(lwrUserAgent, strTrident));
+        }
+        return _isTrident.v;
+      }
+      function isBeaconsSupported(useCached) {
+        if (!_beaconsSupported || useCached === false) {
+          _beaconsSupported = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ hasNavigator() && !!getNavigator().sendBeacon);
+        }
+        return _beaconsSupported.v;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getNamedValue(values, name) {
+        var items = [];
+        if (values) {
+          arrForEach(values, function(value) {
+            if (value[_DYN_NAME]) {
+              if (value[_DYN_NAME] === name) {
+                items[_DYN_PUSH](value);
+              }
+            }
+          });
+        }
+        return items;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findMetaTag(name) {
+        var tags = /* @__PURE__ */ findMetaTags(name);
+        if (tags[_DYN_LENGTH] > 0) {
+          return tags[0];
+        }
+        return null;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findMetaTags(name) {
+        var tags = [];
+        var doc = getDocument();
+        if (doc && name) {
+          arrForEach(/* @__PURE__ */ _getNamedValue(doc.querySelectorAll("meta"), name), function(item) {
+            tags[_DYN_PUSH](item.content);
+          });
+        }
+        return tags;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findNamedServerTiming(name) {
+        var value;
+        var serverTimings = /* @__PURE__ */ findNamedServerTimings(name);
+        if (serverTimings[_DYN_LENGTH] > 0) {
+          value = serverTimings[0];
+        }
+        return value;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findNamedServerTimings(name) {
+        var values = [];
+        var perf = /* @__PURE__ */ getPerformance();
+        if (perf && perf.getEntriesByType) {
+          arrForEach(perf.getEntriesByType("navigation") || [], function(navPerf) {
+            arrForEach(/* @__PURE__ */ _getNamedValue(navPerf.serverTiming, name), function(value) {
+              var desc = value.description;
+              if (!/* @__PURE__ */ isNullOrUndefined(desc)) {
+                values[_DYN_PUSH](desc);
+              }
+            });
+          });
+        }
+        return values;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function redactUserInfo(url2) {
+        return url2.replace(/^([a-zA-Z][a-zA-Z0-9+.-]*:\/\/)([^:@]{1,200}):([^@]{1,200})@(.*)$/, "$1REDACTED:REDACTED@$4");
+      }
+      // @__NO_SIDE_EFFECTS__
+      function redactQueryParameters(url2, config2) {
+        var sensitiveParams;
+        var questionMarkIndex = strIndexOf(url2, "?");
+        if (questionMarkIndex === -1) {
+          return url2;
+        }
+        var option = config2 ? config2.redactUrls : void 0;
+        if (option === 3) {
+          sensitiveParams = DEFAULT_SENSITIVE_PARAMS[_DYN_CONCAT](config2.redactQueryParams);
+        } else if (option === 4) {
+          sensitiveParams = config2.redactQueryParams;
+        } else {
+          sensitiveParams = DEFAULT_SENSITIVE_PARAMS;
+        }
+        var baseUrl = strSubstring(url2, 0, questionMarkIndex + 1);
+        var queryString = strSubstring(url2, questionMarkIndex + 1);
+        var fragment = STR_EMPTY;
+        var hashIndex = strIndexOf(queryString, "#");
+        if (hashIndex !== -1) {
+          fragment = strSubstring(queryString, hashIndex);
+          queryString = strSubstring(queryString, 0, hashIndex);
+        }
+        var hasPotentialSensitiveParam = false;
+        for (var i = 0; i < sensitiveParams[_DYN_LENGTH]; i++) {
+          var paramCheck = sensitiveParams[i] + "=";
+          if (strIndexOf(queryString, paramCheck) !== -1) {
+            hasPotentialSensitiveParam = true;
+            break;
+          }
+        }
+        if (!hasPotentialSensitiveParam) {
+          return url2;
+        }
+        var resultParts = [];
+        var anyParamRedacted = false;
+        if (queryString && queryString[_DYN_LENGTH]) {
+          var pairs = queryString[_DYN_SPLIT]("&");
+          for (var i = 0; i < pairs[_DYN_LENGTH]; i++) {
+            var pair = pairs[i];
+            if (!pair) {
+              continue;
+            }
+            var equalsIndex = strIndexOf(pair, "=");
+            if (equalsIndex === -1) {
+              resultParts[_DYN_PUSH](pair);
+            } else {
+              var paramName = pair[_DYN_SUBSTRING](0, equalsIndex);
+              var paramValue = pair[_DYN_SUBSTRING](equalsIndex + 1);
+              if (paramValue === STR_EMPTY) {
+                resultParts[_DYN_PUSH](pair);
+              } else {
+                var shouldRedact = false;
+                for (var j = 0; j < sensitiveParams[_DYN_LENGTH]; j++) {
+                  if (paramName === sensitiveParams[j]) {
+                    shouldRedact = true;
+                    anyParamRedacted = true;
+                    break;
+                  }
+                }
+                if (shouldRedact) {
+                  resultParts[_DYN_PUSH](paramName + "=" + STR_REDACTED);
+                } else {
+                  resultParts[_DYN_PUSH](pair);
+                }
+              }
+            }
+          }
+        }
+        if (!anyParamRedacted) {
+          return url2;
+        }
+        return baseUrl + resultParts[_DYN_JOIN]("&") + fragment;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function fieldRedaction(input, config2) {
+        if (!input || !isString(input) || strIndexOf(input, " ") !== -1) {
+          return input;
+        }
+        var option = config2 ? config2.redactUrls : void 0;
+        var isRedactionDisabled = option === false || option === 2;
+        if (isRedactionDisabled) {
+          return input;
+        }
+        var hasCredentials = strIndexOf(input, "@") !== -1;
+        var hasQueryParams = strIndexOf(input, "?") !== -1;
+        if (!hasCredentials && !hasQueryParams) {
+          return input;
+        }
+        if (option === 5) {
+          hasQueryParams = false;
+        }
+        if (option === 6) {
+          hasCredentials = false;
+        }
+        try {
+          var result = input;
+          if (hasCredentials) {
+            result = /* @__PURE__ */ redactUserInfo(input);
+          }
+          if (hasQueryParams) {
+            result = /* @__PURE__ */ redactQueryParameters(result, config2);
+          }
+          return result;
+        } catch (e) {
+          return input;
+        }
+      }
+      var UInt32Mask = 4294967296;
+      var MaxUInt32 = 4294967295;
+      var SEED1 = 123456789;
+      var SEED2 = 987654321;
+      var _mwcSeeded = false;
+      var _mwcW = SEED1;
+      var _mwcZ = SEED2;
+      function _mwcSeed(seedValue) {
+        if (seedValue < 0) {
+          seedValue >>>= 0;
+        }
+        _mwcW = SEED1 + seedValue & MaxUInt32;
+        _mwcZ = SEED2 - seedValue & MaxUInt32;
+        _mwcSeeded = true;
+      }
+      function _autoSeedMwc() {
+        try {
+          var now = /* @__PURE__ */ utcNow() & 2147483647;
+          _mwcSeed((mathRandom() * UInt32Mask ^ now) + now);
+        } catch (e) {
+        }
+      }
+      function randomValue(maxValue) {
+        if (maxValue > 0) {
+          return mathFloor(random32() / MaxUInt32 * (maxValue + 1)) >>> 0;
+        }
+        return 0;
+      }
+      function random32(signed) {
+        var value = 0;
+        var c = /* @__PURE__ */ getCrypto() || /* @__PURE__ */ getMsCrypto();
+        if (c && c.getRandomValues) {
+          value = c.getRandomValues(new Uint32Array(1))[0] & MaxUInt32;
+        }
+        if (value === 0 && /* @__PURE__ */ isIE()) {
+          if (!_mwcSeeded) {
+            _autoSeedMwc();
+          }
+          value = mwcRandom32() & MaxUInt32;
+        }
+        if (value === 0) {
+          value = mathFloor(UInt32Mask * mathRandom() | 0);
+        }
+        if (!signed) {
+          value >>>= 0;
+        }
+        return value;
+      }
+      function mwcRandom32(signed) {
+        _mwcZ = 36969 * (_mwcZ & 65535) + (_mwcZ >> 16) & MaxUInt32;
+        _mwcW = 18e3 * (_mwcW & 65535) + (_mwcW >> 16) & MaxUInt32;
+        var value = (_mwcZ << 16) + (_mwcW & 65535) >>> 0 & MaxUInt32 | 0;
+        if (!signed) {
+          value >>>= 0;
+        }
+        return value;
+      }
+      function newId(maxLength) {
+        if (maxLength === void 0) {
+          maxLength = 22;
+        }
+        var base64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        var number4 = random32() >>> 0;
+        var chars = 0;
+        var result = STR_EMPTY;
+        while (result[_DYN_LENGTH] < maxLength) {
+          chars++;
+          result += base64chars.charAt(number4 & 63);
+          number4 >>>= 6;
+          if (chars === 5) {
+            number4 = (random32() << 2 & 4294967295 | number4 & 3) >>> 0;
+            chars = 0;
+          }
+        }
+        return result;
+      }
+      var version2 = "3.4.1";
+      var instanceName = "." + newId(6);
+      var _dataUid = 0;
+      function _canAcceptData(target) {
+        return target.nodeType === 1 || target.nodeType === 9 || !+target.nodeType;
+      }
+      function _getCache(data, target) {
+        var theCache = target[data.id];
+        if (!theCache) {
+          theCache = {};
+          try {
+            if (_canAcceptData(target)) {
+              objDefine(target, data.id, {
+                e: false,
+                v: theCache
+              });
+            }
+          } catch (e) {
+          }
+        }
+        return theCache;
+      }
+      function createUniqueNamespace(name, includeVersion) {
+        if (includeVersion === void 0) {
+          includeVersion = false;
+        }
+        return /* @__PURE__ */ normalizeJsName(name + _dataUid++ + (includeVersion ? "." + version2 : STR_EMPTY) + instanceName);
+      }
+      function createElmNodeData(name) {
+        var data = {
+          id: createUniqueNamespace("_aiData-" + (name || STR_EMPTY) + "." + version2),
+          accept: function(target) {
+            return _canAcceptData(target);
+          },
+          get: function(target, name2, defValue, addDefault) {
+            var theCache = target[data.id];
+            if (!theCache) {
+              if (addDefault) {
+                theCache = _getCache(data, target);
+                theCache[/* @__PURE__ */ normalizeJsName(name2)] = defValue;
+              }
+              return defValue;
+            }
+            return theCache[/* @__PURE__ */ normalizeJsName(name2)];
+          },
+          kill: function(target, name2) {
+            if (target && target[name2]) {
+              try {
+                delete target[name2];
+              } catch (e) {
+              }
+            }
+          }
+        };
+        return data;
+      }
+      function _isConfigDefaults(value) {
+        return value && /* @__PURE__ */ isObject2(value) && !isArray(value) && (value.isVal || value.fb || objHasOwn(value, "v") || objHasOwn(value, "mrg") || objHasOwn(value, "ref") || value.set);
+      }
+      function _getDefault(dynamicHandler, theConfig, cfgDefaults) {
+        var defValue;
+        var isDefaultValid = cfgDefaults.dfVal || isDefined;
+        if (theConfig && cfgDefaults.fb) {
+          var fallbacks = cfgDefaults.fb;
+          if (!isArray(fallbacks)) {
+            fallbacks = [fallbacks];
+          }
+          for (var lp = 0; lp < fallbacks[_DYN_LENGTH]; lp++) {
+            var fallback = fallbacks[lp];
+            var fbValue = theConfig[fallback];
+            if (isDefaultValid(fbValue)) {
+              defValue = fbValue;
+            } else if (dynamicHandler) {
+              fbValue = dynamicHandler.cfg[fallback];
+              if (isDefaultValid(fbValue)) {
+                defValue = fbValue;
+              }
+              dynamicHandler.set(dynamicHandler.cfg, asString(fallback), fbValue);
+            }
+            if (isDefaultValid(defValue)) {
+              break;
+            }
+          }
+        }
+        if (!isDefaultValid(defValue) && isDefaultValid(cfgDefaults.v)) {
+          defValue = cfgDefaults.v;
+        }
+        return defValue;
+      }
+      function _resolveDefaultValue(dynamicHandler, theConfig, cfgDefaults) {
+        var theValue = cfgDefaults;
+        if (cfgDefaults && _isConfigDefaults(cfgDefaults)) {
+          theValue = _getDefault(dynamicHandler, theConfig, cfgDefaults);
+        }
+        if (theValue) {
+          if (_isConfigDefaults(theValue)) {
+            theValue = _resolveDefaultValue(dynamicHandler, theConfig, theValue);
+          }
+          var newValue_1;
+          if (isArray(theValue)) {
+            newValue_1 = [];
+            newValue_1[_DYN_LENGTH] = theValue[_DYN_LENGTH];
+          } else if (/* @__PURE__ */ isPlainObject3(theValue)) {
+            newValue_1 = {};
+          }
+          if (newValue_1) {
+            objForEachKey(theValue, function(key, value) {
+              if (value && _isConfigDefaults(value)) {
+                value = _resolveDefaultValue(dynamicHandler, theConfig, value);
+              }
+              newValue_1[key] = value;
+            });
+            theValue = newValue_1;
+          }
+        }
+        return theValue;
+      }
+      function _applyDefaultValue(dynamicHandler, theConfig, name, defaultValue) {
+        var isValid2;
+        var setFn;
+        var defValue;
+        var cfgDefaults = defaultValue;
+        var mergeDf;
+        var reference;
+        var readOnly;
+        var blkDynamicValue;
+        if (_isConfigDefaults(cfgDefaults)) {
+          isValid2 = cfgDefaults.isVal;
+          setFn = cfgDefaults.set;
+          readOnly = cfgDefaults.rdOnly;
+          blkDynamicValue = cfgDefaults.blkVal;
+          mergeDf = cfgDefaults.mrg;
+          reference = cfgDefaults.ref;
+          if (!reference && /* @__PURE__ */ isUndefined(reference)) {
+            reference = !!mergeDf;
+          }
+          defValue = _getDefault(dynamicHandler, theConfig, cfgDefaults);
+        } else {
+          defValue = defaultValue;
+        }
+        if (blkDynamicValue) {
+          dynamicHandler.blkVal(theConfig, name);
+        }
+        var theValue;
+        var usingDefault = true;
+        var cfgValue = theConfig[name];
+        if (cfgValue || !/* @__PURE__ */ isNullOrUndefined(cfgValue)) {
+          theValue = cfgValue;
+          usingDefault = false;
+          if (isValid2 && theValue !== defValue && !isValid2(theValue)) {
+            theValue = defValue;
+            usingDefault = true;
+          }
+          if (setFn) {
+            theValue = setFn(theValue, defValue, theConfig);
+            usingDefault = theValue === defValue;
+          }
+        }
+        if (!usingDefault) {
+          if (/* @__PURE__ */ isPlainObject3(theValue) || isArray(defValue)) {
+            if (mergeDf && defValue && (/* @__PURE__ */ isPlainObject3(defValue) || isArray(defValue))) {
+              objForEachKey(defValue, function(dfName, dfValue) {
+                _applyDefaultValue(dynamicHandler, theValue, dfName, dfValue);
+              });
+            }
+          }
+        } else if (defValue) {
+          theValue = _resolveDefaultValue(dynamicHandler, theConfig, defValue);
+        } else {
+          theValue = defValue;
+        }
+        dynamicHandler.set(theConfig, name, theValue);
+        if (reference) {
+          dynamicHandler.ref(theConfig, name);
+        }
+        if (readOnly) {
+          dynamicHandler.rdOnly(theConfig, name);
+        }
+      }
+      var CFG_HANDLER_LINK = /* @__PURE__ */ symbolFor("[[ai_dynCfg_1]]");
+      var BLOCK_DYNAMIC = /* @__PURE__ */ symbolFor("[[ai_blkDynCfg_1]]");
+      var FORCE_DYNAMIC = /* @__PURE__ */ symbolFor("[[ai_frcDynCfg_1]]");
+      function _cfgDeepCopy(source) {
+        if (source) {
+          var target_1;
+          if (isArray(source)) {
+            target_1 = [];
+            target_1[_DYN_LENGTH] = source[_DYN_LENGTH];
+          } else if (/* @__PURE__ */ isPlainObject3(source)) {
+            target_1 = {};
+          }
+          if (target_1) {
+            objForEachKey(source, function(key, value) {
+              target_1[key] = _cfgDeepCopy(value);
+            });
+            return target_1;
+          }
+        }
+        return source;
+      }
+      function getDynamicConfigHandler(value) {
+        if (value) {
+          var handler = value[CFG_HANDLER_LINK] || value;
+          if (handler.cfg && (handler.cfg === value || handler.cfg[CFG_HANDLER_LINK] === handler)) {
+            return handler;
+          }
+        }
+        return null;
+      }
+      function blockDynamicConversion(value) {
+        if (value && (/* @__PURE__ */ isPlainObject3(value) || isArray(value))) {
+          try {
+            value[BLOCK_DYNAMIC] = true;
+          } catch (e) {
+          }
+        }
+        return value;
+      }
+      function _canMakeDynamic(getFunc, state, value) {
+        var result = false;
+        if (value && !getFunc[state.blkVal]) {
+          result = value[FORCE_DYNAMIC];
+          if (!result && !value[BLOCK_DYNAMIC]) {
+            result = /* @__PURE__ */ isPlainObject3(value) || isArray(value);
+          }
+        }
+        return result;
+      }
+      function throwInvalidAccess(message) {
+        throwTypeError("InvalidAccess:" + message);
+      }
+      var arrayMethodsToPatch = [
+        "push",
+        "pop",
+        "shift",
+        "unshift",
+        "splice"
+      ];
+      var _throwDynamicError = function(logger, name, desc, e) {
+        logger && logger[_DYN_THROW_INTERNAL](3, 108, "".concat(desc, " [").concat(name, "] failed - ") + /* @__PURE__ */ dumpObj(e));
+      };
+      function _patchArray(state, target, name) {
+        if (isArray(target)) {
+          arrForEach(arrayMethodsToPatch, function(method) {
+            var orgMethod = target[method];
+            target[method] = function() {
+              var args = [];
+              for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+              }
+              var result = orgMethod[_DYN_APPLY](this, args);
+              _makeDynamicObject(state, target, name, "Patching");
+              return result;
+            };
+          });
+        }
+      }
+      function _getOwnPropGetter(target, name) {
+        var propDesc = objGetOwnPropertyDescriptor(target, name);
+        return propDesc && propDesc.get;
+      }
+      function _createDynamicProperty(state, theConfig, name, value) {
+        var detail = {
+          n: name,
+          h: [],
+          trk: function(handler) {
+            if (handler && handler.fn) {
+              if (arrIndexOf(detail.h, handler) === -1) {
+                detail.h[_DYN_PUSH](handler);
+              }
+              state.trk(handler, detail);
+            }
+          },
+          clr: function(handler) {
+            var idx = arrIndexOf(detail.h, handler);
+            if (idx !== -1) {
+              detail.h[_DYN_SPLICE](idx, 1);
+            }
+          }
+        };
+        var checkDynamic = true;
+        var isObjectOrArray = false;
+        function _getProperty() {
+          if (checkDynamic) {
+            isObjectOrArray = isObjectOrArray || _canMakeDynamic(_getProperty, state, value);
+            if (value && !value[CFG_HANDLER_LINK] && isObjectOrArray) {
+              value = _makeDynamicObject(state, value, name, "Converting");
+            }
+            checkDynamic = false;
+          }
+          var activeHandler = state.act;
+          if (activeHandler) {
+            detail.trk(activeHandler);
+          }
+          return value;
+        }
+        _getProperty[state.prop] = {
+          chng: function() {
+            state.add(detail);
+          }
+        };
+        function _setProperty(newValue) {
+          if (value !== newValue) {
+            if (!!_getProperty[state.ro] && !state.upd) {
+              throwInvalidAccess("[" + name + "] is read-only:" + /* @__PURE__ */ dumpObj(theConfig));
+            }
+            if (checkDynamic) {
+              isObjectOrArray = isObjectOrArray || _canMakeDynamic(_getProperty, state, value);
+              checkDynamic = false;
+            }
+            var isReferenced = isObjectOrArray && _getProperty[state.rf];
+            if (isObjectOrArray) {
+              if (isReferenced) {
+                objForEachKey(value, function(key) {
+                  value[key] = newValue ? newValue[key] : UNDEFINED_VALUE;
+                });
+                try {
+                  objForEachKey(newValue, function(key, theValue) {
+                    _setDynamicProperty(state, value, key, theValue);
+                  });
+                  newValue = value;
+                } catch (e) {
+                  _throwDynamicError((state.hdlr || {})[_DYN_LOGGER], name, "Assigning", e);
+                  isObjectOrArray = false;
+                }
+              } else if (value && value[CFG_HANDLER_LINK]) {
+                objForEachKey(value, function(key) {
+                  var getter = _getOwnPropGetter(value, key);
+                  if (getter) {
+                    var valueState = getter[state.prop];
+                    valueState && valueState.chng();
+                  }
+                });
+              }
+            }
+            if (newValue !== value) {
+              var newIsObjectOrArray = newValue && _canMakeDynamic(_getProperty, state, newValue);
+              if (!isReferenced && newIsObjectOrArray) {
+                newValue = _makeDynamicObject(state, newValue, name, "Converting");
+              }
+              value = newValue;
+              isObjectOrArray = newIsObjectOrArray;
+            }
+            state.add(detail);
+          }
+        }
+        objDefine(theConfig, detail.n, { g: _getProperty, s: _setProperty });
+      }
+      function _setDynamicProperty(state, target, name, value) {
+        if (target) {
+          var getter = _getOwnPropGetter(target, name);
+          var isDynamic = getter && !!getter[state.prop];
+          if (!isDynamic) {
+            _createDynamicProperty(state, target, name, value);
+          } else {
+            target[name] = value;
+          }
+        }
+        return target;
+      }
+      function _setDynamicPropertyState(state, target, name, flags) {
+        if (target) {
+          var getter = _getOwnPropGetter(target, name);
+          var isDynamic = getter && !!getter[state.prop];
+          var inPlace = flags && flags[0];
+          var rdOnly = flags && flags[1];
+          var blkProp = flags && flags[2];
+          if (!isDynamic) {
+            if (blkProp) {
+              try {
+                blockDynamicConversion(target);
+              } catch (e) {
+                _throwDynamicError((state.hdlr || {})[_DYN_LOGGER], name, "Blocking", e);
+              }
+            }
+            try {
+              _setDynamicProperty(state, target, name, target[name]);
+              getter = _getOwnPropGetter(target, name);
+            } catch (e) {
+              _throwDynamicError((state.hdlr || {})[_DYN_LOGGER], name, "State", e);
+            }
+          }
+          if (inPlace) {
+            getter[state.rf] = inPlace;
+          }
+          if (rdOnly) {
+            getter[state.ro] = rdOnly;
+          }
+          if (blkProp) {
+            getter[state.blkVal] = true;
+          }
+        }
+        return target;
+      }
+      function _makeDynamicObject(state, target, name, desc) {
+        try {
+          objForEachKey(target, function(key, value) {
+            _setDynamicProperty(state, target, key, value);
+          });
+          if (!target[CFG_HANDLER_LINK]) {
+            objDefineProp(target, CFG_HANDLER_LINK, {
+              get: function() {
+                return state.hdlr;
+              }
+            });
+            _patchArray(state, target, name);
+          }
+        } catch (e) {
+          _throwDynamicError((state.hdlr || {})[_DYN_LOGGER], name, desc, e);
+        }
+        return target;
+      }
+      var symPrefix = "[[ai_";
+      var symPostfix = "]]";
+      function _createState(cfgHandler) {
+        var dynamicPropertySymbol = /* @__PURE__ */ newSymbol(symPrefix + "get" + cfgHandler.uid + symPostfix);
+        var dynamicPropertyReadOnly = /* @__PURE__ */ newSymbol(symPrefix + "ro" + cfgHandler.uid + symPostfix);
+        var dynamicPropertyReferenced = /* @__PURE__ */ newSymbol(symPrefix + "rf" + cfgHandler.uid + symPostfix);
+        var dynamicPropertyBlockValue = /* @__PURE__ */ newSymbol(symPrefix + "blkVal" + cfgHandler.uid + symPostfix);
+        var dynamicPropertyDetail = /* @__PURE__ */ newSymbol(symPrefix + "dtl" + cfgHandler.uid + symPostfix);
+        var _waitingHandlers = null;
+        var _watcherTimer = null;
+        var theState;
+        function _useHandler(activeHandler, callback) {
+          var prevWatcher = theState.act;
+          try {
+            theState.act = activeHandler;
+            if (activeHandler && activeHandler[dynamicPropertyDetail]) {
+              arrForEach(activeHandler[dynamicPropertyDetail], function(detail) {
+                detail.clr(activeHandler);
+              });
+              activeHandler[dynamicPropertyDetail] = [];
+            }
+            callback({
+              cfg: cfgHandler.cfg,
+              set: cfgHandler.set.bind(cfgHandler),
+              setDf: cfgHandler.setDf.bind(cfgHandler),
+              ref: cfgHandler.ref.bind(cfgHandler),
+              rdOnly: cfgHandler.rdOnly.bind(cfgHandler)
+            });
+          } catch (e) {
+            var logger = cfgHandler[_DYN_LOGGER];
+            if (logger) {
+              logger[_DYN_THROW_INTERNAL](1, 107, /* @__PURE__ */ dumpObj(e));
+            }
+            throw e;
+          } finally {
+            theState.act = prevWatcher || null;
+          }
+        }
+        function _notifyWatchers() {
+          if (_waitingHandlers) {
+            var notifyHandlers = _waitingHandlers;
+            _waitingHandlers = null;
+            _watcherTimer && _watcherTimer[_DYN_CANCEL]();
+            _watcherTimer = null;
+            var watcherFailures_1 = [];
+            arrForEach(notifyHandlers, function(handler) {
+              if (handler) {
+                if (handler[dynamicPropertyDetail]) {
+                  arrForEach(handler[dynamicPropertyDetail], function(detail) {
+                    detail.clr(handler);
+                  });
+                  handler[dynamicPropertyDetail] = null;
+                }
+                if (handler.fn) {
+                  try {
+                    _useHandler(handler, handler.fn);
+                  } catch (e) {
+                    watcherFailures_1[_DYN_PUSH](e);
+                  }
+                }
+              }
+            });
+            if (_waitingHandlers) {
+              try {
+                _notifyWatchers();
+              } catch (e) {
+                watcherFailures_1[_DYN_PUSH](e);
+              }
+            }
+            if (watcherFailures_1[_DYN_LENGTH] > 0) {
+              throwAggregationError("Watcher error(s): ", watcherFailures_1);
+            }
+          }
+        }
+        function _addWatcher(detail) {
+          if (detail && detail.h[_DYN_LENGTH] > 0) {
+            if (!_waitingHandlers) {
+              _waitingHandlers = [];
+            }
+            if (!_watcherTimer) {
+              _watcherTimer = scheduleTimeout(function() {
+                _watcherTimer = null;
+                _notifyWatchers();
+              }, 0);
+            }
+            for (var idx = 0; idx < detail.h[_DYN_LENGTH]; idx++) {
+              var handler = detail.h[idx];
+              if (handler && arrIndexOf(_waitingHandlers, handler) === -1) {
+                _waitingHandlers[_DYN_PUSH](handler);
+              }
+            }
+          }
+        }
+        function _trackHandler(handler, detail) {
+          if (handler) {
+            var details = handler[dynamicPropertyDetail] = handler[dynamicPropertyDetail] || [];
+            if (arrIndexOf(details, detail) === -1) {
+              details[_DYN_PUSH](detail);
+            }
+          }
+        }
+        theState = {
+          prop: dynamicPropertySymbol,
+          ro: dynamicPropertyReadOnly,
+          rf: dynamicPropertyReferenced,
+          blkVal: dynamicPropertyBlockValue,
+          hdlr: cfgHandler,
+          add: _addWatcher,
+          notify: _notifyWatchers,
+          use: _useHandler,
+          trk: _trackHandler
+        };
+        return theState;
+      }
+      function _createAndUseHandler(state, configHandler) {
+        var handler = {
+          fn: configHandler,
+          rm: function() {
+            handler.fn = null;
+            state = null;
+            configHandler = null;
+          }
+        };
+        objDefine(handler, "toJSON", { v: function() {
+          return "WatcherHandler" + (handler.fn ? STR_EMPTY : "[X]");
+        } });
+        state.use(handler, configHandler);
+        return handler;
+      }
+      function _createDynamicHandler(logger, target, inPlace) {
+        var dynamicHandler = getDynamicConfigHandler(target);
+        if (dynamicHandler) {
+          return dynamicHandler;
+        }
+        var uid = createUniqueNamespace("dyncfg", true);
+        var newTarget = target && inPlace !== false ? target : _cfgDeepCopy(target);
+        var theState;
+        function _notifyWatchers() {
+          theState.notify();
+        }
+        function _setValue(target2, name, value) {
+          try {
+            target2 = _setDynamicProperty(theState, target2, name, value);
+          } catch (e) {
+            _throwDynamicError(logger, name, "Setting value", e);
+          }
+          return target2[name];
+        }
+        function _watch(configHandler) {
+          return _createAndUseHandler(theState, configHandler);
+        }
+        function _block(configHandler, allowUpdate) {
+          theState.use(null, function(details) {
+            var prevUpd = theState.upd;
+            try {
+              if (!/* @__PURE__ */ isUndefined(allowUpdate)) {
+                theState.upd = allowUpdate;
+              }
+              configHandler(details);
+            } finally {
+              theState.upd = prevUpd;
+            }
+          });
+        }
+        function _ref(target2, name) {
+          var _a3;
+          return _setDynamicPropertyState(theState, target2, name, (_a3 = {}, _a3[0] = true, _a3))[name];
+        }
+        function _rdOnly(target2, name) {
+          var _a3;
+          return _setDynamicPropertyState(theState, target2, name, (_a3 = {}, _a3[1] = true, _a3))[name];
+        }
+        function _blkPropValue(target2, name) {
+          var _a3;
+          return _setDynamicPropertyState(theState, target2, name, (_a3 = {}, _a3[2] = true, _a3))[name];
+        }
+        function _applyDefaults(theConfig, defaultValues2) {
+          if (defaultValues2) {
+            objForEachKey(defaultValues2, function(name, value) {
+              _applyDefaultValue(cfgHandler, theConfig, name, value);
+            });
+          }
+          return theConfig;
+        }
+        var cfgHandler = {
+          uid: null,
+          cfg: newTarget,
+          logger,
+          notify: _notifyWatchers,
+          set: _setValue,
+          setDf: _applyDefaults,
+          watch: _watch,
+          ref: _ref,
+          rdOnly: _rdOnly,
+          blkVal: _blkPropValue,
+          _block
+        };
+        objDefine(cfgHandler, "uid", {
+          c: false,
+          e: false,
+          w: false,
+          v: uid
+        });
+        theState = _createState(cfgHandler);
+        _makeDynamicObject(theState, newTarget, "config", "Creating");
+        return cfgHandler;
+      }
+      function _logInvalidAccess(logger, message) {
+        if (logger) {
+          logger[_DYN_WARN_TO_CONSOLE](message);
+          logger[_DYN_THROW_INTERNAL](2, 108, message);
+        } else {
+          throwInvalidAccess(message);
+        }
+      }
+      function createDynamicConfig(config2, defaultConfig, logger, inPlace) {
+        var dynamicHandler = _createDynamicHandler(logger, config2 || {}, inPlace);
+        if (defaultConfig) {
+          dynamicHandler.setDf(dynamicHandler.cfg, defaultConfig);
+        }
+        return dynamicHandler;
+      }
+      function onConfigChange(config2, configHandler, logger) {
+        var handler = config2[CFG_HANDLER_LINK] || config2;
+        if (handler.cfg && (handler.cfg === config2 || handler.cfg[CFG_HANDLER_LINK] === handler)) {
+          return handler[_DYN_WATCH](configHandler);
+        }
+        _logInvalidAccess(logger, STR_NOT_DYNAMIC_ERROR + /* @__PURE__ */ dumpObj(config2));
+        return createDynamicConfig(config2, null, logger)[_DYN_WATCH](configHandler);
+      }
+      var DisabledPropertyName = "Microsoft_ApplicationInsights_BypassAjaxInstrumentation";
+      var SampleRate = "sampleRate";
+      var ProcessLegacy = "ProcessLegacy";
+      var HttpMethod = "http.method";
+      var DEFAULT_BREEZE_ENDPOINT = "https://dc.services.visualstudio.com";
+      var DEFAULT_BREEZE_PATH = "/v2/track";
+      var strNotSpecified = "not_specified";
+      var strIkey = "iKey";
+      var _aiNamespace = null;
+      function _getExtensionNamespace() {
+        var target = /* @__PURE__ */ getInst("Microsoft");
+        if (target) {
+          _aiNamespace = target["ApplicationInsights"];
+        }
+        return _aiNamespace;
+      }
+      function getDebugExt(config2) {
+        var ns = _aiNamespace;
+        if (!ns && config2.disableDbgExt !== true) {
+          ns = _aiNamespace || _getExtensionNamespace();
+        }
+        return ns ? ns["ChromeDbgExt"] : null;
+      }
+      var _a2;
+      var STR_WARN_TO_CONSOLE = "warnToConsole";
+      var AiNonUserActionablePrefix = "AI (Internal): ";
+      var AiUserActionablePrefix = "AI: ";
+      var AIInternalMessagePrefix = "AITR_";
+      var defaultValues = {
+        loggingLevelConsole: 0,
+        loggingLevelTelemetry: 1,
+        maxMessageLimit: 25,
+        enableDebug: false
+      };
+      var _logFuncs = (_a2 = {}, _a2[0] = null, _a2[1] = "errorToConsole", _a2[2] = STR_WARN_TO_CONSOLE, _a2[3] = "debugToConsole", _a2);
+      function _sanitizeDiagnosticText(text) {
+        if (text) {
+          return '"' + text[_DYN_REPLACE](/\"/g, STR_EMPTY) + '"';
+        }
+        return STR_EMPTY;
+      }
+      function _logToConsole(func, message) {
+        var theConsole = /* @__PURE__ */ getConsole();
+        if (!!theConsole) {
+          var logFunc = "log";
+          if (theConsole[func]) {
+            logFunc = func;
+          }
+          if (isFunction(theConsole[logFunc])) {
+            theConsole[logFunc](message);
+          }
+        }
+      }
+      var _InternalLogMessage = (
+        /** @class */
+        (function() {
+          function _InternalLogMessage2(msgId, msg, isUserAct, properties) {
+            if (isUserAct === void 0) {
+              isUserAct = false;
+            }
+            var _self = this;
+            _self[_DYN_MESSAGE_ID] = msgId;
+            _self[_DYN_MESSAGE] = (isUserAct ? AiUserActionablePrefix : AiNonUserActionablePrefix) + msgId;
+            var strProps = STR_EMPTY;
+            if (/* @__PURE__ */ hasJSON()) {
+              strProps = (/* @__PURE__ */ getJSON())[_DYN_STRINGIFY](properties);
+            }
+            var diagnosticText = (msg ? " message:" + _sanitizeDiagnosticText(msg) : STR_EMPTY) + (properties ? " props:" + _sanitizeDiagnosticText(strProps) : STR_EMPTY);
+            _self[_DYN_MESSAGE] += diagnosticText;
+          }
+          _InternalLogMessage2.dataType = "MessageData";
+          return _InternalLogMessage2;
+        })()
+      );
+      // @__NO_SIDE_EFFECTS__
+      function safeGetLogger(core, config2) {
+        return (core || {})[_DYN_LOGGER] || new DiagnosticLogger(config2 || (core || {})[_DYN_CONFIG]);
+      }
+      var DiagnosticLogger = (
+        /** @class */
+        (function() {
+          function DiagnosticLogger2(config2) {
+            this.identifier = "DiagnosticLogger";
+            this.queue = [];
+            var _messageCount = 0;
+            var _messageLogged = {};
+            var _loggingLevelConsole;
+            var _loggingLevelTelemetry;
+            var _maxInternalMessageLimit;
+            var _enableDebug;
+            var _unloadHandler;
+            dynamicProto(DiagnosticLogger2, this, function(_self) {
+              _unloadHandler = _setDefaultsFromConfig(config2 || {});
+              _self.consoleLoggingLevel = function() {
+                return _loggingLevelConsole;
+              };
+              _self[_DYN_THROW_INTERNAL] = function(severity, msgId, msg, properties, isUserAct) {
+                if (isUserAct === void 0) {
+                  isUserAct = false;
+                }
+                var message = new _InternalLogMessage(msgId, msg, isUserAct, properties);
+                if (_enableDebug) {
+                  throw /* @__PURE__ */ dumpObj(message);
+                } else {
+                  var logFunc = _logFuncs[severity] || STR_WARN_TO_CONSOLE;
+                  if (!/* @__PURE__ */ isUndefined(message[_DYN_MESSAGE])) {
+                    if (isUserAct) {
+                      var messageKey = +message[_DYN_MESSAGE_ID];
+                      if (!_messageLogged[messageKey] && _loggingLevelConsole >= severity) {
+                        _self[logFunc](message[_DYN_MESSAGE]);
+                        _messageLogged[messageKey] = true;
+                      }
+                    } else {
+                      if (_loggingLevelConsole >= severity) {
+                        _self[logFunc](message[_DYN_MESSAGE]);
+                      }
+                    }
+                    _logInternalMessage(severity, message);
+                  } else {
+                    _debugExtMsg("throw" + (severity === 1 ? "Critical" : "Warning"), message);
+                  }
+                }
+              };
+              _self.debugToConsole = function(message) {
+                _logToConsole("debug", message);
+                _debugExtMsg("warning", message);
+              };
+              _self[_DYN_WARN_TO_CONSOLE] = function(message) {
+                _logToConsole("warn", message);
+                _debugExtMsg("warning", message);
+              };
+              _self.errorToConsole = function(message) {
+                _logToConsole("error", message);
+                _debugExtMsg("error", message);
+              };
+              _self.resetInternalMessageCount = function() {
+                _messageCount = 0;
+                _messageLogged = {};
+              };
+              _self.logInternalMessage = _logInternalMessage;
+              _self[_DYN_UNLOAD] = function(isAsync2) {
+                _unloadHandler && _unloadHandler.rm();
+                _unloadHandler = null;
+              };
+              objDefine(_self, "dbgMode", {
+                g: function() {
+                  return _enableDebug;
+                }
+              });
+              function _logInternalMessage(severity, message) {
+                if (_areInternalMessagesThrottled()) {
+                  return;
+                }
+                var logMessage = true;
+                var messageKey = AIInternalMessagePrefix + message[_DYN_MESSAGE_ID];
+                if (_messageLogged[messageKey]) {
+                  logMessage = false;
+                } else {
+                  _messageLogged[messageKey] = true;
+                }
+                if (logMessage) {
+                  if (severity <= _loggingLevelTelemetry) {
+                    _self.queue[_DYN_PUSH](message);
+                    _messageCount++;
+                    _debugExtMsg(severity === 1 ? "error" : "warn", message);
+                  }
+                  if (_messageCount === _maxInternalMessageLimit) {
+                    var throttleLimitMessage = "Internal events throttle limit per PageView reached for this app.";
+                    var throttleMessage = new _InternalLogMessage(23, throttleLimitMessage, false);
+                    _self.queue[_DYN_PUSH](throttleMessage);
+                    if (severity === 1) {
+                      _self.errorToConsole(throttleLimitMessage);
+                    } else {
+                      _self[_DYN_WARN_TO_CONSOLE](throttleLimitMessage);
+                    }
+                  }
+                }
+              }
+              function _setDefaultsFromConfig(config3) {
+                return onConfigChange(createDynamicConfig(config3, defaultValues, _self).cfg, function(details) {
+                  var config4 = details.cfg;
+                  _loggingLevelConsole = config4[_DYN_LOGGING_LEVEL_CONSOL4];
+                  _loggingLevelTelemetry = config4.loggingLevelTelemetry;
+                  _maxInternalMessageLimit = config4.maxMessageLimit;
+                  _enableDebug = config4.enableDebug;
+                });
+              }
+              function _areInternalMessagesThrottled() {
+                return _messageCount >= _maxInternalMessageLimit;
+              }
+              function _debugExtMsg(name, data) {
+                var dbgExt = getDebugExt(config2 || {});
+                if (dbgExt && dbgExt[_DYN_DIAG_LOG]) {
+                  dbgExt[_DYN_DIAG_LOG](name, data);
+                }
+              }
+            });
+          }
+          DiagnosticLogger2.__ieDyn = 1;
+          return DiagnosticLogger2;
+        })()
+      );
+      function _getLogger(logger) {
+        return logger || new DiagnosticLogger();
+      }
+      function _throwInternal(logger, severity, msgId, msg, properties, isUserAct) {
+        if (isUserAct === void 0) {
+          isUserAct = false;
+        }
+        _getLogger(logger)[_DYN_THROW_INTERNAL](severity, msgId, msg, properties, isUserAct);
+      }
+      var MAX_TRACE_STATE_MEMBERS = 32;
+      var MAX_TRACE_STATE_LEN = 512;
+      var LCALPHA = "[a-z]";
+      var LCALPHA_DIGIT = "[a-z\\d]";
+      var LCALPHA_DIGIT_UNDERSCORE_DASH_STAR_SLASH = "[a-z\\d_\\-*\\/]";
+      var SIMPLE_KEY = "(" + LCALPHA + LCALPHA_DIGIT_UNDERSCORE_DASH_STAR_SLASH + "{0,255})";
+      var TENANT_ID = "(" + LCALPHA_DIGIT + LCALPHA_DIGIT_UNDERSCORE_DASH_STAR_SLASH + "{0,240})";
+      var SYSTEM_ID = "(" + LCALPHA + LCALPHA_DIGIT_UNDERSCORE_DASH_STAR_SLASH + "{0,13})";
+      var MULTI_TENANT_KEY = "(" + TENANT_ID + "@" + SYSTEM_ID + ")";
+      var NBLK_CHAR = "!-+\\--<>-~";
+      var TRACESTATE_VALUE = "[ " + NBLK_CHAR + "]{0,255}[" + NBLK_CHAR + "]";
+      var TRACESTATE_KVP_REGEX = /* @__PURE__ */ new RegExp("^\\s*((?:" + SIMPLE_KEY + "|" + MULTI_TENANT_KEY + ")=(" + TRACESTATE_VALUE + "))\\s*$");
+      function _parseListMember(value) {
+        if (value) {
+          TRACESTATE_KVP_REGEX.lastIndex = 0;
+          var match = TRACESTATE_KVP_REGEX.exec(value);
+          if (match && match[_DYN_LENGTH] >= 7 && match[1] && match[6]) {
+            var type = match[3] ? 1 : 0;
+            var multiTenant = null;
+            if (type === 1) {
+              multiTenant = {
+                tenantId: match[4],
+                systemId: match[5]
+              };
+            }
+            var parts = {
+              type,
+              key: match[2],
+              multiTenant,
+              value: match[6]
+            };
+            return parts;
+          }
+        }
+        return null;
+      }
+      function _parseTraceStateList(value) {
+        var items = [];
+        if (value) {
+          var addedKeys_1 = [];
+          arrForEach(strSplit(value, ","), function(member) {
+            var parts = _parseListMember(member);
+            if (parts) {
+              if (arrIndexOf(addedKeys_1, parts.key) === -1) {
+                items[_DYN_PUSH](parts);
+                addedKeys_1[_DYN_PUSH](parts.key);
+                if (items[_DYN_LENGTH] >= MAX_TRACE_STATE_MEMBERS) {
+                  return -1;
+                }
+              }
+            }
+          });
+        }
+        return items;
+      }
+      function _indexOf(items, key) {
+        for (var lp = 0; lp < items[_DYN_LENGTH]; lp++) {
+          if (items[lp].key === key) {
+            return lp;
+          }
+        }
+        return -1;
+      }
+      function _keys(items, parent) {
+        var keys = [];
+        var delKeys = [];
+        arrForEach(items, function(member) {
+          if (member[_DYN_VALUE] != null) {
+            keys[_DYN_PUSH](member.key);
+          } else {
+            delKeys[_DYN_PUSH](member.key);
+          }
+        });
+        if (parent) {
+          arrForEach(parent.keys, function(key) {
+            if (arrIndexOf(keys, key) === -1 && arrIndexOf(delKeys, key) === -1) {
+              keys[_DYN_PUSH](key);
+            }
+          });
+        }
+        return keys;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _isEmpty(items, parent) {
+        var delKeys;
+        var isEmpty = true;
+        if (items && items[_DYN_LENGTH] > 0) {
+          arrForEach(items, function(member) {
+            if (member[_DYN_VALUE] != null) {
+              isEmpty = false;
+            } else {
+              if (!delKeys) {
+                delKeys = [];
+              }
+              delKeys[_DYN_PUSH](member.key);
+            }
+          });
+        }
+        if (isEmpty && parent) {
+          isEmpty = parent.isEmpty;
+          if (!isEmpty && delKeys && delKeys[_DYN_LENGTH] > 0) {
+            isEmpty = true;
+            arrForEach(parent.keys, function(key) {
+              if (arrIndexOf(delKeys, key) === -1) {
+                isEmpty = false;
+                return -1;
+              }
+            });
+          }
+        }
+        return isEmpty;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isW3cTraceState(value) {
+        return !!(value && isArray(value.keys) && isFunction(value.get) && isFunction(value.set) && isFunction(value.del) && isFunction(value.hdrs));
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createW3cTraceState(value, parent) {
+        var cachedItems = /* @__PURE__ */ safeGetDeferred(_parseTraceStateList, [], [value || STR_EMPTY]);
+        function _get(key) {
+          var value2;
+          var theItems = cachedItems.v;
+          var idx = _indexOf(theItems, key);
+          if (idx !== -1) {
+            var itmValue = theItems[idx][_DYN_VALUE];
+            if (itmValue != null) {
+              value2 = itmValue;
+            }
+          } else if (parent) {
+            value2 = parent.get(key);
+          }
+          return value2;
+        }
+        function _setMember(member) {
+          if (member) {
+            var theItems = cachedItems.v;
+            var idx = _indexOf(theItems, member.key);
+            if (idx !== -1) {
+              theItems[_DYN_SPLICE](idx, 1);
+            }
+            theItems.unshift(member);
+            cachedItems = /* @__PURE__ */ createCachedValue(theItems);
+            return 0;
+          }
+          return -1;
+        }
+        function _set(key, value2) {
+          var member;
+          if (key && isString(key) && !/* @__PURE__ */ isNullOrUndefined(value2) && isString(value2)) {
+            member = _parseListMember(key + "=" + value2);
+          }
+          return _setMember(member);
+        }
+        function _del(key) {
+          _setMember({
+            type: 2,
+            key
+          });
+        }
+        function _headers(maxHeaders, maxKeys, maxLen) {
+          var results = [];
+          var result = STR_EMPTY;
+          var numKeys2 = 0;
+          var len = 0;
+          maxKeys = maxKeys || MAX_TRACE_STATE_MEMBERS;
+          maxLen = maxLen || MAX_TRACE_STATE_LEN;
+          var theItems = cachedItems.v;
+          arrForEach(_keys(theItems, parent), function(key) {
+            var value2 = _get(key);
+            if (!/* @__PURE__ */ isNullOrUndefined(value2) && isString(value2)) {
+              numKeys2++;
+              var val = key + "=" + value2;
+              var valLen = val[_DYN_LENGTH];
+              if (len + 1 + valLen >= maxLen) {
+                results[_DYN_PUSH](result);
+                if (maxHeaders && results[_DYN_LENGTH] <= maxHeaders) {
+                  return -1;
+                }
+                result = STR_EMPTY;
+                len = 0;
+              }
+              if (result[_DYN_LENGTH] > 0) {
+                result += ",";
+                len++;
+              }
+              result += val;
+              len += valLen;
+              if (numKeys2 >= maxKeys) {
+                return -1;
+              }
+            }
+          });
+          if (result) {
+            results[_DYN_PUSH](result);
+          }
+          return results;
+        }
+        var traceStateList = {
+          keys: [],
+          isEmpty: false,
+          get: _get,
+          set: _set,
+          del: _del,
+          hdrs: _headers,
+          child: function() {
+            return /* @__PURE__ */ createW3cTraceState(null, traceStateList);
+          }
+        };
+        function _toString() {
+          var headers = traceStateList.hdrs(1);
+          return headers[_DYN_LENGTH] > 0 ? headers[0] : STR_EMPTY;
+        }
+        objDefineProps(traceStateList, {
+          "keys": {
+            g: function() {
+              return _keys(cachedItems.v, parent);
+            }
+          },
+          "isEmpty": {
+            g: function() {
+              return /* @__PURE__ */ _isEmpty(cachedItems.v, parent);
+            }
+          },
+          "toString": {
+            v: _toString,
+            e: false
+          },
+          "_p": {
+            v: parent,
+            e: false
+          }
+        });
+        setObjStringTag(traceStateList, _toString);
+        return traceStateList;
+      }
+      function generateW3CId() {
+        var hexValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+        var oct = STR_EMPTY, tmp;
+        for (var a = 0; a < 4; a++) {
+          tmp = random32();
+          oct += hexValues[tmp & 15] + hexValues[tmp >> 4 & 15] + hexValues[tmp >> 8 & 15] + hexValues[tmp >> 12 & 15] + hexValues[tmp >> 16 & 15] + hexValues[tmp >> 20 & 15] + hexValues[tmp >> 24 & 15] + hexValues[tmp >> 28 & 15];
+        }
+        var clockSequenceHi = hexValues[8 + (random32() & 3) | 0];
+        return strSubstr(oct, 0, 8) + strSubstr(oct, 9, 4) + "4" + strSubstr(oct, 13, 3) + clockSequenceHi + strSubstr(oct, 16, 3) + strSubstr(oct, 19, 12);
+      }
+      var TRACE_PARENT_REGEX = /^([\da-f]{2})-([\da-f]{32})-([\da-f]{16})-([\da-f]{2})(-[^\s]{1,64})?$/i;
+      var DEFAULT_VERSION = "00";
+      var INVALID_VERSION = "ff";
+      var INVALID_TRACE_ID = "00000000000000000000000000000000";
+      var INVALID_SPAN_ID = "0000000000000000";
+      var SAMPLED_FLAG = 1;
+      function _isValid(value, len, invalidValue) {
+        if (value && value[_DYN_LENGTH] === len && value !== invalidValue) {
+          return !!value.match(/^[\da-f]*$/i);
+        }
+        return false;
+      }
+      function _formatValue(value, len, defValue) {
+        if (_isValid(value, len)) {
+          return value;
+        }
+        return defValue;
+      }
+      function _formatFlags(value) {
+        if (isNaN(value) || value < 0 || value > 255) {
+          value = 1;
+        }
+        var result = value[_DYN_TO_STRING](16);
+        while (result[_DYN_LENGTH] < 2) {
+          result = "0" + result;
+        }
+        return result;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createTraceParent(traceId, spanId, flags, version3) {
+        return {
+          version: _isValid(version3, 2, INVALID_VERSION) ? version3 : DEFAULT_VERSION,
+          traceId: /* @__PURE__ */ isValidTraceId(traceId) ? traceId : generateW3CId(),
+          spanId: /* @__PURE__ */ isValidSpanId(spanId) ? spanId : /* @__PURE__ */ strLeft(generateW3CId(), 16),
+          traceFlags: !/* @__PURE__ */ isNullOrUndefined(flags) && flags >= 0 && flags <= 255 ? flags : 1
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function parseTraceParent(value, selectIdx) {
+        if (!value) {
+          return null;
+        }
+        if (isArray(value)) {
+          value = value[0] || STR_EMPTY;
+        }
+        if (!value || !isString(value) || value[_DYN_LENGTH] > 8192) {
+          return null;
+        }
+        if (strIndexOf(value, ",") !== -1) {
+          var values = value[_DYN_SPLIT](",");
+          value = values[selectIdx > 0 && values[_DYN_LENGTH] > selectIdx ? selectIdx : 0];
+        }
+        TRACE_PARENT_REGEX.lastIndex = 0;
+        var match = TRACE_PARENT_REGEX.exec(strTrim(value));
+        if (!match || match[1] === INVALID_VERSION || match[2] === INVALID_TRACE_ID || match[3] === INVALID_SPAN_ID) {
+          return null;
+        }
+        return {
+          version: (match[1] || STR_EMPTY)[_DYN_TO_LOWER_CASE](),
+          traceId: (match[2] || STR_EMPTY)[_DYN_TO_LOWER_CASE](),
+          spanId: (match[3] || STR_EMPTY)[_DYN_TO_LOWER_CASE](),
+          traceFlags: parseInt(match[4], 16)
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isValidTraceId(value) {
+        return _isValid(value, 32, INVALID_TRACE_ID);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isValidSpanId(value) {
+        return _isValid(value, 16, INVALID_SPAN_ID);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isValidTraceParent(value) {
+        if (!value || !_isValid(value[STR_VERSION], 2, INVALID_VERSION) || !_isValid(value[_DYN_TRACE_ID], 32, INVALID_TRACE_ID) || !_isValid(value[_DYN_SPAN_ID], 16, INVALID_SPAN_ID) || !_isValid(_formatFlags(value[_DYN_TRACE_FLAGS]), 2)) {
+          return false;
+        }
+        return true;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isSampledFlag(value) {
+        if (/* @__PURE__ */ isValidTraceParent(value)) {
+          return (value[_DYN_TRACE_FLAGS] & SAMPLED_FLAG) === SAMPLED_FLAG;
+        }
+        return false;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function formatTraceParent(value) {
+        if (value) {
+          var flags = _formatFlags(value[_DYN_TRACE_FLAGS]);
+          if (!_isValid(flags, 2)) {
+            flags = "01";
+          }
+          var version3 = value[STR_VERSION] || DEFAULT_VERSION;
+          if (version3 !== "00" && version3 !== "ff") {
+            version3 = DEFAULT_VERSION;
+          }
+          return "".concat(version3.toLowerCase(), "-").concat(_formatValue(value.traceId, 32, INVALID_TRACE_ID).toLowerCase(), "-").concat(_formatValue(value.spanId, 16, INVALID_SPAN_ID).toLowerCase(), "-").concat(flags.toLowerCase());
+        }
+        return STR_EMPTY;
+      }
+      function findW3cTraceParent(selectIdx) {
+        var name = "traceparent";
+        var traceParent = /* @__PURE__ */ parseTraceParent(/* @__PURE__ */ findMetaTag(name), selectIdx);
+        if (!traceParent) {
+          traceParent = /* @__PURE__ */ parseTraceParent(/* @__PURE__ */ findNamedServerTiming(name), selectIdx);
+        }
+        return traceParent;
+      }
+      function findAllScripts(doc) {
+        var scripts = doc.getElementsByTagName("script");
+        var result = [];
+        arrForEach(scripts, function(script) {
+          var src = script[_DYN_GET_ATTRIBUTE]("src");
+          if (src) {
+            var crossOrigin = script[_DYN_GET_ATTRIBUTE]("crossorigin");
+            var async = script.hasAttribute("async") === true;
+            var defer = script.hasAttribute("defer") === true;
+            var referrerPolicy = script[_DYN_GET_ATTRIBUTE]("referrerpolicy");
+            var info = { url: src };
+            if (crossOrigin) {
+              info.crossOrigin = crossOrigin;
+            }
+            if (async) {
+              info.async = async;
+            }
+            if (defer) {
+              info.defer = defer;
+            }
+            if (referrerPolicy) {
+              info.referrerPolicy = referrerPolicy;
+            }
+            result[_DYN_PUSH](info);
+          }
+        });
+        return result;
+      }
+      var _otelTraceState;
+      function _initOTelTraceStateSymbol() {
+        if (!_otelTraceState) {
+          _otelTraceState = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ symbolFor("otTraceState"));
+        }
+        return _otelTraceState;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createOTelTraceState(traceState) {
+        if (!_otelTraceState) {
+          _otelTraceState = _initOTelTraceStateSymbol();
+        }
+        var otTraceState = {
+          set: function(key, value) {
+            var newState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, traceState);
+            newState.set(key, value);
+            return /* @__PURE__ */ _createOTelTraceState(newState);
+          },
+          unset: function(key) {
+            var newState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, traceState);
+            newState.del(key);
+            return /* @__PURE__ */ _createOTelTraceState(newState);
+          },
+          get: function(key) {
+            return traceState.get(key);
+          },
+          serialize: function() {
+            var headers = traceState.hdrs(1);
+            if (headers[_DYN_LENGTH] > 0) {
+              return headers[0];
+            }
+            return STR_EMPTY;
+          }
+        };
+        objDefine(otTraceState, _otelTraceState.v, { g: function() {
+          return traceState;
+        } });
+        return otTraceState;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isOTelTraceState(value) {
+        if (!_otelTraceState) {
+          _otelTraceState = _initOTelTraceStateSymbol();
+        }
+        if (value && value[_otelTraceState.v]) {
+          return true;
+        }
+        return value && isFunction(value.serialize) && isFunction(value.unset) && isFunction(value.get) && isFunction(value.set);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createOTelTraceState(value) {
+        var traceState = null;
+        if (/* @__PURE__ */ isOTelTraceState(value)) {
+          var parentTraceState = void 0;
+          if (_otelTraceState) {
+            parentTraceState = value[_otelTraceState.v];
+          }
+          if (parentTraceState) {
+            traceState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, parentTraceState);
+          } else {
+            traceState = /* @__PURE__ */ createW3cTraceState(value.serialize());
+          }
+        } else if (/* @__PURE__ */ isW3cTraceState(value)) {
+          traceState = value;
+        } else {
+          traceState = /* @__PURE__ */ createW3cTraceState(isString(value) ? value : STR_EMPTY);
+        }
+        return /* @__PURE__ */ _createOTelTraceState(traceState);
+      }
+      function createOTelSpanContext(traceContext) {
+        var traceId = /* @__PURE__ */ isValidTraceId(traceContext[_DYN_TRACE_ID]) ? traceContext[_DYN_TRACE_ID] : INVALID_TRACE_ID;
+        var spanId = /* @__PURE__ */ isValidSpanId(traceContext[_DYN_SPAN_ID]) ? traceContext[_DYN_SPAN_ID] : INVALID_SPAN_ID;
+        var isRemote = traceContext.isRemote;
+        var traceFlags = !/* @__PURE__ */ isNullOrUndefined(traceContext[_DYN_TRACE_FLAGS]) ? traceContext[_DYN_TRACE_FLAGS] : 1;
+        var otTraceState = null;
+        var traceContextObj = {
+          traceId,
+          spanId,
+          traceFlags
+        };
+        return objDefineProps(traceContextObj, {
+          traceId: {
+            g: function() {
+              return traceId;
+            },
+            s: function(value) {
+              return traceId = /* @__PURE__ */ isValidTraceId(value) ? value : INVALID_TRACE_ID;
+            }
+          },
+          spanId: {
+            g: function() {
+              return spanId;
+            },
+            s: function(value) {
+              return spanId = /* @__PURE__ */ isValidSpanId(value) ? value : INVALID_SPAN_ID;
+            }
+          },
+          isRemote: {
+            g: function() {
+              return isRemote;
+            }
+          },
+          traceFlags: {
+            g: function() {
+              return traceFlags;
+            },
+            s: function(value) {
+              return traceFlags = value;
+            }
+          },
+          traceState: {
+            g: function() {
+              if (!otTraceState) {
+                otTraceState = /* @__PURE__ */ createOTelTraceState(traceContext[_DYN_TRACE_STATE]);
+              }
+              return otTraceState;
+            },
+            s: function(value) {
+              otTraceState = value;
+            }
+          }
+        });
+      }
+      createElmNodeData("plugin");
+      // @__NO_SIDE_EFFECTS__
+      function isDistributedTraceContext(obj) {
+        return obj && isFunction(obj.getName) && isFunction(obj.getTraceId) && isFunction(obj.getSpanId) && isFunction(obj.getTraceFlags) && isFunction(obj.setName) && isFunction(obj.setTraceId) && isFunction(obj.setSpanId) && isFunction(obj[_DYN_SET_TRACE_FLAGS]);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createDistributedTraceContext(parent) {
+        var _a3;
+        var parentCtx = null;
+        var initCtx = null;
+        var traceId = parent && /* @__PURE__ */ isValidTraceId(parent[_DYN_TRACE_ID]) ? parent[_DYN_TRACE_ID] : generateW3CId();
+        var spanId = parent && /* @__PURE__ */ isValidSpanId(parent[_DYN_SPAN_ID]) ? parent[_DYN_SPAN_ID] : STR_EMPTY;
+        var traceFlags = parent ? parent[_DYN_TRACE_FLAGS] : UNDEFINED_VALUE;
+        var isRemote = parent ? parent.isRemote : false;
+        var pageName = STR_EMPTY;
+        var traceState = null;
+        if (parent) {
+          if (/* @__PURE__ */ isDistributedTraceContext(parent)) {
+            parentCtx = parent;
+            pageName = parentCtx.getName();
+          } else {
+            initCtx = parent;
+          }
+        }
+        if (!pageName) {
+          pageName = "_unknown_";
+          var location_1 = /* @__PURE__ */ getLocation();
+          if (location_1 && location_1[_DYN_PATHNAME]) {
+            pageName = location_1[_DYN_PATHNAME] + (location_1.hash || "");
+          }
+        }
+        function _getName() {
+          return pageName;
+        }
+        function _setPageNameFn(updateParent) {
+          return function(newValue) {
+            if (updateParent) {
+              parentCtx && parentCtx.setName(newValue);
+            }
+            pageName = newValue;
+          };
+        }
+        function _getTraceId() {
+          return traceId;
+        }
+        function _setTraceIdFn(updateParent) {
+          return function(newValue) {
+            if (updateParent) {
+              parentCtx && parentCtx.setTraceId(newValue);
+            }
+            if (/* @__PURE__ */ isValidTraceId(newValue)) {
+              traceId = newValue;
+            }
+          };
+        }
+        function _getSpanId() {
+          return spanId;
+        }
+        function _setSpanIdFn(updateParent) {
+          return function(newValue) {
+            if (updateParent) {
+              parentCtx && parentCtx.setSpanId(newValue);
+            }
+            if (/* @__PURE__ */ isValidSpanId(newValue)) {
+              spanId = newValue;
+            }
+          };
+        }
+        function _getTraceFlags() {
+          return traceFlags;
+        }
+        function _setTraceFlagsFn(updateParent) {
+          return function(newTraceFlags) {
+            if (updateParent) {
+              parentCtx && parentCtx[_DYN_SET_TRACE_FLAGS](newTraceFlags);
+            }
+            traceFlags = newTraceFlags;
+          };
+        }
+        function _getTraceState() {
+          if (!traceState) {
+            if (!parentCtx) {
+              if (initCtx) {
+                if (/* @__PURE__ */ isOTelTraceState(initCtx[_DYN_TRACE_STATE])) {
+                  traceState = /* @__PURE__ */ createW3cTraceState(initCtx[_DYN_TRACE_STATE].serialize() || STR_EMPTY, parentCtx ? parentCtx[_DYN_TRACE_STATE] : void 0);
+                } else {
+                  traceState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, initCtx[_DYN_TRACE_STATE] || (parentCtx ? parentCtx[_DYN_TRACE_STATE] : void 0));
+                }
+              }
+            }
+            if (!traceState) {
+              traceState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, parentCtx ? parentCtx[_DYN_TRACE_STATE] : void 0);
+            }
+          }
+          return traceState;
+        }
+        var otelSpanCtx = null;
+        var traceCtx = setProtoTypeName((_a3 = {
+          getName: _getName,
+          setName: _setPageNameFn(true),
+          getTraceId: _getTraceId,
+          setTraceId: _setTraceIdFn(true),
+          getSpanId: _getSpanId,
+          setSpanId: _setSpanIdFn(true),
+          getTraceFlags: _getTraceFlags
+        }, _a3[_DYN_SET_TRACE_FLAGS] = _setTraceFlagsFn(true), _a3.traceId = traceId, _a3.spanId = spanId, _a3.traceFlags = traceFlags, _a3.traceState = traceState, _a3.isRemote = isRemote, _a3.pageName = pageName, _a3.getOTelSpanContext = function() {
+          if (!otelSpanCtx) {
+            otelSpanCtx = createOTelSpanContext(traceCtx);
+          }
+          return otelSpanCtx;
+        }, _a3), "DistributedTraceContext");
+        return objDefineProps(traceCtx, {
+          pageName: {
+            g: _getName,
+            s: _setPageNameFn(false)
+          },
+          traceId: {
+            g: _getTraceId,
+            s: _setTraceIdFn(false)
+          },
+          spanId: {
+            g: _getSpanId,
+            s: _setSpanIdFn(false)
+          },
+          traceFlags: {
+            g: _getTraceFlags,
+            s: _setTraceFlagsFn(false)
+          },
+          isRemote: {
+            v: isRemote,
+            w: false
+          },
+          traceState: {
+            g: _getTraceState
+          },
+          parentCtx: {
+            g: function() {
+              return parentCtx;
+            }
+          },
+          _parent: {
+            g: function() {
+              var result;
+              if (parentCtx) {
+                result = {
+                  t: "traceCtx",
+                  v: parentCtx
+                };
+              } else if (initCtx) {
+                result = {
+                  t: "initCtx",
+                  v: initCtx
+                };
+              }
+              return result;
+            }
+          }
+        });
+      }
+      var strOnPrefix = "on";
+      var strAttachEvent = "attachEvent";
+      var strAddEventHelper = "addEventListener";
+      var strDetachEvent = "detachEvent";
+      var strRemoveEventListener = "removeEventListener";
+      var strEvents = "events";
+      var rRemoveEmptyNs = /\.[\.]+/g;
+      var rRemoveTrailingEmptyNs = /[\.]+$/;
+      var _guid2 = 1;
+      var _elmNodeData;
+      // @__NO_SIDE_EFFECTS__
+      function _getElmNodeData() {
+        !_elmNodeData && (_elmNodeData = /* @__PURE__ */ createCachedValue(createElmNodeData("events")));
+        return _elmNodeData.v;
+      }
+      var eventNamespace = /^([^.]*)(?:\.(.+)|)/;
+      // @__NO_SIDE_EFFECTS__
+      function _normalizeNamespace(name) {
+        if (name && name[_DYN_REPLACE]) {
+          return name[_DYN_REPLACE](/^[\s\.]+|(?=[\s\.])[\.\s]+$/g, STR_EMPTY);
+        }
+        return name;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getEvtNamespace(eventName, evtNamespace) {
+        if (evtNamespace) {
+          var theNamespace_1 = STR_EMPTY;
+          if (isArray(evtNamespace)) {
+            theNamespace_1 = STR_EMPTY;
+            arrForEach(evtNamespace, function(name) {
+              name = /* @__PURE__ */ _normalizeNamespace(name);
+              if (name) {
+                if (name[0] !== ".") {
+                  name = "." + name;
+                }
+                theNamespace_1 += name;
+              }
+            });
+          } else {
+            theNamespace_1 = /* @__PURE__ */ _normalizeNamespace(evtNamespace);
+          }
+          if (theNamespace_1) {
+            if (theNamespace_1[0] !== ".") {
+              theNamespace_1 = "." + theNamespace_1;
+            }
+            eventName = (eventName || STR_EMPTY) + theNamespace_1;
+          }
+        }
+        var parsedEvent = eventNamespace.exec(eventName || STR_EMPTY) || [];
+        return {
+          type: parsedEvent[1],
+          ns: (parsedEvent[2] || STR_EMPTY).replace(rRemoveEmptyNs, ".").replace(rRemoveTrailingEmptyNs, STR_EMPTY).split(".").sort()[_DYN_JOIN](".")
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getRegisteredEvents(target, evtName, addDefault) {
+        if (addDefault === void 0) {
+          addDefault = true;
+        }
+        var aiEvts = (/* @__PURE__ */ _getElmNodeData()).get(target, strEvents, {}, addDefault);
+        var registeredEvents = aiEvts[evtName];
+        if (!registeredEvents) {
+          registeredEvents = aiEvts[evtName] = [];
+        }
+        return registeredEvents;
+      }
+      function _doDetach(obj, evtName, handlerRef, useCapture) {
+        if (obj && evtName && evtName[_DYN_TYPE]) {
+          if (obj[strRemoveEventListener]) {
+            obj[strRemoveEventListener](evtName[_DYN_TYPE], handlerRef, useCapture);
+          } else if (obj[strDetachEvent]) {
+            obj[strDetachEvent](strOnPrefix + evtName[_DYN_TYPE], handlerRef);
+          }
+        }
+      }
+      function _doAttach(obj, evtName, handlerRef, useCapture) {
+        var result = false;
+        if (obj && evtName && evtName[_DYN_TYPE] && handlerRef) {
+          if (obj[strAddEventHelper]) {
+            obj[strAddEventHelper](evtName[_DYN_TYPE], handlerRef, useCapture);
+            result = true;
+          } else if (obj[strAttachEvent]) {
+            obj[strAttachEvent](strOnPrefix + evtName[_DYN_TYPE], handlerRef);
+            result = true;
+          }
+        }
+        return result;
+      }
+      function _doUnregister(target, events, evtName, unRegFn) {
+        var idx = events[_DYN_LENGTH];
+        while (idx--) {
+          var theEvent = events[idx];
+          if (theEvent) {
+            if (!evtName.ns || evtName.ns === theEvent[_DYN_EVT_NAME].ns) {
+              if (!unRegFn || unRegFn(theEvent)) {
+                _doDetach(target, theEvent.evtName, theEvent[_DYN_HANDLER], theEvent.capture);
+                events[_DYN_SPLICE](idx, 1);
+              }
+            }
+          }
+        }
+      }
+      function _unregisterEvents(target, evtName, unRegFn) {
+        if (evtName[_DYN_TYPE]) {
+          _doUnregister(target, /* @__PURE__ */ _getRegisteredEvents(target, evtName[_DYN_TYPE]), evtName, unRegFn);
+        } else {
+          var eventCache = (/* @__PURE__ */ _getElmNodeData()).get(target, strEvents, {});
+          objForEachKey(eventCache, function(evtType, events) {
+            _doUnregister(target, events, evtName, unRegFn);
+          });
+          if (objKeys(eventCache)[_DYN_LENGTH] === 0) {
+            (/* @__PURE__ */ _getElmNodeData()).kill(target, strEvents);
+          }
+        }
+      }
+      // @__NO_SIDE_EFFECTS__
+      function mergeEvtNamespace(theNamespace, namespaces) {
+        var newNamespaces;
+        if (namespaces) {
+          if (isArray(namespaces)) {
+            newNamespaces = [theNamespace][_DYN_CONCAT](namespaces);
+          } else {
+            newNamespaces = [theNamespace, namespaces];
+          }
+          newNamespaces = (/* @__PURE__ */ _getEvtNamespace("xx", newNamespaces)).ns[_DYN_SPLIT](".");
+        } else {
+          newNamespaces = theNamespace;
+        }
+        return newNamespaces;
+      }
+      function eventOn(target, eventName, handlerRef, evtNamespace, useCapture) {
+        if (useCapture === void 0) {
+          useCapture = false;
+        }
+        var result = false;
+        if (target) {
+          try {
+            var evtName = /* @__PURE__ */ _getEvtNamespace(eventName, evtNamespace);
+            result = _doAttach(target, evtName, handlerRef, useCapture);
+            if (result && (/* @__PURE__ */ _getElmNodeData()).accept(target)) {
+              var registeredEvent = {
+                guid: _guid2++,
+                evtName,
+                handler: handlerRef,
+                capture: useCapture
+              };
+              (/* @__PURE__ */ _getRegisteredEvents(target, evtName.type))[_DYN_PUSH](registeredEvent);
+            }
+          } catch (e) {
+          }
+        }
+        return result;
+      }
+      function eventOff(target, eventName, handlerRef, evtNamespace, useCapture) {
+        if (useCapture === void 0) {
+          useCapture = false;
+        }
+        if (target) {
+          try {
+            var evtName_1 = /* @__PURE__ */ _getEvtNamespace(eventName, evtNamespace);
+            var found_1 = false;
+            _unregisterEvents(target, evtName_1, function(regEvent) {
+              if (evtName_1.ns && !handlerRef || regEvent[_DYN_HANDLER] === handlerRef) {
+                found_1 = true;
+                return true;
+              }
+              return false;
+            });
+            if (!found_1) {
+              _doDetach(target, evtName_1, handlerRef, useCapture);
+            }
+          } catch (e) {
+          }
+        }
+      }
+      var RequestHeaders = /* @__PURE__ */ createValueMap({
+        requestContextHeader: [0, "Request-Context"],
+        requestContextTargetKey: [1, "appId"],
+        requestContextAppIdFormat: [2, "appId=cid-v1:"],
+        requestIdHeader: [3, "Request-Id"],
+        traceParentHeader: [4, "traceparent"],
+        traceStateHeader: [5, "tracestate"],
+        sdkContextHeader: [6, "Sdk-Context"],
+        sdkContextHeaderAppIdRequest: [7, "appId"],
+        requestContextHeaderLowerCase: [8, "request-context"]
+      });
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeKeyAndAddUniqueness(logger, key, map2) {
+        var origLength = key[_DYN_LENGTH];
+        var field = /* @__PURE__ */ dataSanitizeKey(logger, key);
+        if (field[_DYN_LENGTH] !== origLength) {
+          var i = 0;
+          var uniqueField = field;
+          while (map2[uniqueField] !== void 0) {
+            i++;
+            uniqueField = strSubstring(field, 0, 150 - 3) + /* @__PURE__ */ dsPadNumber(i);
+          }
+          field = uniqueField;
+        }
+        return field;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeKey(logger, name) {
+        var nameTrunc;
+        if (name) {
+          name = strTrim(asString(name));
+          if (name[_DYN_LENGTH] > 150) {
+            nameTrunc = strSubstring(name, 0, 150);
+            _throwInternal(logger, 2, 57, "name is too long.  It has been truncated to 150 characters.", { name }, true);
+          }
+        }
+        return nameTrunc || name;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeString(logger, value, maxLength) {
+        if (maxLength === void 0) {
+          maxLength = 1024;
+        }
+        var valueTrunc;
+        if (value) {
+          maxLength = maxLength ? maxLength : 1024;
+          value = strTrim(asString(value));
+          if (value[_DYN_LENGTH] > maxLength) {
+            valueTrunc = strSubstring(value, 0, maxLength);
+            _throwInternal(logger, 2, 61, "string value is too long. It has been truncated to " + maxLength + " characters.", { value }, true);
+          }
+        }
+        return valueTrunc || value;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeUrl(logger, url2, config2) {
+        if (isString(url2)) {
+          url2 = /* @__PURE__ */ fieldRedaction(url2, config2);
+        }
+        return /* @__PURE__ */ dataSanitizeInput(logger, url2, 2048, 66);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeMessage(logger, message) {
+        var messageTrunc;
+        if (message) {
+          if (message[_DYN_LENGTH] > 32768) {
+            messageTrunc = strSubstring(message, 0, 32768);
+            _throwInternal(logger, 2, 56, "message is too long, it has been truncated to 32768 characters.", { message }, true);
+          }
+        }
+        return messageTrunc || message;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeException(logger, exception) {
+        var exceptionTrunc;
+        if (exception) {
+          var value = "" + exception;
+          if (value[_DYN_LENGTH] > 32768) {
+            exceptionTrunc = strSubstring(value, 0, 32768);
+            _throwInternal(logger, 2, 52, "exception is too long, it has been truncated to 32768 characters.", { exception }, true);
+          }
+        }
+        return exceptionTrunc || exception;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeProperties(logger, properties) {
+        if (properties) {
+          var tempProps_1 = {};
+          objForEachKey(properties, function(prop, value) {
+            if (/* @__PURE__ */ isObject2(value) && /* @__PURE__ */ hasJSON()) {
+              try {
+                value = (/* @__PURE__ */ getJSON())[_DYN_STRINGIFY](value);
+              } catch (e) {
+                _throwInternal(logger, 2, 49, "custom property is not valid", { exception: e }, true);
+              }
+            }
+            value = /* @__PURE__ */ dataSanitizeString(logger, value, 8192);
+            prop = /* @__PURE__ */ dataSanitizeKeyAndAddUniqueness(logger, prop, tempProps_1);
+            tempProps_1[prop] = value;
+          });
+          properties = tempProps_1;
+        }
+        return properties;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeMeasurements(logger, measurements) {
+        if (measurements) {
+          var tempMeasurements_1 = {};
+          objForEachKey(measurements, function(measure, value) {
+            measure = /* @__PURE__ */ dataSanitizeKeyAndAddUniqueness(logger, measure, tempMeasurements_1);
+            tempMeasurements_1[measure] = value;
+          });
+          measurements = tempMeasurements_1;
+        }
+        return measurements;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeId(logger, id) {
+        return id ? (/* @__PURE__ */ dataSanitizeInput(logger, id, 128, 69))[_DYN_TO_STRING]() : id;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeInput(logger, input, maxLength, _msgId) {
+        var inputTrunc;
+        if (input) {
+          input = strTrim(asString(input));
+          if (input[_DYN_LENGTH] > maxLength) {
+            inputTrunc = strSubstring(input, 0, maxLength);
+            _throwInternal(logger, 2, _msgId, "input is too long, it has been truncated to " + maxLength + " characters.", { data: input }, true);
+          }
+        }
+        return inputTrunc || input;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dsPadNumber(num) {
+        var s = "00" + num;
+        return strSubstr(s, s[_DYN_LENGTH] - 3);
+      }
+      var _document = getDocument() || {};
+      var _htmlAnchorIdx = 0;
+      var _htmlAnchorElement = [null, null, null, null, null];
+      function urlParseUrl(url2) {
+        var anchorIdx = _htmlAnchorIdx;
+        var anchorCache = _htmlAnchorElement;
+        var tempAnchor = anchorCache[anchorIdx];
+        if (!_document.createElement) {
+          tempAnchor = { host: urlParseHost(url2, true) };
+        } else if (!anchorCache[anchorIdx]) {
+          tempAnchor = anchorCache[anchorIdx] = _document.createElement("a");
+        }
+        tempAnchor.href = url2;
+        anchorIdx++;
+        if (anchorIdx >= anchorCache[_DYN_LENGTH]) {
+          anchorIdx = 0;
+        }
+        _htmlAnchorIdx = anchorIdx;
+        return tempAnchor;
+      }
+      function urlGetAbsoluteUrl(url2) {
+        var result;
+        var a = urlParseUrl(url2);
+        if (a) {
+          result = a.href;
+        }
+        return result;
+      }
+      function urlGetPathName(url2) {
+        var result;
+        var a = urlParseUrl(url2);
+        if (a) {
+          result = a[_DYN_PATHNAME];
+        }
+        return result;
+      }
+      function urlGetCompleteUrl(method, absoluteUrl) {
+        if (method) {
+          return method.toUpperCase() + " " + absoluteUrl;
+        }
+        return absoluteUrl;
+      }
+      function urlParseHost(url2, inclPort) {
+        var fullHost = urlParseFullHost(url2, inclPort) || STR_EMPTY;
+        if (fullHost) {
+          var match = fullHost[_DYN_MATCH](/(www\d{0,5}\.)?([^\/:]{1,256})(:\d{1,20})?/i);
+          if (match != null && match[_DYN_LENGTH] > 3 && isString(match[2]) && match[2][_DYN_LENGTH] > 0) {
+            return match[2] + (match[3] || STR_EMPTY);
+          }
+        }
+        return fullHost;
+      }
+      function urlParseFullHost(url2, inclPort) {
+        var result = null;
+        if (url2) {
+          var match = url2[_DYN_MATCH](/(\w{1,150}):\/\/([^\/:]{1,256})(:\d{1,20})?/i);
+          if (match != null && match[_DYN_LENGTH] > 2 && isString(match[2]) && match[2][_DYN_LENGTH] > 0) {
+            result = match[2] || STR_EMPTY;
+            if (inclPort && match[_DYN_LENGTH] > 2) {
+              var protocol = (match[1] || STR_EMPTY)[_DYN_TO_LOWER_CASE]();
+              var port = match[3] || STR_EMPTY;
+              if (protocol === "http" && port === ":80") {
+                port = STR_EMPTY;
+              } else if (protocol === "https" && port === ":443") {
+                port = STR_EMPTY;
+              }
+              result += port;
+            }
+          }
+        }
+        return result;
+      }
+      var _internalEndpoints = [
+        DEFAULT_BREEZE_ENDPOINT + DEFAULT_BREEZE_PATH,
+        "https://breeze.aimon.applicationinsights.io" + DEFAULT_BREEZE_PATH,
+        "https://dc-int.services.visualstudio.com" + DEFAULT_BREEZE_PATH
+      ];
+      var _correlationIdPrefix = "cid-v1:";
+      function isInternalApplicationInsightsEndpoint(endpointUrl) {
+        return arrIndexOf(_internalEndpoints, endpointUrl[_DYN_TO_LOWER_CASE]()) !== -1;
+      }
+      function correlationIdSetPrefix(prefix) {
+        _correlationIdPrefix = prefix;
+      }
+      function correlationIdGetPrefix() {
+        return _correlationIdPrefix;
+      }
+      function correlationIdCanIncludeCorrelationHeader(config2, requestUrl, currentHost) {
+        if (!requestUrl || config2 && config2.disableCorrelationHeaders) {
+          return false;
+        }
+        if (config2 && config2[_DYN_CORRELATION_HEADER_E8]) {
+          for (var i = 0; i < config2.correlationHeaderExcludePatterns[_DYN_LENGTH]; i++) {
+            if (config2[_DYN_CORRELATION_HEADER_E8][i].test(requestUrl)) {
+              return false;
+            }
+          }
+        }
+        var requestHost = urlParseUrl(requestUrl).host[_DYN_TO_LOWER_CASE]();
+        if (requestHost && (strIndexOf(requestHost, ":443") !== -1 || strIndexOf(requestHost, ":80") !== -1)) {
+          requestHost = (urlParseFullHost(requestUrl, true) || "")[_DYN_TO_LOWER_CASE]();
+        }
+        if ((!config2 || !config2.enableCorsCorrelation) && (requestHost && requestHost !== currentHost)) {
+          return false;
+        }
+        var includedDomains = config2 && config2.correlationHeaderDomains;
+        if (includedDomains) {
+          var matchExists_1;
+          arrForEach(includedDomains, function(domain2) {
+            var regex2 = new RegExp(domain2.toLowerCase().replace(/\\/g, "\\\\").replace(/\./g, "\\.").replace(/\*/g, ".*"));
+            matchExists_1 = matchExists_1 || regex2.test(requestHost);
+          });
+          if (!matchExists_1) {
+            return false;
+          }
+        }
+        var excludedDomains = config2 && config2.correlationHeaderExcludedDomains;
+        if (!excludedDomains || excludedDomains[_DYN_LENGTH] === 0) {
+          return true;
+        }
+        for (var i = 0; i < excludedDomains[_DYN_LENGTH]; i++) {
+          var regex = new RegExp(excludedDomains[i].toLowerCase().replace(/\\/g, "\\\\").replace(/\./g, "\\.").replace(/\*/g, ".*"));
+          if (regex.test(requestHost)) {
+            return false;
+          }
+        }
+        return requestHost && requestHost[_DYN_LENGTH] > 0;
+      }
+      function correlationIdGetCorrelationContext(responseHeader) {
+        if (responseHeader) {
+          var correlationId = correlationIdGetCorrelationContextValue(responseHeader, RequestHeaders[1]);
+          if (correlationId && correlationId !== _correlationIdPrefix) {
+            return correlationId;
+          }
+        }
+      }
+      function correlationIdGetCorrelationContextValue(responseHeader, key) {
+        if (responseHeader) {
+          var keyValues = responseHeader[_DYN_SPLIT](",");
+          for (var i = 0; i < keyValues[_DYN_LENGTH]; ++i) {
+            var keyValue = keyValues[i][_DYN_SPLIT]("=");
+            if (keyValue[_DYN_LENGTH] === 2 && keyValue[0] === key) {
+              return keyValue[1];
+            }
+          }
+        }
+      }
+      function AjaxHelperParseDependencyPath(logger, absoluteUrl, method, commandName) {
+        var target, name = commandName, data = commandName;
+        if (absoluteUrl && absoluteUrl[_DYN_LENGTH] > 0) {
+          var parsedUrl = urlParseUrl(absoluteUrl);
+          target = parsedUrl[_DYN_HOST];
+          if (!name) {
+            if (parsedUrl[_DYN_PATHNAME] != null) {
+              var pathName = parsedUrl.pathname[_DYN_LENGTH] === 0 ? "/" : parsedUrl[_DYN_PATHNAME];
+              if (pathName.charAt(0) !== "/") {
+                pathName = "/" + pathName;
+              }
+              data = parsedUrl[_DYN_PATHNAME];
+              name = /* @__PURE__ */ dataSanitizeString(logger, method ? method + " " + pathName : pathName);
+            } else {
+              name = /* @__PURE__ */ dataSanitizeString(logger, absoluteUrl);
+            }
+          }
+        } else {
+          target = commandName;
+          name = commandName;
+        }
+        return {
+          target,
+          name,
+          data
+        };
+      }
+      function dateTimeUtilsNow() {
+        var perf = /* @__PURE__ */ getPerformance();
+        if (perf && perf.now && perf.timing) {
+          var now = perf.now() + perf.timing.navigationStart;
+          if (now > 0) {
+            return now;
+          }
+        }
+        return /* @__PURE__ */ utcNow();
+      }
+      function dateTimeUtilsDuration(start, end) {
+        var result = null;
+        if (start !== 0 && end !== 0 && !/* @__PURE__ */ isNullOrUndefined(start) && !/* @__PURE__ */ isNullOrUndefined(end)) {
+          result = end - start;
+        }
+        return result;
+      }
+      function createDistributedTraceContextFromTrace(telemetryTrace, parentCtx) {
+        var traceCtx = /* @__PURE__ */ createDistributedTraceContext(parentCtx);
+        if (telemetryTrace) {
+          traceCtx.pageName = telemetryTrace[_DYN_NAME] || traceCtx.pageName || STR_EMPTY;
+          traceCtx[_DYN_TRACE_ID] = telemetryTrace.traceID || traceCtx[_DYN_TRACE_ID] || STR_EMPTY;
+          traceCtx[_DYN_SPAN_ID] = telemetryTrace.parentID || traceCtx[_DYN_SPAN_ID] || STR_EMPTY;
+          traceCtx[_DYN_TRACE_FLAGS] = (!/* @__PURE__ */ isNullOrUndefined(telemetryTrace[_DYN_TRACE_FLAGS]) ? telemetryTrace[_DYN_TRACE_FLAGS] : traceCtx[_DYN_TRACE_FLAGS]) || 0;
+        }
+        return traceCtx;
+      }
+      var StorageType = /* @__PURE__ */ createEnumStyle({
+        LocalStorage: 0,
+        SessionStorage: 1
+      });
+      var DistributedTracingModes = /* @__PURE__ */ createEnumStyle({
+        AI: 0,
+        AI_AND_W3C: 1,
+        W3C: 2,
+        AI_AND_W3C_TRACE: 17,
+        W3C_TRACE: 18,
+        _BaseMask: 15,
+        _W3CTraceState: 16
+      });
+      var EventPersistence = /* @__PURE__ */ createEnumStyle({
+        Normal: 1,
+        Critical: 2
+      });
+      var _canUseLocalStorage = void 0;
+      var _canUseSessionStorage = void 0;
+      var _storagePrefix = STR_EMPTY;
+      function _getLocalStorageObject() {
+        if (utlCanUseLocalStorage()) {
+          return _getVerifiedStorageObject(StorageType.LocalStorage);
+        }
+        return null;
+      }
+      function _getVerifiedStorageObject(storageType) {
+        try {
+          if (/* @__PURE__ */ isNullOrUndefined(getGlobal())) {
+            return null;
+          }
+          var uid = (/* @__PURE__ */ new Date())[_DYN_TO_STRING]();
+          var storage = /* @__PURE__ */ getInst(storageType === StorageType.LocalStorage ? "localStorage" : "sessionStorage");
+          var name_1 = _storagePrefix + uid;
+          storage.setItem(name_1, uid);
+          var fail = storage.getItem(name_1) !== uid;
+          storage[_DYN_REMOVE_ITEM](name_1);
+          if (!fail) {
+            return storage;
+          }
+        } catch (exception) {
+        }
+        return null;
+      }
+      function _getSessionStorageObject() {
+        if (utlCanUseSessionStorage()) {
+          return _getVerifiedStorageObject(StorageType.SessionStorage);
+        }
+        return null;
+      }
+      function utlDisableStorage() {
+        _canUseLocalStorage = false;
+        _canUseSessionStorage = false;
+      }
+      function utlSetStoragePrefix(storagePrefix) {
+        _storagePrefix = storagePrefix || STR_EMPTY;
+      }
+      function utlEnableStorage() {
+        _canUseLocalStorage = utlCanUseLocalStorage(true);
+        _canUseSessionStorage = utlCanUseSessionStorage(true);
+      }
+      function utlCanUseLocalStorage(reset) {
+        if (reset || _canUseLocalStorage === void 0) {
+          _canUseLocalStorage = !!_getVerifiedStorageObject(StorageType.LocalStorage);
+        }
+        return _canUseLocalStorage;
+      }
+      function utlGetLocalStorage(logger, name) {
+        var storage = _getLocalStorageObject();
+        if (storage !== null) {
+          try {
+            return storage.getItem(name);
+          } catch (e) {
+            _canUseLocalStorage = false;
+            _throwInternal(logger, 2, 1, "Browser failed read of local storage. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return null;
+      }
+      function utlSetLocalStorage(logger, name, data) {
+        var storage = _getLocalStorageObject();
+        if (storage !== null) {
+          try {
+            storage.setItem(name, data);
+            return true;
+          } catch (e) {
+            _canUseLocalStorage = false;
+            _throwInternal(logger, 2, 3, "Browser failed write to local storage. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return false;
+      }
+      function utlRemoveStorage(logger, name) {
+        var storage = _getLocalStorageObject();
+        if (storage !== null) {
+          try {
+            storage[_DYN_REMOVE_ITEM](name);
+            return true;
+          } catch (e) {
+            _canUseLocalStorage = false;
+            _throwInternal(logger, 2, 5, "Browser failed removal of local storage item. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return false;
+      }
+      function utlCanUseSessionStorage(reset) {
+        if (reset || _canUseSessionStorage === void 0) {
+          _canUseSessionStorage = !!_getVerifiedStorageObject(StorageType.SessionStorage);
+        }
+        return _canUseSessionStorage;
+      }
+      function utlGetSessionStorageKeys() {
+        var keys = [];
+        if (utlCanUseSessionStorage()) {
+          objForEachKey(/* @__PURE__ */ getInst("sessionStorage"), function(key) {
+            keys[_DYN_PUSH](key);
+          });
+        }
+        return keys;
+      }
+      function utlGetSessionStorage(logger, name) {
+        var storage = _getSessionStorageObject();
+        if (storage !== null) {
+          try {
+            return storage.getItem(name);
+          } catch (e) {
+            _canUseSessionStorage = false;
+            _throwInternal(logger, 2, 2, "Browser failed read of session storage. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return null;
+      }
+      function utlSetSessionStorage(logger, name, data) {
+        var storage = _getSessionStorageObject();
+        if (storage !== null) {
+          try {
+            storage.setItem(name, data);
+            return true;
+          } catch (e) {
+            _canUseSessionStorage = false;
+            _throwInternal(logger, 2, 4, "Browser failed write to session storage. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return false;
+      }
+      function utlRemoveSessionStorage(logger, name) {
+        var storage = _getSessionStorageObject();
+        if (storage !== null) {
+          try {
+            storage[_DYN_REMOVE_ITEM](name);
+            return true;
+          } catch (e) {
+            _canUseSessionStorage = false;
+            _throwInternal(logger, 2, 6, "Browser failed removal of session storage item. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return false;
+      }
+      var THROTTLE_STORAGE_PREFIX = "appInsightsThrottle";
+      var ThrottleMgr = (
+        /** @class */
+        /* @__PURE__ */ (function() {
+          function ThrottleMgr2(core, namePrefix) {
+            var _self = this;
+            var _canUseLocalStorage2;
+            var _logger;
+            var _config;
+            var _localStorageObj;
+            var _isTriggered;
+            var _namePrefix;
+            var _queue;
+            var _isReady = false;
+            var _isSpecificDaysGiven = false;
+            _initConfig();
+            _self["_getDbgPlgTargets"] = function() {
+              return [_queue];
+            };
+            _self.getConfig = function() {
+              return _config;
+            };
+            _self.canThrottle = function(msgId) {
+              var localObj = _getLocalStorageObjByKey(msgId);
+              var cfg = _getCfgByKey(msgId);
+              return _canThrottle(cfg, _canUseLocalStorage2, localObj);
+            };
+            _self.isTriggered = function(msgId) {
+              return _isTrigger(msgId);
+            };
+            _self.isReady = function() {
+              return _isReady;
+            };
+            _self[_DYN_FLUSH] = function(msgId) {
+              try {
+                var queue = _getQueueByKey(msgId);
+                if (queue && queue[_DYN_LENGTH] > 0) {
+                  var items = queue.slice(0);
+                  _queue[msgId] = [];
+                  arrForEach(items, function(item) {
+                    _flushMessage(item.msgID, item[_DYN_MESSAGE], item.severity, false);
+                  });
+                  return true;
+                }
+              } catch (err) {
+              }
+              return false;
+            };
+            _self.flushAll = function() {
+              try {
+                if (_queue) {
+                  var result_1 = true;
+                  objForEachKey(_queue, function(key) {
+                    var isFlushed = _self[_DYN_FLUSH](parseInt(key));
+                    result_1 = result_1 && isFlushed;
+                  });
+                  return result_1;
+                }
+              } catch (err) {
+              }
+              return false;
+            };
+            _self.onReadyState = function(isReady, flushAll) {
+              if (flushAll === void 0) {
+                flushAll = true;
+              }
+              _isReady = /* @__PURE__ */ isNullOrUndefined(isReady) ? true : isReady;
+              if (_isReady && flushAll) {
+                return _self.flushAll();
+              }
+              return null;
+            };
+            _self.sendMessage = function(msgID, message, severity) {
+              return _flushMessage(msgID, message, severity, true);
+            };
+            function _flushMessage(msgID, message, severity, saveUnsentMsg) {
+              if (_isReady) {
+                var isSampledIn = _canSampledIn(msgID);
+                if (!isSampledIn) {
+                  return;
+                }
+                var cfg = _getCfgByKey(msgID);
+                var localStorageObj = _getLocalStorageObjByKey(msgID);
+                var canThrottle = _canThrottle(cfg, _canUseLocalStorage2, localStorageObj);
+                var throttled = false;
+                var number4 = 0;
+                var isTriggered = _isTrigger(msgID);
+                try {
+                  if (canThrottle && !isTriggered) {
+                    number4 = mathMin(cfg.limit.maxSendNumber, localStorageObj[_DYN_COUNT] + 1);
+                    localStorageObj[_DYN_COUNT] = 0;
+                    throttled = true;
+                    _isTriggered[msgID] = true;
+                    localStorageObj[_DYN_PRE_TRIGGER_DATE] = /* @__PURE__ */ new Date();
+                  } else {
+                    _isTriggered[msgID] = canThrottle;
+                    localStorageObj[_DYN_COUNT] += 1;
+                  }
+                  var localStorageName = _getLocalStorageName(msgID);
+                  _resetLocalStorage(_logger, localStorageName, localStorageObj);
+                  for (var i = 0; i < number4; i++) {
+                    _sendMessage(msgID, _logger, message, severity);
+                  }
+                } catch (e) {
+                }
+                return {
+                  isThrottled: throttled,
+                  throttleNum: number4
+                };
+              } else {
+                if (!!saveUnsentMsg) {
+                  var queue = _getQueueByKey(msgID);
+                  queue[_DYN_PUSH]({
+                    msgID,
+                    message,
+                    severity
+                  });
+                }
+              }
+              return null;
+            }
+            function _initConfig() {
+              _logger = /* @__PURE__ */ safeGetLogger(core);
+              _isTriggered = {};
+              _localStorageObj = {};
+              _queue = {};
+              _config = {};
+              _setCfgByKey(109);
+              _namePrefix = !/* @__PURE__ */ isNullOrUndefined(namePrefix) ? namePrefix : "";
+              core.addUnloadHook(onConfigChange(core[_DYN_CONFIG], function(details) {
+                var coreConfig = details.cfg;
+                _canUseLocalStorage2 = utlCanUseLocalStorage();
+                var configMgr = coreConfig.throttleMgrCfg || {};
+                objForEachKey(configMgr, function(key, cfg) {
+                  _setCfgByKey(parseInt(key), cfg);
+                });
+              }));
+            }
+            function _getCfgByKey(msgID) {
+              return _config[msgID] || _config[109];
+            }
+            function _setCfgByKey(msgID, config2) {
+              var _a3, _b;
+              try {
+                var cfg = config2 || {};
+                var curCfg = {};
+                curCfg[STR_DISABLED] = !!cfg[STR_DISABLED];
+                var configInterval = cfg.interval || {};
+                _isSpecificDaysGiven = (configInterval === null || configInterval === void 0 ? void 0 : configInterval.daysOfMonth) && (configInterval === null || configInterval === void 0 ? void 0 : configInterval.daysOfMonth[_DYN_LENGTH]) > 0;
+                curCfg.interval = _getIntervalConfig(configInterval);
+                var limit = {
+                  samplingRate: ((_a3 = cfg.limit) === null || _a3 === void 0 ? void 0 : _a3.samplingRate) || 100,
+                  maxSendNumber: ((_b = cfg.limit) === null || _b === void 0 ? void 0 : _b.maxSendNumber) || 1
+                };
+                curCfg.limit = limit;
+                _config[msgID] = curCfg;
+              } catch (e) {
+              }
+            }
+            function _getIntervalConfig(interval) {
+              interval = interval || {};
+              var monthInterval = interval === null || interval === void 0 ? void 0 : interval.monthInterval;
+              var dayInterval = interval === null || interval === void 0 ? void 0 : interval.dayInterval;
+              if (/* @__PURE__ */ isNullOrUndefined(monthInterval) && /* @__PURE__ */ isNullOrUndefined(dayInterval)) {
+                interval.monthInterval = 3;
+                if (!_isSpecificDaysGiven) {
+                  interval.daysOfMonth = [28];
+                  _isSpecificDaysGiven = true;
+                }
+              }
+              interval = {
+                monthInterval: interval === null || interval === void 0 ? void 0 : interval.monthInterval,
+                dayInterval: interval === null || interval === void 0 ? void 0 : interval.dayInterval,
+                daysOfMonth: interval === null || interval === void 0 ? void 0 : interval.daysOfMonth
+              };
+              return interval;
+            }
+            function _canThrottle(config2, canUseLocalStorage, localStorageObj) {
+              if (config2 && !config2[STR_DISABLED] && canUseLocalStorage && !/* @__PURE__ */ isNullOrUndefined(localStorageObj)) {
+                var curDate = _getThrottleDate();
+                var date5 = localStorageObj.date;
+                var interval = config2.interval;
+                var monthCheck = 1;
+                if (interval === null || interval === void 0 ? void 0 : interval.monthInterval) {
+                  var monthExpand = (curDate.getUTCFullYear() - date5.getUTCFullYear()) * 12 + curDate.getUTCMonth() - date5.getUTCMonth();
+                  monthCheck = _checkInterval(interval.monthInterval, 0, monthExpand);
+                }
+                var dayCheck = 1;
+                if (_isSpecificDaysGiven) {
+                  dayCheck = arrIndexOf(interval.daysOfMonth, curDate[_DYN_GET_UTCDATE]());
+                } else if (interval === null || interval === void 0 ? void 0 : interval.dayInterval) {
+                  var daySpan = mathFloor((curDate.getTime() - date5.getTime()) / 864e5);
+                  dayCheck = _checkInterval(interval.dayInterval, 0, daySpan);
+                }
+                return monthCheck >= 0 && dayCheck >= 0;
+              }
+              return false;
+            }
+            function _getLocalStorageName(msgKey, prefix) {
+              var fix = !/* @__PURE__ */ isNullOrUndefined(prefix) ? prefix : "";
+              if (msgKey) {
+                return THROTTLE_STORAGE_PREFIX + fix + "-" + msgKey;
+              }
+              return null;
+            }
+            function _isTriggeredOnCurDate(preTriggerDate) {
+              try {
+                if (preTriggerDate) {
+                  var curDate = /* @__PURE__ */ new Date();
+                  return preTriggerDate.getUTCFullYear() === curDate.getUTCFullYear() && preTriggerDate.getUTCMonth() === curDate.getUTCMonth() && preTriggerDate[_DYN_GET_UTCDATE]() === curDate[_DYN_GET_UTCDATE]();
+                }
+              } catch (e) {
+              }
+              return false;
+            }
+            function _getLocalStorageObj(value, logger, storageName) {
+              try {
+                var storageObj = {
+                  date: _getThrottleDate(),
+                  count: 0
+                };
+                if (value) {
+                  var obj = JSON.parse(value);
+                  var curObj = {
+                    date: _getThrottleDate(obj.date) || storageObj.date,
+                    count: obj[_DYN_COUNT] || storageObj[_DYN_COUNT],
+                    preTriggerDate: obj.preTriggerDate ? _getThrottleDate(obj[_DYN_PRE_TRIGGER_DATE]) : void 0
+                  };
+                  return curObj;
+                } else {
+                  _resetLocalStorage(logger, storageName, storageObj);
+                  return storageObj;
+                }
+              } catch (e) {
+              }
+              return null;
+            }
+            function _getThrottleDate(dateStr) {
+              try {
+                if (dateStr) {
+                  var date5 = new Date(dateStr);
+                  if (!isNaN(date5.getDate())) {
+                    return date5;
+                  }
+                } else {
+                  return /* @__PURE__ */ new Date();
+                }
+              } catch (e) {
+              }
+              return null;
+            }
+            function _resetLocalStorage(logger, storageName, obj) {
+              try {
+                return utlSetLocalStorage(logger, storageName, strTrim(JSON[_DYN_STRINGIFY](obj)));
+              } catch (e) {
+              }
+              return false;
+            }
+            function _checkInterval(interval, start, current) {
+              if (interval <= 0) {
+                return 1;
+              }
+              return current >= start && (current - start) % interval == 0 ? mathFloor((current - start) / interval) + 1 : -1;
+            }
+            function _sendMessage(msgID, logger, message, severity) {
+              _throwInternal(logger, severity || 1, msgID, message);
+            }
+            function _canSampledIn(msgID) {
+              try {
+                var cfg = _getCfgByKey(msgID);
+                return randomValue(1e6) <= cfg.limit.samplingRate;
+              } catch (e) {
+              }
+              return false;
+            }
+            function _getLocalStorageObjByKey(key) {
+              try {
+                var curObj = _localStorageObj[key];
+                if (!curObj) {
+                  var localStorageName = _getLocalStorageName(key, _namePrefix);
+                  curObj = _getLocalStorageObj(utlGetLocalStorage(_logger, localStorageName), _logger, localStorageName);
+                  _localStorageObj[key] = curObj;
+                }
+                return _localStorageObj[key];
+              } catch (e) {
+              }
+              return null;
+            }
+            function _isTrigger(key) {
+              var isTrigger = _isTriggered[key];
+              if (/* @__PURE__ */ isNullOrUndefined(isTrigger)) {
+                isTrigger = false;
+                var localStorageObj = _getLocalStorageObjByKey(key);
+                if (localStorageObj) {
+                  isTrigger = _isTriggeredOnCurDate(localStorageObj[_DYN_PRE_TRIGGER_DATE]);
+                }
+                _isTriggered[key] = isTrigger;
+              }
+              return _isTriggered[key];
+            }
+            function _getQueueByKey(key) {
+              _queue = _queue || {};
+              if (/* @__PURE__ */ isNullOrUndefined(_queue[key])) {
+                _queue[key] = [];
+              }
+              return _queue[key];
+            }
+          }
+          return ThrottleMgr2;
+        })()
+      );
+      var _FIELDS_SEPARATOR = ";";
+      var _FIELD_KEY_VALUE_SEPARATOR = "=";
+      function parseConnectionString(connectionString) {
+        if (!connectionString) {
+          return {};
+        }
+        var kvPairs = connectionString[_DYN_SPLIT](_FIELDS_SEPARATOR);
+        var result = arrReduce(kvPairs, function(fields, kv) {
+          var kvParts = kv[_DYN_SPLIT](_FIELD_KEY_VALUE_SEPARATOR);
+          if (kvParts[_DYN_LENGTH] === 2) {
+            var key = kvParts[0][_DYN_TO_LOWER_CASE]();
+            var value = kvParts[1];
+            fields[key] = value;
+          }
+          return fields;
+        }, {});
+        if (objKeys(result)[_DYN_LENGTH] > 0) {
+          if (result.endpointsuffix) {
+            var locationPrefix = result.location ? result.location + "." : "";
+            result[_DYN_INGESTIONENDPOINT] = result[_DYN_INGESTIONENDPOINT] || "https://" + locationPrefix + "dc." + result.endpointsuffix;
+          }
+          result[_DYN_INGESTIONENDPOINT] = result[_DYN_INGESTIONENDPOINT] || DEFAULT_BREEZE_ENDPOINT;
+          if (strEndsWith(result[_DYN_INGESTIONENDPOINT], "/")) {
+            result[_DYN_INGESTIONENDPOINT] = result[_DYN_INGESTIONENDPOINT].slice(0, -1);
+          }
+        }
+        return result;
+      }
+      var ConnectionStringParser = {
+        parse: parseConnectionString
+      };
+      var Envelope = (
+        /** @class */
+        /* @__PURE__ */ (function() {
+          function Envelope2(logger, data, name) {
+            var _this = this;
+            var _self = this;
+            _self.ver = 1;
+            _self.sampleRate = 100;
+            _self.tags = {};
+            _self[_DYN_NAME] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            _self[_DYN_DATA] = data;
+            _self[_DYN_TIME] = /* @__PURE__ */ toISOString(/* @__PURE__ */ new Date());
+            _self[_DYN_AI_DATA_CONTRACT] = {
+              time: 1,
+              iKey: 1,
+              name: 1,
+              sampleRate: function() {
+                return _this.sampleRate === 100 ? 4 : 1;
+              },
+              tags: 1,
+              data: 1
+            };
+          }
+          return Envelope2;
+        })()
+      );
+      var EventDataType = "EventData";
+      var ExceptionDataType = "ExceptionData";
+      var MetricDataType = "MetricData";
+      var PageViewDataType = "PageviewData";
+      var PageViewPerformanceDataType = "PageviewPerformanceData";
+      var RemoteDependencyDataType = "RemoteDependencyData";
+      var RequestDataType = "RequestData";
+      var TraceDataType = "MessageData";
+      // @__NO_SIDE_EFFECTS__
+      function _AddPrefix(name) {
+        return "Microsoft.ApplicationInsights.{0}." + name;
+      }
+      var EventEnvelopeType = /* @__PURE__ */ _AddPrefix("Event");
+      var ExceptionEnvelopeType = /* @__PURE__ */ _AddPrefix("Exception");
+      var MetricEnvelopeType = /* @__PURE__ */ _AddPrefix("Metric");
+      var PageViewEnvelopeType = /* @__PURE__ */ _AddPrefix("Pageview");
+      var PageViewPerformanceEnvelopeType = /* @__PURE__ */ _AddPrefix("PageviewPerformance");
+      var RemoteDependencyEnvelopeType = /* @__PURE__ */ _AddPrefix("RemoteDependency");
+      var RequestEnvelopeType = /* @__PURE__ */ _AddPrefix("Request");
+      var TraceEnvelopeType = /* @__PURE__ */ _AddPrefix("Message");
+      var Event$1 = (
+        /** @class */
+        (function() {
+          function Event2(logger, name, properties, measurements) {
+            this.aiDataContract = {
+              ver: 1,
+              name: 1,
+              properties: 0,
+              measurements: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            _self[_DYN_NAME] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+          }
+          Event2.envelopeType = EventEnvelopeType;
+          Event2.dataType = EventDataType;
+          return Event2;
+        })()
+      );
+      var STACKFRAME_BASE_SIZE = 58;
+      var IS_FRAME = /^\s{0,50}(from\s|at\s|Line\s{1,5}\d{1,10}\s{1,5}of|\w{1,50}@\w{1,80}|[^\(\s\n]+:[0-9\?]+(?::[0-9\?]+)?)/;
+      var FULL_STACK_FRAME_1 = /^(?:\s{0,50}at)?\s{0,50}([^\@\()\s]+)?\s{0,50}(?:\s|\@|\()\s{0,5}([^\(\s\n\]]+):([0-9\?]+):([0-9\?]+)\)?$/;
+      var FULL_STACK_FRAME_2 = /^(?:\s{0,50}at)?\s{0,50}([^\@\()\s]+)?\s{0,50}(?:\s|\@|\()\s{0,5}([^\(\s\n\]]+):([0-9\?]+)\)?$/;
+      var FULL_STACK_FRAME_3 = /^(?:\s{0,50}at)?\s{0,50}([^\@\()\s]+)?\s{0,50}(?:\s|\@|\()\s{0,5}([^\(\s\n\)\]]+)\)?$/;
+      var EXTRACT_FILENAME = /(?:^|\(|\s{0,10}[\w\)]+\@)?([^\(\n\s\]\)]+)(?:\:([0-9]+)(?:\:([0-9]+))?)?\)?(?:,|$)/;
+      var PARSE_FILENAME_LINE_COL = /([^\(\s\n]+):([0-9]+):([0-9]+)$/;
+      var PARSE_FILENAME_LINE_ONLY = /([^\(\s\n]+):([0-9]+)$/;
+      var NoMethod = "<no_method>";
+      var strError = "error";
+      var strStack = "stack";
+      var strStackDetails = "stackDetails";
+      var strErrorSrc = "errorSrc";
+      var strMessage = "message";
+      var strDescription = "description";
+      var _parseSequence = [
+        { re: FULL_STACK_FRAME_1, len: 5, m: 1, fn: 2, ln: 3, col: 4 },
+        { chk: _ignoreNative, pre: _scrubAnonymous, re: FULL_STACK_FRAME_2, len: 4, m: 1, fn: 2, ln: 3 },
+        { re: FULL_STACK_FRAME_3, len: 3, m: 1, fn: 2, hdl: _handleFilename },
+        { re: EXTRACT_FILENAME, len: 2, fn: 1, hdl: _handleFilename }
+      ];
+      function _scrubAnonymous(frame) {
+        return frame[_DYN_REPLACE](/(\(anonymous\))/, "<anonymous>");
+      }
+      function _ignoreNative(frame) {
+        return strIndexOf(frame, "[native") < 0;
+      }
+      function _stringify(value, convertToString) {
+        var result = value;
+        if (result && !isString(result)) {
+          if (JSON && JSON[_DYN_STRINGIFY]) {
+            result = JSON[_DYN_STRINGIFY](value);
+            if (convertToString && (!result || result === "{}")) {
+              if (isFunction(value[_DYN_TO_STRING])) {
+                result = value[_DYN_TO_STRING]();
+              } else {
+                result = "" + value;
+              }
+            }
+          } else {
+            result = "" + value + " - (Missing JSON.stringify)";
+          }
+        }
+        return result || "";
+      }
+      function _formatMessage(theEvent, errorType) {
+        var evtMessage = theEvent;
+        if (theEvent) {
+          if (evtMessage && !isString(evtMessage)) {
+            evtMessage = theEvent[strMessage] || theEvent[strDescription] || evtMessage;
+          }
+          if (evtMessage && !isString(evtMessage)) {
+            evtMessage = _stringify(evtMessage, true);
+          }
+          if (theEvent["filename"]) {
+            evtMessage = evtMessage + " @" + (theEvent["filename"] || "") + ":" + (theEvent["lineno"] || "?") + ":" + (theEvent["colno"] || "?");
+          }
+        }
+        if (errorType && errorType !== "String" && errorType !== "Object" && errorType !== "Error" && strIndexOf(evtMessage || "", errorType) === -1) {
+          evtMessage = errorType + ": " + evtMessage;
+        }
+        return evtMessage || "";
+      }
+      function _isExceptionDetailsInternal(value) {
+        try {
+          if (/* @__PURE__ */ isObject2(value)) {
+            return "hasFullStack" in value && "typeName" in value;
+          }
+        } catch (e) {
+        }
+        return false;
+      }
+      function _isExceptionInternal(value) {
+        try {
+          if (/* @__PURE__ */ isObject2(value)) {
+            return "ver" in value && "exceptions" in value && "properties" in value;
+          }
+        } catch (e) {
+        }
+        return false;
+      }
+      function _isStackDetails(details) {
+        return details && details.src && isString(details.src) && details.obj && isArray(details.obj);
+      }
+      function _convertStackObj(errorStack) {
+        var src = errorStack || "";
+        if (!isString(src)) {
+          if (isString(src[strStack])) {
+            src = src[strStack];
+          } else {
+            src = "" + src;
+          }
+        }
+        var items = src[_DYN_SPLIT]("\n");
+        return {
+          src,
+          obj: items
+        };
+      }
+      function _getOperaStack(errorMessage) {
+        var stack = [];
+        var lines = errorMessage[_DYN_SPLIT]("\n");
+        for (var lp = 0; lp < lines[_DYN_LENGTH]; lp++) {
+          var entry = lines[lp];
+          if (lines[lp + 1]) {
+            entry += "@" + lines[lp + 1];
+            lp++;
+          }
+          stack[_DYN_PUSH](entry);
+        }
+        return {
+          src: errorMessage,
+          obj: stack
+        };
+      }
+      function _getStackFromErrorObj(errorObj) {
+        var details = null;
+        if (errorObj) {
+          try {
+            if (errorObj[strStack]) {
+              details = _convertStackObj(errorObj[strStack]);
+            } else if (errorObj[strError] && errorObj[strError][strStack]) {
+              details = _convertStackObj(errorObj[strError][strStack]);
+            } else if (errorObj["exception"] && errorObj[_DYN_EXCEPTION][strStack]) {
+              details = _convertStackObj(errorObj[_DYN_EXCEPTION][strStack]);
+            } else if (_isStackDetails(errorObj)) {
+              details = errorObj;
+            } else if (_isStackDetails(errorObj[strStackDetails])) {
+              details = errorObj[strStackDetails];
+            } else if (getWindow() && getWindow()["opera"] && errorObj[strMessage]) {
+              details = _getOperaStack(errorObj[_DYN_MESSAGE]);
+            } else if (errorObj["reason"] && errorObj[_DYN_REASON][strStack]) {
+              details = _convertStackObj(errorObj[_DYN_REASON][strStack]);
+            } else if (isString(errorObj)) {
+              details = _convertStackObj(errorObj);
+            } else {
+              var evtMessage = errorObj[strMessage] || errorObj[strDescription] || "";
+              if (isString(errorObj[strErrorSrc])) {
+                if (evtMessage) {
+                  evtMessage += "\n";
+                }
+                evtMessage += " from " + errorObj[strErrorSrc];
+              }
+              if (evtMessage) {
+                details = _convertStackObj(evtMessage);
+              }
+            }
+          } catch (e) {
+            details = _convertStackObj(e);
+          }
+        }
+        return details || {
+          src: "",
+          obj: null
+        };
+      }
+      function _formatStackTrace(stackDetails) {
+        var stack = "";
+        if (stackDetails) {
+          if (stackDetails.obj) {
+            stack = stackDetails.obj[_DYN_JOIN]("\n");
+          } else {
+            stack = stackDetails.src || "";
+          }
+        }
+        return stack;
+      }
+      function _parseStack(stack) {
+        var parsedStack;
+        var frames = stack.obj;
+        if (frames && frames[_DYN_LENGTH] > 0) {
+          parsedStack = [];
+          var level_1 = 0;
+          var foundStackStart_1 = false;
+          var totalSizeInBytes_1 = 0;
+          arrForEach(frames, function(frame) {
+            if (foundStackStart_1 || _isStackFrame(frame)) {
+              var theFrame = asString(frame);
+              foundStackStart_1 = true;
+              var parsedFrame = _extractStackFrame(theFrame, level_1);
+              if (parsedFrame) {
+                totalSizeInBytes_1 += parsedFrame[_DYN_SIZE_IN_BYTES];
+                parsedStack[_DYN_PUSH](parsedFrame);
+                level_1++;
+              }
+            }
+          });
+          var exceptionParsedStackThreshold = 32 * 1024;
+          if (totalSizeInBytes_1 > exceptionParsedStackThreshold) {
+            var left = 0;
+            var right = parsedStack[_DYN_LENGTH] - 1;
+            var size = 0;
+            var acceptedLeft = left;
+            var acceptedRight = right;
+            while (left < right) {
+              var lSize = parsedStack[left][_DYN_SIZE_IN_BYTES];
+              var rSize = parsedStack[right][_DYN_SIZE_IN_BYTES];
+              size += lSize + rSize;
+              if (size > exceptionParsedStackThreshold) {
+                var howMany = acceptedRight - acceptedLeft + 1;
+                parsedStack[_DYN_SPLICE](acceptedLeft, howMany);
+                break;
+              }
+              acceptedLeft = left;
+              acceptedRight = right;
+              left++;
+              right--;
+            }
+          }
+        }
+        return parsedStack;
+      }
+      function _getErrorType(errorType) {
+        var typeName = "";
+        if (errorType) {
+          typeName = errorType.typeName || errorType[_DYN_NAME] || "";
+          if (!typeName) {
+            try {
+              var funcNameRegex = /function (.{1,200})\(/;
+              var results = funcNameRegex.exec(errorType.constructor[_DYN_TO_STRING]());
+              typeName = results && results[_DYN_LENGTH] > 1 ? results[1] : "";
+            } catch (e) {
+            }
+          }
+        }
+        return typeName;
+      }
+      function _formatErrorCode(errorObj) {
+        if (errorObj) {
+          try {
+            if (!isString(errorObj)) {
+              var errorType = _getErrorType(errorObj);
+              var result = _stringify(errorObj, false);
+              if (!result || result === "{}") {
+                if (errorObj[strError]) {
+                  errorObj = errorObj[strError];
+                  errorType = _getErrorType(errorObj);
+                }
+                result = _stringify(errorObj, true);
+              }
+              if (strIndexOf(result, errorType) !== 0 && errorType !== "String") {
+                return errorType + ":" + result;
+              }
+              return result;
+            }
+          } catch (e) {
+          }
+        }
+        return "" + (errorObj || "");
+      }
+      var Exception = (
+        /** @class */
+        (function() {
+          function Exception2(logger, exception, properties, measurements, severityLevel, id) {
+            this.aiDataContract = {
+              ver: 1,
+              exceptions: 1,
+              severityLevel: 0,
+              properties: 0,
+              measurements: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            if (!_isExceptionInternal(exception)) {
+              if (!properties) {
+                properties = {};
+              }
+              if (id) {
+                properties.id = id;
+              }
+              _self[_DYN_EXCEPTIONS] = [_createExceptionDetails(logger, exception, properties)];
+              _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+              _self[_DYN_MEASUREMENTS] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+              if (severityLevel) {
+                _self[_DYN_SEVERITY_LEVEL] = severityLevel;
+              }
+              if (id) {
+                _self.id = id;
+              }
+            } else {
+              _self[_DYN_EXCEPTIONS] = exception[_DYN_EXCEPTIONS] || [];
+              _self[_DYN_PROPERTIES] = exception[_DYN_PROPERTIES];
+              _self[_DYN_MEASUREMENTS] = exception[_DYN_MEASUREMENTS];
+              if (exception[_DYN_SEVERITY_LEVEL]) {
+                _self[_DYN_SEVERITY_LEVEL] = exception[_DYN_SEVERITY_LEVEL];
+              }
+              if (exception.id) {
+                _self.id = exception.id;
+                exception[_DYN_PROPERTIES].id = exception.id;
+              }
+              if (exception[_DYN_PROBLEM_GROUP]) {
+                _self[_DYN_PROBLEM_GROUP] = exception[_DYN_PROBLEM_GROUP];
+              }
+              if (!/* @__PURE__ */ isNullOrUndefined(exception.isManual)) {
+                _self.isManual = exception.isManual;
+              }
+            }
+          }
+          Exception2.CreateAutoException = function(message, url2, lineNumber, columnNumber, error2, evt, stack, errorSrc) {
+            var errorType = _getErrorType(error2 || evt || message);
+            return {
+              message: _formatMessage(message, errorType),
+              url: url2,
+              lineNumber,
+              columnNumber,
+              error: _formatErrorCode(error2 || evt || message),
+              evt: _formatErrorCode(evt || message),
+              typeName: errorType,
+              stackDetails: _getStackFromErrorObj(stack || error2 || evt),
+              errorSrc
+            };
+          };
+          Exception2.CreateFromInterface = function(logger, exception, properties, measurements) {
+            var exceptions = exception[_DYN_EXCEPTIONS] && arrMap(exception[_DYN_EXCEPTIONS], function(ex) {
+              return _createExDetailsFromInterface(logger, ex);
+            });
+            var exceptionData = new Exception2(logger, __assignFn(__assignFn({}, exception), { exceptions }), properties, measurements);
+            return exceptionData;
+          };
+          Exception2.prototype.toInterface = function() {
+            var _a3 = this, exceptions = _a3.exceptions, properties = _a3.properties, measurements = _a3.measurements, severityLevel = _a3.severityLevel, problemGroup = _a3.problemGroup, id = _a3.id, isManual = _a3.isManual;
+            var exceptionDetailsInterface = exceptions instanceof Array && arrMap(exceptions, function(exception) {
+              return exception.toInterface();
+            }) || void 0;
+            return {
+              ver: "4.0",
+              exceptions: exceptionDetailsInterface,
+              severityLevel,
+              properties,
+              measurements,
+              problemGroup,
+              id,
+              isManual
+            };
+          };
+          Exception2.CreateSimpleException = function(message, typeName, assembly, fileName, details, line) {
+            var _a3;
+            return {
+              exceptions: [
+                (_a3 = {}, _a3[_DYN_HAS_FULL_STACK] = true, _a3.message = message, _a3.stack = details, _a3.typeName = typeName, _a3)
+              ]
+            };
+          };
+          Exception2.envelopeType = ExceptionEnvelopeType;
+          Exception2.dataType = ExceptionDataType;
+          Exception2.formatError = _formatErrorCode;
+          return Exception2;
+        })()
+      );
+      var exDetailsAiDataContract = /* @__PURE__ */ objFreeze({
+        id: 0,
+        outerId: 0,
+        typeName: 1,
+        message: 1,
+        hasFullStack: 0,
+        stack: 0,
+        parsedStack: 2
+      });
+      function _toInterface() {
+        var _self = this;
+        var parsedStack = isArray(_self[_DYN_PARSED_STACK]) && arrMap(_self[_DYN_PARSED_STACK], function(frame) {
+          return _parsedFrameToInterface(frame);
+        });
+        var exceptionDetailsInterface = {
+          id: _self.id,
+          outerId: _self.outerId,
+          typeName: _self[_DYN_TYPE_NAME],
+          message: _self[_DYN_MESSAGE],
+          hasFullStack: _self[_DYN_HAS_FULL_STACK],
+          stack: _self[strStack],
+          parsedStack: parsedStack || void 0
+        };
+        return exceptionDetailsInterface;
+      }
+      function _createExceptionDetails(logger, exception, properties) {
+        var _a3;
+        var id;
+        var outerId;
+        var typeName;
+        var message;
+        var hasFullStack;
+        var theStack;
+        var parsedStack;
+        if (!_isExceptionDetailsInternal(exception)) {
+          var error2 = exception;
+          var evt = error2 && error2.evt;
+          if (!isError(error2)) {
+            error2 = error2[strError] || evt || error2;
+          }
+          typeName = /* @__PURE__ */ dataSanitizeString(logger, _getErrorType(error2)) || strNotSpecified;
+          message = /* @__PURE__ */ dataSanitizeMessage(logger, _formatMessage(exception || error2, typeName)) || strNotSpecified;
+          var stack = exception[strStackDetails] || _getStackFromErrorObj(exception);
+          parsedStack = _parseStack(stack);
+          if (isArray(parsedStack)) {
+            arrMap(parsedStack, function(frame) {
+              frame[_DYN_ASSEMBLY] = /* @__PURE__ */ dataSanitizeString(logger, frame[_DYN_ASSEMBLY]);
+              frame[_DYN_FILE_NAME] = /* @__PURE__ */ dataSanitizeString(logger, frame[_DYN_FILE_NAME]);
+            });
+          }
+          theStack = /* @__PURE__ */ dataSanitizeException(logger, _formatStackTrace(stack));
+          hasFullStack = isArray(parsedStack) && parsedStack[_DYN_LENGTH] > 0;
+          if (properties) {
+            properties[_DYN_TYPE_NAME] = properties[_DYN_TYPE_NAME] || typeName;
+          }
+        } else {
+          typeName = exception[_DYN_TYPE_NAME];
+          message = exception[_DYN_MESSAGE];
+          theStack = exception[strStack];
+          parsedStack = exception[_DYN_PARSED_STACK] || [];
+          hasFullStack = exception[_DYN_HAS_FULL_STACK];
+        }
+        return _a3 = {}, _a3[_DYN_AI_DATA_CONTRACT] = exDetailsAiDataContract, _a3.id = id, _a3.outerId = outerId, _a3.typeName = typeName, _a3.message = message, _a3[_DYN_HAS_FULL_STACK] = hasFullStack, _a3.stack = theStack, _a3.parsedStack = parsedStack, _a3.toInterface = _toInterface, _a3;
+      }
+      function _createExDetailsFromInterface(logger, exception) {
+        var parsedStack = isArray(exception[_DYN_PARSED_STACK]) && arrMap(exception[_DYN_PARSED_STACK], function(frame) {
+          return _stackFrameFromInterface(frame);
+        }) || exception[_DYN_PARSED_STACK];
+        var exceptionDetails = _createExceptionDetails(logger, __assignFn(__assignFn({}, exception), { parsedStack }));
+        return exceptionDetails;
+      }
+      function _parseFilename(theFrame, fileName) {
+        var lineCol = fileName[_DYN_MATCH](PARSE_FILENAME_LINE_COL);
+        if (lineCol && lineCol[_DYN_LENGTH] >= 4) {
+          theFrame[_DYN_FILE_NAME] = lineCol[1];
+          theFrame[_DYN_LINE] = parseInt(lineCol[2]);
+        } else {
+          var lineNo = fileName[_DYN_MATCH](PARSE_FILENAME_LINE_ONLY);
+          if (lineNo && lineNo[_DYN_LENGTH] >= 3) {
+            theFrame[_DYN_FILE_NAME] = lineNo[1];
+            theFrame[_DYN_LINE] = parseInt(lineNo[2]);
+          } else {
+            theFrame[_DYN_FILE_NAME] = fileName;
+          }
+        }
+      }
+      function _handleFilename(theFrame, sequence, matches) {
+        var filename = theFrame[_DYN_FILE_NAME];
+        if (sequence.fn && matches && matches[_DYN_LENGTH] > sequence.fn) {
+          if (sequence.ln && matches[_DYN_LENGTH] > sequence.ln) {
+            filename = strTrim(matches[sequence.fn] || "");
+            theFrame[_DYN_LINE] = parseInt(strTrim(matches[sequence.ln] || "")) || 0;
+          } else {
+            filename = strTrim(matches[sequence.fn] || "");
+          }
+        }
+        if (filename) {
+          _parseFilename(theFrame, filename);
+        }
+      }
+      function _isStackFrame(frame) {
+        var result = false;
+        if (frame && isString(frame)) {
+          var trimmedFrame = strTrim(frame);
+          if (trimmedFrame) {
+            result = IS_FRAME.test(trimmedFrame);
+          }
+        }
+        return result;
+      }
+      var stackFrameAiDataContract = /* @__PURE__ */ objFreeze({
+        level: 1,
+        method: 1,
+        assembly: 0,
+        fileName: 0,
+        line: 0
+      });
+      function _extractStackFrame(frame, level) {
+        var _a3;
+        var theFrame;
+        if (frame && isString(frame) && strTrim(frame)) {
+          theFrame = (_a3 = {}, _a3[_DYN_AI_DATA_CONTRACT] = stackFrameAiDataContract, _a3.level = level, _a3.assembly = strTrim(frame), _a3.method = NoMethod, _a3.fileName = "", _a3.line = 0, _a3.sizeInBytes = 0, _a3);
+          var idx = 0;
+          while (idx < _parseSequence[_DYN_LENGTH]) {
+            var sequence = _parseSequence[idx];
+            if (sequence.chk && !sequence.chk(frame)) {
+              break;
+            }
+            if (sequence.pre) {
+              frame = sequence.pre(frame);
+            }
+            var matches = frame[_DYN_MATCH](sequence.re);
+            if (matches && matches[_DYN_LENGTH] >= sequence.len) {
+              if (sequence.m) {
+                theFrame.method = strTrim(matches[sequence.m] || NoMethod);
+              }
+              if (sequence.hdl) {
+                sequence.hdl(theFrame, sequence, matches);
+              } else if (sequence.fn) {
+                if (sequence.ln) {
+                  theFrame[_DYN_FILE_NAME] = strTrim(matches[sequence.fn] || "");
+                  theFrame[_DYN_LINE] = parseInt(strTrim(matches[sequence.ln] || "")) || 0;
+                } else {
+                  _parseFilename(theFrame, matches[sequence.fn] || "");
+                }
+              }
+              break;
+            }
+            idx++;
+          }
+        }
+        return _populateFrameSizeInBytes(theFrame);
+      }
+      function _stackFrameFromInterface(frame) {
+        var _a3;
+        var parsedFrame = (_a3 = {}, _a3[_DYN_AI_DATA_CONTRACT] = stackFrameAiDataContract, _a3.level = frame.level, _a3.method = frame.method, _a3.assembly = frame[_DYN_ASSEMBLY], _a3.fileName = frame[_DYN_FILE_NAME], _a3.line = frame[_DYN_LINE], _a3.sizeInBytes = 0, _a3);
+        return _populateFrameSizeInBytes(parsedFrame);
+      }
+      function _populateFrameSizeInBytes(frame) {
+        var sizeInBytes = STACKFRAME_BASE_SIZE;
+        if (frame) {
+          sizeInBytes += frame.method[_DYN_LENGTH];
+          sizeInBytes += frame.assembly[_DYN_LENGTH];
+          sizeInBytes += frame.fileName[_DYN_LENGTH];
+          sizeInBytes += frame.level.toString()[_DYN_LENGTH];
+          sizeInBytes += frame.line.toString()[_DYN_LENGTH];
+          frame[_DYN_SIZE_IN_BYTES] = sizeInBytes;
+        }
+        return frame;
+      }
+      function _parsedFrameToInterface(frame) {
+        return {
+          level: frame.level,
+          method: frame.method,
+          assembly: frame[_DYN_ASSEMBLY],
+          fileName: frame[_DYN_FILE_NAME],
+          line: frame[_DYN_LINE]
+        };
+      }
+      var DataPoint = (
+        /** @class */
+        /* @__PURE__ */ (function() {
+          function DataPoint2() {
+            this.aiDataContract = {
+              name: 1,
+              kind: 0,
+              value: 1,
+              count: 0,
+              min: 0,
+              max: 0,
+              stdDev: 0
+            };
+            this.kind = 0;
+          }
+          return DataPoint2;
+        })()
+      );
+      var Metric = (
+        /** @class */
+        (function() {
+          function Metric2(logger, name, value, count, min, max, stdDev, properties, measurements) {
+            this.aiDataContract = {
+              ver: 1,
+              metrics: 1,
+              properties: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            var dataPoint = new DataPoint();
+            dataPoint[_DYN_COUNT] = count > 0 ? count : void 0;
+            dataPoint.max = isNaN(max) || max === null ? void 0 : max;
+            dataPoint.min = isNaN(min) || min === null ? void 0 : min;
+            dataPoint[_DYN_NAME] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            dataPoint[_DYN_VALUE] = value;
+            dataPoint.stdDev = isNaN(stdDev) || stdDev === null ? void 0 : stdDev;
+            _self.metrics = [dataPoint];
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+          }
+          Metric2.envelopeType = MetricEnvelopeType;
+          Metric2.dataType = MetricDataType;
+          return Metric2;
+        })()
+      );
+      var PageView = (
+        /** @class */
+        (function() {
+          function PageView2(logger, name, url2, durationMs, properties, measurements, id) {
+            this.aiDataContract = {
+              ver: 1,
+              name: 0,
+              url: 0,
+              duration: 0,
+              properties: 0,
+              measurements: 0,
+              id: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            _self.id = /* @__PURE__ */ dataSanitizeId(logger, id);
+            _self.url = /* @__PURE__ */ dataSanitizeUrl(logger, url2);
+            _self[_DYN_NAME] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            if (!isNaN(durationMs)) {
+              _self[_DYN_DURATION] = /* @__PURE__ */ msToTimeSpan(durationMs);
+            }
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+          }
+          PageView2.envelopeType = PageViewEnvelopeType;
+          PageView2.dataType = PageViewDataType;
+          return PageView2;
+        })()
+      );
+      var RemoteDependencyData = (
+        /** @class */
+        (function() {
+          function RemoteDependencyData2(logger, id, absoluteUrl, commandName, value, success2, resultCode, method, requestAPI, correlationContext, properties, measurements) {
+            if (requestAPI === void 0) {
+              requestAPI = "Ajax";
+            }
+            this.aiDataContract = {
+              id: 1,
+              ver: 1,
+              name: 0,
+              resultCode: 0,
+              duration: 0,
+              success: 0,
+              data: 0,
+              target: 0,
+              type: 0,
+              properties: 0,
+              measurements: 0,
+              kind: 0,
+              value: 0,
+              count: 0,
+              min: 0,
+              max: 0,
+              stdDev: 0,
+              dependencyKind: 0,
+              dependencySource: 0,
+              commandName: 0,
+              dependencyTypeName: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            _self.id = id;
+            _self[_DYN_DURATION] = /* @__PURE__ */ msToTimeSpan(value);
+            _self.success = success2;
+            _self.resultCode = "" + resultCode;
+            _self[_DYN_TYPE] = /* @__PURE__ */ dataSanitizeString(logger, requestAPI);
+            var dependencyFields = AjaxHelperParseDependencyPath(logger, absoluteUrl, method, commandName);
+            _self[_DYN_DATA] = /* @__PURE__ */ dataSanitizeUrl(logger, commandName) || dependencyFields[_DYN_DATA];
+            _self.target = /* @__PURE__ */ dataSanitizeString(logger, dependencyFields.target);
+            if (correlationContext) {
+              _self.target = "".concat(_self.target, " | ").concat(correlationContext);
+            }
+            _self[_DYN_NAME] = /* @__PURE__ */ dataSanitizeString(logger, dependencyFields[_DYN_NAME]);
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+          }
+          RemoteDependencyData2.envelopeType = RemoteDependencyEnvelopeType;
+          RemoteDependencyData2.dataType = RemoteDependencyDataType;
+          return RemoteDependencyData2;
+        })()
+      );
+      var Trace = (
+        /** @class */
+        (function() {
+          function Trace2(logger, message, severityLevel, properties, measurements) {
+            this.aiDataContract = {
+              ver: 1,
+              message: 1,
+              severityLevel: 0,
+              properties: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            message = message || strNotSpecified;
+            _self[_DYN_MESSAGE] = /* @__PURE__ */ dataSanitizeMessage(logger, message);
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+            if (severityLevel) {
+              _self[_DYN_SEVERITY_LEVEL] = severityLevel;
+            }
+          }
+          Trace2.envelopeType = TraceEnvelopeType;
+          Trace2.dataType = TraceDataType;
+          return Trace2;
+        })()
+      );
+      var PageViewPerformance = (
+        /** @class */
+        (function() {
+          function PageViewPerformance2(logger, name, url2, unused, properties, measurements, cs4BaseData) {
+            this.aiDataContract = {
+              ver: 1,
+              name: 0,
+              url: 0,
+              duration: 0,
+              perfTotal: 0,
+              networkConnect: 0,
+              sentRequest: 0,
+              receivedResponse: 0,
+              domProcessing: 0,
+              properties: 0,
+              measurements: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            _self.url = /* @__PURE__ */ dataSanitizeUrl(logger, url2);
+            _self[_DYN_NAME] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+            if (cs4BaseData) {
+              _self.domProcessing = cs4BaseData.domProcessing;
+              _self[_DYN_DURATION] = cs4BaseData[_DYN_DURATION];
+              _self.networkConnect = cs4BaseData.networkConnect;
+              _self.perfTotal = cs4BaseData.perfTotal;
+              _self.receivedResponse = cs4BaseData.receivedResponse;
+              _self.sentRequest = cs4BaseData.sentRequest;
+            }
+          }
+          PageViewPerformance2.envelopeType = PageViewPerformanceEnvelopeType;
+          PageViewPerformance2.dataType = PageViewPerformanceDataType;
+          return PageViewPerformance2;
+        })()
+      );
+      var Data = (
+        /** @class */
+        /* @__PURE__ */ (function() {
+          function Data2(baseType, data) {
+            this.aiDataContract = {
+              baseType: 1,
+              baseData: 1
+            };
+            this.baseType = baseType;
+            this[_DYN_BASE_DATA] = data;
+          }
+          return Data2;
+        })()
+      );
+      var SeverityLevel = /* @__PURE__ */ createEnumStyle({
+        Verbose: 0,
+        Information: 1,
+        Warning: 2,
+        Error: 3,
+        Critical: 4
+      });
+      var ConfigurationManager = (
+        /** @class */
+        (function() {
+          function ConfigurationManager2() {
+          }
+          ConfigurationManager2.getConfig = function(config2, field, identifier2, defaultValue) {
+            if (defaultValue === void 0) {
+              defaultValue = false;
+            }
+            var configValue;
+            if (identifier2 && config2[STR_EXTENSION_CONFIG] && config2[STR_EXTENSION_CONFIG][identifier2] && !/* @__PURE__ */ isNullOrUndefined(config2[STR_EXTENSION_CONFIG][identifier2][field])) {
+              configValue = config2[STR_EXTENSION_CONFIG][identifier2][field];
+            } else {
+              configValue = config2[field];
+            }
+            return !/* @__PURE__ */ isNullOrUndefined(configValue) ? configValue : defaultValue;
+          };
+          return ConfigurationManager2;
+        })()
+      );
+      function _aiNameFunc(baseName) {
+        var aiName = "ai." + baseName + ".";
+        return function(name) {
+          return aiName + name;
+        };
+      }
+      var _aiApplication = _aiNameFunc("application");
+      var _aiDevice = _aiNameFunc("device");
+      var _aiLocation = _aiNameFunc("location");
+      var _aiOperation = _aiNameFunc("operation");
+      var _aiSession = _aiNameFunc("session");
+      var _aiUser = _aiNameFunc("user");
+      var _aiCloud = _aiNameFunc("cloud");
+      var _aiInternal = _aiNameFunc("internal");
+      var ContextTagKeys = (
+        /** @class */
+        (function(_super) {
+          __extendsFn(ContextTagKeys2, _super);
+          function ContextTagKeys2() {
+            return _super.call(this) || this;
+          }
+          return ContextTagKeys2;
+        })(/* @__PURE__ */ createClassFromInterface({
+          applicationVersion: _aiApplication("ver"),
+          applicationBuild: _aiApplication("build"),
+          applicationTypeId: _aiApplication("typeId"),
+          applicationId: _aiApplication("applicationId"),
+          applicationLayer: _aiApplication("layer"),
+          deviceId: _aiDevice("id"),
+          deviceIp: _aiDevice("ip"),
+          deviceLanguage: _aiDevice("language"),
+          deviceLocale: _aiDevice("locale"),
+          deviceModel: _aiDevice("model"),
+          deviceFriendlyName: _aiDevice("friendlyName"),
+          deviceNetwork: _aiDevice("network"),
+          deviceNetworkName: _aiDevice("networkName"),
+          deviceOEMName: _aiDevice("oemName"),
+          deviceOS: _aiDevice("os"),
+          deviceOSVersion: _aiDevice("osVersion"),
+          deviceRoleInstance: _aiDevice("roleInstance"),
+          deviceRoleName: _aiDevice("roleName"),
+          deviceScreenResolution: _aiDevice("screenResolution"),
+          deviceType: _aiDevice("type"),
+          deviceMachineName: _aiDevice("machineName"),
+          deviceVMName: _aiDevice("vmName"),
+          deviceBrowser: _aiDevice("browser"),
+          deviceBrowserVersion: _aiDevice("browserVersion"),
+          locationIp: _aiLocation("ip"),
+          locationCountry: _aiLocation("country"),
+          locationProvince: _aiLocation("province"),
+          locationCity: _aiLocation("city"),
+          operationId: _aiOperation("id"),
+          operationName: _aiOperation("name"),
+          operationParentId: _aiOperation("parentId"),
+          operationRootId: _aiOperation("rootId"),
+          operationSyntheticSource: _aiOperation("syntheticSource"),
+          operationCorrelationVector: _aiOperation("correlationVector"),
+          sessionId: _aiSession("id"),
+          sessionIsFirst: _aiSession("isFirst"),
+          sessionIsNew: _aiSession("isNew"),
+          userAccountAcquisitionDate: _aiUser("accountAcquisitionDate"),
+          userAccountId: _aiUser("accountId"),
+          userAgent: _aiUser("userAgent"),
+          userId: _aiUser("id"),
+          userStoreRegion: _aiUser("storeRegion"),
+          userAuthUserId: _aiUser("authUserId"),
+          userAnonymousUserAcquisitionDate: _aiUser("anonUserAcquisitionDate"),
+          userAuthenticatedUserAcquisitionDate: _aiUser("authUserAcquisitionDate"),
+          cloudName: _aiCloud("name"),
+          cloudRole: _aiCloud("role"),
+          cloudRoleVer: _aiCloud("roleVer"),
+          cloudRoleInstance: _aiCloud("roleInstance"),
+          cloudEnvironment: _aiCloud("environment"),
+          cloudLocation: _aiCloud("location"),
+          cloudDeploymentUnit: _aiCloud("deploymentUnit"),
+          internalNodeName: _aiInternal("nodeName"),
+          internalSdkVersion: _aiInternal("sdkVersion"),
+          internalAgentVersion: _aiInternal("agentVersion"),
+          internalSnippet: _aiInternal("snippet"),
+          internalSdkSrc: _aiInternal("sdkSrc")
+        }))
+      );
+      var Extensions = {
+        UserExt: "user",
+        DeviceExt: "device",
+        TraceExt: "trace",
+        WebExt: "web",
+        AppExt: "app",
+        OSExt: "os",
+        SessionExt: "ses",
+        SDKExt: "sdk"
+      };
+      var CtxTagKeys = /* @__PURE__ */ new ContextTagKeys();
+      function createTelemetryItem(item, baseType, envelopeName, logger, customProperties, systemProperties) {
+        envelopeName = /* @__PURE__ */ dataSanitizeString(logger, envelopeName) || strNotSpecified;
+        if (/* @__PURE__ */ isNullOrUndefined(item) || /* @__PURE__ */ isNullOrUndefined(baseType) || /* @__PURE__ */ isNullOrUndefined(envelopeName)) {
+          throwError("Input doesn't contain all required fields");
+        }
+        var iKey = "";
+        if (item[strIkey]) {
+          iKey = item[strIkey];
+          delete item[strIkey];
+        }
+        var telemetryItem = {
+          name: envelopeName,
+          time: /* @__PURE__ */ toISOString(/* @__PURE__ */ new Date()),
+          iKey,
+          ext: systemProperties ? systemProperties : {},
+          tags: [],
+          data: {},
+          baseType,
+          baseData: item
+        };
+        if (!/* @__PURE__ */ isNullOrUndefined(customProperties)) {
+          objForEachKey(customProperties, function(prop, value) {
+            telemetryItem[_DYN_DATA][prop] = value;
+          });
+        }
+        return telemetryItem;
+      }
+      var TelemetryItemCreator = (
+        /** @class */
+        (function() {
+          function TelemetryItemCreator2() {
+          }
+          TelemetryItemCreator2.create = createTelemetryItem;
+          return TelemetryItemCreator2;
+        })()
+      );
+      function createDomEvent(eventName) {
+        var event = null;
+        if (isFunction(Event)) {
+          event = new Event(eventName);
+        } else {
+          var doc = getDocument();
+          if (doc && doc[_DYN_CREATE_EVENT]) {
+            event = doc[_DYN_CREATE_EVENT]("Event");
+            event.initEvent(eventName, true, true);
+          }
+        }
+        return event;
+      }
+      function _disableEvents(target, evtNamespace) {
+        eventOff(target, null, null, evtNamespace);
+      }
+      function createOfflineListener(parentEvtNamespace) {
+        var _document2 = getDocument();
+        var _navigator = getNavigator();
+        var _isListening = false;
+        var listenerList = [];
+        var rState = 1;
+        if (_navigator && !/* @__PURE__ */ isNullOrUndefined(_navigator.onLine) && !_navigator.onLine) {
+          rState = 2;
+        }
+        var uState = 0;
+        var _currentState = calCurrentState();
+        var _evtNamespace = /* @__PURE__ */ mergeEvtNamespace(createUniqueNamespace("OfflineListener"), parentEvtNamespace);
+        try {
+          if (_enableEvents(getWindow())) {
+            _isListening = true;
+          }
+          if (_document2) {
+            var target = _document2.body || _document2;
+            if (target.ononline) {
+              if (_enableEvents(target)) {
+                _isListening = true;
+              }
+            }
+          }
+        } catch (e) {
+          _isListening = false;
+        }
+        function _enableEvents(target2) {
+          var enabled = false;
+          if (target2) {
+            enabled = eventOn(target2, "online", _setOnline, _evtNamespace);
+            if (enabled) {
+              eventOn(target2, "offline", _setOffline, _evtNamespace);
+            }
+          }
+          return enabled;
+        }
+        function _isOnline() {
+          return _currentState;
+        }
+        function calCurrentState() {
+          if (uState === 2 || rState === 2) {
+            return false;
+          }
+          return true;
+        }
+        function listnerNoticeCheck() {
+          var newState = calCurrentState();
+          if (_currentState !== newState) {
+            _currentState = newState;
+            arrForEach(listenerList, function(callback) {
+              var offlineState = {
+                isOnline: _currentState,
+                rState,
+                uState
+              };
+              try {
+                callback(offlineState);
+              } catch (e) {
+              }
+            });
+          }
+        }
+        function setOnlineState(newState) {
+          uState = newState;
+          listnerNoticeCheck();
+        }
+        function _setOnline() {
+          rState = 1;
+          listnerNoticeCheck();
+        }
+        function _setOffline() {
+          rState = 2;
+          listnerNoticeCheck();
+        }
+        function _unload() {
+          var win = getWindow();
+          if (win && _isListening) {
+            _disableEvents(win, _evtNamespace);
+            if (_document2) {
+              var target2 = _document2.body || _document2;
+              if (!/* @__PURE__ */ isUndefined(target2.ononline)) {
+                _disableEvents(target2, _evtNamespace);
+              }
+            }
+            _isListening = false;
+          }
+        }
+        function addListener(callback) {
+          listenerList[_DYN_PUSH](callback);
+          return {
+            rm: function() {
+              var index = arrIndexOf(listenerList, callback);
+              if (index > -1) {
+                return listenerList[_DYN_SPLICE](index, 1);
+              } else {
+                return;
+              }
+            }
+          };
+        }
+        return {
+          isOnline: _isOnline,
+          isListening: function() {
+            return _isListening;
+          },
+          unload: _unload,
+          addListener,
+          setOnlineState
+        };
+      }
+      var PropertiesPluginIdentifier = "AppInsightsPropertiesPlugin";
+      var BreezeChannelIdentifier = "AppInsightsChannelPlugin";
+      var AnalyticsPluginIdentifier = "ApplicationInsightsAnalytics";
+      exports3.AnalyticsPluginIdentifier = AnalyticsPluginIdentifier;
+      exports3.BreezeChannelIdentifier = BreezeChannelIdentifier;
+      exports3.ConfigurationManager = ConfigurationManager;
+      exports3.ConnectionStringParser = ConnectionStringParser;
+      exports3.ContextTagKeys = ContextTagKeys;
+      exports3.CtxTagKeys = CtxTagKeys;
+      exports3.DEFAULT_BREEZE_ENDPOINT = DEFAULT_BREEZE_ENDPOINT;
+      exports3.DEFAULT_BREEZE_PATH = DEFAULT_BREEZE_PATH;
+      exports3.Data = Data;
+      exports3.DisabledPropertyName = DisabledPropertyName;
+      exports3.DistributedTracingModes = DistributedTracingModes;
+      exports3.Envelope = Envelope;
+      exports3.Event = Event$1;
+      exports3.EventDataType = EventDataType;
+      exports3.EventEnvelopeType = EventEnvelopeType;
+      exports3.EventPersistence = EventPersistence;
+      exports3.Exception = Exception;
+      exports3.ExceptionDataType = ExceptionDataType;
+      exports3.ExceptionEnvelopeType = ExceptionEnvelopeType;
+      exports3.Extensions = Extensions;
+      exports3.HttpMethod = HttpMethod;
+      exports3.Metric = Metric;
+      exports3.MetricDataType = MetricDataType;
+      exports3.MetricEnvelopeType = MetricEnvelopeType;
+      exports3.PageView = PageView;
+      exports3.PageViewDataType = PageViewDataType;
+      exports3.PageViewEnvelopeType = PageViewEnvelopeType;
+      exports3.PageViewPerformance = PageViewPerformance;
+      exports3.PageViewPerformanceDataType = PageViewPerformanceDataType;
+      exports3.PageViewPerformanceEnvelopeType = PageViewPerformanceEnvelopeType;
+      exports3.ProcessLegacy = ProcessLegacy;
+      exports3.PropertiesPluginIdentifier = PropertiesPluginIdentifier;
+      exports3.RemoteDependencyData = RemoteDependencyData;
+      exports3.RemoteDependencyDataType = RemoteDependencyDataType;
+      exports3.RemoteDependencyEnvelopeType = RemoteDependencyEnvelopeType;
+      exports3.RequestDataType = RequestDataType;
+      exports3.RequestEnvelopeType = RequestEnvelopeType;
+      exports3.RequestHeaders = RequestHeaders;
+      exports3.SampleRate = SampleRate;
+      exports3.SeverityLevel = SeverityLevel;
+      exports3.TelemetryItemCreator = TelemetryItemCreator;
+      exports3.ThrottleMgr = ThrottleMgr;
+      exports3.Trace = Trace;
+      exports3.TraceDataType = TraceDataType;
+      exports3.TraceEnvelopeType = TraceEnvelopeType;
+      exports3.correlationIdCanIncludeCorrelationHeader = correlationIdCanIncludeCorrelationHeader;
+      exports3.correlationIdGetCorrelationContext = correlationIdGetCorrelationContext;
+      exports3.correlationIdGetCorrelationContextValue = correlationIdGetCorrelationContextValue;
+      exports3.correlationIdGetPrefix = correlationIdGetPrefix;
+      exports3.correlationIdSetPrefix = correlationIdSetPrefix;
+      exports3.createDistributedTraceContextFromTrace = createDistributedTraceContextFromTrace;
+      exports3.createDomEvent = createDomEvent;
+      exports3.createOfflineListener = createOfflineListener;
+      exports3.createTelemetryItem = createTelemetryItem;
+      exports3.createTraceParent = createTraceParent;
+      exports3.dataSanitizeException = dataSanitizeException;
+      exports3.dataSanitizeId = dataSanitizeId;
+      exports3.dataSanitizeInput = dataSanitizeInput;
+      exports3.dataSanitizeKey = dataSanitizeKey;
+      exports3.dataSanitizeKeyAndAddUniqueness = dataSanitizeKeyAndAddUniqueness;
+      exports3.dataSanitizeMeasurements = dataSanitizeMeasurements;
+      exports3.dataSanitizeMessage = dataSanitizeMessage;
+      exports3.dataSanitizeProperties = dataSanitizeProperties;
+      exports3.dataSanitizeString = dataSanitizeString;
+      exports3.dataSanitizeUrl = dataSanitizeUrl;
+      exports3.dateTimeUtilsDuration = dateTimeUtilsDuration;
+      exports3.dateTimeUtilsNow = dateTimeUtilsNow;
+      exports3.dsPadNumber = dsPadNumber;
+      exports3.findAllScripts = findAllScripts;
+      exports3.findW3cTraceParent = findW3cTraceParent;
+      exports3.formatTraceParent = formatTraceParent;
+      exports3.getExtensionByName = getExtensionByName;
+      exports3.isBeaconApiSupported = isBeaconsSupported;
+      exports3.isCrossOriginError = isCrossOriginError;
+      exports3.isInternalApplicationInsightsEndpoint = isInternalApplicationInsightsEndpoint;
+      exports3.isSampledFlag = isSampledFlag;
+      exports3.isValidSpanId = isValidSpanId;
+      exports3.isValidTraceId = isValidTraceId;
+      exports3.isValidTraceParent = isValidTraceParent;
+      exports3.msToTimeSpan = msToTimeSpan;
+      exports3.parseConnectionString = parseConnectionString;
+      exports3.parseTraceParent = parseTraceParent;
+      exports3.strNotSpecified = strNotSpecified;
+      exports3.stringToBoolOrDefault = stringToBoolOrDefault;
+      exports3.urlGetAbsoluteUrl = urlGetAbsoluteUrl;
+      exports3.urlGetCompleteUrl = urlGetCompleteUrl;
+      exports3.urlGetPathName = urlGetPathName;
+      exports3.urlParseFullHost = urlParseFullHost;
+      exports3.urlParseHost = urlParseHost;
+      exports3.urlParseUrl = urlParseUrl;
+      exports3.utlCanUseLocalStorage = utlCanUseLocalStorage;
+      exports3.utlCanUseSessionStorage = utlCanUseSessionStorage;
+      exports3.utlDisableStorage = utlDisableStorage;
+      exports3.utlEnableStorage = utlEnableStorage;
+      exports3.utlGetLocalStorage = utlGetLocalStorage;
+      exports3.utlGetSessionStorage = utlGetSessionStorage;
+      exports3.utlGetSessionStorageKeys = utlGetSessionStorageKeys;
+      exports3.utlRemoveSessionStorage = utlRemoveSessionStorage;
+      exports3.utlRemoveStorage = utlRemoveStorage;
+      exports3.utlSetLocalStorage = utlSetLocalStorage;
+      exports3.utlSetSessionStorage = utlSetSessionStorage;
+      exports3.utlSetStoragePrefix = utlSetStoragePrefix;
+    }));
+  }
+});
+
 // node_modules/@vscode/extension-telemetry/dist/node/common/util.js
 var require_util3 = __commonJS({
   "node_modules/@vscode/extension-telemetry/dist/node/common/util.js"(exports2) {
@@ -67300,6 +72719,10357 @@ var require_util3 = __commonJS({
   }
 });
 
+// node_modules/@microsoft/applicationinsights-web-basic/dist/es5/applicationinsights-web-basic.js
+var require_applicationinsights_web_basic = __commonJS({
+  "node_modules/@microsoft/applicationinsights-web-basic/dist/es5/applicationinsights-web-basic.js"(exports2, module2) {
+    (function(global2, factory) {
+      typeof exports2 === "object" && typeof module2 !== "undefined" ? factory(exports2) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory((global2.Microsoft = global2.Microsoft || {}, global2.Microsoft.ApplicationInsights = global2.Microsoft.ApplicationInsights || {})));
+    })(exports2, (function(exports3) {
+      "use strict";
+      // @__NO_SIDE_EFFECTS__
+      function _pureAssign(func1, func2) {
+        return func1 || func2;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _pureRef(value, name) {
+        return value[name];
+      }
+      var UNDEF_VALUE = void 0;
+      var NULL_VALUE = null;
+      var EMPTY = "";
+      var FUNCTION = "function";
+      var OBJECT = "object";
+      var PROTOTYPE = "prototype";
+      var __PROTO__ = "__proto__";
+      var UNDEFINED = "undefined";
+      var CONSTRUCTOR = "constructor";
+      var SYMBOL = "Symbol";
+      var LENGTH = "length";
+      var NAME = "name";
+      var CALL = "call";
+      var TO_STRING = "toString";
+      var GET_OWN_PROPERTY_DESCRIPTOR = "getOwnPropertyDescriptor";
+      var GET_OWN_PROPERTY_SYMBOLS = "getOwnPropertySymbols";
+      var ObjClass$1 = /* @__PURE__ */ _pureAssign(Object);
+      var ObjProto$1 = /* @__PURE__ */ _pureRef(ObjClass$1, PROTOTYPE);
+      var StrCls = /* @__PURE__ */ _pureAssign(String);
+      var StrProto = /* @__PURE__ */ _pureRef(StrCls, PROTOTYPE);
+      var MathCls = /* @__PURE__ */ _pureAssign(Math);
+      var ArrCls = /* @__PURE__ */ _pureAssign(Array);
+      var ArrProto = /* @__PURE__ */ _pureRef(ArrCls, PROTOTYPE);
+      var ArrSlice = /* @__PURE__ */ _pureRef(ArrProto, "slice");
+      var POLYFILL_TAG = "_polyfill";
+      var POLYFILL_TYPE_NAME = "__nw21$polytype__";
+      function safe(func, argArray) {
+        try {
+          return {
+            v: func.apply(this, argArray)
+          };
+        } catch (e) {
+          return { e };
+        }
+      }
+      // @__NO_SIDE_EFFECTS__
+      function safeGet(cb, defValue, argArray) {
+        var result = safe(cb, argArray);
+        return result.e ? defValue : result.v;
+      }
+      var _primitiveTypes;
+      // @__NO_SIDE_EFFECTS__
+      function _createIs(theType) {
+        return function(value) {
+          return typeof value === theType;
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createObjIs(theName) {
+        var theType = "[object " + theName + "]";
+        return function(value) {
+          return !!(value && /* @__PURE__ */ objToString(value) === theType);
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function objToString(value) {
+        return ObjProto$1[TO_STRING].call(value);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isUndefined(value) {
+        return typeof value === UNDEFINED || value === UNDEFINED;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isStrictUndefined(arg) {
+        return arg === UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isNullOrUndefined(value) {
+        return value === NULL_VALUE || /* @__PURE__ */ isUndefined(value);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isStrictNullOrUndefined(value) {
+        return value === NULL_VALUE || value === UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isDefined(arg) {
+        return !!arg || arg !== UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isPrimitiveType(theType) {
+        !_primitiveTypes && (_primitiveTypes = ["string", "number", "boolean", UNDEFINED, "symbol", "bigint"]);
+        return !!(theType !== OBJECT && _primitiveTypes.indexOf(theType) !== -1);
+      }
+      var isString = /* @__PURE__ */ _createIs("string");
+      var isFunction = /* @__PURE__ */ _createIs(FUNCTION);
+      // @__NO_SIDE_EFFECTS__
+      function isObject2(value) {
+        if (!value && /* @__PURE__ */ isNullOrUndefined(value)) {
+          return false;
+        }
+        return !!value && typeof value === OBJECT;
+      }
+      var isArray = /* @__PURE__ */ _pureRef(ArrCls, "isArray");
+      var isDate = /* @__PURE__ */ _createObjIs("Date");
+      var isNumber = /* @__PURE__ */ _createIs("number");
+      var isBoolean = /* @__PURE__ */ _createIs("boolean");
+      var isError = /* @__PURE__ */ _createObjIs("Error");
+      // @__NO_SIDE_EFFECTS__
+      function isPromiseLike(value) {
+        return !!(value && value.then && isFunction(value.then));
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isTruthy(value) {
+        return !(!value || /* @__PURE__ */ safeGet(function() {
+          return !(value && 0 + value);
+        }, !value));
+      }
+      function _returnNothing() {
+        return;
+      }
+      function _returnEmptyArray() {
+        return [];
+      }
+      function _returnFalse() {
+        return false;
+      }
+      var asString = /* @__PURE__ */ _pureAssign(StrCls);
+      var ERROR_TYPE = "[object Error]";
+      // @__NO_SIDE_EFFECTS__
+      function dumpObj(object3, format) {
+        var propertyValueDump = EMPTY;
+        var objType = ObjProto$1[TO_STRING][CALL](object3);
+        if (objType === ERROR_TYPE) {
+          object3 = { stack: asString(object3.stack), message: asString(object3.message), name: asString(object3.name) };
+        }
+        try {
+          propertyValueDump = JSON.stringify(object3, NULL_VALUE, format ? typeof format === "number" ? format : 4 : UNDEF_VALUE);
+          propertyValueDump = (propertyValueDump ? propertyValueDump.replace(/"(\w+)"\s*:\s{0,1}/g, "$1: ") : NULL_VALUE) || asString(object3);
+        } catch (e) {
+          propertyValueDump = " - " + /* @__PURE__ */ dumpObj(e, format);
+        }
+        return objType + ": " + propertyValueDump;
+      }
+      function throwError(message) {
+        throw new Error(message);
+      }
+      function throwTypeError(message) {
+        throw new TypeError(message);
+      }
+      function _throwIfNullOrUndefined(obj) {
+        if (/* @__PURE__ */ isStrictNullOrUndefined(obj)) {
+          throwTypeError("Cannot convert undefined or null to object");
+        }
+      }
+      function _throwIfNotString(value) {
+        if (!isString(value)) {
+          throwTypeError("'" + /* @__PURE__ */ dumpObj(value) + "' is not a string");
+        }
+      }
+      // @__NO_SIDE_EFFECTS__
+      function objHasOwnProperty(obj, prop) {
+        return !!obj && ObjProto$1.hasOwnProperty[CALL](obj, prop);
+      }
+      var _objGetOwnPropertyDescriptor$2 = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, GET_OWN_PROPERTY_DESCRIPTOR), _returnNothing);
+      var objHasOwn = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "hasOwn"), polyObjHasOwn);
+      // @__NO_SIDE_EFFECTS__
+      function polyObjHasOwn(obj, prop) {
+        _throwIfNullOrUndefined(obj);
+        return /* @__PURE__ */ objHasOwnProperty(obj, prop) || !!_objGetOwnPropertyDescriptor$2(obj, prop);
+      }
+      function objForEachKey(theObject, callbackfn, thisArg) {
+        if (theObject && (/* @__PURE__ */ isObject2(theObject) || isFunction(theObject))) {
+          for (var prop in theObject) {
+            if (objHasOwn(theObject, prop)) {
+              if (callbackfn[CALL](thisArg || theObject, prop, theObject[prop]) === -1) {
+                break;
+              }
+            }
+          }
+        }
+      }
+      function arrForEach(theArray, callbackfn, thisArg) {
+        if (theArray) {
+          var len = theArray[LENGTH] >>> 0;
+          for (var idx = 0; idx < len; idx++) {
+            if (idx in theArray) {
+              if (callbackfn[CALL](thisArg || theArray, theArray[idx], idx, theArray) === -1) {
+                break;
+              }
+            }
+          }
+        }
+      }
+      var _unwrapFunction = _unwrapFunctionWithPoly;
+      // @__NO_SIDE_EFFECTS__
+      function _unwrapFunctionWithPoly(funcName, clsProto, polyFunc) {
+        var clsFn = clsProto ? clsProto[funcName] : NULL_VALUE;
+        return function(thisArg) {
+          var theFunc = (thisArg ? thisArg[funcName] : NULL_VALUE) || clsFn;
+          if (theFunc || polyFunc) {
+            var theArgs = arguments;
+            return (theFunc || polyFunc).apply(thisArg, theFunc ? ArrSlice[CALL](theArgs, 1) : theArgs);
+          }
+          throwTypeError('"' + asString(funcName) + '" not defined for ' + /* @__PURE__ */ dumpObj(thisArg));
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _unwrapProp(propName) {
+        return function(thisArg) {
+          return thisArg[propName];
+        };
+      }
+      function _objPropertyIsEnum(obj, propKey) {
+        var desc;
+        var fn = ObjClass$1.getOwnPropertyDescriptor;
+        if (!/* @__PURE__ */ isStrictNullOrUndefined(obj) && fn) {
+          desc = safe(fn, [obj, propKey]).v || NULL_VALUE;
+        }
+        if (!desc) {
+          desc = safe(function() {
+            for (var key in obj) {
+              if (key === propKey) {
+                return { enumerable: true };
+              }
+            }
+          }).v;
+        }
+        return desc && desc.enumerable || false;
+      }
+      var objPropertyIsEnumerable = /* @__PURE__ */ _unwrapFunctionWithPoly("propertyIsEnumerable", NULL_VALUE, _objPropertyIsEnum);
+      var _objGetOwnPropertyDescriptor$1 = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, GET_OWN_PROPERTY_DESCRIPTOR), _returnNothing);
+      var _objGetOwnPropertySymbols = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, GET_OWN_PROPERTY_SYMBOLS), _returnEmptyArray);
+      var propMap = {
+        e: "enumerable",
+        c: "configurable",
+        v: "value",
+        w: "writable",
+        g: "get",
+        s: "set"
+      };
+      // @__NO_SIDE_EFFECTS__
+      function _createProp(value) {
+        var prop = {};
+        prop[propMap["c"]] = true;
+        prop[propMap["e"]] = true;
+        if (value.l) {
+          prop.get = function() {
+            return value.l.v;
+          };
+          var desc = _objGetOwnPropertyDescriptor$1(value.l, "v");
+          if (desc && desc.set) {
+            prop.set = function(newValue) {
+              value.l.v = newValue;
+            };
+          }
+        }
+        objForEachKey(value, function(key, value2) {
+          prop[propMap[key]] = /* @__PURE__ */ isStrictUndefined(value2) ? prop[propMap[key]] : value2;
+        });
+        return prop;
+      }
+      var objDefineProp = /* @__PURE__ */ _pureRef(ObjClass$1, "defineProperty");
+      var objDefineProperties = /* @__PURE__ */ _pureRef(ObjClass$1, "defineProperties");
+      function objDefine(target, key, propDesc) {
+        return objDefineProp(target, key, /* @__PURE__ */ _createProp(propDesc));
+      }
+      function objDefineProps(target, propDescMap) {
+        var props = {};
+        objForEachKey(propDescMap, function(key, value) {
+          props[key] = /* @__PURE__ */ _createProp(value);
+        });
+        arrForEach(_objGetOwnPropertySymbols(propDescMap), function(sym) {
+          if (objPropertyIsEnumerable(propDescMap, sym)) {
+            props[sym] = /* @__PURE__ */ _createProp(propDescMap[sym]);
+          }
+        });
+        return objDefineProperties(target, props);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createKeyValueMap(values, keyType, valueType, completeFn, writable) {
+        var theMap = {};
+        objForEachKey(values, function(key, value) {
+          _assignMapValue(theMap, key, keyType ? value : key);
+          _assignMapValue(theMap, value, valueType ? value : key);
+        });
+        return completeFn ? completeFn(theMap) : theMap;
+      }
+      function _assignMapValue(theMap, key, value, writable) {
+        objDefineProp(theMap, key, {
+          value,
+          enumerable: true,
+          writable: false
+        });
+      }
+      var objIsFrozen = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "isFrozen"), _returnFalse);
+      var _objFreeze = /* @__PURE__ */ _pureRef(ObjClass$1, "freeze");
+      function _doNothing(value) {
+        return value;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getProto(value) {
+        _throwIfNullOrUndefined(value);
+        return value[__PROTO__] || NULL_VALUE;
+      }
+      var objAssign = /* @__PURE__ */ _pureRef(ObjClass$1, "assign");
+      var objKeys = /* @__PURE__ */ _pureRef(ObjClass$1, "keys");
+      function _deepFreeze(val, visited) {
+        if ((isArray(val) || /* @__PURE__ */ isObject2(val) || isFunction(val)) && !objIsFrozen(val)) {
+          for (var lp = 0; lp < visited.length; lp++) {
+            if (visited[lp] === val) {
+              return val;
+            }
+          }
+          visited.push(val);
+          objForEachKey(val, function(_key, propValue) {
+            _deepFreeze(propValue, visited);
+          });
+          objFreeze(val);
+        }
+        return val;
+      }
+      function objDeepFreeze(value) {
+        return _objFreeze ? _deepFreeze(value, []) : value;
+      }
+      var objFreeze = /* @__PURE__ */ _pureAssign(_objFreeze, _doNothing);
+      var objGetPrototypeOf = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "getPrototypeOf"), _getProto);
+      // @__NO_SIDE_EFFECTS__
+      function createEnum(values) {
+        return /* @__PURE__ */ _createKeyValueMap(values, 1, 0, objFreeze);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createEnumKeyMap(values) {
+        return /* @__PURE__ */ _createKeyValueMap(values, 0, 0, objFreeze);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createSimpleMap(values) {
+        var mapClass = {};
+        objForEachKey(values, function(key, value) {
+          _assignMapValue(mapClass, key, value[1]);
+          _assignMapValue(mapClass, value[0], value[1]);
+        });
+        return objFreeze(mapClass);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createTypeMap(values) {
+        return /* @__PURE__ */ createSimpleMap(values);
+      }
+      var _wellKnownSymbolMap = /* @__PURE__ */ createEnumKeyMap({
+        asyncIterator: 0,
+        hasInstance: 1,
+        isConcatSpreadable: 2,
+        iterator: 3,
+        match: 4,
+        matchAll: 5,
+        replace: 6,
+        search: 7,
+        species: 8,
+        split: 9,
+        toPrimitive: 10,
+        toStringTag: 11,
+        unscopables: 12
+      });
+      var GLOBAL_CONFIG_KEY = "__tsUtils$gblCfg";
+      var _globalCfg;
+      // @__NO_SIDE_EFFECTS__
+      function _getGlobalValue() {
+        var result;
+        if (typeof globalThis !== UNDEFINED) {
+          result = globalThis;
+        }
+        if (!result && typeof self !== UNDEFINED) {
+          result = self;
+        }
+        if (!result && typeof window !== UNDEFINED) {
+          result = window;
+        }
+        if (!result && typeof global !== UNDEFINED) {
+          result = global;
+        }
+        return result;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getGlobalConfig() {
+        if (!_globalCfg) {
+          var gbl = safe(_getGlobalValue).v || {};
+          _globalCfg = gbl[GLOBAL_CONFIG_KEY] = gbl[GLOBAL_CONFIG_KEY] || {};
+        }
+        return _globalCfg;
+      }
+      var mathMin = /* @__PURE__ */ _pureRef(MathCls, "min");
+      var mathMax = /* @__PURE__ */ _pureRef(MathCls, "max");
+      var strSlice = /* @__PURE__ */ _unwrapFunction("slice", StrProto);
+      var strSubstring = /* @__PURE__ */ _unwrapFunction("substring", StrProto);
+      var strSubstr = /* @__PURE__ */ _unwrapFunctionWithPoly("substr", StrProto, polyStrSubstr);
+      // @__NO_SIDE_EFFECTS__
+      function polyStrSubstr(value, start, length) {
+        _throwIfNullOrUndefined(value);
+        if (length < 0) {
+          return EMPTY;
+        }
+        start = start || 0;
+        if (start < 0) {
+          start = mathMax(start + value[LENGTH], 0);
+        }
+        if (/* @__PURE__ */ isUndefined(length)) {
+          return strSlice(value, start);
+        }
+        return strSlice(value, start, start + length);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function strLeft(value, count) {
+        return strSubstring(value, 0, count);
+      }
+      function _tagAsPolyfill(target, polyfillTypeName) {
+        if (target) {
+          safe(function() {
+            target[POLYFILL_TAG] = true;
+            target[POLYFILL_TYPE_NAME] = polyfillTypeName;
+          });
+          safe(objDefine, [target, POLYFILL_TAG, {
+            v: true,
+            w: false,
+            e: false
+          }]);
+          safe(objDefine, [target, POLYFILL_TYPE_NAME, {
+            v: polyfillTypeName,
+            w: false,
+            e: false
+          }]);
+        }
+        return target;
+      }
+      var objCreate = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "create"), polyObjCreate);
+      // @__NO_SIDE_EFFECTS__
+      function polyObjCreate(obj, properties) {
+        var newObj = null;
+        function tempFunc() {
+        }
+        if (!/* @__PURE__ */ isStrictNullOrUndefined(obj)) {
+          var type = typeof obj;
+          if (type !== OBJECT && type !== FUNCTION) {
+            throwTypeError("Prototype must be an Object or function: " + /* @__PURE__ */ dumpObj(obj));
+          }
+          tempFunc[PROTOTYPE] = obj;
+          safe(function() {
+            tempFunc[__PROTO__] = obj;
+          });
+          newObj = new tempFunc();
+        } else {
+          newObj = {};
+        }
+        if (properties) {
+          safe(objDefineProperties, [newObj, properties]);
+        }
+        return newObj;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function utcNow() {
+        return (Date.now || polyUtcNow)();
+      }
+      // @__NO_SIDE_EFFECTS__
+      function polyUtcNow() {
+        return (/* @__PURE__ */ new Date()).getTime();
+      }
+      function fnApply(fn, thisArg, argArray) {
+        return fn.apply(thisArg, argArray);
+      }
+      var _globalLazyTestHooks;
+      function _initTestHooks() {
+        _globalLazyTestHooks = /* @__PURE__ */ _getGlobalConfig();
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getLazy(cb, argArray) {
+        var lazyValue = {};
+        !_globalLazyTestHooks && _initTestHooks();
+        lazyValue.b = _globalLazyTestHooks.lzy;
+        objDefineProp(lazyValue, "v", {
+          configurable: true,
+          get: function() {
+            var result = fnApply(cb, null, argArray);
+            if (!_globalLazyTestHooks.lzy) {
+              objDefineProp(lazyValue, "v", {
+                value: result
+              });
+            }
+            lazyValue.b = _globalLazyTestHooks.lzy;
+            return result;
+          }
+        });
+        return lazyValue;
+      }
+      var mathRandom = /* @__PURE__ */ _pureRef(MathCls, "random");
+      var _uniqueInstanceId = /* @__PURE__ */ getLazy(function() {
+        var value = (/* @__PURE__ */ utcNow()).toString(36).slice(2);
+        while (value.length < 16) {
+          value += mathRandom().toString(36).slice(2);
+        }
+        value = value.substring(0, 16);
+        return value;
+      });
+      var UNIQUE_REGISTRY_ID = "_urid";
+      var POLY_SYM = "$nw21sym";
+      var _polySymbols;
+      var _polyId = 0;
+      // @__NO_SIDE_EFFECTS__
+      function _globalSymbolRegistry() {
+        if (!_polySymbols) {
+          var gblCfg = /* @__PURE__ */ _getGlobalConfig();
+          _polySymbols = gblCfg.gblSym = gblCfg.gblSym || { k: {}, s: {} };
+        }
+        return _polySymbols;
+      }
+      var _wellKnownSymbolCache;
+      // @__NO_SIDE_EFFECTS__
+      function polyNewSymbol(description) {
+        var uniqueId = "_" + _polyId++ + "_" + _uniqueInstanceId.v;
+        var symString = SYMBOL + "(" + description + ")";
+        function _setProp(name, value) {
+          objDefine(theSymbol, name, {
+            v: value,
+            e: false,
+            w: false
+          });
+        }
+        var theSymbol = objCreate(null);
+        _setProp("description", asString(description));
+        _setProp(TO_STRING, function() {
+          return symString + POLY_SYM + uniqueId;
+        });
+        _setProp("valueOf", function() {
+          return theSymbol;
+        });
+        _setProp("v", symString);
+        _setProp("_uid", uniqueId);
+        return _tagAsPolyfill(theSymbol, "symbol");
+      }
+      // @__NO_SIDE_EFFECTS__
+      function polySymbolFor(key) {
+        var registry2 = /* @__PURE__ */ _globalSymbolRegistry();
+        if (!objHasOwn(registry2.k, key)) {
+          var newSymbol_1 = /* @__PURE__ */ polyNewSymbol(key);
+          var regId_1 = objKeys(registry2.s).length;
+          newSymbol_1[UNIQUE_REGISTRY_ID] = function() {
+            return regId_1 + "_" + newSymbol_1[TO_STRING]();
+          };
+          registry2.k[key] = newSymbol_1;
+          registry2.s[newSymbol_1[UNIQUE_REGISTRY_ID]()] = asString(key);
+        }
+        return registry2.k[key];
+      }
+      // @__NO_SIDE_EFFECTS__
+      function polyGetKnownSymbol(name) {
+        !_wellKnownSymbolCache && (_wellKnownSymbolCache = {});
+        var result;
+        var knownName = _wellKnownSymbolMap[name];
+        if (knownName) {
+          result = _wellKnownSymbolCache[knownName] = _wellKnownSymbolCache[knownName] || /* @__PURE__ */ polyNewSymbol(SYMBOL + "." + knownName);
+        }
+        return result;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createCachedValue(value) {
+        return objDefineProp({
+          toJSON: function() {
+            return value;
+          }
+        }, "v", { value });
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getDeferred(cb, argArray) {
+        var theValue = {
+          toJSON: function() {
+            return theValue.v;
+          }
+        };
+        return objDefineProp(theValue, "v", {
+          get: function() {
+            var result = fnApply(cb, null, argArray);
+            cb = NULL_VALUE;
+            objDefineProp(theValue, "v", { value: result });
+            return result;
+          },
+          configurable: true
+        });
+      }
+      var WINDOW = "window";
+      var _cachedGlobal;
+      function _getGlobalInstFn(getFn, theArgs) {
+        var cachedValue;
+        return function() {
+          !_globalLazyTestHooks && _initTestHooks();
+          if (!cachedValue || _globalLazyTestHooks.lzy) {
+            cachedValue = /* @__PURE__ */ createCachedValue(safe(getFn, theArgs).v);
+          }
+          return cachedValue.v;
+        };
+      }
+      function getGlobal(useCached) {
+        !_globalLazyTestHooks && _initTestHooks();
+        if (!_cachedGlobal || useCached === false || _globalLazyTestHooks.lzy) {
+          _cachedGlobal = /* @__PURE__ */ createCachedValue(safe(_getGlobalValue).v || NULL_VALUE);
+        }
+        return _cachedGlobal.v;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getInst(name, useCached) {
+        var gbl;
+        if (!_cachedGlobal || useCached === false) {
+          gbl = getGlobal(useCached);
+        } else {
+          gbl = _cachedGlobal.v;
+        }
+        if (gbl && gbl[name]) {
+          return gbl[name];
+        }
+        if (name === WINDOW) {
+          try {
+            return window;
+          } catch (e) {
+          }
+        }
+        return NULL_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function hasDocument() {
+        return !!/* @__PURE__ */ getDocument();
+      }
+      var getDocument = /* @__PURE__ */ _getGlobalInstFn(getInst, ["document"]);
+      // @__NO_SIDE_EFFECTS__
+      function hasWindow() {
+        return !!/* @__PURE__ */ getWindow();
+      }
+      var getWindow = /* @__PURE__ */ _getGlobalInstFn(getInst, [WINDOW]);
+      // @__NO_SIDE_EFFECTS__
+      function hasNavigator() {
+        return !!/* @__PURE__ */ getNavigator();
+      }
+      var getNavigator = /* @__PURE__ */ _getGlobalInstFn(getInst, ["navigator"]);
+      var isNode = /* @__PURE__ */ _getGlobalInstFn(function() {
+        return !!safe(function() {
+          return process && (process.versions || {}).node;
+        }).v;
+      });
+      var _symbol2;
+      var _symbolFor;
+      // @__NO_SIDE_EFFECTS__
+      function _initSymbol() {
+        _symbol2 = /* @__PURE__ */ createCachedValue(safe(getInst, [SYMBOL]).v);
+        return _symbol2;
+      }
+      function _getSymbolKey(key) {
+        var gblSym = (!_globalLazyTestHooks.lzy ? _symbol2 : 0) || /* @__PURE__ */ _initSymbol();
+        return gblSym.v ? gblSym.v[key] : UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function hasSymbol() {
+        return !!/* @__PURE__ */ getSymbol();
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getSymbol() {
+        !_globalLazyTestHooks && _initTestHooks();
+        return ((!_globalLazyTestHooks.lzy ? _symbol2 : 0) || /* @__PURE__ */ _initSymbol()).v;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getKnownSymbol(name, noPoly) {
+        var knownName = _wellKnownSymbolMap[name];
+        !_globalLazyTestHooks && _initTestHooks();
+        var sym = (!_globalLazyTestHooks.lzy ? _symbol2 : 0) || /* @__PURE__ */ _initSymbol();
+        return sym.v ? sym.v[knownName || name] : !noPoly ? /* @__PURE__ */ polyGetKnownSymbol(name) : UNDEF_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function newSymbol(description, noPoly) {
+        !_globalLazyTestHooks && _initTestHooks();
+        var sym = (!_globalLazyTestHooks.lzy ? _symbol2 : 0) || /* @__PURE__ */ _initSymbol();
+        return sym.v ? sym.v(description) : !noPoly ? /* @__PURE__ */ polyNewSymbol(description) : NULL_VALUE;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function symbolFor(key) {
+        !_globalLazyTestHooks && _initTestHooks();
+        _symbolFor = (!_globalLazyTestHooks.lzy ? _symbolFor : 0) || /* @__PURE__ */ createCachedValue(safe(_getSymbolKey, ["for"]).v);
+        return (_symbolFor.v || polySymbolFor)(key);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isIterator(value) {
+        return !!value && isFunction(value.next);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isIterable(value) {
+        return !/* @__PURE__ */ isStrictNullOrUndefined(value) && isFunction(value[/* @__PURE__ */ getKnownSymbol(3)]);
+      }
+      var _iterSymbol$1;
+      function iterForOf(iter, callbackfn, thisArg) {
+        if (iter) {
+          if (!/* @__PURE__ */ isIterator(iter)) {
+            !_iterSymbol$1 && (_iterSymbol$1 = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ getKnownSymbol(3)));
+            iter = iter[_iterSymbol$1.v] ? iter[_iterSymbol$1.v]() : NULL_VALUE;
+          }
+          if (/* @__PURE__ */ isIterator(iter)) {
+            var err = UNDEF_VALUE;
+            var iterResult = UNDEF_VALUE;
+            try {
+              var count = 0;
+              while (!(iterResult = iter.next()).done) {
+                if (callbackfn[CALL](thisArg || iter, iterResult.value, count, iter) === -1) {
+                  break;
+                }
+                count++;
+              }
+            } catch (failed) {
+              err = { e: failed };
+              if (iter.throw) {
+                iterResult = NULL_VALUE;
+                iter.throw(err);
+              }
+            } finally {
+              try {
+                if (iterResult && !iterResult.done) {
+                  iter.return && iter.return(iterResult);
+                }
+              } finally {
+                if (err) {
+                  throw err.e;
+                }
+              }
+            }
+          }
+        }
+      }
+      function arrAppend(target, elms) {
+        if (!/* @__PURE__ */ isUndefined(elms) && target) {
+          if (isArray(elms)) {
+            fnApply(target.push, target, elms);
+          } else if (/* @__PURE__ */ isIterator(elms) || /* @__PURE__ */ isIterable(elms)) {
+            iterForOf(elms, function(elm) {
+              target.push(elm);
+            });
+          } else {
+            target.push(elms);
+          }
+        }
+        return target;
+      }
+      var arrIndexOf = /* @__PURE__ */ _unwrapFunction("indexOf", ArrProto);
+      var arrMap = /* @__PURE__ */ _unwrapFunction("map", ArrProto);
+      function arrSlice(theArray, start, end) {
+        return ((theArray ? theArray["slice"] : NULL_VALUE) || ArrSlice).apply(theArray, ArrSlice[CALL](arguments, 1));
+      }
+      var arrReduce = /* @__PURE__ */ _unwrapFunction("reduce", ArrProto);
+      var _isProtoArray;
+      var objSetPrototypeOf = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, "setPrototypeOf"), _polyObjSetPrototypeOf);
+      function _polyObjSetPrototypeOf(obj, proto) {
+        var _a3;
+        !_isProtoArray && (_isProtoArray = /* @__PURE__ */ createCachedValue((_a3 = {}, _a3[__PROTO__] = [], _a3) instanceof Array));
+        _isProtoArray.v ? obj[__PROTO__] = proto : objForEachKey(proto, function(key, value) {
+          return obj[key] = value;
+        });
+        return obj;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createCustomError(name, d, b) {
+        safe(objDefine, [d, NAME, { v: name, c: true, e: false }]);
+        d = objSetPrototypeOf(d, b);
+        function __() {
+          this[CONSTRUCTOR] = d;
+          safe(objDefine, [this, NAME, { v: name, c: true, e: false }]);
+        }
+        d[PROTOTYPE] = b === NULL_VALUE ? objCreate(b) : (__[PROTOTYPE] = b[PROTOTYPE], new __());
+        return d;
+      }
+      function _setName(baseClass, name) {
+        name && (baseClass[NAME] = name);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createCustomError(name, constructCb, errorBase, superArgsFn) {
+        var theBaseClass = errorBase || Error;
+        var orgName = theBaseClass[PROTOTYPE][NAME];
+        var captureFn = Error.captureStackTrace;
+        return /* @__PURE__ */ _createCustomError(name, function() {
+          var _this = this;
+          var theArgs = arguments;
+          try {
+            safe(_setName, [theBaseClass, name]);
+            var _self = fnApply(theBaseClass, _this, superArgsFn ? superArgsFn(theArgs) : ArrSlice[CALL](theArgs)) || _this;
+            if (_self !== _this) {
+              var orgProto = objGetPrototypeOf(_this);
+              if (orgProto !== objGetPrototypeOf(_self)) {
+                objSetPrototypeOf(_self, orgProto);
+              }
+            }
+            captureFn && captureFn(_self, _this[CONSTRUCTOR]);
+            constructCb && constructCb(_self, theArgs);
+            return _self;
+          } finally {
+            safe(_setName, [theBaseClass, orgName]);
+          }
+        }, theBaseClass);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createTrimFn(exp) {
+        return function _doTrim(value) {
+          _throwIfNullOrUndefined(value);
+          if (value && value.replace) {
+            value = value.replace(exp, EMPTY);
+          }
+          return value;
+        };
+      }
+      var polyStrTrim = /* @__PURE__ */ _createTrimFn(/^\s+|(?=\s)\s+$/g);
+      var strTrim = /* @__PURE__ */ _unwrapFunctionWithPoly("trim", StrProto, polyStrTrim);
+      var mathFloor = /* @__PURE__ */ _pureRef(MathCls, "floor");
+      // @__NO_SIDE_EFFECTS__
+      function safeGetDeferred(cb, defValue, argArray) {
+        return /* @__PURE__ */ getDeferred(function() {
+          var result = safe(cb, argArray);
+          return result.e ? defValue : result.v;
+        });
+      }
+      var _fnToString;
+      var _objCtrFnString;
+      var _gblWindow;
+      // @__NO_SIDE_EFFECTS__
+      function isPlainObject3(value) {
+        if (!value || typeof value !== OBJECT) {
+          return false;
+        }
+        if (!_gblWindow) {
+          _gblWindow = /* @__PURE__ */ hasWindow() ? getWindow() : true;
+        }
+        var result = false;
+        if (value !== _gblWindow) {
+          if (!_objCtrFnString) {
+            _fnToString = Function[PROTOTYPE][TO_STRING];
+            _objCtrFnString = _fnToString[CALL](ObjClass$1);
+          }
+          try {
+            var proto = objGetPrototypeOf(value);
+            result = !proto;
+            if (!result) {
+              if (/* @__PURE__ */ objHasOwnProperty(proto, CONSTRUCTOR)) {
+                proto = proto[CONSTRUCTOR];
+              }
+              result = !!(proto && typeof proto === FUNCTION && _fnToString[CALL](proto) === _objCtrFnString);
+            }
+          } catch (ex) {
+          }
+        }
+        return result;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _defaultDeepCopyHandler(details) {
+        details.value && plainObjDeepCopyHandler(details);
+        return true;
+      }
+      var defaultDeepCopyHandlers = [
+        arrayDeepCopyHandler,
+        plainObjDeepCopyHandler,
+        functionDeepCopyHandler,
+        dateDeepCopyHandler
+      ];
+      // @__NO_SIDE_EFFECTS__
+      function _getSetVisited(visitMap, source, newPath, cb) {
+        var theEntry;
+        arrForEach(visitMap, function(entry) {
+          if (entry.k === source) {
+            theEntry = entry;
+            return -1;
+          }
+        });
+        if (!theEntry) {
+          theEntry = { k: source, v: source };
+          visitMap.push(theEntry);
+          cb(theEntry);
+        }
+        return theEntry.v;
+      }
+      function _deepCopy(visitMap, value, ctx, key) {
+        var userHandler = ctx.handler;
+        var newPath = ctx.path ? key ? ctx.path.concat(key) : ctx.path : [];
+        var newCtx = {
+          handler: ctx.handler,
+          src: ctx.src,
+          path: newPath
+        };
+        var theType = typeof value;
+        var isPlain = false;
+        var isPrim = value === NULL_VALUE;
+        if (!isPrim) {
+          if (value && theType === OBJECT) {
+            isPlain = /* @__PURE__ */ isPlainObject3(value);
+          } else {
+            isPrim = /* @__PURE__ */ isPrimitiveType(theType);
+          }
+        }
+        var details = {
+          type: theType,
+          isPrim,
+          isPlain,
+          value,
+          result: value,
+          path: newPath,
+          origin: ctx.src,
+          copy: function(source, newKey) {
+            return _deepCopy(visitMap, source, newKey ? newCtx : ctx, newKey);
+          },
+          copyTo: function(target, source) {
+            return _copyProps(visitMap, target, source, newCtx);
+          }
+        };
+        if (!details.isPrim) {
+          return /* @__PURE__ */ _getSetVisited(visitMap, value, newPath, function(newEntry) {
+            objDefine(details, "result", {
+              g: function() {
+                return newEntry.v;
+              },
+              s: function(newValue) {
+                newEntry.v = newValue;
+              }
+            });
+            var idx = 0;
+            var handler = userHandler;
+            while (!(handler || (idx < defaultDeepCopyHandlers.length ? defaultDeepCopyHandlers[idx++] : _defaultDeepCopyHandler))[CALL](ctx, details)) {
+              handler = NULL_VALUE;
+            }
+          });
+        }
+        if (userHandler && userHandler[CALL](ctx, details)) {
+          return details.result;
+        }
+        return value;
+      }
+      function _copyProps(visitMap, target, source, ctx) {
+        if (!/* @__PURE__ */ isNullOrUndefined(source)) {
+          for (var key in source) {
+            target[key] = _deepCopy(visitMap, source[key], ctx, key);
+          }
+        }
+        return target;
+      }
+      function objCopyProps(target, source, handler) {
+        var ctx = {
+          handler,
+          src: source,
+          path: []
+        };
+        return _copyProps([], target, source, ctx);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function objDeepCopy(source, handler) {
+        var ctx = {
+          handler,
+          src: source
+        };
+        return _deepCopy([], source, ctx);
+      }
+      function arrayDeepCopyHandler(details) {
+        var value = details.value;
+        if (isArray(value)) {
+          var target = details.result = [];
+          target.length = value.length;
+          details.copyTo(target, value);
+          return true;
+        }
+        return false;
+      }
+      function dateDeepCopyHandler(details) {
+        var value = details.value;
+        if (isDate(value)) {
+          details.result = new Date(value.getTime());
+          return true;
+        }
+        return false;
+      }
+      function functionDeepCopyHandler(details) {
+        if (details.type === FUNCTION) {
+          return true;
+        }
+        return false;
+      }
+      function plainObjDeepCopyHandler(details) {
+        var value = details.value;
+        if (value && details.isPlain) {
+          var target = details.result = {};
+          details.copyTo(target, value);
+          return true;
+        }
+        return false;
+      }
+      function _doExtend(target, theArgs) {
+        arrForEach(theArgs, function(theArg) {
+          objCopyProps(target, theArg);
+        });
+        return target;
+      }
+      function deepExtend(target, obj1, obj2, obj3, obj4, obj5, obj6) {
+        return _doExtend(/* @__PURE__ */ objDeepCopy(target) || {}, ArrSlice[CALL](arguments));
+      }
+      var strSplit = /* @__PURE__ */ _unwrapFunction("split", StrProto);
+      var getLength = /* @__PURE__ */ _unwrapProp(LENGTH);
+      var mathAbs = /* @__PURE__ */ _pureRef(MathCls, "abs");
+      var mathRound = /* @__PURE__ */ _pureRef(MathCls, "round");
+      var objGetOwnPropertyDescriptor = /* @__PURE__ */ _pureAssign(/* @__PURE__ */ _pureRef(ObjClass$1, GET_OWN_PROPERTY_DESCRIPTOR), _returnNothing);
+      var strEndsWith = /* @__PURE__ */ _unwrapFunctionWithPoly("endsWith", StrProto, polyStrEndsWith);
+      // @__NO_SIDE_EFFECTS__
+      function polyStrEndsWith(value, searchString, length) {
+        _throwIfNotString(value);
+        var searchValue = isString(searchString) ? searchString : asString(searchString);
+        var end = !/* @__PURE__ */ isUndefined(length) && length < value[LENGTH] ? length : value[LENGTH];
+        return strSubstring(value, end - searchValue[LENGTH], end) === searchValue;
+      }
+      var strIndexOf = /* @__PURE__ */ _unwrapFunction("indexOf", StrProto);
+      var REF = "ref";
+      var UNREF = "unref";
+      var HAS_REF = "hasRef";
+      var ENABLED = "enabled";
+      // @__NO_SIDE_EFFECTS__
+      function _createTimerHandler(startTimer, refreshFn, cancelFn) {
+        var ref = true;
+        var timerId = startTimer ? refreshFn(NULL_VALUE) : NULL_VALUE;
+        var theTimerHandler;
+        function _unref() {
+          ref = false;
+          timerId && timerId[UNREF] && timerId[UNREF]();
+          return theTimerHandler;
+        }
+        function _cancel() {
+          timerId && cancelFn(timerId);
+          timerId = NULL_VALUE;
+        }
+        function _refresh() {
+          timerId = refreshFn(timerId);
+          if (!ref) {
+            _unref();
+          }
+          return theTimerHandler;
+        }
+        function _setEnabled(value) {
+          !value && timerId && _cancel();
+          value && !timerId && _refresh();
+        }
+        theTimerHandler = {
+          cancel: _cancel,
+          refresh: _refresh
+        };
+        theTimerHandler[HAS_REF] = function() {
+          if (timerId && timerId[HAS_REF]) {
+            return timerId[HAS_REF]();
+          }
+          return ref;
+        };
+        theTimerHandler[REF] = function() {
+          ref = true;
+          timerId && timerId[REF] && timerId[REF]();
+          return theTimerHandler;
+        };
+        theTimerHandler[UNREF] = _unref;
+        theTimerHandler = objDefineProp(theTimerHandler, ENABLED, {
+          get: function() {
+            return !!timerId;
+          },
+          set: _setEnabled
+        });
+        return {
+          h: theTimerHandler,
+          dn: function() {
+            timerId = NULL_VALUE;
+          }
+        };
+      }
+      var _setTimeoutFn;
+      var _clearTimeoutFn;
+      function _resolveTimeoutFn(timeoutFn) {
+        var result = isFunction(timeoutFn) ? timeoutFn : _setTimeoutFn;
+        if (!result) {
+          var globalOverrides = (/* @__PURE__ */ _getGlobalConfig()).tmOut || [];
+          if (isArray(globalOverrides) && globalOverrides.length > 0 && isFunction(globalOverrides[0])) {
+            result = globalOverrides[0];
+          }
+        }
+        return result || setTimeout;
+      }
+      function _resolveClearTimeoutFn(timeoutFn) {
+        var result = isFunction(timeoutFn) ? timeoutFn : _clearTimeoutFn;
+        if (!result) {
+          var globalOverrides = (/* @__PURE__ */ _getGlobalConfig()).tmOut || [];
+          if (isArray(globalOverrides) && globalOverrides.length > 1 && isFunction(globalOverrides[1])) {
+            result = globalOverrides[1];
+          }
+        }
+        return result || clearTimeout;
+      }
+      function _createTimeoutWith(startTimer, overrideFn, theArgs) {
+        var isArr = isArray(overrideFn);
+        var len = isArr ? overrideFn.length : 0;
+        var setFn = _resolveTimeoutFn(len > 0 ? overrideFn[0] : !isArr ? overrideFn : UNDEF_VALUE);
+        var clearFn = _resolveClearTimeoutFn(len > 1 ? overrideFn[1] : UNDEF_VALUE);
+        var timerFn = theArgs[0];
+        theArgs[0] = function() {
+          handler.dn();
+          fnApply(timerFn, UNDEF_VALUE, ArrSlice[CALL](arguments));
+        };
+        var handler = /* @__PURE__ */ _createTimerHandler(startTimer, function(timerId) {
+          if (timerId) {
+            if (timerId.refresh) {
+              timerId.refresh();
+              return timerId;
+            }
+            fnApply(clearFn, UNDEF_VALUE, [timerId]);
+          }
+          return fnApply(setFn, UNDEF_VALUE, theArgs);
+        }, function(timerId) {
+          fnApply(clearFn, UNDEF_VALUE, [timerId]);
+        });
+        return handler.h;
+      }
+      function scheduleTimeout(callback, timeout) {
+        return _createTimeoutWith(true, UNDEF_VALUE, ArrSlice[CALL](arguments));
+      }
+      function createTimeout(callback, timeout) {
+        return _createTimeoutWith(false, UNDEF_VALUE, ArrSlice[CALL](arguments));
+      }
+      var _a$6;
+      var Constructor = "constructor";
+      var Prototype = "prototype";
+      var strFunction = "function";
+      var DynInstFuncTable = "_dynInstFuncs";
+      var DynProxyTag = "_isDynProxy";
+      var DynClassName = "_dynClass";
+      var DynClassNamePrefix = "_dynCls$";
+      var DynInstChkTag = "_dynInstChk";
+      var DynAllowInstChkTag = DynInstChkTag;
+      var DynProtoDefaultOptions = "_dfOpts";
+      var UnknownValue = "_unknown_";
+      var str__Proto = "__proto__";
+      var DynProtoBaseProto = "_dyn" + str__Proto;
+      var DynProtoGlobalSettings = "__dynProto$Gbl";
+      var DynProtoCurrent = "_dynInstProto";
+      var strUseBaseInst = "useBaseInst";
+      var strSetInstFuncs = "setInstFuncs";
+      var Obj = Object;
+      var _objGetPrototypeOf = Obj["getPrototypeOf"];
+      var _objGetOwnProps = Obj["getOwnPropertyNames"];
+      var _gbl = getGlobal();
+      var _gblInst = _gbl[DynProtoGlobalSettings] || (_gbl[DynProtoGlobalSettings] = {
+        o: (_a$6 = {}, _a$6[strSetInstFuncs] = true, _a$6[strUseBaseInst] = true, _a$6),
+        n: 1e3
+      });
+      function _isObjectOrArrayPrototype(target) {
+        return target && (target === Obj[Prototype] || target === Array[Prototype]);
+      }
+      function _isObjectArrayOrFunctionPrototype(target) {
+        return _isObjectOrArrayPrototype(target) || target === Function[Prototype];
+      }
+      function _getObjProto$1(target) {
+        var newProto;
+        if (target) {
+          if (_objGetPrototypeOf) {
+            return _objGetPrototypeOf(target);
+          }
+          var curProto = target[str__Proto] || target[Prototype] || (target[Constructor] ? target[Constructor][Prototype] : null);
+          newProto = target[DynProtoBaseProto] || curProto;
+          if (!/* @__PURE__ */ objHasOwnProperty(target, DynProtoBaseProto)) {
+            delete target[DynProtoCurrent];
+            newProto = target[DynProtoBaseProto] = target[DynProtoCurrent] || target[DynProtoBaseProto];
+            target[DynProtoCurrent] = curProto;
+          }
+        }
+        return newProto;
+      }
+      function _forEachProp(target, func) {
+        var props = [];
+        if (_objGetOwnProps) {
+          props = _objGetOwnProps(target);
+        } else {
+          for (var name_1 in target) {
+            if (typeof name_1 === "string" && /* @__PURE__ */ objHasOwnProperty(target, name_1)) {
+              props.push(name_1);
+            }
+          }
+        }
+        if (props && props.length > 0) {
+          for (var lp = 0; lp < props.length; lp++) {
+            func(props[lp]);
+          }
+        }
+      }
+      function _isDynamicCandidate(target, funcName, skipOwn) {
+        return funcName !== Constructor && typeof target[funcName] === strFunction && (skipOwn || /* @__PURE__ */ objHasOwnProperty(target, funcName)) && funcName !== str__Proto && funcName !== Prototype;
+      }
+      function _throwTypeError(message) {
+        throwTypeError("DynamicProto: " + message);
+      }
+      function _getInstanceFuncs(thisTarget) {
+        var instFuncs = objCreate(null);
+        _forEachProp(thisTarget, function(name) {
+          if (!instFuncs[name] && _isDynamicCandidate(thisTarget, name, false)) {
+            instFuncs[name] = thisTarget[name];
+          }
+        });
+        return instFuncs;
+      }
+      function _hasVisited(values, value) {
+        for (var lp = values.length - 1; lp >= 0; lp--) {
+          if (values[lp] === value) {
+            return true;
+          }
+        }
+        return false;
+      }
+      function _getBaseFuncs(classProto, thisTarget, instFuncs, useBaseInst) {
+        function _instFuncProxy(target, funcHost, funcName) {
+          var theFunc = funcHost[funcName];
+          if (theFunc[DynProxyTag] && useBaseInst) {
+            var instFuncTable = target[DynInstFuncTable] || {};
+            if (instFuncTable[DynAllowInstChkTag] !== false) {
+              theFunc = (instFuncTable[funcHost[DynClassName]] || {})[funcName] || theFunc;
+            }
+          }
+          return function() {
+            return theFunc.apply(target, arguments);
+          };
+        }
+        var baseFuncs = objCreate(null);
+        _forEachProp(instFuncs, function(name) {
+          baseFuncs[name] = _instFuncProxy(thisTarget, instFuncs, name);
+        });
+        var baseProto = _getObjProto$1(classProto);
+        var visited = [];
+        while (baseProto && !_isObjectArrayOrFunctionPrototype(baseProto) && !_hasVisited(visited, baseProto)) {
+          _forEachProp(baseProto, function(name) {
+            if (!baseFuncs[name] && _isDynamicCandidate(baseProto, name, !_objGetPrototypeOf)) {
+              baseFuncs[name] = _instFuncProxy(thisTarget, baseProto, name);
+            }
+          });
+          visited.push(baseProto);
+          baseProto = _getObjProto$1(baseProto);
+        }
+        return baseFuncs;
+      }
+      function _getInstFunc(target, funcName, proto, currentDynProtoProxy) {
+        var instFunc = null;
+        if (target && /* @__PURE__ */ objHasOwnProperty(proto, DynClassName)) {
+          var instFuncTable = target[DynInstFuncTable] || objCreate(null);
+          instFunc = (instFuncTable[proto[DynClassName]] || objCreate(null))[funcName];
+          if (!instFunc) {
+            _throwTypeError("Missing [" + funcName + "] " + strFunction);
+          }
+          if (!instFunc[DynInstChkTag] && instFuncTable[DynAllowInstChkTag] !== false) {
+            var canAddInst = !/* @__PURE__ */ objHasOwnProperty(target, funcName);
+            var objProto = _getObjProto$1(target);
+            var visited = [];
+            while (canAddInst && objProto && !_isObjectArrayOrFunctionPrototype(objProto) && !_hasVisited(visited, objProto)) {
+              var protoFunc = objProto[funcName];
+              if (protoFunc) {
+                canAddInst = protoFunc === currentDynProtoProxy;
+                break;
+              }
+              visited.push(objProto);
+              objProto = _getObjProto$1(objProto);
+            }
+            try {
+              if (canAddInst) {
+                target[funcName] = instFunc;
+              }
+              instFunc[DynInstChkTag] = 1;
+            } catch (e) {
+              instFuncTable[DynAllowInstChkTag] = false;
+            }
+          }
+        }
+        return instFunc;
+      }
+      function _getProtoFunc(funcName, proto, currentDynProtoProxy) {
+        var protoFunc = proto[funcName];
+        if (protoFunc === currentDynProtoProxy) {
+          protoFunc = _getObjProto$1(proto)[funcName];
+        }
+        if (typeof protoFunc !== strFunction) {
+          _throwTypeError("[" + funcName + "] is not a " + strFunction);
+        }
+        return protoFunc;
+      }
+      function _populatePrototype(proto, className, target, baseInstFuncs, setInstanceFunc) {
+        function _createDynamicPrototype(proto2, funcName) {
+          var dynProtoProxy = function() {
+            var instFunc = _getInstFunc(this, funcName, proto2, dynProtoProxy) || _getProtoFunc(funcName, proto2, dynProtoProxy);
+            return instFunc.apply(this, arguments);
+          };
+          dynProtoProxy[DynProxyTag] = 1;
+          return dynProtoProxy;
+        }
+        if (!_isObjectOrArrayPrototype(proto)) {
+          var instFuncTable = target[DynInstFuncTable] = target[DynInstFuncTable] || objCreate(null);
+          if (!_isObjectOrArrayPrototype(instFuncTable)) {
+            var instFuncs_1 = instFuncTable[className] = instFuncTable[className] || objCreate(null);
+            if (instFuncTable[DynAllowInstChkTag] !== false) {
+              instFuncTable[DynAllowInstChkTag] = !!setInstanceFunc;
+            }
+            if (!_isObjectOrArrayPrototype(instFuncs_1)) {
+              _forEachProp(target, function(name) {
+                if (_isDynamicCandidate(target, name, false) && target[name] !== baseInstFuncs[name]) {
+                  instFuncs_1[name] = target[name];
+                  delete target[name];
+                  if (!/* @__PURE__ */ objHasOwnProperty(proto, name) || proto[name] && !proto[name][DynProxyTag]) {
+                    proto[name] = _createDynamicPrototype(proto, name);
+                  }
+                }
+              });
+            }
+          }
+        }
+      }
+      function _checkPrototype(classProto, thisTarget) {
+        if (_objGetPrototypeOf) {
+          var visited = [];
+          var thisProto = _getObjProto$1(thisTarget);
+          while (thisProto && !_isObjectArrayOrFunctionPrototype(thisProto) && !_hasVisited(visited, thisProto)) {
+            if (thisProto === classProto) {
+              return true;
+            }
+            visited.push(thisProto);
+            thisProto = _getObjProto$1(thisProto);
+          }
+          return false;
+        }
+        return true;
+      }
+      function _getObjName(target, unknownValue) {
+        if (/* @__PURE__ */ objHasOwnProperty(target, Prototype)) {
+          return target.name || unknownValue || UnknownValue;
+        }
+        return ((target || {})[Constructor] || {}).name || unknownValue || UnknownValue;
+      }
+      function dynamicProto(theClass, target, delegateFunc, options) {
+        if (!/* @__PURE__ */ objHasOwnProperty(theClass, Prototype)) {
+          _throwTypeError("theClass is an invalid class definition.");
+        }
+        var classProto = theClass[Prototype];
+        if (!_checkPrototype(classProto, target)) {
+          _throwTypeError("[" + _getObjName(theClass) + "] not in hierarchy of [" + _getObjName(target) + "]");
+        }
+        var className = null;
+        if (/* @__PURE__ */ objHasOwnProperty(classProto, DynClassName)) {
+          className = classProto[DynClassName];
+        } else {
+          className = DynClassNamePrefix + _getObjName(theClass, "_") + "$" + _gblInst.n;
+          _gblInst.n++;
+          classProto[DynClassName] = className;
+        }
+        var perfOptions = dynamicProto[DynProtoDefaultOptions];
+        var useBaseInst = !!perfOptions[strUseBaseInst];
+        if (useBaseInst && options && options[strUseBaseInst] !== void 0) {
+          useBaseInst = !!options[strUseBaseInst];
+        }
+        var instFuncs = _getInstanceFuncs(target);
+        var baseFuncs = _getBaseFuncs(classProto, target, instFuncs, useBaseInst);
+        delegateFunc(target, baseFuncs);
+        var setInstanceFunc = !!_objGetPrototypeOf && !!perfOptions[strSetInstFuncs];
+        if (setInstanceFunc && options) {
+          setInstanceFunc = !!options[strSetInstFuncs];
+        }
+        _populatePrototype(classProto, className, target, instFuncs, setInstanceFunc !== false);
+      }
+      dynamicProto[DynProtoDefaultOptions] = _gblInst.o;
+      var strShimFunction = "function";
+      var strShimObject = "object";
+      var strShimUndefined = "undefined";
+      var strShimPrototype = "prototype";
+      var ObjClass = Object;
+      var ObjProto = ObjClass[strShimPrototype];
+      (getGlobal() || {})["Symbol"];
+      (getGlobal() || {})["Reflect"];
+      var strHasOwnProperty = "hasOwnProperty";
+      var __objAssignFnImpl = function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s) {
+            if (ObjProto[strHasOwnProperty].call(s, p)) {
+              t[p] = s[p];
+            }
+          }
+        }
+        return t;
+      };
+      var __assignFn = objAssign || __objAssignFnImpl;
+      var extendStaticsFn = function(d, b) {
+        extendStaticsFn = ObjClass["setPrototypeOf"] || { __proto__: [] } instanceof Array && function(d2, b2) {
+          d2.__proto__ = b2;
+        } || function(d2, b2) {
+          for (var p in b2) {
+            if (b2[strHasOwnProperty](p)) {
+              d2[p] = b2[p];
+            }
+          }
+        };
+        return extendStaticsFn(d, b);
+      };
+      function __extendsFn(d, b) {
+        if (typeof b !== strShimFunction && b !== null) {
+          throwTypeError("Class extends value " + String(b) + " is not a constructor or null");
+        }
+        extendStaticsFn(d, b);
+        function __() {
+          this.constructor = d;
+        }
+        d[strShimPrototype] = b === null ? objCreate(b) : (__[strShimPrototype] = b[strShimPrototype], new __());
+      }
+      function __spreadArrayFn(to, from) {
+        for (var i = 0, il = from.length, j = to.length; i < il; i++, j++) {
+          to[j] = from[i];
+        }
+        return to;
+      }
+      var createEnumStyle = createEnum;
+      var createValueMap = createTypeMap;
+      var ActiveStatus = /* @__PURE__ */ createEnumStyle({
+        NONE: 0,
+        PENDING: 3,
+        INACTIVE: 1,
+        ACTIVE: 2
+      });
+      var _DYN_TO_LOWER_CASE = "toLowerCase";
+      var _DYN_LENGTH$1 = "length";
+      var _DYN_WARN_TO_CONSOLE = "warnToConsole";
+      var _DYN_THROW_INTERNAL = "throwInternal";
+      var _DYN_WATCH = "watch";
+      var _DYN_APPLY = "apply";
+      var _DYN_PUSH$1 = "push";
+      var _DYN_SPLICE = "splice";
+      var _DYN_LOGGER = "logger";
+      var _DYN_CANCEL = "cancel";
+      var _DYN_INITIALIZE$1 = "initialize";
+      var _DYN_IDENTIFIER = "identifier";
+      var _DYN_REMOVE_NOTIFICATION_0 = "removeNotificationListener";
+      var _DYN_ADD_NOTIFICATION_LIS1 = "addNotificationListener";
+      var _DYN_STRINGIFY$1 = "stringify";
+      var _DYN_TRACE_ID$1 = "traceId";
+      var _DYN_SPAN_ID = "spanId";
+      var _DYN_TRACE_FLAGS = "traceFlags";
+      var _DYN_IS_INITIALIZED = "isInitialized";
+      var _DYN_TRACE_HDR_MODE = "traceHdrMode";
+      var _DYN_GET_NOTIFY_MGR = "getNotifyMgr";
+      var _DYN_GET_PLUGIN = "getPlugin";
+      var _DYN_TRACK = "track";
+      var _DYN_NAME$1 = "name";
+      var _DYN_I_KEY = "iKey";
+      var _DYN_TIME = "time";
+      var _DYN_PROCESS_NEXT = "processNext";
+      var _DYN_GET_PROCESS_TEL_CONT2 = "getProcessTelContext";
+      var _DYN_POLL_INTERNAL_LOGS = "pollInternalLogs";
+      var _DYN_VALUE = "value";
+      var _DYN_ENABLED = "enabled";
+      var _DYN_STOP_POLLING_INTERNA3 = "stopPollingInternalLogs";
+      var _DYN_UNLOAD = "unload";
+      var _DYN_ON_COMPLETE = "onComplete";
+      var _DYN_REASON = "reason";
+      var _DYN_FLUSH = "flush";
+      var _DYN_GET_TRACE_CTX = "getTraceCtx";
+      var _DYN_SET_TRACE_CTX = "setTraceCtx";
+      var _DYN_GET_ACTIVE_SPAN = "getActiveSpan";
+      var _DYN_SET_ACTIVE_SPAN = "setActiveSpan";
+      var _DYN_SPAN_CONTEXT = "spanContext";
+      var _DYN_PARENT_SPAN_CONTEXT = "parentSpanContext";
+      var _DYN_PARENT_SPAN_ID = "parentSpanId";
+      var _DYN_LOGGING_LEVEL_CONSOL4 = "loggingLevelConsole";
+      var _DYN_JOIN = "join";
+      var _DYN_CREATE_NEW = "createNew";
+      var _DYN_TEARDOWN = "teardown";
+      var _DYN_MESSAGE_ID = "messageId";
+      var _DYN_MESSAGE = "message";
+      var _DYN_ATTRIBUTE_COUNT_LIMI5 = "attributeCountLimit";
+      var _DYN_SUPPRESS_TRACING = "suppressTracing";
+      var _DYN_NOT_IMPLEMENTED = "notImplemented";
+      var _DYN_DIAG_LOG$1 = "diagLog";
+      var _DYN__DO_TEARDOWN = "_doTeardown";
+      var _DYN_UPDATE = "update";
+      var _DYN_GET_NEXT = "getNext";
+      var _DYN_SET_NEXT_PLUGIN = "setNextPlugin";
+      var _DYN_SPLIT = "split";
+      var _DYN_IS_CHILD_EVT = "isChildEvt";
+      var _DYN_DATA$1 = "data";
+      var _DYN_GET_CTX = "getCtx";
+      var _DYN_SET_CTX = "setCtx";
+      var _DYN_CONFIG = "config";
+      var _DYN_CALL = "call";
+      var _DYN_ITEMS_RECEIVED$1 = "itemsReceived";
+      var _DYN_HEADERS = "headers";
+      var _DYN_URL_STRING = "urlString";
+      var _DYN_TIMEOUT = "timeout";
+      var _DYN_STATUS = "status";
+      var _DYN_REPLACE = "replace";
+      var _DYN_EXCEPTION = "exception";
+      var _DYN_TYPE = "type";
+      var _DYN_MATCH = "match";
+      var _DYN_SET_TRACE_FLAGS = "setTraceFlags";
+      var _DYN_PATHNAME = "pathname";
+      var _DYN_TRACE_STATE = "traceState";
+      var _DYN_COUNT$1 = "count";
+      var _DYN_PROPERTIES = "properties";
+      var _DYN_USER_AGENT = "userAgent";
+      var _DYN_DURATION = "duration";
+      var _DYN_TO_STRING$1 = "toString";
+      var _DYN_HANDLER = "handler";
+      var _DYN_EVT_NAME = "evtName";
+      var _DYN_CONCAT$1 = "concat";
+      var _DYN_INGESTIONENDPOINT = "ingestionendpoint";
+      var _DYN_SUBSTRING = "substring";
+      var _DYN_GET_ALL_RESPONSE_HEA7 = "getAllResponseHeaders";
+      var _DYN_REMOVE_ITEM = "removeItem";
+      var _DYN_MEASUREMENTS$1 = "measurements";
+      var _DYN_SIZE_IN_BYTES = "sizeInBytes";
+      var _DYN_TYPE_NAME = "typeName";
+      var _DYN_EXCEPTIONS = "exceptions";
+      var _DYN_SEVERITY_LEVEL = "severityLevel";
+      var _DYN_PROBLEM_GROUP = "problemGroup";
+      var _DYN_PARSED_STACK = "parsedStack";
+      var _DYN_HAS_FULL_STACK = "hasFullStack";
+      var _DYN_ASSEMBLY = "assembly";
+      var _DYN_FILE_NAME = "fileName";
+      var _DYN_LINE = "line";
+      var _DYN_AI_DATA_CONTRACT = "aiDataContract";
+      var aggregationErrorType;
+      function throwAggregationError(message, sourceErrors) {
+        if (!aggregationErrorType) {
+          aggregationErrorType = /* @__PURE__ */ createCustomError("AggregationError", function(self2, args) {
+            if (args[_DYN_LENGTH$1] > 1) {
+              self2.errors = args[1];
+            }
+          });
+        }
+        var theMessage = message || "One or more errors occurred.";
+        arrForEach(sourceErrors, function(srcError, idx) {
+          theMessage += "\n".concat(idx, " > ").concat(/* @__PURE__ */ dumpObj(srcError));
+        });
+        throw new aggregationErrorType(theMessage, sourceErrors || []);
+      }
+      var STR_PROMISE = "Promise";
+      var REJECTED = "rejected";
+      function doAwaitResponse(value, cb) {
+        return doAwait(value, function(value2) {
+          return cb ? cb({
+            status: "fulfilled",
+            rejected: false,
+            value: value2
+          }) : value2;
+        }, function(reason) {
+          return cb ? cb({
+            status: REJECTED,
+            rejected: true,
+            reason
+          }) : reason;
+        });
+      }
+      function doAwait(value, resolveFn, rejectFn, finallyFn) {
+        var result = value;
+        try {
+          if (/* @__PURE__ */ isPromiseLike(value)) {
+            if (resolveFn || rejectFn) {
+              result = value.then(resolveFn, rejectFn);
+            }
+          } else {
+            try {
+              if (resolveFn) {
+                result = resolveFn(value);
+              }
+            } catch (err) {
+              if (rejectFn) {
+                result = rejectFn(err);
+              } else {
+                throw err;
+              }
+            }
+          }
+        } finally {
+          if (finallyFn) {
+            doFinally(result, finallyFn);
+          }
+        }
+        return result;
+      }
+      function doFinally(value, finallyFn) {
+        var result = value;
+        if (finallyFn) {
+          if (/* @__PURE__ */ isPromiseLike(value)) {
+            if (value.finally) {
+              result = value.finally(finallyFn);
+            } else {
+              result = value.then(function(value2) {
+                finallyFn();
+                return value2;
+              }, function(reason) {
+                finallyFn();
+                throw reason;
+              });
+            }
+          } else {
+            finallyFn();
+          }
+        }
+        return result;
+      }
+      var STRING_STATES = [
+        "pending",
+        "resolving",
+        "resolved",
+        REJECTED
+      ];
+      var DISPATCH_EVENT = "dispatchEvent";
+      var _hasInitEvent;
+      function _hasInitEventFn(doc) {
+        var evt;
+        if (doc && doc.createEvent) {
+          evt = doc.createEvent("Event");
+        }
+        return !!evt && evt.initEvent;
+      }
+      function emitEvent(target, evtName, populateEvent, useNewEvent) {
+        var doc = getDocument();
+        !_hasInitEvent && (_hasInitEvent = /* @__PURE__ */ createCachedValue(!!safe(_hasInitEventFn, [doc]).v));
+        var theEvt = _hasInitEvent.v ? doc.createEvent("Event") : useNewEvent ? new Event(evtName) : {};
+        populateEvent && populateEvent(theEvt);
+        if (_hasInitEvent.v) {
+          theEvt.initEvent(evtName, false, true);
+        }
+        if (theEvt && target[DISPATCH_EVENT]) {
+          target[DISPATCH_EVENT](theEvt);
+        } else {
+          var handler = target["on" + evtName];
+          if (handler) {
+            handler(theEvt);
+          } else {
+            var theConsole = /* @__PURE__ */ getInst("console");
+            theConsole && (theConsole["error"] || theConsole["log"])(evtName, /* @__PURE__ */ dumpObj(theEvt));
+          }
+        }
+      }
+      var NODE_UNHANDLED_REJECTION = "unhandledRejection";
+      var UNHANDLED_REJECTION = NODE_UNHANDLED_REJECTION.toLowerCase();
+      var _unhandledRejectionTimeout = 10;
+      var _hasPromiseRejectionEvent;
+      function dumpFnObj(value) {
+        if (isFunction(value)) {
+          return value.toString();
+        }
+        return /* @__PURE__ */ dumpObj(value);
+      }
+      function _createPromise(newPromise, processor, executor) {
+        var additionalArgs = arrSlice(arguments, 3);
+        var _state = 0;
+        var _hasResolved = false;
+        var _settledValue;
+        var _queue = [];
+        var _handled = false;
+        var _unHandledRejectionHandler = null;
+        var _thePromise;
+        function _then(onResolved, onRejected) {
+          try {
+            _handled = true;
+            _unHandledRejectionHandler && _unHandledRejectionHandler.cancel();
+            _unHandledRejectionHandler = null;
+            var thenPromise = newPromise(function(resolve, reject) {
+              _queue.push(function() {
+                try {
+                  var handler = _state === 2 ? onResolved : onRejected;
+                  var value = /* @__PURE__ */ isUndefined(handler) ? _settledValue : isFunction(handler) ? handler(_settledValue) : handler;
+                  if (/* @__PURE__ */ isPromiseLike(value)) {
+                    value.then(resolve, reject);
+                  } else if (handler) {
+                    resolve(value);
+                  } else if (_state === 3) {
+                    reject(value);
+                  } else {
+                    resolve(value);
+                  }
+                } catch (e) {
+                  reject(e);
+                }
+              });
+              if (_hasResolved) {
+                _processQueue();
+              }
+            }, additionalArgs);
+            return thenPromise;
+          } finally {
+          }
+        }
+        function _catch2(onRejected) {
+          return _then(void 0, onRejected);
+        }
+        function _finally(onFinally) {
+          var thenFinally = onFinally;
+          var catchFinally = onFinally;
+          if (isFunction(onFinally)) {
+            thenFinally = function(value) {
+              onFinally && onFinally();
+              return value;
+            };
+            catchFinally = function(reason) {
+              onFinally && onFinally();
+              throw reason;
+            };
+          }
+          return _then(thenFinally, catchFinally);
+        }
+        function _strState() {
+          return STRING_STATES[_state];
+        }
+        function _processQueue() {
+          if (_queue.length > 0) {
+            var pending = _queue.slice();
+            _queue = [];
+            _handled = true;
+            _unHandledRejectionHandler && _unHandledRejectionHandler.cancel();
+            _unHandledRejectionHandler = null;
+            processor(pending);
+          }
+        }
+        function _createSettleIfFn(newState, allowState) {
+          return function(theValue) {
+            if (_state === allowState) {
+              if (newState === 2 && /* @__PURE__ */ isPromiseLike(theValue)) {
+                _state = 1;
+                theValue.then(_createSettleIfFn(2, 1), _createSettleIfFn(3, 1));
+                return;
+              }
+              _state = newState;
+              _hasResolved = true;
+              _settledValue = theValue;
+              _processQueue();
+              if (!_handled && newState === 3 && !_unHandledRejectionHandler) {
+                _unHandledRejectionHandler = scheduleTimeout(_notifyUnhandledRejection, _unhandledRejectionTimeout);
+              }
+            }
+          };
+        }
+        function _notifyUnhandledRejection() {
+          if (!_handled) {
+            _handled = true;
+            if (isNode()) {
+              process.emit(NODE_UNHANDLED_REJECTION, _settledValue, _thePromise);
+            } else {
+              var gbl = getWindow() || getGlobal();
+              !_hasPromiseRejectionEvent && (_hasPromiseRejectionEvent = /* @__PURE__ */ createCachedValue(safe(getInst, [STR_PROMISE + "RejectionEvent"]).v));
+              emitEvent(gbl, UNHANDLED_REJECTION, function(theEvt) {
+                objDefine(theEvt, "promise", { g: function() {
+                  return _thePromise;
+                } });
+                theEvt.reason = _settledValue;
+                return theEvt;
+              }, !!_hasPromiseRejectionEvent.v);
+            }
+          }
+        }
+        _thePromise = {
+          then: _then,
+          "catch": _catch2,
+          finally: _finally
+        };
+        objDefineProp(_thePromise, "state", {
+          get: _strState
+        });
+        if (/* @__PURE__ */ hasSymbol()) {
+          _thePromise[/* @__PURE__ */ getKnownSymbol(11)] = "IPromise";
+        }
+        function _toString() {
+          return "IPromise " + _strState() + (_hasResolved ? " - " + dumpFnObj(_settledValue) : "");
+        }
+        _thePromise.toString = _toString;
+        (function _initialize() {
+          if (!isFunction(executor)) {
+            throwTypeError(STR_PROMISE + ": executor is not a function - " + dumpFnObj(executor));
+          }
+          var _rejectFn = _createSettleIfFn(3, 0);
+          try {
+            executor.call(_thePromise, _createSettleIfFn(2, 0), _rejectFn);
+          } catch (e) {
+            _rejectFn(e);
+          }
+        })();
+        return _thePromise;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createAllPromise(newPromise) {
+        return function(input) {
+          var additionalArgs = arrSlice(arguments, 1);
+          return newPromise(function(resolve, reject) {
+            try {
+              var values_1 = [];
+              var pending_1 = 1;
+              iterForOf(input, function(item, idx) {
+                if (item) {
+                  pending_1++;
+                  doAwait(item, function(value) {
+                    values_1[idx] = value;
+                    if (--pending_1 === 0) {
+                      resolve(values_1);
+                    }
+                  }, reject);
+                }
+              });
+              pending_1--;
+              if (pending_1 === 0) {
+                resolve(values_1);
+              }
+            } catch (e) {
+              reject(e);
+            }
+          }, additionalArgs);
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createAllSettledPromise(newPromise) {
+        return /* @__PURE__ */ createCachedValue(function(input) {
+          var additionalArgs = arrSlice(arguments, 1);
+          return newPromise(function(resolve, reject) {
+            var values = [];
+            var pending = 1;
+            function processItem(item, idx) {
+              pending++;
+              doAwaitResponse(item, function(value) {
+                if (value.rejected) {
+                  values[idx] = {
+                    status: REJECTED,
+                    reason: value.reason
+                  };
+                } else {
+                  values[idx] = {
+                    status: "fulfilled",
+                    value: value.value
+                  };
+                }
+                if (--pending === 0) {
+                  resolve(values);
+                }
+              });
+            }
+            try {
+              if (isArray(input)) {
+                arrForEach(input, processItem);
+              } else if (/* @__PURE__ */ isIterable(input)) {
+                iterForOf(input, processItem);
+              } else {
+                throwTypeError("Input is not an iterable");
+              }
+              pending--;
+              if (pending === 0) {
+                resolve(values);
+              }
+            } catch (e) {
+              reject(e);
+            }
+          }, additionalArgs);
+        });
+      }
+      function syncItemProcessor(pending) {
+        arrForEach(pending, function(fn) {
+          try {
+            fn();
+          } catch (e) {
+          }
+        });
+      }
+      function timeoutItemProcessor(timeout) {
+        var callbackTimeout = isNumber(timeout) ? timeout : 0;
+        return function(pending) {
+          scheduleTimeout(function() {
+            syncItemProcessor(pending);
+          }, callbackTimeout);
+        };
+      }
+      function createAsyncPromise(executor, timeout) {
+        return _createPromise(createAsyncPromise, timeoutItemProcessor(timeout), executor, timeout);
+      }
+      var _promiseCls;
+      function createNativePromise(executor, timeout) {
+        !_promiseCls && (_promiseCls = /* @__PURE__ */ createCachedValue(safe(getInst, [STR_PROMISE]).v || null));
+        var PrmCls = _promiseCls.v;
+        if (!PrmCls) {
+          return createAsyncPromise(executor);
+        }
+        if (!isFunction(executor)) {
+          throwTypeError(STR_PROMISE + ": executor is not a function - " + /* @__PURE__ */ dumpObj(executor));
+        }
+        var _state = 0;
+        function _strState() {
+          return STRING_STATES[_state];
+        }
+        var thePromise = new PrmCls(function(resolve, reject) {
+          function _resolve(value) {
+            _state = 2;
+            resolve(value);
+          }
+          function _reject(reason) {
+            _state = 3;
+            reject(reason);
+          }
+          executor(_resolve, _reject);
+        });
+        objDefineProp(thePromise, "state", {
+          get: _strState
+        });
+        return thePromise;
+      }
+      var _allSyncSettledCreator;
+      function createSyncPromise(executor) {
+        return _createPromise(createSyncPromise, syncItemProcessor, executor);
+      }
+      function createSyncAllSettledPromise(input, timeout) {
+        !_allSyncSettledCreator && (_allSyncSettledCreator = /* @__PURE__ */ _createAllSettledPromise(createSyncPromise));
+        return _allSyncSettledCreator.v(input, timeout);
+      }
+      var _promiseCreator;
+      function createPromise(executor, timeout) {
+        !_promiseCreator && (_promiseCreator = /* @__PURE__ */ createCachedValue(createNativePromise));
+        return _promiseCreator.v.call(this, executor, timeout);
+      }
+      var createAllPromise = /* @__PURE__ */ _createAllPromise(createPromise);
+      var UNDEFINED_VALUE$2 = void 0;
+      var STR_EMPTY = "";
+      var STR_CHANNELS = "channels";
+      var STR_CORE = "core";
+      var STR_CREATE_PERF_MGR = "createPerfMgr";
+      var STR_DISABLED = "disabled";
+      var STR_EXTENSION_CONFIG = "extensionConfig";
+      var STR_EXTENSIONS = "extensions";
+      var STR_PROCESS_TELEMETRY = "processTelemetry";
+      var STR_PRIORITY = "priority";
+      var STR_EVENTS_SENT = "eventsSent";
+      var STR_EVENTS_DISCARDED = "eventsDiscarded";
+      var STR_EVENTS_SEND_REQUEST = "eventsSendRequest";
+      var STR_PERF_EVENT = "perfEvent";
+      var STR_OFFLINE_STORE = "offlineEventsStored";
+      var STR_OFFLINE_SENT = "offlineBatchSent";
+      var STR_OFFLINE_DROP = "offlineBatchDrop";
+      var STR_GET_PERF_MGR = "getPerfMgr";
+      var STR_DOMAIN = "domain";
+      var STR_PATH = "path";
+      var STR_NOT_DYNAMIC_ERROR = "Not dynamic - ";
+      var STR_REDACTED = "REDACTED";
+      var DEFAULT_SENSITIVE_PARAMS = ["sig", "Signature", "AWSAccessKeyId", "X-Goog-Signature"];
+      var STR_VERSION = "version";
+      function _stringToBoolOrDefault(theValue, defaultValue, theConfig) {
+        if (!theValue && /* @__PURE__ */ isNullOrUndefined(theValue)) {
+          return defaultValue;
+        }
+        if (isBoolean(theValue)) {
+          return theValue;
+        }
+        return asString(theValue)[_DYN_TO_LOWER_CASE]() === "true";
+      }
+      function cfgDfMerge(defaultValue) {
+        return {
+          mrg: true,
+          v: defaultValue
+        };
+      }
+      function cfgDfValidate(validator, defaultValue, fallBackName) {
+        return {
+          fb: fallBackName,
+          isVal: validator,
+          v: defaultValue
+        };
+      }
+      function cfgDfBoolean(defaultValue, fallBackName) {
+        return {
+          fb: fallBackName,
+          set: _stringToBoolOrDefault,
+          v: !!defaultValue
+        };
+      }
+      var strGetPrototypeOf = "getPrototypeOf";
+      var rCamelCase = /-([a-z])/g;
+      var rNormalizeInvalid = /([^\w\d_$])/g;
+      var rLeadingNumeric = /^(\d+[\w\d_$])/;
+      var _ProtoNameTag;
+      var _getObjProto = Object[strGetPrototypeOf];
+      // @__NO_SIDE_EFFECTS__
+      function isNotNullOrUndefined(value) {
+        return !/* @__PURE__ */ isNullOrUndefined(value);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function normalizeJsName(name) {
+        var value = name;
+        if (value && isString(value)) {
+          value = value[_DYN_REPLACE](rCamelCase, function(_all, letter) {
+            return letter.toUpperCase();
+          });
+          value = value[_DYN_REPLACE](rNormalizeInvalid, "_");
+          value = value[_DYN_REPLACE](rLeadingNumeric, function(_all, match) {
+            return "_" + match;
+          });
+        }
+        return value;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function strContains(value, search) {
+        if (value && search) {
+          return strIndexOf(value, search) !== -1;
+        }
+        return false;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function toISOString(date5) {
+        return date5 && date5.toISOString() || STR_EMPTY;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getExceptionName(object3) {
+        if (isError(object3)) {
+          return object3[_DYN_NAME$1];
+        }
+        return STR_EMPTY;
+      }
+      function setValue(target, field, value, valChk, srcChk) {
+        var theValue = value;
+        if (target) {
+          theValue = target[field];
+          if (theValue !== value && (!srcChk || srcChk(theValue)) && (!valChk || valChk(value))) {
+            theValue = value;
+            target[field] = theValue;
+          }
+        }
+        return theValue;
+      }
+      function getSetValue(target, field, defValue) {
+        var theValue;
+        if (target) {
+          theValue = target[field];
+          if (!theValue && /* @__PURE__ */ isNullOrUndefined(theValue)) {
+            theValue = !/* @__PURE__ */ isUndefined(defValue) ? defValue : {};
+            target[field] = theValue;
+          }
+        } else {
+          theValue = !/* @__PURE__ */ isUndefined(defValue) ? defValue : {};
+        }
+        return theValue;
+      }
+      function _createProxyFunction(source, funcName) {
+        var srcFunc = null;
+        var src = null;
+        if (isFunction(source)) {
+          srcFunc = source;
+        } else {
+          src = source;
+        }
+        return function() {
+          var originalArguments = arguments;
+          if (srcFunc) {
+            src = srcFunc();
+          }
+          if (src) {
+            return src[funcName][_DYN_APPLY](src, originalArguments);
+          }
+        };
+      }
+      function proxyFunctionAs(target, name, source, theFunc, overwriteTarget) {
+        if (target && name && source) {
+          if (overwriteTarget !== false || /* @__PURE__ */ isUndefined(target[name])) {
+            target[name] = _createProxyFunction(source, theFunc);
+          }
+        }
+      }
+      function proxyFunctions(target, source, functionsToProxy, overwriteTarget) {
+        if (target && source && /* @__PURE__ */ isObject2(target) && isArray(functionsToProxy)) {
+          arrForEach(functionsToProxy, function(theFuncName) {
+            if (isString(theFuncName)) {
+              proxyFunctionAs(target, theFuncName, source, theFuncName, overwriteTarget);
+            }
+          });
+        }
+        return target;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createClassFromInterface(defaults) {
+        return (
+          /** @class */
+          /* @__PURE__ */ (function() {
+            function class_1() {
+              var _this = this;
+              if (defaults) {
+                objForEachKey(defaults, function(field, value) {
+                  _this[field] = value;
+                });
+              }
+            }
+            return class_1;
+          })()
+        );
+      }
+      function setObjStringTag(target, nameOrFunc) {
+        safe(objDefine, [target, /* @__PURE__ */ getKnownSymbol(11), isFunction(nameOrFunc) ? { g: nameOrFunc, e: false } : { v: nameOrFunc, w: false, e: false }]);
+        return target;
+      }
+      function setProtoTypeName(target, name) {
+        if (target) {
+          var proto_1 = _getObjProto(target);
+          var done_1 = false;
+          if (proto_1) {
+            safe(function() {
+              var newProto = setObjStringTag(objCreate(proto_1), name);
+              if (!_ProtoNameTag) {
+                _ProtoNameTag = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ newSymbol("ai$ProtoName"));
+              }
+              objDefine(newProto, _ProtoNameTag.v, {
+                v: true,
+                w: false,
+                e: false
+              });
+              objSetPrototypeOf(target, newProto);
+              done_1 = true;
+            });
+          }
+          if (!done_1) {
+            safe(setObjStringTag, [target, name]);
+          }
+        }
+        return target;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function optimizeObject(theObject) {
+        if (theObject && objAssign) {
+          theObject = ObjClass(objAssign({}, theObject));
+        }
+        return theObject;
+      }
+      function objExtend(obj1, obj2, obj3, obj4, obj5, obj6) {
+        var theArgs = arguments;
+        var extended = theArgs[0] || {};
+        var argLen = theArgs[_DYN_LENGTH$1];
+        var deep = false;
+        var idx = 1;
+        if (argLen > 0 && isBoolean(extended)) {
+          deep = extended;
+          extended = theArgs[idx] || {};
+          idx++;
+        }
+        if (!/* @__PURE__ */ isObject2(extended)) {
+          extended = {};
+        }
+        for (; idx < argLen; idx++) {
+          var arg = theArgs[idx];
+          var isArgArray = isArray(arg);
+          var isArgObj = /* @__PURE__ */ isObject2(arg);
+          for (var prop in arg) {
+            var propOk = isArgArray && prop in arg || isArgObj && objHasOwn(arg, prop);
+            if (!propOk) {
+              continue;
+            }
+            var newValue = arg[prop];
+            var isNewArray = void 0;
+            if (deep && newValue && ((isNewArray = isArray(newValue)) || /* @__PURE__ */ isPlainObject3(newValue))) {
+              var clone2 = extended[prop];
+              if (isNewArray) {
+                if (!isArray(clone2)) {
+                  clone2 = [];
+                }
+              } else if (!/* @__PURE__ */ isPlainObject3(clone2)) {
+                clone2 = {};
+              }
+              newValue = objExtend(deep, clone2, newValue);
+            }
+            if (newValue !== void 0) {
+              extended[prop] = newValue;
+            }
+          }
+        }
+        return extended;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isFeatureEnabled(feature, cfg, sdkDefaultState) {
+        var ft = cfg && cfg.featureOptIn && cfg.featureOptIn[feature];
+        if (feature && ft) {
+          var mode = ft.mode;
+          if (mode === 3) {
+            return true;
+          } else if (mode === 2) {
+            return false;
+          }
+        }
+        return sdkDefaultState;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getResponseText(xhr) {
+        try {
+          return xhr.responseText;
+        } catch (e) {
+        }
+        return null;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function formatErrorMessageXdr(xdr, message) {
+        if (xdr) {
+          return "XDomainRequest,Response:" + /* @__PURE__ */ getResponseText(xdr) || STR_EMPTY;
+        }
+        return message;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function formatErrorMessageXhr(xhr, message) {
+        if (xhr) {
+          return "XMLHttpRequest,Status:" + xhr[_DYN_STATUS] + ",Response:" + /* @__PURE__ */ getResponseText(xhr) || xhr.response || STR_EMPTY;
+        }
+        return message;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function prependTransports(theTransports, newTransports) {
+        if (newTransports) {
+          if (isNumber(newTransports)) {
+            theTransports = [newTransports][_DYN_CONCAT$1](theTransports);
+          } else if (isArray(newTransports)) {
+            theTransports = newTransports[_DYN_CONCAT$1](theTransports);
+          }
+        }
+        return theTransports;
+      }
+      var strDisabledPropertyName = "Microsoft_ApplicationInsights_BypassAjaxInstrumentation";
+      var strWithCredentials = "withCredentials";
+      var strTimeout = "timeout";
+      function openXhr(method, urlString, withCredentials, disabled, isSync, timeout) {
+        if (disabled === void 0) {
+          disabled = false;
+        }
+        if (isSync === void 0) {
+          isSync = false;
+        }
+        function _wrapSetXhrProp(xhr2, prop, value) {
+          try {
+            xhr2[prop] = value;
+          } catch (e) {
+          }
+        }
+        var xhr = new XMLHttpRequest();
+        if (disabled) {
+          _wrapSetXhrProp(xhr, strDisabledPropertyName, disabled);
+        }
+        if (withCredentials) {
+          _wrapSetXhrProp(xhr, strWithCredentials, withCredentials);
+        }
+        xhr.open(method, urlString, !isSync);
+        if (withCredentials) {
+          _wrapSetXhrProp(xhr, strWithCredentials, withCredentials);
+        }
+        if (!isSync && timeout) {
+          _wrapSetXhrProp(xhr, strTimeout, timeout);
+        }
+        return xhr;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function convertAllHeadersToMap(headersString) {
+        var headers = {};
+        if (isString(headersString)) {
+          var headersArray = strTrim(headersString)[_DYN_SPLIT](/[\r\n]+/);
+          arrForEach(headersArray, function(headerEntry) {
+            if (headerEntry) {
+              var idx = strIndexOf(headerEntry, ": ");
+              if (idx !== -1) {
+                var header = strTrim(headerEntry.substring(0, idx))[_DYN_TO_LOWER_CASE]();
+                var value = strTrim(headerEntry[_DYN_SUBSTRING](idx + 1));
+                headers[header] = value;
+              } else {
+                headers[strTrim(headerEntry)] = 1;
+              }
+            }
+          });
+        }
+        return headers;
+      }
+      function _appendHeader(theHeaders, xhr, name) {
+        if (!theHeaders[name] && xhr && xhr.getResponseHeader) {
+          var value = xhr.getResponseHeader(name);
+          if (value) {
+            theHeaders[name] = strTrim(value);
+          }
+        }
+        return theHeaders;
+      }
+      var STR_KILL_DURATION_HEADER = "kill-duration";
+      var STR_KILL_DURATION_SECONDS_HEADER = "kill-duration-seconds";
+      var STR_TIME_DELTA_HEADER = "time-delta-millis";
+      function _getAllResponseHeaders(xhr, isOneDs) {
+        var theHeaders = {};
+        if (!xhr[_DYN_GET_ALL_RESPONSE_HEA7]) {
+          if (!!isOneDs) {
+            theHeaders = _appendHeader(theHeaders, xhr, STR_TIME_DELTA_HEADER);
+            theHeaders = _appendHeader(theHeaders, xhr, STR_KILL_DURATION_HEADER);
+            theHeaders = _appendHeader(theHeaders, xhr, STR_KILL_DURATION_SECONDS_HEADER);
+          }
+        } else {
+          theHeaders = /* @__PURE__ */ convertAllHeadersToMap(xhr[_DYN_GET_ALL_RESPONSE_HEA7]());
+        }
+        return theHeaders;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function msToTimeSpan(totalms) {
+        if (/* @__PURE__ */ isTimeSpan(totalms)) {
+          return totalms;
+        }
+        if (isNaN(totalms) || totalms < 0) {
+          totalms = 0;
+        }
+        totalms = mathRound(totalms);
+        var ms = STR_EMPTY + totalms % 1e3;
+        var sec = STR_EMPTY + mathFloor(totalms / 1e3) % 60;
+        var min = STR_EMPTY + mathFloor(totalms / (1e3 * 60)) % 60;
+        var hour = STR_EMPTY + mathFloor(totalms / (1e3 * 60 * 60)) % 24;
+        var days = mathFloor(totalms / (1e3 * 60 * 60 * 24));
+        ms = ms[_DYN_LENGTH$1] === 1 ? "00" + ms : ms[_DYN_LENGTH$1] === 2 ? "0" + ms : ms;
+        sec = sec[_DYN_LENGTH$1] < 2 ? "0" + sec : sec;
+        min = min[_DYN_LENGTH$1] < 2 ? "0" + min : min;
+        hour = hour[_DYN_LENGTH$1] < 2 ? "0" + hour : hour;
+        return (days > 0 ? days + "." : STR_EMPTY) + hour + ":" + min + ":" + sec + "." + ms;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isTimeSpan(value) {
+        var result = false;
+        if (isString(value)) {
+          var parts = strSplit(value, ":");
+          if (parts[_DYN_LENGTH$1] === 3) {
+            var daysHours = strSplit(parts[0], ".");
+            if (daysHours[_DYN_LENGTH$1] === 2) {
+              result = !isNaN(parseInt(daysHours[0] || "0")) && !isNaN(parseInt(daysHours[1] || "0"));
+            } else {
+              result = !isNaN(parseInt(daysHours[0] || "0"));
+            }
+            result = result && !isNaN(parseInt(parts[1] || "0"));
+            var secondsParts = strSplit(parts[2], ".");
+            if (secondsParts[_DYN_LENGTH$1] === 2) {
+              result = result && !isNaN(parseInt(secondsParts[0] || "0")) && !isNaN(parseInt(secondsParts[1] || "0"));
+            } else {
+              result = result && !isNaN(parseInt(secondsParts[0] || "0"));
+            }
+          }
+        }
+        return result;
+      }
+      var strDocumentMode = "documentMode";
+      var strLocation = "location";
+      var strConsole = "console";
+      var strJSON = "JSON";
+      var strCrypto = "crypto";
+      var strMsCrypto = "msCrypto";
+      var strMsie = "msie";
+      var strTrident = "trident/";
+      var strXMLHttpRequest = "XMLHttpRequest";
+      var _isTrident;
+      var _navUserAgentCheck;
+      var _enableMocks = false;
+      var _beaconsSupported;
+      var _userAgent;
+      function _hasProperty(theClass, property) {
+        var supported = false;
+        if (theClass) {
+          try {
+            supported = property in theClass;
+            if (!supported) {
+              var proto = theClass[strShimPrototype];
+              if (proto) {
+                supported = property in proto;
+              }
+            }
+          } catch (e) {
+          }
+          if (!supported) {
+            try {
+              var tmp = new theClass();
+              supported = !/* @__PURE__ */ isUndefined(tmp[property]);
+            } catch (e) {
+            }
+          }
+        }
+        return supported;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getUserAgentString() {
+        if (!_userAgent) {
+          _userAgent = /* @__PURE__ */ getLazy(function() {
+            var nav = getNavigator() || {};
+            return nav[_DYN_USER_AGENT] || STR_EMPTY;
+          });
+        }
+        return _userAgent.v;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getLocation(checkForMock) {
+        if (checkForMock && _enableMocks) {
+          var mockLocation = /* @__PURE__ */ getInst("__mockLocation");
+          if (mockLocation) {
+            return mockLocation;
+          }
+        }
+        if (typeof location === strShimObject && location) {
+          return location;
+        }
+        return /* @__PURE__ */ getInst(strLocation);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getConsole() {
+        if (typeof console !== strShimUndefined) {
+          return console;
+        }
+        return /* @__PURE__ */ getInst(strConsole);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function hasJSON() {
+        return Boolean(typeof JSON === strShimObject && JSON || /* @__PURE__ */ getInst(strJSON) !== null);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getJSON() {
+        if (/* @__PURE__ */ hasJSON()) {
+          return JSON || /* @__PURE__ */ getInst(strJSON);
+        }
+        return null;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getCrypto() {
+        return /* @__PURE__ */ getInst(strCrypto);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getMsCrypto() {
+        return /* @__PURE__ */ getInst(strMsCrypto);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isIE() {
+        var userAgent = /* @__PURE__ */ getUserAgentString();
+        if (!_isTrident || userAgent !== _navUserAgentCheck) {
+          _navUserAgentCheck = userAgent;
+          var lwrUserAgent = _navUserAgentCheck[_DYN_TO_LOWER_CASE]();
+          _isTrident = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ strContains(lwrUserAgent, strMsie) || /* @__PURE__ */ strContains(lwrUserAgent, strTrident));
+        }
+        return _isTrident.v;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function getIEVersion(userAgentStr) {
+        if (userAgentStr === void 0) {
+          userAgentStr = null;
+        }
+        if (!userAgentStr) {
+          userAgentStr = /* @__PURE__ */ getUserAgentString();
+        }
+        var ua = (userAgentStr || STR_EMPTY)[_DYN_TO_LOWER_CASE]();
+        if (/* @__PURE__ */ strContains(ua, strMsie)) {
+          var doc = getDocument() || {};
+          return mathMax(parseInt(ua[_DYN_SPLIT](strMsie)[1]), doc[strDocumentMode] || 0);
+        } else if (/* @__PURE__ */ strContains(ua, strTrident)) {
+          var tridentVer = parseInt(ua[_DYN_SPLIT](strTrident)[1]);
+          if (tridentVer) {
+            return tridentVer + 4;
+          }
+        }
+        return null;
+      }
+      function isBeaconsSupported(useCached) {
+        if (!_beaconsSupported || useCached === false) {
+          _beaconsSupported = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ hasNavigator() && !!getNavigator().sendBeacon);
+        }
+        return _beaconsSupported.v;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isFetchSupported(withKeepAlive) {
+        var isSupported = false;
+        try {
+          isSupported = !!/* @__PURE__ */ getInst("fetch");
+          var request = /* @__PURE__ */ getInst("Request");
+          if (isSupported && withKeepAlive && request) {
+            isSupported = _hasProperty(request, "keepalive");
+          }
+        } catch (e) {
+        }
+        return isSupported;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isXhrSupported() {
+        var isSupported = false;
+        try {
+          var xmlHttpRequest = /* @__PURE__ */ getInst(strXMLHttpRequest);
+          isSupported = !!xmlHttpRequest;
+        } catch (e) {
+        }
+        return isSupported;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getNamedValue(values, name) {
+        var items = [];
+        if (values) {
+          arrForEach(values, function(value) {
+            if (value[_DYN_NAME$1]) {
+              if (value[_DYN_NAME$1] === name) {
+                items[_DYN_PUSH$1](value);
+              }
+            }
+          });
+        }
+        return items;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findMetaTag(name) {
+        var tags = /* @__PURE__ */ findMetaTags(name);
+        if (tags[_DYN_LENGTH$1] > 0) {
+          return tags[0];
+        }
+        return null;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findMetaTags(name) {
+        var tags = [];
+        var doc = getDocument();
+        if (doc && name) {
+          arrForEach(/* @__PURE__ */ _getNamedValue(doc.querySelectorAll("meta"), name), function(item) {
+            tags[_DYN_PUSH$1](item.content);
+          });
+        }
+        return tags;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findNamedServerTiming(name) {
+        var value;
+        var serverTimings = /* @__PURE__ */ findNamedServerTimings();
+        if (serverTimings[_DYN_LENGTH$1] > 0) {
+          value = serverTimings[0];
+        }
+        return value;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findNamedServerTimings(name) {
+        var values = [];
+        return values;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function redactUserInfo(url2) {
+        return url2.replace(/^([a-zA-Z][a-zA-Z0-9+.-]*:\/\/)([^:@]{1,200}):([^@]{1,200})@(.*)$/, "$1REDACTED:REDACTED@$4");
+      }
+      // @__NO_SIDE_EFFECTS__
+      function redactQueryParameters(url2, config2) {
+        var sensitiveParams;
+        var questionMarkIndex = strIndexOf(url2, "?");
+        if (questionMarkIndex === -1) {
+          return url2;
+        }
+        var option = config2 ? config2.redactUrls : void 0;
+        if (option === 3) {
+          sensitiveParams = DEFAULT_SENSITIVE_PARAMS[_DYN_CONCAT$1](config2.redactQueryParams);
+        } else if (option === 4) {
+          sensitiveParams = config2.redactQueryParams;
+        } else {
+          sensitiveParams = DEFAULT_SENSITIVE_PARAMS;
+        }
+        var baseUrl = strSubstring(url2, 0, questionMarkIndex + 1);
+        var queryString = strSubstring(url2, questionMarkIndex + 1);
+        var fragment = STR_EMPTY;
+        var hashIndex = strIndexOf(queryString, "#");
+        if (hashIndex !== -1) {
+          fragment = strSubstring(queryString, hashIndex);
+          queryString = strSubstring(queryString, 0, hashIndex);
+        }
+        var hasPotentialSensitiveParam = false;
+        for (var i = 0; i < sensitiveParams[_DYN_LENGTH$1]; i++) {
+          var paramCheck = sensitiveParams[i] + "=";
+          if (strIndexOf(queryString, paramCheck) !== -1) {
+            hasPotentialSensitiveParam = true;
+            break;
+          }
+        }
+        if (!hasPotentialSensitiveParam) {
+          return url2;
+        }
+        var resultParts = [];
+        var anyParamRedacted = false;
+        if (queryString && queryString[_DYN_LENGTH$1]) {
+          var pairs = queryString[_DYN_SPLIT]("&");
+          for (var i = 0; i < pairs[_DYN_LENGTH$1]; i++) {
+            var pair = pairs[i];
+            if (!pair) {
+              continue;
+            }
+            var equalsIndex = strIndexOf(pair, "=");
+            if (equalsIndex === -1) {
+              resultParts[_DYN_PUSH$1](pair);
+            } else {
+              var paramName = pair[_DYN_SUBSTRING](0, equalsIndex);
+              var paramValue = pair[_DYN_SUBSTRING](equalsIndex + 1);
+              if (paramValue === STR_EMPTY) {
+                resultParts[_DYN_PUSH$1](pair);
+              } else {
+                var shouldRedact = false;
+                for (var j = 0; j < sensitiveParams[_DYN_LENGTH$1]; j++) {
+                  if (paramName === sensitiveParams[j]) {
+                    shouldRedact = true;
+                    anyParamRedacted = true;
+                    break;
+                  }
+                }
+                if (shouldRedact) {
+                  resultParts[_DYN_PUSH$1](paramName + "=" + STR_REDACTED);
+                } else {
+                  resultParts[_DYN_PUSH$1](pair);
+                }
+              }
+            }
+          }
+        }
+        if (!anyParamRedacted) {
+          return url2;
+        }
+        return baseUrl + resultParts[_DYN_JOIN]("&") + fragment;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function fieldRedaction(input, config2) {
+        if (!input || !isString(input) || strIndexOf(input, " ") !== -1) {
+          return input;
+        }
+        var option = config2 ? config2.redactUrls : void 0;
+        var isRedactionDisabled = option === false || option === 2;
+        if (isRedactionDisabled) {
+          return input;
+        }
+        var hasCredentials = strIndexOf(input, "@") !== -1;
+        var hasQueryParams = strIndexOf(input, "?") !== -1;
+        if (!hasCredentials && !hasQueryParams) {
+          return input;
+        }
+        if (option === 5) {
+          hasQueryParams = false;
+        }
+        if (option === 6) {
+          hasCredentials = false;
+        }
+        try {
+          var result = input;
+          if (hasCredentials) {
+            result = /* @__PURE__ */ redactUserInfo(input);
+          }
+          if (hasQueryParams) {
+            result = /* @__PURE__ */ redactQueryParameters(result, config2);
+          }
+          return result;
+        } catch (e) {
+          return input;
+        }
+      }
+      var UInt32Mask = 4294967296;
+      var MaxUInt32 = 4294967295;
+      var SEED1 = 123456789;
+      var SEED2 = 987654321;
+      var _mwcSeeded = false;
+      var _mwcW = SEED1;
+      var _mwcZ = SEED2;
+      function _mwcSeed(seedValue) {
+        if (seedValue < 0) {
+          seedValue >>>= 0;
+        }
+        _mwcW = SEED1 + seedValue & MaxUInt32;
+        _mwcZ = SEED2 - seedValue & MaxUInt32;
+        _mwcSeeded = true;
+      }
+      function _autoSeedMwc() {
+        try {
+          var now = /* @__PURE__ */ utcNow() & 2147483647;
+          _mwcSeed((mathRandom() * UInt32Mask ^ now) + now);
+        } catch (e) {
+        }
+      }
+      function random32(signed) {
+        var value = 0;
+        var c = /* @__PURE__ */ getCrypto() || /* @__PURE__ */ getMsCrypto();
+        if (c && c.getRandomValues) {
+          value = c.getRandomValues(new Uint32Array(1))[0] & MaxUInt32;
+        }
+        if (value === 0 && /* @__PURE__ */ isIE()) {
+          if (!_mwcSeeded) {
+            _autoSeedMwc();
+          }
+          value = mwcRandom32() & MaxUInt32;
+        }
+        if (value === 0) {
+          value = mathFloor(UInt32Mask * mathRandom() | 0);
+        }
+        if (!signed) {
+          value >>>= 0;
+        }
+        return value;
+      }
+      function mwcRandom32(signed) {
+        _mwcZ = 36969 * (_mwcZ & 65535) + (_mwcZ >> 16) & MaxUInt32;
+        _mwcW = 18e3 * (_mwcW & 65535) + (_mwcW >> 16) & MaxUInt32;
+        var value = (_mwcZ << 16) + (_mwcW & 65535) >>> 0 & MaxUInt32 | 0;
+        if (!signed) {
+          value >>>= 0;
+        }
+        return value;
+      }
+      function newId(maxLength) {
+        if (maxLength === void 0) {
+          maxLength = 22;
+        }
+        var base64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        var number4 = random32() >>> 0;
+        var chars = 0;
+        var result = STR_EMPTY;
+        while (result[_DYN_LENGTH$1] < maxLength) {
+          chars++;
+          result += base64chars.charAt(number4 & 63);
+          number4 >>>= 6;
+          if (chars === 5) {
+            number4 = (random32() << 2 & 4294967295 | number4 & 3) >>> 0;
+            chars = 0;
+          }
+        }
+        return result;
+      }
+      var version2 = "3.4.1";
+      var instanceName = "." + newId(6);
+      var _dataUid = 0;
+      function _canAcceptData(target) {
+        return target.nodeType === 1 || target.nodeType === 9 || !+target.nodeType;
+      }
+      function _getCache(data, target) {
+        var theCache = target[data.id];
+        if (!theCache) {
+          theCache = {};
+          try {
+            if (_canAcceptData(target)) {
+              objDefine(target, data.id, {
+                e: false,
+                v: theCache
+              });
+            }
+          } catch (e) {
+          }
+        }
+        return theCache;
+      }
+      function createUniqueNamespace(name, includeVersion) {
+        if (includeVersion === void 0) {
+          includeVersion = false;
+        }
+        return /* @__PURE__ */ normalizeJsName(name + _dataUid++ + (includeVersion ? "." + version2 : STR_EMPTY) + instanceName);
+      }
+      function createElmNodeData(name) {
+        var data = {
+          id: createUniqueNamespace("_aiData-" + (name || STR_EMPTY) + "." + version2),
+          accept: function(target) {
+            return _canAcceptData(target);
+          },
+          get: function(target, name2, defValue, addDefault) {
+            var theCache = target[data.id];
+            if (!theCache) {
+              if (addDefault) {
+                theCache = _getCache(data, target);
+                theCache[/* @__PURE__ */ normalizeJsName(name2)] = defValue;
+              }
+              return defValue;
+            }
+            return theCache[/* @__PURE__ */ normalizeJsName(name2)];
+          },
+          kill: function(target, name2) {
+            if (target && target[name2]) {
+              try {
+                delete target[name2];
+              } catch (e) {
+              }
+            }
+          }
+        };
+        return data;
+      }
+      function _isConfigDefaults(value) {
+        return value && /* @__PURE__ */ isObject2(value) && !isArray(value) && (value.isVal || value.fb || objHasOwn(value, "v") || objHasOwn(value, "mrg") || objHasOwn(value, "ref") || value.set);
+      }
+      function _getDefault(dynamicHandler, theConfig, cfgDefaults) {
+        var defValue;
+        var isDefaultValid = cfgDefaults.dfVal || isDefined;
+        if (theConfig && cfgDefaults.fb) {
+          var fallbacks = cfgDefaults.fb;
+          if (!isArray(fallbacks)) {
+            fallbacks = [fallbacks];
+          }
+          for (var lp = 0; lp < fallbacks[_DYN_LENGTH$1]; lp++) {
+            var fallback = fallbacks[lp];
+            var fbValue = theConfig[fallback];
+            if (isDefaultValid(fbValue)) {
+              defValue = fbValue;
+            } else if (dynamicHandler) {
+              fbValue = dynamicHandler.cfg[fallback];
+              if (isDefaultValid(fbValue)) {
+                defValue = fbValue;
+              }
+              dynamicHandler.set(dynamicHandler.cfg, asString(fallback), fbValue);
+            }
+            if (isDefaultValid(defValue)) {
+              break;
+            }
+          }
+        }
+        if (!isDefaultValid(defValue) && isDefaultValid(cfgDefaults.v)) {
+          defValue = cfgDefaults.v;
+        }
+        return defValue;
+      }
+      function _resolveDefaultValue(dynamicHandler, theConfig, cfgDefaults) {
+        var theValue = cfgDefaults;
+        if (cfgDefaults && _isConfigDefaults(cfgDefaults)) {
+          theValue = _getDefault(dynamicHandler, theConfig, cfgDefaults);
+        }
+        if (theValue) {
+          if (_isConfigDefaults(theValue)) {
+            theValue = _resolveDefaultValue(dynamicHandler, theConfig, theValue);
+          }
+          var newValue_1;
+          if (isArray(theValue)) {
+            newValue_1 = [];
+            newValue_1[_DYN_LENGTH$1] = theValue[_DYN_LENGTH$1];
+          } else if (/* @__PURE__ */ isPlainObject3(theValue)) {
+            newValue_1 = {};
+          }
+          if (newValue_1) {
+            objForEachKey(theValue, function(key, value) {
+              if (value && _isConfigDefaults(value)) {
+                value = _resolveDefaultValue(dynamicHandler, theConfig, value);
+              }
+              newValue_1[key] = value;
+            });
+            theValue = newValue_1;
+          }
+        }
+        return theValue;
+      }
+      function _applyDefaultValue(dynamicHandler, theConfig, name, defaultValue) {
+        var isValid2;
+        var setFn;
+        var defValue;
+        var cfgDefaults = defaultValue;
+        var mergeDf;
+        var reference;
+        var readOnly;
+        var blkDynamicValue;
+        if (_isConfigDefaults(cfgDefaults)) {
+          isValid2 = cfgDefaults.isVal;
+          setFn = cfgDefaults.set;
+          readOnly = cfgDefaults.rdOnly;
+          blkDynamicValue = cfgDefaults.blkVal;
+          mergeDf = cfgDefaults.mrg;
+          reference = cfgDefaults.ref;
+          if (!reference && /* @__PURE__ */ isUndefined(reference)) {
+            reference = !!mergeDf;
+          }
+          defValue = _getDefault(dynamicHandler, theConfig, cfgDefaults);
+        } else {
+          defValue = defaultValue;
+        }
+        if (blkDynamicValue) {
+          dynamicHandler.blkVal(theConfig, name);
+        }
+        var theValue;
+        var usingDefault = true;
+        var cfgValue = theConfig[name];
+        if (cfgValue || !/* @__PURE__ */ isNullOrUndefined(cfgValue)) {
+          theValue = cfgValue;
+          usingDefault = false;
+          if (isValid2 && theValue !== defValue && !isValid2(theValue)) {
+            theValue = defValue;
+            usingDefault = true;
+          }
+          if (setFn) {
+            theValue = setFn(theValue, defValue, theConfig);
+            usingDefault = theValue === defValue;
+          }
+        }
+        if (!usingDefault) {
+          if (/* @__PURE__ */ isPlainObject3(theValue) || isArray(defValue)) {
+            if (mergeDf && defValue && (/* @__PURE__ */ isPlainObject3(defValue) || isArray(defValue))) {
+              objForEachKey(defValue, function(dfName, dfValue) {
+                _applyDefaultValue(dynamicHandler, theValue, dfName, dfValue);
+              });
+            }
+          }
+        } else if (defValue) {
+          theValue = _resolveDefaultValue(dynamicHandler, theConfig, defValue);
+        } else {
+          theValue = defValue;
+        }
+        dynamicHandler.set(theConfig, name, theValue);
+        if (reference) {
+          dynamicHandler.ref(theConfig, name);
+        }
+        if (readOnly) {
+          dynamicHandler.rdOnly(theConfig, name);
+        }
+      }
+      var CFG_HANDLER_LINK = /* @__PURE__ */ symbolFor("[[ai_dynCfg_1]]");
+      var BLOCK_DYNAMIC = /* @__PURE__ */ symbolFor("[[ai_blkDynCfg_1]]");
+      var FORCE_DYNAMIC = /* @__PURE__ */ symbolFor("[[ai_frcDynCfg_1]]");
+      function _cfgDeepCopy(source) {
+        if (source) {
+          var target_1;
+          if (isArray(source)) {
+            target_1 = [];
+            target_1[_DYN_LENGTH$1] = source[_DYN_LENGTH$1];
+          } else if (/* @__PURE__ */ isPlainObject3(source)) {
+            target_1 = {};
+          }
+          if (target_1) {
+            objForEachKey(source, function(key, value) {
+              target_1[key] = _cfgDeepCopy(value);
+            });
+            return target_1;
+          }
+        }
+        return source;
+      }
+      function getDynamicConfigHandler(value) {
+        if (value) {
+          var handler = value[CFG_HANDLER_LINK] || value;
+          if (handler.cfg && (handler.cfg === value || handler.cfg[CFG_HANDLER_LINK] === handler)) {
+            return handler;
+          }
+        }
+        return null;
+      }
+      function blockDynamicConversion(value) {
+        if (value && (/* @__PURE__ */ isPlainObject3(value) || isArray(value))) {
+          try {
+            value[BLOCK_DYNAMIC] = true;
+          } catch (e) {
+          }
+        }
+        return value;
+      }
+      function _canMakeDynamic(getFunc, state, value) {
+        var result = false;
+        if (value && !getFunc[state.blkVal]) {
+          result = value[FORCE_DYNAMIC];
+          if (!result && !value[BLOCK_DYNAMIC]) {
+            result = /* @__PURE__ */ isPlainObject3(value) || isArray(value);
+          }
+        }
+        return result;
+      }
+      function throwInvalidAccess(message) {
+        throwTypeError("InvalidAccess:" + message);
+      }
+      var arrayMethodsToPatch = [
+        "push",
+        "pop",
+        "shift",
+        "unshift",
+        "splice"
+      ];
+      var _throwDynamicError = function(logger, name, desc, e) {
+        logger && logger[_DYN_THROW_INTERNAL](3, 108, "".concat(desc, " [").concat(name, "] failed - ") + /* @__PURE__ */ dumpObj(e));
+      };
+      function _patchArray(state, target, name) {
+        if (isArray(target)) {
+          arrForEach(arrayMethodsToPatch, function(method) {
+            var orgMethod = target[method];
+            target[method] = function() {
+              var args = [];
+              for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+              }
+              var result = orgMethod[_DYN_APPLY](this, args);
+              _makeDynamicObject(state, target, name, "Patching");
+              return result;
+            };
+          });
+        }
+      }
+      function _getOwnPropGetter(target, name) {
+        var propDesc = objGetOwnPropertyDescriptor(target, name);
+        return propDesc && propDesc.get;
+      }
+      function _createDynamicProperty(state, theConfig, name, value) {
+        var detail = {
+          n: name,
+          h: [],
+          trk: function(handler) {
+            if (handler && handler.fn) {
+              if (arrIndexOf(detail.h, handler) === -1) {
+                detail.h[_DYN_PUSH$1](handler);
+              }
+              state.trk(handler, detail);
+            }
+          },
+          clr: function(handler) {
+            var idx = arrIndexOf(detail.h, handler);
+            if (idx !== -1) {
+              detail.h[_DYN_SPLICE](idx, 1);
+            }
+          }
+        };
+        var checkDynamic = true;
+        var isObjectOrArray = false;
+        function _getProperty() {
+          if (checkDynamic) {
+            isObjectOrArray = isObjectOrArray || _canMakeDynamic(_getProperty, state, value);
+            if (value && !value[CFG_HANDLER_LINK] && isObjectOrArray) {
+              value = _makeDynamicObject(state, value, name, "Converting");
+            }
+            checkDynamic = false;
+          }
+          var activeHandler = state.act;
+          if (activeHandler) {
+            detail.trk(activeHandler);
+          }
+          return value;
+        }
+        _getProperty[state.prop] = {
+          chng: function() {
+            state.add(detail);
+          }
+        };
+        function _setProperty(newValue) {
+          if (value !== newValue) {
+            if (!!_getProperty[state.ro] && !state.upd) {
+              throwInvalidAccess("[" + name + "] is read-only:" + /* @__PURE__ */ dumpObj(theConfig));
+            }
+            if (checkDynamic) {
+              isObjectOrArray = isObjectOrArray || _canMakeDynamic(_getProperty, state, value);
+              checkDynamic = false;
+            }
+            var isReferenced = isObjectOrArray && _getProperty[state.rf];
+            if (isObjectOrArray) {
+              if (isReferenced) {
+                objForEachKey(value, function(key) {
+                  value[key] = newValue ? newValue[key] : UNDEFINED_VALUE$2;
+                });
+                try {
+                  objForEachKey(newValue, function(key, theValue) {
+                    _setDynamicProperty(state, value, key, theValue);
+                  });
+                  newValue = value;
+                } catch (e) {
+                  _throwDynamicError((state.hdlr || {})[_DYN_LOGGER], name, "Assigning", e);
+                  isObjectOrArray = false;
+                }
+              } else if (value && value[CFG_HANDLER_LINK]) {
+                objForEachKey(value, function(key) {
+                  var getter = _getOwnPropGetter(value, key);
+                  if (getter) {
+                    var valueState = getter[state.prop];
+                    valueState && valueState.chng();
+                  }
+                });
+              }
+            }
+            if (newValue !== value) {
+              var newIsObjectOrArray = newValue && _canMakeDynamic(_getProperty, state, newValue);
+              if (!isReferenced && newIsObjectOrArray) {
+                newValue = _makeDynamicObject(state, newValue, name, "Converting");
+              }
+              value = newValue;
+              isObjectOrArray = newIsObjectOrArray;
+            }
+            state.add(detail);
+          }
+        }
+        objDefine(theConfig, detail.n, { g: _getProperty, s: _setProperty });
+      }
+      function _setDynamicProperty(state, target, name, value) {
+        if (target) {
+          var getter = _getOwnPropGetter(target, name);
+          var isDynamic = getter && !!getter[state.prop];
+          if (!isDynamic) {
+            _createDynamicProperty(state, target, name, value);
+          } else {
+            target[name] = value;
+          }
+        }
+        return target;
+      }
+      function _setDynamicPropertyState(state, target, name, flags) {
+        if (target) {
+          var getter = _getOwnPropGetter(target, name);
+          var isDynamic = getter && !!getter[state.prop];
+          var inPlace = flags && flags[0];
+          var rdOnly = flags && flags[1];
+          var blkProp = flags && flags[2];
+          if (!isDynamic) {
+            if (blkProp) {
+              try {
+                blockDynamicConversion(target);
+              } catch (e) {
+                _throwDynamicError((state.hdlr || {})[_DYN_LOGGER], name, "Blocking", e);
+              }
+            }
+            try {
+              _setDynamicProperty(state, target, name, target[name]);
+              getter = _getOwnPropGetter(target, name);
+            } catch (e) {
+              _throwDynamicError((state.hdlr || {})[_DYN_LOGGER], name, "State", e);
+            }
+          }
+          if (inPlace) {
+            getter[state.rf] = inPlace;
+          }
+          if (rdOnly) {
+            getter[state.ro] = rdOnly;
+          }
+          if (blkProp) {
+            getter[state.blkVal] = true;
+          }
+        }
+        return target;
+      }
+      function _makeDynamicObject(state, target, name, desc) {
+        try {
+          objForEachKey(target, function(key, value) {
+            _setDynamicProperty(state, target, key, value);
+          });
+          if (!target[CFG_HANDLER_LINK]) {
+            objDefineProp(target, CFG_HANDLER_LINK, {
+              get: function() {
+                return state.hdlr;
+              }
+            });
+            _patchArray(state, target, name);
+          }
+        } catch (e) {
+          _throwDynamicError((state.hdlr || {})[_DYN_LOGGER], name, desc, e);
+        }
+        return target;
+      }
+      var symPrefix = "[[ai_";
+      var symPostfix = "]]";
+      function _createState(cfgHandler) {
+        var dynamicPropertySymbol = /* @__PURE__ */ newSymbol(symPrefix + "get" + cfgHandler.uid + symPostfix);
+        var dynamicPropertyReadOnly = /* @__PURE__ */ newSymbol(symPrefix + "ro" + cfgHandler.uid + symPostfix);
+        var dynamicPropertyReferenced = /* @__PURE__ */ newSymbol(symPrefix + "rf" + cfgHandler.uid + symPostfix);
+        var dynamicPropertyBlockValue = /* @__PURE__ */ newSymbol(symPrefix + "blkVal" + cfgHandler.uid + symPostfix);
+        var dynamicPropertyDetail = /* @__PURE__ */ newSymbol(symPrefix + "dtl" + cfgHandler.uid + symPostfix);
+        var _waitingHandlers = null;
+        var _watcherTimer = null;
+        var theState;
+        function _useHandler(activeHandler, callback) {
+          var prevWatcher = theState.act;
+          try {
+            theState.act = activeHandler;
+            if (activeHandler && activeHandler[dynamicPropertyDetail]) {
+              arrForEach(activeHandler[dynamicPropertyDetail], function(detail) {
+                detail.clr(activeHandler);
+              });
+              activeHandler[dynamicPropertyDetail] = [];
+            }
+            callback({
+              cfg: cfgHandler.cfg,
+              set: cfgHandler.set.bind(cfgHandler),
+              setDf: cfgHandler.setDf.bind(cfgHandler),
+              ref: cfgHandler.ref.bind(cfgHandler),
+              rdOnly: cfgHandler.rdOnly.bind(cfgHandler)
+            });
+          } catch (e) {
+            var logger = cfgHandler[_DYN_LOGGER];
+            if (logger) {
+              logger[_DYN_THROW_INTERNAL](1, 107, /* @__PURE__ */ dumpObj(e));
+            }
+            throw e;
+          } finally {
+            theState.act = prevWatcher || null;
+          }
+        }
+        function _notifyWatchers() {
+          if (_waitingHandlers) {
+            var notifyHandlers = _waitingHandlers;
+            _waitingHandlers = null;
+            _watcherTimer && _watcherTimer[_DYN_CANCEL]();
+            _watcherTimer = null;
+            var watcherFailures_1 = [];
+            arrForEach(notifyHandlers, function(handler) {
+              if (handler) {
+                if (handler[dynamicPropertyDetail]) {
+                  arrForEach(handler[dynamicPropertyDetail], function(detail) {
+                    detail.clr(handler);
+                  });
+                  handler[dynamicPropertyDetail] = null;
+                }
+                if (handler.fn) {
+                  try {
+                    _useHandler(handler, handler.fn);
+                  } catch (e) {
+                    watcherFailures_1[_DYN_PUSH$1](e);
+                  }
+                }
+              }
+            });
+            if (_waitingHandlers) {
+              try {
+                _notifyWatchers();
+              } catch (e) {
+                watcherFailures_1[_DYN_PUSH$1](e);
+              }
+            }
+            if (watcherFailures_1[_DYN_LENGTH$1] > 0) {
+              throwAggregationError("Watcher error(s): ", watcherFailures_1);
+            }
+          }
+        }
+        function _addWatcher(detail) {
+          if (detail && detail.h[_DYN_LENGTH$1] > 0) {
+            if (!_waitingHandlers) {
+              _waitingHandlers = [];
+            }
+            if (!_watcherTimer) {
+              _watcherTimer = scheduleTimeout(function() {
+                _watcherTimer = null;
+                _notifyWatchers();
+              }, 0);
+            }
+            for (var idx = 0; idx < detail.h[_DYN_LENGTH$1]; idx++) {
+              var handler = detail.h[idx];
+              if (handler && arrIndexOf(_waitingHandlers, handler) === -1) {
+                _waitingHandlers[_DYN_PUSH$1](handler);
+              }
+            }
+          }
+        }
+        function _trackHandler(handler, detail) {
+          if (handler) {
+            var details = handler[dynamicPropertyDetail] = handler[dynamicPropertyDetail] || [];
+            if (arrIndexOf(details, detail) === -1) {
+              details[_DYN_PUSH$1](detail);
+            }
+          }
+        }
+        theState = {
+          prop: dynamicPropertySymbol,
+          ro: dynamicPropertyReadOnly,
+          rf: dynamicPropertyReferenced,
+          blkVal: dynamicPropertyBlockValue,
+          hdlr: cfgHandler,
+          add: _addWatcher,
+          notify: _notifyWatchers,
+          use: _useHandler,
+          trk: _trackHandler
+        };
+        return theState;
+      }
+      function _createAndUseHandler(state, configHandler) {
+        var handler = {
+          fn: configHandler,
+          rm: function() {
+            handler.fn = null;
+            state = null;
+            configHandler = null;
+          }
+        };
+        objDefine(handler, "toJSON", { v: function() {
+          return "WatcherHandler" + (handler.fn ? STR_EMPTY : "[X]");
+        } });
+        state.use(handler, configHandler);
+        return handler;
+      }
+      function _createDynamicHandler(logger, target, inPlace) {
+        var dynamicHandler = getDynamicConfigHandler(target);
+        if (dynamicHandler) {
+          return dynamicHandler;
+        }
+        var uid = createUniqueNamespace("dyncfg", true);
+        var newTarget = target && inPlace !== false ? target : _cfgDeepCopy(target);
+        var theState;
+        function _notifyWatchers() {
+          theState.notify();
+        }
+        function _setValue(target2, name, value) {
+          try {
+            target2 = _setDynamicProperty(theState, target2, name, value);
+          } catch (e) {
+            _throwDynamicError(logger, name, "Setting value", e);
+          }
+          return target2[name];
+        }
+        function _watch(configHandler) {
+          return _createAndUseHandler(theState, configHandler);
+        }
+        function _block(configHandler, allowUpdate) {
+          theState.use(null, function(details) {
+            var prevUpd = theState.upd;
+            try {
+              if (!/* @__PURE__ */ isUndefined(allowUpdate)) {
+                theState.upd = allowUpdate;
+              }
+              configHandler(details);
+            } finally {
+              theState.upd = prevUpd;
+            }
+          });
+        }
+        function _ref(target2, name) {
+          var _a3;
+          return _setDynamicPropertyState(theState, target2, name, (_a3 = {}, _a3[0] = true, _a3))[name];
+        }
+        function _rdOnly(target2, name) {
+          var _a3;
+          return _setDynamicPropertyState(theState, target2, name, (_a3 = {}, _a3[1] = true, _a3))[name];
+        }
+        function _blkPropValue(target2, name) {
+          var _a3;
+          return _setDynamicPropertyState(theState, target2, name, (_a3 = {}, _a3[2] = true, _a3))[name];
+        }
+        function _applyDefaults(theConfig, defaultValues2) {
+          if (defaultValues2) {
+            objForEachKey(defaultValues2, function(name, value) {
+              _applyDefaultValue(cfgHandler, theConfig, name, value);
+            });
+          }
+          return theConfig;
+        }
+        var cfgHandler = {
+          uid: null,
+          cfg: newTarget,
+          logger,
+          notify: _notifyWatchers,
+          set: _setValue,
+          setDf: _applyDefaults,
+          watch: _watch,
+          ref: _ref,
+          rdOnly: _rdOnly,
+          blkVal: _blkPropValue,
+          _block
+        };
+        objDefine(cfgHandler, "uid", {
+          c: false,
+          e: false,
+          w: false,
+          v: uid
+        });
+        theState = _createState(cfgHandler);
+        _makeDynamicObject(theState, newTarget, "config", "Creating");
+        return cfgHandler;
+      }
+      function _logInvalidAccess(logger, message) {
+        if (logger) {
+          logger[_DYN_WARN_TO_CONSOLE](message);
+          logger[_DYN_THROW_INTERNAL](2, 108, message);
+        } else {
+          throwInvalidAccess(message);
+        }
+      }
+      function createDynamicConfig(config2, defaultConfig2, logger, inPlace) {
+        var dynamicHandler = _createDynamicHandler(logger, config2 || {}, inPlace);
+        if (defaultConfig2) {
+          dynamicHandler.setDf(dynamicHandler.cfg, defaultConfig2);
+        }
+        return dynamicHandler;
+      }
+      function onConfigChange(config2, configHandler, logger) {
+        var handler = config2[CFG_HANDLER_LINK] || config2;
+        if (handler.cfg && (handler.cfg === config2 || handler.cfg[CFG_HANDLER_LINK] === handler)) {
+          return handler[_DYN_WATCH](configHandler);
+        }
+        _logInvalidAccess(logger, STR_NOT_DYNAMIC_ERROR + /* @__PURE__ */ dumpObj(config2));
+        return createDynamicConfig(config2, null, logger)[_DYN_WATCH](configHandler);
+      }
+      var DisabledPropertyName = "Microsoft_ApplicationInsights_BypassAjaxInstrumentation";
+      var ChannelControllerPriority = 500;
+      var SampleRate = "sampleRate";
+      var ProcessLegacy = "ProcessLegacy";
+      var HttpMethod = "http.method";
+      var DEFAULT_BREEZE_ENDPOINT = "https://dc.services.visualstudio.com";
+      var DEFAULT_BREEZE_PATH = "/v2/track";
+      var strNotSpecified = "not_specified";
+      var listenerFuncs = [STR_EVENTS_SENT, STR_EVENTS_DISCARDED, STR_EVENTS_SEND_REQUEST, STR_PERF_EVENT];
+      var _aiNamespace = null;
+      var _debugListener;
+      function _listenerProxyFunc(name, config2) {
+        return function() {
+          var args = arguments;
+          var dbgExt = getDebugExt(config2);
+          if (dbgExt) {
+            var listener = dbgExt.listener;
+            if (listener && listener[name]) {
+              listener[name][_DYN_APPLY](listener, args);
+            }
+          }
+        };
+      }
+      function _getExtensionNamespace() {
+        var target = /* @__PURE__ */ getInst("Microsoft");
+        if (target) {
+          _aiNamespace = target["ApplicationInsights"];
+        }
+        return _aiNamespace;
+      }
+      function getDebugExt(config2) {
+        var ns = _aiNamespace;
+        if (!ns && config2.disableDbgExt !== true) {
+          ns = _aiNamespace || _getExtensionNamespace();
+        }
+        return ns ? ns["ChromeDbgExt"] : null;
+      }
+      function getDebugListener(config2) {
+        if (!_debugListener) {
+          _debugListener = {};
+          for (var lp = 0; lp < listenerFuncs[_DYN_LENGTH$1]; lp++) {
+            _debugListener[listenerFuncs[lp]] = _listenerProxyFunc(listenerFuncs[lp], config2);
+          }
+        }
+        return _debugListener;
+      }
+      var _a$5;
+      var STR_WARN_TO_CONSOLE = "warnToConsole";
+      var AiNonUserActionablePrefix = "AI (Internal): ";
+      var AiUserActionablePrefix = "AI: ";
+      var AIInternalMessagePrefix = "AITR_";
+      var defaultValues$2 = {
+        loggingLevelConsole: 0,
+        loggingLevelTelemetry: 1,
+        maxMessageLimit: 25,
+        enableDebug: false
+      };
+      var _logFuncs = (_a$5 = {}, _a$5[0] = null, _a$5[1] = "errorToConsole", _a$5[2] = STR_WARN_TO_CONSOLE, _a$5[3] = "debugToConsole", _a$5);
+      function _sanitizeDiagnosticText(text) {
+        if (text) {
+          return '"' + text[_DYN_REPLACE](/\"/g, STR_EMPTY) + '"';
+        }
+        return STR_EMPTY;
+      }
+      function _logToConsole(func, message) {
+        var theConsole = /* @__PURE__ */ getConsole();
+        if (!!theConsole) {
+          var logFunc = "log";
+          if (theConsole[func]) {
+            logFunc = func;
+          }
+          if (isFunction(theConsole[logFunc])) {
+            theConsole[logFunc](message);
+          }
+        }
+      }
+      var _InternalLogMessage = (
+        /** @class */
+        (function() {
+          function _InternalLogMessage2(msgId, msg, isUserAct, properties) {
+            if (isUserAct === void 0) {
+              isUserAct = false;
+            }
+            var _self = this;
+            _self[_DYN_MESSAGE_ID] = msgId;
+            _self[_DYN_MESSAGE] = (isUserAct ? AiUserActionablePrefix : AiNonUserActionablePrefix) + msgId;
+            var strProps = STR_EMPTY;
+            if (/* @__PURE__ */ hasJSON()) {
+              strProps = (/* @__PURE__ */ getJSON())[_DYN_STRINGIFY$1](properties);
+            }
+            var diagnosticText = (msg ? " message:" + _sanitizeDiagnosticText(msg) : STR_EMPTY) + (properties ? " props:" + _sanitizeDiagnosticText(strProps) : STR_EMPTY);
+            _self[_DYN_MESSAGE] += diagnosticText;
+          }
+          _InternalLogMessage2.dataType = "MessageData";
+          return _InternalLogMessage2;
+        })()
+      );
+      // @__NO_SIDE_EFFECTS__
+      function safeGetLogger(core, config2) {
+        return (core || {})[_DYN_LOGGER] || new DiagnosticLogger(config2 || (core || {})[_DYN_CONFIG]);
+      }
+      var DiagnosticLogger = (
+        /** @class */
+        (function() {
+          function DiagnosticLogger2(config2) {
+            this.identifier = "DiagnosticLogger";
+            this.queue = [];
+            var _messageCount = 0;
+            var _messageLogged = {};
+            var _loggingLevelConsole;
+            var _loggingLevelTelemetry;
+            var _maxInternalMessageLimit;
+            var _enableDebug;
+            var _unloadHandler;
+            dynamicProto(DiagnosticLogger2, this, function(_self) {
+              _unloadHandler = _setDefaultsFromConfig(config2 || {});
+              _self.consoleLoggingLevel = function() {
+                return _loggingLevelConsole;
+              };
+              _self[_DYN_THROW_INTERNAL] = function(severity, msgId, msg, properties, isUserAct) {
+                if (isUserAct === void 0) {
+                  isUserAct = false;
+                }
+                var message = new _InternalLogMessage(msgId, msg, isUserAct, properties);
+                if (_enableDebug) {
+                  throw /* @__PURE__ */ dumpObj(message);
+                } else {
+                  var logFunc = _logFuncs[severity] || STR_WARN_TO_CONSOLE;
+                  if (!/* @__PURE__ */ isUndefined(message[_DYN_MESSAGE])) {
+                    if (isUserAct) {
+                      var messageKey = +message[_DYN_MESSAGE_ID];
+                      if (!_messageLogged[messageKey] && _loggingLevelConsole >= severity) {
+                        _self[logFunc](message[_DYN_MESSAGE]);
+                        _messageLogged[messageKey] = true;
+                      }
+                    } else {
+                      if (_loggingLevelConsole >= severity) {
+                        _self[logFunc](message[_DYN_MESSAGE]);
+                      }
+                    }
+                    _logInternalMessage(severity, message);
+                  } else {
+                    _debugExtMsg("throw" + (severity === 1 ? "Critical" : "Warning"), message);
+                  }
+                }
+              };
+              _self.debugToConsole = function(message) {
+                _logToConsole("debug", message);
+                _debugExtMsg("warning", message);
+              };
+              _self[_DYN_WARN_TO_CONSOLE] = function(message) {
+                _logToConsole("warn", message);
+                _debugExtMsg("warning", message);
+              };
+              _self.errorToConsole = function(message) {
+                _logToConsole("error", message);
+                _debugExtMsg("error", message);
+              };
+              _self.resetInternalMessageCount = function() {
+                _messageCount = 0;
+                _messageLogged = {};
+              };
+              _self.logInternalMessage = _logInternalMessage;
+              _self[_DYN_UNLOAD] = function(isAsync2) {
+                _unloadHandler && _unloadHandler.rm();
+                _unloadHandler = null;
+              };
+              objDefine(_self, "dbgMode", {
+                g: function() {
+                  return _enableDebug;
+                }
+              });
+              function _logInternalMessage(severity, message) {
+                if (_areInternalMessagesThrottled()) {
+                  return;
+                }
+                var logMessage = true;
+                var messageKey = AIInternalMessagePrefix + message[_DYN_MESSAGE_ID];
+                if (_messageLogged[messageKey]) {
+                  logMessage = false;
+                } else {
+                  _messageLogged[messageKey] = true;
+                }
+                if (logMessage) {
+                  if (severity <= _loggingLevelTelemetry) {
+                    _self.queue[_DYN_PUSH$1](message);
+                    _messageCount++;
+                    _debugExtMsg(severity === 1 ? "error" : "warn", message);
+                  }
+                  if (_messageCount === _maxInternalMessageLimit) {
+                    var throttleLimitMessage = "Internal events throttle limit per PageView reached for this app.";
+                    var throttleMessage = new _InternalLogMessage(23, throttleLimitMessage, false);
+                    _self.queue[_DYN_PUSH$1](throttleMessage);
+                    if (severity === 1) {
+                      _self.errorToConsole(throttleLimitMessage);
+                    } else {
+                      _self[_DYN_WARN_TO_CONSOLE](throttleLimitMessage);
+                    }
+                  }
+                }
+              }
+              function _setDefaultsFromConfig(config3) {
+                return onConfigChange(createDynamicConfig(config3, defaultValues$2, _self).cfg, function(details) {
+                  var config4 = details.cfg;
+                  _loggingLevelConsole = config4[_DYN_LOGGING_LEVEL_CONSOL4];
+                  _loggingLevelTelemetry = config4.loggingLevelTelemetry;
+                  _maxInternalMessageLimit = config4.maxMessageLimit;
+                  _enableDebug = config4.enableDebug;
+                });
+              }
+              function _areInternalMessagesThrottled() {
+                return _messageCount >= _maxInternalMessageLimit;
+              }
+              function _debugExtMsg(name, data) {
+                var dbgExt = getDebugExt(config2 || {});
+                if (dbgExt && dbgExt[_DYN_DIAG_LOG$1]) {
+                  dbgExt[_DYN_DIAG_LOG$1](name, data);
+                }
+              }
+            });
+          }
+          DiagnosticLogger2.__ieDyn = 1;
+          return DiagnosticLogger2;
+        })()
+      );
+      function _getLogger(logger) {
+        return logger || new DiagnosticLogger();
+      }
+      function _throwInternal(logger, severity, msgId, msg, properties, isUserAct) {
+        if (isUserAct === void 0) {
+          isUserAct = false;
+        }
+        _getLogger(logger)[_DYN_THROW_INTERNAL](severity, msgId, msg, properties, isUserAct);
+      }
+      function _warnToConsole(logger, message) {
+        _getLogger(logger)[_DYN_WARN_TO_CONSOLE](message);
+      }
+      function _noopVoid() {
+      }
+      var MAX_TRACE_STATE_MEMBERS = 32;
+      var MAX_TRACE_STATE_LEN = 512;
+      var LCALPHA = "[a-z]";
+      var LCALPHA_DIGIT = "[a-z\\d]";
+      var LCALPHA_DIGIT_UNDERSCORE_DASH_STAR_SLASH = "[a-z\\d_\\-*\\/]";
+      var SIMPLE_KEY = "(" + LCALPHA + LCALPHA_DIGIT_UNDERSCORE_DASH_STAR_SLASH + "{0,255})";
+      var TENANT_ID = "(" + LCALPHA_DIGIT + LCALPHA_DIGIT_UNDERSCORE_DASH_STAR_SLASH + "{0,240})";
+      var SYSTEM_ID = "(" + LCALPHA + LCALPHA_DIGIT_UNDERSCORE_DASH_STAR_SLASH + "{0,13})";
+      var MULTI_TENANT_KEY = "(" + TENANT_ID + "@" + SYSTEM_ID + ")";
+      var NBLK_CHAR = "!-+\\--<>-~";
+      var TRACESTATE_VALUE = "[ " + NBLK_CHAR + "]{0,255}[" + NBLK_CHAR + "]";
+      var TRACESTATE_KVP_REGEX = /* @__PURE__ */ new RegExp("^\\s*((?:" + SIMPLE_KEY + "|" + MULTI_TENANT_KEY + ")=(" + TRACESTATE_VALUE + "))\\s*$");
+      function _parseListMember(value) {
+        if (value) {
+          TRACESTATE_KVP_REGEX.lastIndex = 0;
+          var match = TRACESTATE_KVP_REGEX.exec(value);
+          if (match && match[_DYN_LENGTH$1] >= 7 && match[1] && match[6]) {
+            var type = match[3] ? 1 : 0;
+            var multiTenant = null;
+            if (type === 1) {
+              multiTenant = {
+                tenantId: match[4],
+                systemId: match[5]
+              };
+            }
+            var parts = {
+              type,
+              key: match[2],
+              multiTenant,
+              value: match[6]
+            };
+            return parts;
+          }
+        }
+        return null;
+      }
+      function _parseTraceStateList(value) {
+        var items = [];
+        if (value) {
+          var addedKeys_1 = [];
+          arrForEach(strSplit(value, ","), function(member) {
+            var parts = _parseListMember(member);
+            if (parts) {
+              if (arrIndexOf(addedKeys_1, parts.key) === -1) {
+                items[_DYN_PUSH$1](parts);
+                addedKeys_1[_DYN_PUSH$1](parts.key);
+                if (items[_DYN_LENGTH$1] >= MAX_TRACE_STATE_MEMBERS) {
+                  return -1;
+                }
+              }
+            }
+          });
+        }
+        return items;
+      }
+      function _indexOf(items, key) {
+        for (var lp = 0; lp < items[_DYN_LENGTH$1]; lp++) {
+          if (items[lp].key === key) {
+            return lp;
+          }
+        }
+        return -1;
+      }
+      function _keys(items, parent) {
+        var keys = [];
+        var delKeys = [];
+        arrForEach(items, function(member) {
+          if (member[_DYN_VALUE] != null) {
+            keys[_DYN_PUSH$1](member.key);
+          } else {
+            delKeys[_DYN_PUSH$1](member.key);
+          }
+        });
+        if (parent) {
+          arrForEach(parent.keys, function(key) {
+            if (arrIndexOf(keys, key) === -1 && arrIndexOf(delKeys, key) === -1) {
+              keys[_DYN_PUSH$1](key);
+            }
+          });
+        }
+        return keys;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _isEmpty(items, parent) {
+        var delKeys;
+        var isEmpty = true;
+        if (items && items[_DYN_LENGTH$1] > 0) {
+          arrForEach(items, function(member) {
+            if (member[_DYN_VALUE] != null) {
+              isEmpty = false;
+            } else {
+              if (!delKeys) {
+                delKeys = [];
+              }
+              delKeys[_DYN_PUSH$1](member.key);
+            }
+          });
+        }
+        if (isEmpty && parent) {
+          isEmpty = parent.isEmpty;
+          if (!isEmpty && delKeys && delKeys[_DYN_LENGTH$1] > 0) {
+            isEmpty = true;
+            arrForEach(parent.keys, function(key) {
+              if (arrIndexOf(delKeys, key) === -1) {
+                isEmpty = false;
+                return -1;
+              }
+            });
+          }
+        }
+        return isEmpty;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isW3cTraceState(value) {
+        return !!(value && isArray(value.keys) && isFunction(value.get) && isFunction(value.set) && isFunction(value.del) && isFunction(value.hdrs));
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createW3cTraceState(value, parent) {
+        var cachedItems = /* @__PURE__ */ safeGetDeferred(_parseTraceStateList, [], [value || STR_EMPTY]);
+        function _get(key) {
+          var value2;
+          var theItems = cachedItems.v;
+          var idx = _indexOf(theItems, key);
+          if (idx !== -1) {
+            var itmValue = theItems[idx][_DYN_VALUE];
+            if (itmValue != null) {
+              value2 = itmValue;
+            }
+          } else if (parent) {
+            value2 = parent.get(key);
+          }
+          return value2;
+        }
+        function _setMember(member) {
+          if (member) {
+            var theItems = cachedItems.v;
+            var idx = _indexOf(theItems, member.key);
+            if (idx !== -1) {
+              theItems[_DYN_SPLICE](idx, 1);
+            }
+            theItems.unshift(member);
+            cachedItems = /* @__PURE__ */ createCachedValue(theItems);
+            return 0;
+          }
+          return -1;
+        }
+        function _set(key, value2) {
+          var member;
+          if (key && isString(key) && !/* @__PURE__ */ isNullOrUndefined(value2) && isString(value2)) {
+            member = _parseListMember(key + "=" + value2);
+          }
+          return _setMember(member);
+        }
+        function _del(key) {
+          _setMember({
+            type: 2,
+            key
+          });
+        }
+        function _headers(maxHeaders, maxKeys, maxLen) {
+          var results = [];
+          var result = STR_EMPTY;
+          var numKeys2 = 0;
+          var len = 0;
+          maxKeys = maxKeys || MAX_TRACE_STATE_MEMBERS;
+          maxLen = maxLen || MAX_TRACE_STATE_LEN;
+          var theItems = cachedItems.v;
+          arrForEach(_keys(theItems, parent), function(key) {
+            var value2 = _get(key);
+            if (!/* @__PURE__ */ isNullOrUndefined(value2) && isString(value2)) {
+              numKeys2++;
+              var val = key + "=" + value2;
+              var valLen = val[_DYN_LENGTH$1];
+              if (len + 1 + valLen >= maxLen) {
+                results[_DYN_PUSH$1](result);
+                if (maxHeaders && results[_DYN_LENGTH$1] <= maxHeaders) {
+                  return -1;
+                }
+                result = STR_EMPTY;
+                len = 0;
+              }
+              if (result[_DYN_LENGTH$1] > 0) {
+                result += ",";
+                len++;
+              }
+              result += val;
+              len += valLen;
+              if (numKeys2 >= maxKeys) {
+                return -1;
+              }
+            }
+          });
+          if (result) {
+            results[_DYN_PUSH$1](result);
+          }
+          return results;
+        }
+        var traceStateList = {
+          keys: [],
+          isEmpty: false,
+          get: _get,
+          set: _set,
+          del: _del,
+          hdrs: _headers,
+          child: function() {
+            return /* @__PURE__ */ createW3cTraceState(null, traceStateList);
+          }
+        };
+        function _toString() {
+          var headers = traceStateList.hdrs(1);
+          return headers[_DYN_LENGTH$1] > 0 ? headers[0] : STR_EMPTY;
+        }
+        objDefineProps(traceStateList, {
+          "keys": {
+            g: function() {
+              return _keys(cachedItems.v, parent);
+            }
+          },
+          "isEmpty": {
+            g: function() {
+              return /* @__PURE__ */ _isEmpty(cachedItems.v, parent);
+            }
+          },
+          "toString": {
+            v: _toString,
+            e: false
+          },
+          "_p": {
+            v: parent,
+            e: false
+          }
+        });
+        setObjStringTag(traceStateList, _toString);
+        return traceStateList;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function findW3cTraceState() {
+        var name = "tracestate";
+        var traceState = null;
+        var metaTags = /* @__PURE__ */ findMetaTags(name);
+        if (metaTags[_DYN_LENGTH$1] > 0) {
+          traceState = /* @__PURE__ */ createW3cTraceState(metaTags[_DYN_JOIN](","));
+        }
+        if (!traceState) {
+          var serverTimings = /* @__PURE__ */ findNamedServerTimings();
+          if (serverTimings[_DYN_LENGTH$1] > 0) {
+            traceState = /* @__PURE__ */ createW3cTraceState(serverTimings[_DYN_JOIN](","));
+          }
+        }
+        return traceState;
+      }
+      function generateW3CId() {
+        var hexValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+        var oct = STR_EMPTY, tmp;
+        for (var a = 0; a < 4; a++) {
+          tmp = random32();
+          oct += hexValues[tmp & 15] + hexValues[tmp >> 4 & 15] + hexValues[tmp >> 8 & 15] + hexValues[tmp >> 12 & 15] + hexValues[tmp >> 16 & 15] + hexValues[tmp >> 20 & 15] + hexValues[tmp >> 24 & 15] + hexValues[tmp >> 28 & 15];
+        }
+        var clockSequenceHi = hexValues[8 + (random32() & 3) | 0];
+        return strSubstr(oct, 0, 8) + strSubstr(oct, 9, 4) + "4" + strSubstr(oct, 13, 3) + clockSequenceHi + strSubstr(oct, 16, 3) + strSubstr(oct, 19, 12);
+      }
+      var TRACE_PARENT_REGEX = /^([\da-f]{2})-([\da-f]{32})-([\da-f]{16})-([\da-f]{2})(-[^\s]{1,64})?$/i;
+      var INVALID_VERSION = "ff";
+      var INVALID_TRACE_ID = "00000000000000000000000000000000";
+      var INVALID_SPAN_ID = "0000000000000000";
+      function _isValid(value, len, invalidValue) {
+        if (value && value[_DYN_LENGTH$1] === len && value !== invalidValue) {
+          return !!value.match(/^[\da-f]*$/i);
+        }
+        return false;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function parseTraceParent(value, selectIdx) {
+        if (!value) {
+          return null;
+        }
+        if (isArray(value)) {
+          value = value[0] || STR_EMPTY;
+        }
+        if (!value || !isString(value) || value[_DYN_LENGTH$1] > 8192) {
+          return null;
+        }
+        if (strIndexOf(value, ",") !== -1) {
+          var values = value[_DYN_SPLIT](",");
+          value = values[selectIdx > 0 && values[_DYN_LENGTH$1] > selectIdx ? selectIdx : 0];
+        }
+        TRACE_PARENT_REGEX.lastIndex = 0;
+        var match = TRACE_PARENT_REGEX.exec(strTrim(value));
+        if (!match || match[1] === INVALID_VERSION || match[2] === INVALID_TRACE_ID || match[3] === INVALID_SPAN_ID) {
+          return null;
+        }
+        return {
+          version: (match[1] || STR_EMPTY)[_DYN_TO_LOWER_CASE](),
+          traceId: (match[2] || STR_EMPTY)[_DYN_TO_LOWER_CASE](),
+          spanId: (match[3] || STR_EMPTY)[_DYN_TO_LOWER_CASE](),
+          traceFlags: parseInt(match[4], 16)
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isValidTraceId(value) {
+        return _isValid(value, 32, INVALID_TRACE_ID);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isValidSpanId(value) {
+        return _isValid(value, 16, INVALID_SPAN_ID);
+      }
+      function findW3cTraceParent(selectIdx) {
+        var name = "traceparent";
+        var traceParent = /* @__PURE__ */ parseTraceParent(/* @__PURE__ */ findMetaTag(name), selectIdx);
+        if (!traceParent) {
+          traceParent = /* @__PURE__ */ parseTraceParent(/* @__PURE__ */ findNamedServerTiming(), selectIdx);
+        }
+        return traceParent;
+      }
+      function runTargetUnload(target, isAsync2) {
+        if (target && target[_DYN_UNLOAD]) {
+          return target[_DYN_UNLOAD](isAsync2);
+        }
+      }
+      function doUnloadAll(targets, isAsync2, done) {
+        var result;
+        if (!done) {
+          result = createPromise(function(resolved) {
+            done = resolved;
+          });
+        }
+        if (targets && getLength(targets) > 0) {
+          doAwaitResponse(runTargetUnload(targets[0], isAsync2), function() {
+            doUnloadAll(arrSlice(targets, 1), isAsync2, done);
+          });
+        } else {
+          done();
+        }
+        return result;
+      }
+      var _a$4, _b$3;
+      var strToGMTString = "toGMTString";
+      var strToUTCString = "toUTCString";
+      var strCookie = "cookie";
+      var strExpires = "expires";
+      var strIsCookieUseDisabled = "isCookieUseDisabled";
+      var strDisableCookiesUsage = "disableCookiesUsage";
+      var strConfigCookieMgr = "_ckMgr";
+      var _supportsCookies = null;
+      var _allowUaSameSite = null;
+      var _parsedCookieValue = null;
+      var _doc;
+      var _cookieCache = {};
+      var _globalCookieConfig = {};
+      var rootDefaultConfig = (_a$4 = {
+        cookieCfg: cfgDfMerge((_b$3 = {}, _b$3[STR_DOMAIN] = { fb: "cookieDomain", dfVal: isNotNullOrUndefined }, _b$3.path = { fb: "cookiePath", dfVal: isNotNullOrUndefined }, _b$3.enabled = UNDEFINED_VALUE$2, _b$3.ignoreCookies = UNDEFINED_VALUE$2, _b$3.blockedCookies = UNDEFINED_VALUE$2, _b$3.disableCookieDefer = false, _b$3)),
+        cookieDomain: UNDEFINED_VALUE$2,
+        cookiePath: UNDEFINED_VALUE$2
+      }, _a$4[strDisableCookiesUsage] = UNDEFINED_VALUE$2, _a$4);
+      function _getDoc() {
+        !_doc && (_doc = /* @__PURE__ */ getLazy(function() {
+          return getDocument();
+        }));
+      }
+      function _isMgrEnabled(cookieMgr) {
+        if (cookieMgr) {
+          return cookieMgr.isEnabled();
+        }
+        return true;
+      }
+      function _isIgnoredCookie(cookieMgrCfg, name) {
+        if (name && cookieMgrCfg && isArray(cookieMgrCfg.ignoreCookies)) {
+          return arrIndexOf(cookieMgrCfg.ignoreCookies, name) !== -1;
+        }
+        return false;
+      }
+      function _isBlockedCookie(cookieMgrCfg, name) {
+        if (name && cookieMgrCfg && isArray(cookieMgrCfg.blockedCookies)) {
+          if (arrIndexOf(cookieMgrCfg.blockedCookies, name) !== -1) {
+            return true;
+          }
+        }
+        return _isIgnoredCookie(cookieMgrCfg, name);
+      }
+      function _isCfgEnabled(rootConfig, cookieMgrConfig) {
+        var isCfgEnabled = cookieMgrConfig[_DYN_ENABLED];
+        if (/* @__PURE__ */ isNullOrUndefined(isCfgEnabled)) {
+          var cookieEnabled = void 0;
+          if (!/* @__PURE__ */ isUndefined(rootConfig[strIsCookieUseDisabled])) {
+            cookieEnabled = !rootConfig[strIsCookieUseDisabled];
+          }
+          if (!/* @__PURE__ */ isUndefined(rootConfig[strDisableCookiesUsage])) {
+            cookieEnabled = !rootConfig[strDisableCookiesUsage];
+          }
+          isCfgEnabled = cookieEnabled;
+        }
+        return isCfgEnabled;
+      }
+      function createCookieMgr(rootConfig, logger) {
+        var cookieMgrConfig;
+        var _path;
+        var _domain;
+        var unloadHandler;
+        var _enabled;
+        var _getCookieFn;
+        var _setCookieFn;
+        var _delCookieFn;
+        var _pendingCookies = [];
+        function _formatDeletionValue(path5) {
+          var _a3;
+          var values = (_a3 = {}, _a3[STR_PATH] = path5 ? path5 : "/", _a3[strExpires] = "Thu, 01 Jan 1970 00:00:01 GMT", _a3);
+          if (!/* @__PURE__ */ isIE()) {
+            values["max-age"] = "0";
+          }
+          return _formatCookieValue(STR_EMPTY, values);
+        }
+        function _formatSetCookieValue(value, maxAgeSec, domain2, path5) {
+          var values = {};
+          var theValue = strTrim(value || STR_EMPTY);
+          var idx = strIndexOf(theValue, ";");
+          if (idx !== -1) {
+            theValue = strTrim(/* @__PURE__ */ strLeft(value, idx));
+            values = _extractParts(strSubstring(value, idx + 1));
+          }
+          setValue(values, STR_DOMAIN, domain2 || _domain, isTruthy, isUndefined);
+          if (!/* @__PURE__ */ isNullOrUndefined(maxAgeSec)) {
+            var _isIE = /* @__PURE__ */ isIE();
+            if (/* @__PURE__ */ isUndefined(values[strExpires])) {
+              var nowMs = /* @__PURE__ */ utcNow();
+              var expireMs = nowMs + maxAgeSec * 1e3;
+              if (expireMs > 0) {
+                var expiry = /* @__PURE__ */ new Date();
+                expiry.setTime(expireMs);
+                setValue(values, strExpires, _formatDate(expiry, !_isIE ? strToUTCString : strToGMTString) || _formatDate(expiry, _isIE ? strToGMTString : strToUTCString) || STR_EMPTY, isTruthy);
+              }
+            }
+            if (!_isIE) {
+              setValue(values, "max-age", STR_EMPTY + maxAgeSec, null, isUndefined);
+            }
+          }
+          var location2 = /* @__PURE__ */ getLocation();
+          if (location2 && location2.protocol === "https:") {
+            setValue(values, "secure", null, null, isUndefined);
+            if (_allowUaSameSite === null) {
+              _allowUaSameSite = !uaDisallowsSameSiteNone(/* @__PURE__ */ getUserAgentString());
+            }
+            if (_allowUaSameSite) {
+              setValue(values, "SameSite", "None", null, isUndefined);
+            }
+          }
+          setValue(values, STR_PATH, path5 || _path, null, isUndefined);
+          return _formatCookieValue(theValue, values);
+        }
+        function _removePendingCookie(name) {
+          if (_pendingCookies) {
+            for (var i = _pendingCookies[_DYN_LENGTH$1] - 1; i >= 0; i--) {
+              if (_pendingCookies[i].n === name) {
+                _pendingCookies[_DYN_SPLICE](i, 1);
+              }
+            }
+          }
+        }
+        function _flushPendingCookies() {
+          if (areCookiesSupported(logger) && _pendingCookies) {
+            arrForEach(_pendingCookies, function(pendingData) {
+              if (!_isBlockedCookie(cookieMgrConfig, pendingData.n)) {
+                if (pendingData.o === 0) {
+                  _setCookieFn(pendingData.n, pendingData.v);
+                } else if (pendingData.o === 1) {
+                  _delCookieFn(pendingData.n, pendingData.v);
+                }
+              }
+            });
+            _pendingCookies = [];
+          }
+        }
+        rootConfig = createDynamicConfig(rootConfig || _globalCookieConfig, null, logger).cfg;
+        unloadHandler = onConfigChange(rootConfig, function(details) {
+          details.setDf(details.cfg, rootDefaultConfig);
+          cookieMgrConfig = details.ref(details.cfg, "cookieCfg");
+          _path = cookieMgrConfig[STR_PATH] || "/";
+          _domain = cookieMgrConfig[STR_DOMAIN];
+          if (cookieMgrConfig.disableCookieDefer) {
+            _pendingCookies = null;
+          } else if (_pendingCookies === null) {
+            _pendingCookies = [];
+          }
+          var wasEnabled = _enabled;
+          _enabled = _isCfgEnabled(rootConfig, cookieMgrConfig) !== false;
+          _getCookieFn = cookieMgrConfig.getCookie || _getCookieValue;
+          _setCookieFn = cookieMgrConfig.setCookie || _setCookieValue;
+          _delCookieFn = cookieMgrConfig.delCookie || _setCookieValue;
+          if (!wasEnabled && _enabled && _pendingCookies) {
+            _flushPendingCookies();
+          }
+        }, logger);
+        var cookieMgr = {
+          isEnabled: function() {
+            var enabled = _isCfgEnabled(rootConfig, cookieMgrConfig) !== false && _enabled && areCookiesSupported(logger);
+            var gblManager = _globalCookieConfig[strConfigCookieMgr];
+            if (enabled && gblManager && cookieMgr !== gblManager) {
+              enabled = _isMgrEnabled(gblManager);
+            }
+            return enabled;
+          },
+          setEnabled: function(value) {
+            cookieMgrConfig[_DYN_ENABLED] = value;
+            if (!/* @__PURE__ */ isUndefined(rootConfig[strDisableCookiesUsage])) {
+              rootConfig[strDisableCookiesUsage] = !value;
+            }
+          },
+          set: function(name, value, maxAgeSec, domain2, path5) {
+            var result = false;
+            var isBlocked = _isBlockedCookie(cookieMgrConfig, name);
+            if (!isBlocked) {
+              var cookieValue = _formatSetCookieValue(value, maxAgeSec, domain2, path5);
+              if (_isMgrEnabled(cookieMgr)) {
+                _setCookieFn(name, cookieValue);
+                result = true;
+              } else if (_pendingCookies) {
+                _removePendingCookie(name);
+                _pendingCookies[_DYN_PUSH$1]({
+                  n: name,
+                  o: 0,
+                  v: cookieValue
+                });
+                result = true;
+              }
+            }
+            return result;
+          },
+          get: function(name) {
+            var value = STR_EMPTY;
+            var isIgnored = _isIgnoredCookie(cookieMgrConfig, name);
+            if (!isIgnored) {
+              if (_isMgrEnabled(cookieMgr)) {
+                value = _getCookieFn(name);
+              } else if (_pendingCookies) {
+                for (var i = _pendingCookies[_DYN_LENGTH$1] - 1; i >= 0; i--) {
+                  var pendingData = _pendingCookies[i];
+                  if (pendingData.n === name) {
+                    if (pendingData.o === 0) {
+                      var cookieValue = pendingData.v;
+                      var idx = strIndexOf(cookieValue, ";");
+                      value = idx !== -1 ? strTrim(/* @__PURE__ */ strLeft(cookieValue, idx)) : strTrim(cookieValue);
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+            return value;
+          },
+          del: function(name, path5) {
+            var result = false;
+            if (_isMgrEnabled(cookieMgr)) {
+              result = cookieMgr.purge(name, path5);
+            } else if (_pendingCookies) {
+              _removePendingCookie(name);
+              _pendingCookies[_DYN_PUSH$1]({
+                n: name,
+                o: 1,
+                v: _formatDeletionValue(path5)
+              });
+              result = true;
+            }
+            return result;
+          },
+          purge: function(name, path5) {
+            var result = false;
+            if (areCookiesSupported(logger)) {
+              _delCookieFn(name, _formatDeletionValue(path5));
+              result = true;
+            }
+            return result;
+          },
+          unload: function(isAsync2) {
+            unloadHandler && unloadHandler.rm();
+            unloadHandler = null;
+            _pendingCookies = null;
+          }
+        };
+        cookieMgr[strConfigCookieMgr] = cookieMgr;
+        return cookieMgr;
+      }
+      function areCookiesSupported(logger) {
+        if (_supportsCookies === null) {
+          _supportsCookies = false;
+          !_doc && _getDoc();
+          try {
+            var doc = _doc.v || {};
+            _supportsCookies = doc[strCookie] !== void 0;
+          } catch (e) {
+            _throwInternal(logger, 2, 68, "Cannot access document.cookie - " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return _supportsCookies;
+      }
+      function _extractParts(theValue) {
+        var values = {};
+        if (theValue && theValue[_DYN_LENGTH$1]) {
+          var parts = strTrim(theValue)[_DYN_SPLIT](";");
+          arrForEach(parts, function(thePart) {
+            thePart = strTrim(thePart || STR_EMPTY);
+            if (thePart) {
+              var idx = strIndexOf(thePart, "=");
+              if (idx === -1) {
+                values[thePart] = null;
+              } else {
+                values[strTrim(/* @__PURE__ */ strLeft(thePart, idx))] = strTrim(strSubstring(thePart, idx + 1));
+              }
+            }
+          });
+        }
+        return values;
+      }
+      function _formatDate(theDate, func) {
+        if (isFunction(theDate[func])) {
+          return theDate[func]();
+        }
+        return null;
+      }
+      function _formatCookieValue(value, values) {
+        var cookieValue = value || STR_EMPTY;
+        objForEachKey(values, function(name, theValue) {
+          cookieValue += "; " + name + (!/* @__PURE__ */ isNullOrUndefined(theValue) ? "=" + theValue : STR_EMPTY);
+        });
+        return cookieValue;
+      }
+      function _getCookieValue(name) {
+        var cookieValue = STR_EMPTY;
+        !_doc && _getDoc();
+        if (_doc.v) {
+          var theCookie = _doc.v[strCookie] || STR_EMPTY;
+          if (_parsedCookieValue !== theCookie) {
+            _cookieCache = _extractParts(theCookie);
+            _parsedCookieValue = theCookie;
+          }
+          cookieValue = strTrim(_cookieCache[name] || STR_EMPTY);
+        }
+        return cookieValue;
+      }
+      function _setCookieValue(name, cookieValue) {
+        !_doc && _getDoc();
+        if (_doc.v) {
+          _doc.v[strCookie] = name + "=" + cookieValue;
+        }
+      }
+      function uaDisallowsSameSiteNone(userAgent) {
+        if (!isString(userAgent)) {
+          return false;
+        }
+        if (/* @__PURE__ */ strContains(userAgent, "CPU iPhone OS 12") || /* @__PURE__ */ strContains(userAgent, "iPad; CPU OS 12")) {
+          return true;
+        }
+        if (/* @__PURE__ */ strContains(userAgent, "Macintosh; Intel Mac OS X 10_14") && /* @__PURE__ */ strContains(userAgent, "Version/") && /* @__PURE__ */ strContains(userAgent, "Safari")) {
+          return true;
+        }
+        if (/* @__PURE__ */ strContains(userAgent, "Macintosh; Intel Mac OS X 10_14") && strEndsWith(userAgent, "AppleWebKit/605.1.15 (KHTML, like Gecko)")) {
+          return true;
+        }
+        if (/* @__PURE__ */ strContains(userAgent, "Chrome/5") || /* @__PURE__ */ strContains(userAgent, "Chrome/6")) {
+          return true;
+        }
+        if (/* @__PURE__ */ strContains(userAgent, "UnrealEngine") && !/* @__PURE__ */ strContains(userAgent, "Chrome")) {
+          return true;
+        }
+        if (/* @__PURE__ */ strContains(userAgent, "UCBrowser/12") || /* @__PURE__ */ strContains(userAgent, "UCBrowser/11")) {
+          return true;
+        }
+        return false;
+      }
+      var defaultValues$1 = {
+        perfEvtsSendAll: false
+      };
+      function _runScheduledListeners(asyncNotifications) {
+        asyncNotifications.h = null;
+        var callbacks = asyncNotifications.cb;
+        asyncNotifications.cb = [];
+        arrForEach(callbacks, function(cb) {
+          safe(cb.fn, [cb.arg]);
+        });
+      }
+      function _runListeners(listeners, name, asyncNotifications, callback) {
+        arrForEach(listeners, function(listener) {
+          if (listener && listener[name]) {
+            if (asyncNotifications) {
+              asyncNotifications.cb[_DYN_PUSH$1]({
+                fn: callback,
+                arg: listener
+              });
+              asyncNotifications.h = asyncNotifications.h || scheduleTimeout(_runScheduledListeners, 0, asyncNotifications);
+            } else {
+              safe(callback, [listener]);
+            }
+          }
+        });
+      }
+      var NotificationManager = (
+        /** @class */
+        (function() {
+          function NotificationManager2(config2) {
+            this.listeners = [];
+            var perfEvtsSendAll;
+            var unloadHandler;
+            var _listeners = [];
+            var _asyncNotifications = {
+              h: null,
+              cb: []
+            };
+            var cfgHandler = createDynamicConfig(config2, defaultValues$1);
+            unloadHandler = cfgHandler[_DYN_WATCH](function(details) {
+              perfEvtsSendAll = !!details.cfg.perfEvtsSendAll;
+            });
+            dynamicProto(NotificationManager2, this, function(_self) {
+              objDefine(_self, "listeners", {
+                g: function() {
+                  return _listeners;
+                }
+              });
+              _self[_DYN_ADD_NOTIFICATION_LIS1] = function(listener) {
+                _listeners[_DYN_PUSH$1](listener);
+              };
+              _self[_DYN_REMOVE_NOTIFICATION_0] = function(listener) {
+                var index = arrIndexOf(_listeners, listener);
+                while (index > -1) {
+                  _listeners[_DYN_SPLICE](index, 1);
+                  index = arrIndexOf(_listeners, listener);
+                }
+              };
+              _self[STR_EVENTS_SENT] = function(events) {
+                _runListeners(_listeners, STR_EVENTS_SENT, _asyncNotifications, function(listener) {
+                  listener[STR_EVENTS_SENT](events);
+                });
+              };
+              _self[STR_EVENTS_DISCARDED] = function(events, reason, sendType) {
+                _runListeners(_listeners, STR_EVENTS_DISCARDED, _asyncNotifications, function(listener) {
+                  listener[STR_EVENTS_DISCARDED](events, reason, sendType);
+                });
+              };
+              _self[STR_EVENTS_SEND_REQUEST] = function(sendReason, isAsync2) {
+                _runListeners(_listeners, STR_EVENTS_SEND_REQUEST, isAsync2 ? _asyncNotifications : null, function(listener) {
+                  listener[STR_EVENTS_SEND_REQUEST](sendReason, isAsync2);
+                });
+              };
+              _self[STR_PERF_EVENT] = function(perfEvent) {
+                if (perfEvent) {
+                  if (perfEvtsSendAll || !perfEvent[_DYN_IS_CHILD_EVT]()) {
+                    _runListeners(_listeners, STR_PERF_EVENT, null, function(listener) {
+                      if (perfEvent.isAsync) {
+                        scheduleTimeout(function() {
+                          return listener[STR_PERF_EVENT](perfEvent);
+                        }, 0);
+                      } else {
+                        listener[STR_PERF_EVENT](perfEvent);
+                      }
+                    });
+                  }
+                }
+              };
+              _self[STR_OFFLINE_STORE] = function(events) {
+                if (events && events[_DYN_LENGTH$1]) {
+                  _runListeners(_listeners, STR_OFFLINE_STORE, _asyncNotifications, function(listener) {
+                    listener[STR_OFFLINE_STORE](events);
+                  });
+                }
+              };
+              _self[STR_OFFLINE_SENT] = function(batch) {
+                if (batch && batch[_DYN_DATA$1]) {
+                  _runListeners(_listeners, STR_OFFLINE_SENT, _asyncNotifications, function(listener) {
+                    listener[STR_OFFLINE_SENT](batch);
+                  });
+                }
+              };
+              _self[STR_OFFLINE_DROP] = function(cnt, reason) {
+                if (cnt > 0) {
+                  var rn_1 = reason || 0;
+                  _runListeners(_listeners, STR_OFFLINE_DROP, _asyncNotifications, function(listener) {
+                    listener[STR_OFFLINE_DROP](cnt, rn_1);
+                  });
+                }
+              };
+              _self[_DYN_UNLOAD] = function(isAsync2) {
+                var _finishUnload = function() {
+                  unloadHandler && unloadHandler.rm();
+                  unloadHandler = null;
+                  _listeners = [];
+                  _asyncNotifications.h && _asyncNotifications.h[_DYN_CANCEL]();
+                  _asyncNotifications.h = null;
+                  _asyncNotifications.cb = [];
+                };
+                var waiting;
+                _runListeners(_listeners, "unload", null, function(listener) {
+                  var asyncUnload = listener[_DYN_UNLOAD](isAsync2);
+                  if (asyncUnload) {
+                    if (!waiting) {
+                      waiting = [];
+                    }
+                    waiting[_DYN_PUSH$1](asyncUnload);
+                  }
+                });
+                if (waiting) {
+                  return createPromise(function(resolve) {
+                    return doAwaitResponse(createAllPromise(waiting), function() {
+                      _finishUnload();
+                      resolve();
+                    });
+                  });
+                } else {
+                  _finishUnload();
+                }
+              };
+            });
+          }
+          NotificationManager2.__ieDyn = 1;
+          return NotificationManager2;
+        })()
+      );
+      var strExecutionContextKey = "ctx";
+      var strParentContextKey = "ParentContextKey";
+      var strChildrenContextKey = "ChildrenContextKey";
+      var _defaultPerfManager = null;
+      var PerfEvent = (
+        /** @class */
+        (function() {
+          function PerfEvent2(name, payloadDetails, isAsync2) {
+            var _self = this;
+            _self.start = /* @__PURE__ */ utcNow();
+            _self[_DYN_NAME$1] = name;
+            _self.isAsync = isAsync2;
+            _self[_DYN_IS_CHILD_EVT] = function() {
+              return false;
+            };
+            if (isFunction(payloadDetails)) {
+              var theDetails_1;
+              objDefine(_self, "payload", {
+                g: function() {
+                  if (!theDetails_1 && isFunction(payloadDetails)) {
+                    theDetails_1 = payloadDetails();
+                    payloadDetails = null;
+                  }
+                  return theDetails_1;
+                }
+              });
+            }
+            _self[_DYN_GET_CTX] = function(key) {
+              if (key) {
+                if (key === PerfEvent2[strParentContextKey] || key === PerfEvent2[strChildrenContextKey]) {
+                  return _self[key];
+                }
+                return (_self[strExecutionContextKey] || {})[key];
+              }
+              return null;
+            };
+            _self[_DYN_SET_CTX] = function(key, value) {
+              if (key) {
+                if (key === PerfEvent2[strParentContextKey]) {
+                  if (!_self[key]) {
+                    _self[_DYN_IS_CHILD_EVT] = function() {
+                      return true;
+                    };
+                  }
+                  _self[key] = value;
+                } else if (key === PerfEvent2[strChildrenContextKey]) {
+                  _self[key] = value;
+                } else {
+                  var ctx = _self[strExecutionContextKey] = _self[strExecutionContextKey] || {};
+                  ctx[key] = value;
+                }
+              }
+            };
+            _self.complete = function() {
+              var childTime = 0;
+              var childEvts = _self[_DYN_GET_CTX](PerfEvent2[strChildrenContextKey]);
+              if (isArray(childEvts)) {
+                for (var lp = 0; lp < childEvts[_DYN_LENGTH$1]; lp++) {
+                  var childEvt = childEvts[lp];
+                  if (childEvt) {
+                    childTime += childEvt[_DYN_TIME];
+                  }
+                }
+              }
+              _self[_DYN_TIME] = /* @__PURE__ */ utcNow() - _self.start;
+              _self.exTime = _self[_DYN_TIME] - childTime;
+              _self.complete = _noopVoid;
+            };
+          }
+          PerfEvent2.ParentContextKey = "parent";
+          PerfEvent2.ChildrenContextKey = "childEvts";
+          return PerfEvent2;
+        })()
+      );
+      var PerfManager = (
+        /** @class */
+        (function() {
+          function PerfManager2(manager) {
+            this.ctx = {};
+            dynamicProto(PerfManager2, this, function(_self) {
+              _self.create = function(src, payloadDetails, isAsync2) {
+                return new PerfEvent(src, payloadDetails, isAsync2);
+              };
+              _self.fire = function(perfEvent) {
+                if (perfEvent) {
+                  perfEvent.complete();
+                  if (manager && isFunction(manager[STR_PERF_EVENT])) {
+                    manager[STR_PERF_EVENT](perfEvent);
+                  }
+                }
+              };
+              _self[_DYN_SET_CTX] = function(key, value) {
+                if (key) {
+                  var ctx = _self[strExecutionContextKey] = _self[strExecutionContextKey] || {};
+                  ctx[key] = value;
+                }
+              };
+              _self[_DYN_GET_CTX] = function(key) {
+                return (_self[strExecutionContextKey] || {})[key];
+              };
+            });
+          }
+          PerfManager2.__ieDyn = 1;
+          return PerfManager2;
+        })()
+      );
+      var doPerfActiveKey = "CoreUtils.doPerf";
+      function doPerf(mgrSource, getSource, func, details, isAsync2) {
+        if (mgrSource) {
+          var perfMgr = mgrSource;
+          if (perfMgr[STR_GET_PERF_MGR]) {
+            perfMgr = perfMgr[STR_GET_PERF_MGR]();
+          }
+          if (perfMgr) {
+            var perfEvt = void 0;
+            var currentActive = perfMgr[_DYN_GET_CTX](doPerfActiveKey);
+            try {
+              perfEvt = perfMgr.create(getSource(), details, isAsync2);
+              if (perfEvt) {
+                if (currentActive && perfEvt[_DYN_SET_CTX]) {
+                  perfEvt[_DYN_SET_CTX](PerfEvent[strParentContextKey], currentActive);
+                  if (currentActive[_DYN_GET_CTX] && currentActive[_DYN_SET_CTX]) {
+                    var children = currentActive[_DYN_GET_CTX](PerfEvent[strChildrenContextKey]);
+                    if (!children) {
+                      children = [];
+                      currentActive[_DYN_SET_CTX](PerfEvent[strChildrenContextKey], children);
+                    }
+                    children[_DYN_PUSH$1](perfEvt);
+                  }
+                }
+                perfMgr[_DYN_SET_CTX](doPerfActiveKey, perfEvt);
+                return func(perfEvt);
+              }
+            } catch (ex) {
+              if (perfEvt && perfEvt[_DYN_SET_CTX]) {
+                perfEvt[_DYN_SET_CTX]("exception", ex);
+              }
+            } finally {
+              if (perfEvt) {
+                perfMgr.fire(perfEvt);
+              }
+              perfMgr[_DYN_SET_CTX](doPerfActiveKey, currentActive);
+            }
+          }
+        }
+        return func();
+      }
+      function getGblPerfMgr() {
+        return _defaultPerfManager;
+      }
+      var _otelTraceState;
+      function _initOTelTraceStateSymbol() {
+        if (!_otelTraceState) {
+          _otelTraceState = /* @__PURE__ */ createCachedValue(/* @__PURE__ */ symbolFor("otTraceState"));
+        }
+        return _otelTraceState;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createOTelTraceState(traceState) {
+        if (!_otelTraceState) {
+          _otelTraceState = _initOTelTraceStateSymbol();
+        }
+        var otTraceState = {
+          set: function(key, value) {
+            var newState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, traceState);
+            newState.set(key, value);
+            return /* @__PURE__ */ _createOTelTraceState(newState);
+          },
+          unset: function(key) {
+            var newState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, traceState);
+            newState.del(key);
+            return /* @__PURE__ */ _createOTelTraceState(newState);
+          },
+          get: function(key) {
+            return traceState.get(key);
+          },
+          serialize: function() {
+            var headers = traceState.hdrs(1);
+            if (headers[_DYN_LENGTH$1] > 0) {
+              return headers[0];
+            }
+            return STR_EMPTY;
+          }
+        };
+        objDefine(otTraceState, _otelTraceState.v, { g: function() {
+          return traceState;
+        } });
+        return otTraceState;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isOTelTraceState(value) {
+        if (!_otelTraceState) {
+          _otelTraceState = _initOTelTraceStateSymbol();
+        }
+        if (value && value[_otelTraceState.v]) {
+          return true;
+        }
+        return value && isFunction(value.serialize) && isFunction(value.unset) && isFunction(value.get) && isFunction(value.set);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createOTelTraceState(value) {
+        var traceState = null;
+        if (/* @__PURE__ */ isOTelTraceState(value)) {
+          var parentTraceState = void 0;
+          if (_otelTraceState) {
+            parentTraceState = value[_otelTraceState.v];
+          }
+          if (parentTraceState) {
+            traceState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, parentTraceState);
+          } else {
+            traceState = /* @__PURE__ */ createW3cTraceState(value.serialize());
+          }
+        } else if (/* @__PURE__ */ isW3cTraceState(value)) {
+          traceState = value;
+        } else {
+          traceState = /* @__PURE__ */ createW3cTraceState(isString(value) ? value : STR_EMPTY);
+        }
+        return /* @__PURE__ */ _createOTelTraceState(traceState);
+      }
+      function createOTelSpanContext(traceContext) {
+        var traceId = /* @__PURE__ */ isValidTraceId(traceContext[_DYN_TRACE_ID$1]) ? traceContext[_DYN_TRACE_ID$1] : INVALID_TRACE_ID;
+        var spanId = /* @__PURE__ */ isValidSpanId(traceContext[_DYN_SPAN_ID]) ? traceContext[_DYN_SPAN_ID] : INVALID_SPAN_ID;
+        var isRemote = traceContext.isRemote;
+        var traceFlags = !/* @__PURE__ */ isNullOrUndefined(traceContext[_DYN_TRACE_FLAGS]) ? traceContext[_DYN_TRACE_FLAGS] : 1;
+        var otTraceState = null;
+        var traceContextObj = {
+          traceId,
+          spanId,
+          traceFlags
+        };
+        return objDefineProps(traceContextObj, {
+          traceId: {
+            g: function() {
+              return traceId;
+            },
+            s: function(value) {
+              return traceId = /* @__PURE__ */ isValidTraceId(value) ? value : INVALID_TRACE_ID;
+            }
+          },
+          spanId: {
+            g: function() {
+              return spanId;
+            },
+            s: function(value) {
+              return spanId = /* @__PURE__ */ isValidSpanId(value) ? value : INVALID_SPAN_ID;
+            }
+          },
+          isRemote: {
+            g: function() {
+              return isRemote;
+            }
+          },
+          traceFlags: {
+            g: function() {
+              return traceFlags;
+            },
+            s: function(value) {
+              return traceFlags = value;
+            }
+          },
+          traceState: {
+            g: function() {
+              if (!otTraceState) {
+                otTraceState = /* @__PURE__ */ createOTelTraceState(traceContext[_DYN_TRACE_STATE]);
+              }
+              return otTraceState;
+            },
+            s: function(value) {
+              otTraceState = value;
+            }
+          }
+        });
+      }
+      var pluginStateData = createElmNodeData("plugin");
+      function _getPluginState(plugin) {
+        return pluginStateData.get(plugin, "state", {}, true);
+      }
+      function initializePlugins(processContext, extensions2) {
+        var initPlugins = [];
+        var lastPlugin = null;
+        var proxy = processContext[_DYN_GET_NEXT]();
+        var pluginState;
+        while (proxy) {
+          var thePlugin = proxy[_DYN_GET_PLUGIN]();
+          if (thePlugin) {
+            if (lastPlugin && lastPlugin[_DYN_SET_NEXT_PLUGIN] && thePlugin[STR_PROCESS_TELEMETRY]) {
+              lastPlugin[_DYN_SET_NEXT_PLUGIN](thePlugin);
+            }
+            pluginState = _getPluginState(thePlugin);
+            var isInitialized = !!pluginState[_DYN_IS_INITIALIZED];
+            if (thePlugin[_DYN_IS_INITIALIZED]) {
+              isInitialized = thePlugin[_DYN_IS_INITIALIZED]();
+            }
+            if (!isInitialized) {
+              initPlugins[_DYN_PUSH$1](thePlugin);
+            }
+            lastPlugin = thePlugin;
+            proxy = proxy[_DYN_GET_NEXT]();
+          }
+        }
+        arrForEach(initPlugins, function(thePlugin2) {
+          var core = processContext[STR_CORE]();
+          thePlugin2[_DYN_INITIALIZE$1](processContext.getCfg(), core, extensions2, processContext[_DYN_GET_NEXT]());
+          pluginState = _getPluginState(thePlugin2);
+          if (!thePlugin2[STR_CORE] && !pluginState[STR_CORE]) {
+            pluginState[STR_CORE] = core;
+          }
+          pluginState[_DYN_IS_INITIALIZED] = true;
+          delete pluginState[_DYN_TEARDOWN];
+        });
+      }
+      function sortPlugins(plugins) {
+        return plugins.sort(function(extA, extB) {
+          var result = 0;
+          if (extB) {
+            var bHasProcess = extB[STR_PROCESS_TELEMETRY];
+            if (extA[STR_PROCESS_TELEMETRY]) {
+              result = bHasProcess ? extA[STR_PRIORITY] - extB[STR_PRIORITY] : 1;
+            } else if (bHasProcess) {
+              result = -1;
+            }
+          } else {
+            result = extA ? 1 : -1;
+          }
+          return result;
+        });
+      }
+      // @__NO_SIDE_EFFECTS__
+      function isDistributedTraceContext(obj) {
+        return obj && isFunction(obj.getName) && isFunction(obj.getTraceId) && isFunction(obj.getSpanId) && isFunction(obj.getTraceFlags) && isFunction(obj.setName) && isFunction(obj.setTraceId) && isFunction(obj.setSpanId) && isFunction(obj[_DYN_SET_TRACE_FLAGS]);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createDistributedTraceContext(parent) {
+        var _a3;
+        var parentCtx = null;
+        var initCtx = null;
+        var traceId = parent && /* @__PURE__ */ isValidTraceId(parent[_DYN_TRACE_ID$1]) ? parent[_DYN_TRACE_ID$1] : generateW3CId();
+        var spanId = parent && /* @__PURE__ */ isValidSpanId(parent[_DYN_SPAN_ID]) ? parent[_DYN_SPAN_ID] : STR_EMPTY;
+        var traceFlags = parent ? parent[_DYN_TRACE_FLAGS] : UNDEFINED_VALUE$2;
+        var isRemote = parent ? parent.isRemote : false;
+        var pageName = STR_EMPTY;
+        var traceState = null;
+        if (parent) {
+          if (/* @__PURE__ */ isDistributedTraceContext(parent)) {
+            parentCtx = parent;
+            pageName = parentCtx.getName();
+          } else {
+            initCtx = parent;
+          }
+        }
+        if (!pageName) {
+          pageName = "_unknown_";
+          var location_1 = /* @__PURE__ */ getLocation();
+          if (location_1 && location_1[_DYN_PATHNAME]) {
+            pageName = location_1[_DYN_PATHNAME] + (location_1.hash || "");
+          }
+        }
+        function _getName() {
+          return pageName;
+        }
+        function _setPageNameFn(updateParent) {
+          return function(newValue) {
+            if (updateParent) {
+              parentCtx && parentCtx.setName(newValue);
+            }
+            pageName = newValue;
+          };
+        }
+        function _getTraceId() {
+          return traceId;
+        }
+        function _setTraceIdFn(updateParent) {
+          return function(newValue) {
+            if (updateParent) {
+              parentCtx && parentCtx.setTraceId(newValue);
+            }
+            if (/* @__PURE__ */ isValidTraceId(newValue)) {
+              traceId = newValue;
+            }
+          };
+        }
+        function _getSpanId() {
+          return spanId;
+        }
+        function _setSpanIdFn(updateParent) {
+          return function(newValue) {
+            if (updateParent) {
+              parentCtx && parentCtx.setSpanId(newValue);
+            }
+            if (/* @__PURE__ */ isValidSpanId(newValue)) {
+              spanId = newValue;
+            }
+          };
+        }
+        function _getTraceFlags() {
+          return traceFlags;
+        }
+        function _setTraceFlagsFn(updateParent) {
+          return function(newTraceFlags) {
+            if (updateParent) {
+              parentCtx && parentCtx[_DYN_SET_TRACE_FLAGS](newTraceFlags);
+            }
+            traceFlags = newTraceFlags;
+          };
+        }
+        function _getTraceState() {
+          if (!traceState) {
+            if (!parentCtx) {
+              if (initCtx) {
+                if (/* @__PURE__ */ isOTelTraceState(initCtx[_DYN_TRACE_STATE])) {
+                  traceState = /* @__PURE__ */ createW3cTraceState(initCtx[_DYN_TRACE_STATE].serialize() || STR_EMPTY, parentCtx ? parentCtx[_DYN_TRACE_STATE] : void 0);
+                } else {
+                  traceState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, initCtx[_DYN_TRACE_STATE] || (parentCtx ? parentCtx[_DYN_TRACE_STATE] : void 0));
+                }
+              }
+            }
+            if (!traceState) {
+              traceState = /* @__PURE__ */ createW3cTraceState(STR_EMPTY, parentCtx ? parentCtx[_DYN_TRACE_STATE] : void 0);
+            }
+          }
+          return traceState;
+        }
+        var otelSpanCtx = null;
+        var traceCtx = setProtoTypeName((_a3 = {
+          getName: _getName,
+          setName: _setPageNameFn(true),
+          getTraceId: _getTraceId,
+          setTraceId: _setTraceIdFn(true),
+          getSpanId: _getSpanId,
+          setSpanId: _setSpanIdFn(true),
+          getTraceFlags: _getTraceFlags
+        }, _a3[_DYN_SET_TRACE_FLAGS] = _setTraceFlagsFn(true), _a3.traceId = traceId, _a3.spanId = spanId, _a3.traceFlags = traceFlags, _a3.traceState = traceState, _a3.isRemote = isRemote, _a3.pageName = pageName, _a3.getOTelSpanContext = function() {
+          if (!otelSpanCtx) {
+            otelSpanCtx = createOTelSpanContext(traceCtx);
+          }
+          return otelSpanCtx;
+        }, _a3), "DistributedTraceContext");
+        return objDefineProps(traceCtx, {
+          pageName: {
+            g: _getName,
+            s: _setPageNameFn(false)
+          },
+          traceId: {
+            g: _getTraceId,
+            s: _setTraceIdFn(false)
+          },
+          spanId: {
+            g: _getSpanId,
+            s: _setSpanIdFn(false)
+          },
+          traceFlags: {
+            g: _getTraceFlags,
+            s: _setTraceFlagsFn(false)
+          },
+          isRemote: {
+            v: isRemote,
+            w: false
+          },
+          traceState: {
+            g: _getTraceState
+          },
+          parentCtx: {
+            g: function() {
+              return parentCtx;
+            }
+          },
+          _parent: {
+            g: function() {
+              var result;
+              if (parentCtx) {
+                result = {
+                  t: "traceCtx",
+                  v: parentCtx
+                };
+              } else if (initCtx) {
+                result = {
+                  t: "initCtx",
+                  v: initCtx
+                };
+              }
+              return result;
+            }
+          }
+        });
+      }
+      var strTelemetryPluginChain = "TelemetryPluginChain";
+      var strHasRunFlags = "_hasRun";
+      var strGetTelCtx = "_getTelCtx";
+      var _chainId = 0;
+      function _getNextProxyStart(proxy, core, startAt) {
+        while (proxy) {
+          if (proxy[_DYN_GET_PLUGIN]() === startAt) {
+            return proxy;
+          }
+          proxy = proxy[_DYN_GET_NEXT]();
+        }
+        return createTelemetryProxyChain([startAt], core[_DYN_CONFIG] || {}, core);
+      }
+      function _createInternalContext(telemetryChain, dynamicHandler, core, startAt) {
+        var _nextProxy = null;
+        var _onComplete = [];
+        if (!dynamicHandler) {
+          dynamicHandler = createDynamicConfig({}, null, core[_DYN_LOGGER]);
+        }
+        if (startAt !== null) {
+          _nextProxy = startAt ? _getNextProxyStart(telemetryChain, core, startAt) : telemetryChain;
+        }
+        var context = {
+          _next: _moveNext,
+          ctx: {
+            core: function() {
+              return core;
+            },
+            diagLog: function() {
+              return /* @__PURE__ */ safeGetLogger(core, dynamicHandler.cfg);
+            },
+            getCfg: function() {
+              return dynamicHandler.cfg;
+            },
+            getExtCfg: _resolveExtCfg,
+            getConfig: _getConfig,
+            hasNext: function() {
+              return !!_nextProxy;
+            },
+            getNext: function() {
+              return _nextProxy;
+            },
+            setNext: function(nextPlugin) {
+              _nextProxy = nextPlugin;
+            },
+            iterate: _iterateChain,
+            onComplete: _addOnComplete
+          }
+        };
+        function _addOnComplete(onComplete, that) {
+          var args = [];
+          for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+          }
+          if (onComplete) {
+            _onComplete[_DYN_PUSH$1]({
+              func: onComplete,
+              self: !/* @__PURE__ */ isUndefined(that) ? that : context.ctx,
+              args
+            });
+          }
+        }
+        function _moveNext() {
+          var nextProxy = _nextProxy;
+          _nextProxy = nextProxy ? nextProxy[_DYN_GET_NEXT]() : null;
+          if (!nextProxy) {
+            var onComplete = _onComplete;
+            if (onComplete && onComplete[_DYN_LENGTH$1] > 0) {
+              arrForEach(onComplete, function(completeDetails) {
+                try {
+                  completeDetails.func[_DYN_CALL](completeDetails.self, completeDetails.args);
+                } catch (e) {
+                  _throwInternal(core[_DYN_LOGGER], 2, 73, "Unexpected Exception during onComplete - " + /* @__PURE__ */ dumpObj(e));
+                }
+              });
+              _onComplete = [];
+            }
+          }
+          return nextProxy;
+        }
+        function _getExtCfg(identifier2, createIfMissing) {
+          var idCfg = null;
+          var extCfg = _getCfg(dynamicHandler.cfg, "extensionConfig", createIfMissing);
+          if (extCfg) {
+            idCfg = _getCfg(extCfg, identifier2, createIfMissing);
+          }
+          return idCfg;
+        }
+        function _getCfg(cfg, identifier2, createIfMissing) {
+          var idCfg = null;
+          if (cfg && identifier2) {
+            idCfg = cfg[identifier2];
+            if (!idCfg && createIfMissing) {
+              idCfg = {};
+            }
+            cfg[identifier2] = idCfg;
+            idCfg = dynamicHandler.ref(cfg, identifier2);
+          }
+          return idCfg;
+        }
+        function _resolveExtCfg(identifier2, defaultValues2, rootOnly) {
+          var newConfig = rootOnly ? _getCfg(dynamicHandler.cfg, identifier2, true) : _getExtCfg(identifier2, true);
+          if (defaultValues2) {
+            objForEachKey(defaultValues2, function(field, defaultValue) {
+              if (/* @__PURE__ */ isNullOrUndefined(newConfig[field])) {
+                var cfgValue = dynamicHandler.cfg[field];
+                if (cfgValue || !/* @__PURE__ */ isNullOrUndefined(cfgValue)) {
+                  newConfig[field] = cfgValue;
+                }
+              }
+              _applyDefaultValue(dynamicHandler, newConfig, field, defaultValue);
+            });
+          }
+          return dynamicHandler.setDf(newConfig, defaultValues2);
+        }
+        function _getConfig(identifier2, field, defaultValue) {
+          if (defaultValue === void 0) {
+            defaultValue = false;
+          }
+          var theValue;
+          var extConfig = _getExtCfg(identifier2, false);
+          var rootConfig = dynamicHandler.cfg;
+          if (extConfig && (extConfig[field] || !/* @__PURE__ */ isNullOrUndefined(extConfig[field]))) {
+            theValue = extConfig[field];
+          } else if (rootConfig[field] || !/* @__PURE__ */ isNullOrUndefined(rootConfig[field])) {
+            theValue = rootConfig[field];
+          }
+          return theValue || !/* @__PURE__ */ isNullOrUndefined(theValue) ? theValue : defaultValue;
+        }
+        function _iterateChain(cb) {
+          var nextPlugin;
+          while (!!(nextPlugin = context._next())) {
+            var plugin = nextPlugin[_DYN_GET_PLUGIN]();
+            if (plugin) {
+              cb(plugin);
+            }
+          }
+        }
+        return context;
+      }
+      function createProcessTelemetryContext(telemetryChain, cfg, core, startAt) {
+        var config2 = createDynamicConfig(cfg);
+        var internalContext = _createInternalContext(telemetryChain, config2, core, startAt);
+        var context = internalContext.ctx;
+        function _processNext(env3) {
+          var nextPlugin = internalContext._next();
+          if (nextPlugin) {
+            nextPlugin[STR_PROCESS_TELEMETRY](env3, context);
+          }
+          return !nextPlugin;
+        }
+        function _createNew(plugins, startAt2) {
+          if (plugins === void 0) {
+            plugins = null;
+          }
+          if (isArray(plugins)) {
+            plugins = createTelemetryProxyChain(plugins, config2.cfg, core, startAt2);
+          }
+          return createProcessTelemetryContext(plugins || context[_DYN_GET_NEXT](), config2.cfg, core, startAt2);
+        }
+        context[_DYN_PROCESS_NEXT] = _processNext;
+        context[_DYN_CREATE_NEW] = _createNew;
+        return context;
+      }
+      function createProcessTelemetryUnloadContext(telemetryChain, core, startAt) {
+        var config2 = createDynamicConfig(core[_DYN_CONFIG]);
+        var internalContext = _createInternalContext(telemetryChain, config2, core, startAt);
+        var context = internalContext.ctx;
+        function _processNext(unloadState) {
+          var nextPlugin = internalContext._next();
+          nextPlugin && nextPlugin[_DYN_UNLOAD](context, unloadState);
+          return !nextPlugin;
+        }
+        function _createNew(plugins, startAt2) {
+          if (plugins === void 0) {
+            plugins = null;
+          }
+          if (isArray(plugins)) {
+            plugins = createTelemetryProxyChain(plugins, config2.cfg, core, startAt2);
+          }
+          return createProcessTelemetryUnloadContext(plugins || context[_DYN_GET_NEXT](), core, startAt2);
+        }
+        context[_DYN_PROCESS_NEXT] = _processNext;
+        context[_DYN_CREATE_NEW] = _createNew;
+        return context;
+      }
+      function createProcessTelemetryUpdateContext(telemetryChain, core, startAt) {
+        var config2 = createDynamicConfig(core[_DYN_CONFIG]);
+        var internalContext = _createInternalContext(telemetryChain, config2, core, startAt);
+        var context = internalContext.ctx;
+        function _processNext(updateState) {
+          return context.iterate(function(plugin) {
+            if (isFunction(plugin[_DYN_UPDATE])) {
+              plugin[_DYN_UPDATE](context, updateState);
+            }
+          });
+        }
+        function _createNew(plugins, startAt2) {
+          if (plugins === void 0) {
+            plugins = null;
+          }
+          if (isArray(plugins)) {
+            plugins = createTelemetryProxyChain(plugins, config2.cfg, core, startAt2);
+          }
+          return createProcessTelemetryUpdateContext(plugins || context[_DYN_GET_NEXT](), core, startAt2);
+        }
+        context[_DYN_PROCESS_NEXT] = _processNext;
+        context[_DYN_CREATE_NEW] = _createNew;
+        return context;
+      }
+      function createTelemetryProxyChain(plugins, config2, core, startAt) {
+        var firstProxy = null;
+        var add = startAt ? false : true;
+        if (isArray(plugins) && plugins[_DYN_LENGTH$1] > 0) {
+          var lastProxy_1 = null;
+          arrForEach(plugins, function(thePlugin) {
+            if (!add && startAt === thePlugin) {
+              add = true;
+            }
+            if (add && thePlugin && isFunction(thePlugin[STR_PROCESS_TELEMETRY])) {
+              var newProxy = createTelemetryPluginProxy(thePlugin, config2, core);
+              if (!firstProxy) {
+                firstProxy = newProxy;
+              }
+              if (lastProxy_1) {
+                lastProxy_1._setNext(newProxy);
+              }
+              lastProxy_1 = newProxy;
+            }
+          });
+        }
+        if (startAt && !firstProxy) {
+          return createTelemetryProxyChain([startAt], config2, core);
+        }
+        return firstProxy;
+      }
+      function createTelemetryPluginProxy(plugin, config2, core) {
+        var _a3;
+        var nextProxy = null;
+        var hasProcessTelemetry = isFunction(plugin[STR_PROCESS_TELEMETRY]);
+        var hasSetNext = isFunction(plugin[_DYN_SET_NEXT_PLUGIN]);
+        var chainId;
+        if (plugin) {
+          chainId = plugin[_DYN_IDENTIFIER] + "-" + plugin[STR_PRIORITY] + "-" + _chainId++;
+        } else {
+          chainId = "Unknown-0-" + _chainId++;
+        }
+        var proxyChain = (_a3 = {
+          getPlugin: function() {
+            return plugin;
+          },
+          getNext: function() {
+            return nextProxy;
+          }
+        }, _a3[STR_PROCESS_TELEMETRY] = _processTelemetry, _a3.unload = _unloadPlugin, _a3.update = _updatePlugin, _a3._id = chainId, _a3._setNext = function(nextPlugin) {
+          nextProxy = nextPlugin;
+        }, _a3);
+        function _getTelCtx() {
+          var itemCtx;
+          if (plugin && isFunction(plugin[strGetTelCtx])) {
+            itemCtx = plugin[strGetTelCtx]();
+          }
+          if (!itemCtx) {
+            itemCtx = createProcessTelemetryContext(proxyChain, config2, core);
+          }
+          return itemCtx;
+        }
+        function _processChain(itemCtx, processPluginFn, name, details, isAsync2) {
+          var hasRun = false;
+          var identifier2 = plugin ? plugin[_DYN_IDENTIFIER] : strTelemetryPluginChain;
+          var hasRunContext = itemCtx[strHasRunFlags];
+          if (!hasRunContext) {
+            hasRunContext = itemCtx[strHasRunFlags] = {};
+          }
+          itemCtx.setNext(nextProxy);
+          if (plugin) {
+            doPerf(itemCtx[STR_CORE](), function() {
+              return identifier2 + ":" + name;
+            }, function() {
+              hasRunContext[chainId] = true;
+              try {
+                var nextId = nextProxy ? nextProxy._id : STR_EMPTY;
+                if (nextId) {
+                  hasRunContext[nextId] = false;
+                }
+                hasRun = processPluginFn(itemCtx);
+              } catch (error2) {
+                var hasNextRun = nextProxy ? hasRunContext[nextProxy._id] : true;
+                if (hasNextRun) {
+                  hasRun = true;
+                }
+                if (!nextProxy || !hasNextRun) {
+                  _throwInternal(itemCtx[_DYN_DIAG_LOG$1](), 1, 73, "Plugin [" + identifier2 + "] failed during " + name + " - " + /* @__PURE__ */ dumpObj(error2) + ", run flags: " + /* @__PURE__ */ dumpObj(hasRunContext));
+                }
+              }
+            }, details, isAsync2);
+          }
+          return hasRun;
+        }
+        function _processTelemetry(env3, itemCtx) {
+          itemCtx = itemCtx || _getTelCtx();
+          function _callProcessTelemetry(itemCtx2) {
+            if (!plugin || !hasProcessTelemetry) {
+              return false;
+            }
+            var pluginState = _getPluginState(plugin);
+            if (pluginState[_DYN_TEARDOWN] || pluginState[STR_DISABLED]) {
+              return false;
+            }
+            if (hasSetNext) {
+              plugin[_DYN_SET_NEXT_PLUGIN](nextProxy);
+            }
+            plugin[STR_PROCESS_TELEMETRY](env3, itemCtx2);
+            return true;
+          }
+          if (!_processChain(itemCtx, _callProcessTelemetry, "processTelemetry", function() {
+            return { item: env3 };
+          }, !env3.sync)) {
+            itemCtx[_DYN_PROCESS_NEXT](env3);
+          }
+        }
+        function _unloadPlugin(unloadCtx, unloadState) {
+          function _callTeardown() {
+            var hasRun = false;
+            if (plugin) {
+              var pluginState = _getPluginState(plugin);
+              var pluginCore = plugin[STR_CORE] || pluginState[STR_CORE];
+              if (plugin && (!pluginCore || pluginCore === unloadCtx.core()) && !pluginState[_DYN_TEARDOWN]) {
+                pluginState[STR_CORE] = null;
+                pluginState[_DYN_TEARDOWN] = true;
+                pluginState[_DYN_IS_INITIALIZED] = false;
+                if (plugin[_DYN_TEARDOWN] && plugin[_DYN_TEARDOWN](unloadCtx, unloadState) === true) {
+                  hasRun = true;
+                }
+              }
+            }
+            return hasRun;
+          }
+          if (!_processChain(unloadCtx, _callTeardown, "unload", _noopVoid, unloadState.isAsync)) {
+            unloadCtx[_DYN_PROCESS_NEXT](unloadState);
+          }
+        }
+        function _updatePlugin(updateCtx, updateState) {
+          function _callUpdate() {
+            var hasRun = false;
+            if (plugin) {
+              var pluginState = _getPluginState(plugin);
+              var pluginCore = plugin[STR_CORE] || pluginState[STR_CORE];
+              if (plugin && (!pluginCore || pluginCore === updateCtx.core()) && !pluginState[_DYN_TEARDOWN]) {
+                if (plugin[_DYN_UPDATE] && plugin[_DYN_UPDATE](updateCtx, updateState) === true) {
+                  hasRun = true;
+                }
+              }
+            }
+            return hasRun;
+          }
+          if (!_processChain(updateCtx, _callUpdate, "update", _noopVoid, false)) {
+            updateCtx[_DYN_PROCESS_NEXT](updateState);
+          }
+        }
+        return objFreeze(proxyChain);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function createUnloadHandlerContainer() {
+        var handlers = [];
+        function _addHandler(handler) {
+          if (handler) {
+            handlers[_DYN_PUSH$1](handler);
+          }
+        }
+        function _runHandlers(unloadCtx, unloadState) {
+          arrForEach(handlers, function(handler) {
+            try {
+              handler(unloadCtx, unloadState);
+            } catch (e) {
+              _throwInternal(unloadCtx[_DYN_DIAG_LOG$1](), 2, 73, "Unexpected error calling unload handler - " + /* @__PURE__ */ dumpObj(e));
+            }
+          });
+          handlers = [];
+        }
+        return {
+          add: _addHandler,
+          run: _runHandlers
+        };
+      }
+      function createUnloadHookContainer() {
+        var _hooks = [];
+        function _doUnload(logger) {
+          var oldHooks = _hooks;
+          _hooks = [];
+          arrForEach(oldHooks, function(fn) {
+            try {
+              (fn.rm || fn.remove)[_DYN_CALL](fn);
+            } catch (e) {
+              _throwInternal(logger, 2, 73, "Unloading:" + /* @__PURE__ */ dumpObj(e));
+            }
+          });
+        }
+        function _addHook(hooks) {
+          if (hooks) {
+            arrAppend(_hooks, hooks);
+          }
+        }
+        return {
+          run: _doUnload,
+          add: _addHook
+        };
+      }
+      var _a$3;
+      var strGetPlugin = "getPlugin";
+      var defaultValues = (_a$3 = {}, _a$3[STR_EXTENSION_CONFIG] = { isVal: isNotNullOrUndefined, v: {} }, _a$3);
+      var BaseTelemetryPlugin = (
+        /** @class */
+        (function() {
+          function BaseTelemetryPlugin2() {
+            var _self = this;
+            var _isinitialized;
+            var _rootCtx;
+            var _nextPlugin;
+            var _unloadHandlerContainer;
+            var _hookContainer;
+            _initDefaults();
+            dynamicProto(BaseTelemetryPlugin2, _self, function(_self2) {
+              _self2[_DYN_INITIALIZE$1] = function(config2, core, extensions2, pluginChain) {
+                _setDefaults(config2, core, pluginChain);
+                _isinitialized = true;
+              };
+              _self2[_DYN_TEARDOWN] = function(unloadCtx, unloadState) {
+                var core = _self2[STR_CORE];
+                if (!core || unloadCtx && core !== unloadCtx[STR_CORE]()) {
+                  return;
+                }
+                var result;
+                var unloadDone = false;
+                var theUnloadCtx = unloadCtx || createProcessTelemetryUnloadContext(null, core, _nextPlugin && _nextPlugin[strGetPlugin] ? _nextPlugin[strGetPlugin]() : _nextPlugin);
+                var theUnloadState = unloadState || {
+                  reason: 0,
+                  isAsync: false
+                };
+                function _unloadCallback() {
+                  if (!unloadDone) {
+                    unloadDone = true;
+                    _unloadHandlerContainer.run(theUnloadCtx, unloadState);
+                    _hookContainer.run(theUnloadCtx[_DYN_DIAG_LOG$1]());
+                    if (result === true) {
+                      theUnloadCtx[_DYN_PROCESS_NEXT](theUnloadState);
+                    }
+                    _initDefaults();
+                  }
+                }
+                if (!_self2[_DYN__DO_TEARDOWN] || _self2[_DYN__DO_TEARDOWN](theUnloadCtx, theUnloadState, _unloadCallback) !== true) {
+                  _unloadCallback();
+                } else {
+                  result = true;
+                }
+                return result;
+              };
+              _self2[_DYN_UPDATE] = function(updateCtx, updateState) {
+                var core = _self2[STR_CORE];
+                if (!core || updateCtx && core !== updateCtx[STR_CORE]()) {
+                  return;
+                }
+                var result;
+                var updateDone = false;
+                var theUpdateCtx = updateCtx || createProcessTelemetryUpdateContext(null, core, _nextPlugin && _nextPlugin[strGetPlugin] ? _nextPlugin[strGetPlugin]() : _nextPlugin);
+                var theUpdateState = updateState || {
+                  reason: 0
+                };
+                function _updateCallback() {
+                  if (!updateDone) {
+                    updateDone = true;
+                    _setDefaults(theUpdateCtx.getCfg(), theUpdateCtx.core(), theUpdateCtx[_DYN_GET_NEXT]());
+                  }
+                }
+                if (!_self2._doUpdate || _self2._doUpdate(theUpdateCtx, theUpdateState, _updateCallback) !== true) {
+                  _updateCallback();
+                } else {
+                  result = true;
+                }
+                return result;
+              };
+              proxyFunctionAs(_self2, "_addUnloadCb", function() {
+                return _unloadHandlerContainer;
+              }, "add");
+              proxyFunctionAs(_self2, "_addHook", function() {
+                return _hookContainer;
+              }, "add");
+              objDefine(_self2, "_unloadHooks", { g: function() {
+                return _hookContainer;
+              } });
+            });
+            _self[_DYN_DIAG_LOG$1] = function(itemCtx) {
+              return _getTelCtx(itemCtx)[_DYN_DIAG_LOG$1]();
+            };
+            _self[_DYN_IS_INITIALIZED] = function() {
+              return _isinitialized;
+            };
+            _self.setInitialized = function(isInitialized) {
+              _isinitialized = isInitialized;
+            };
+            _self[_DYN_SET_NEXT_PLUGIN] = function(next) {
+              _nextPlugin = next;
+            };
+            _self[_DYN_PROCESS_NEXT] = function(env3, itemCtx) {
+              if (itemCtx) {
+                itemCtx[_DYN_PROCESS_NEXT](env3);
+              } else if (_nextPlugin && isFunction(_nextPlugin[STR_PROCESS_TELEMETRY])) {
+                _nextPlugin[STR_PROCESS_TELEMETRY](env3, null);
+              }
+            };
+            _self._getTelCtx = _getTelCtx;
+            function _getTelCtx(currentCtx) {
+              if (currentCtx === void 0) {
+                currentCtx = null;
+              }
+              var itemCtx = currentCtx;
+              if (!itemCtx) {
+                var rootCtx = _rootCtx || createProcessTelemetryContext(null, {}, _self[STR_CORE]);
+                if (_nextPlugin && _nextPlugin[strGetPlugin]) {
+                  itemCtx = rootCtx[_DYN_CREATE_NEW](null, _nextPlugin[strGetPlugin]);
+                } else {
+                  itemCtx = rootCtx[_DYN_CREATE_NEW](null, _nextPlugin);
+                }
+              }
+              return itemCtx;
+            }
+            function _setDefaults(config2, core, pluginChain) {
+              createDynamicConfig(config2, defaultValues, /* @__PURE__ */ safeGetLogger(core));
+              if (!pluginChain && core) {
+                pluginChain = core[_DYN_GET_PROCESS_TEL_CONT2]()[_DYN_GET_NEXT]();
+              }
+              var nextPlugin = _nextPlugin;
+              if (_nextPlugin && _nextPlugin[strGetPlugin]) {
+                nextPlugin = _nextPlugin[strGetPlugin]();
+              }
+              _self[STR_CORE] = core;
+              _rootCtx = createProcessTelemetryContext(pluginChain, config2, core, nextPlugin);
+            }
+            function _initDefaults() {
+              _isinitialized = false;
+              _self[STR_CORE] = null;
+              _rootCtx = null;
+              _nextPlugin = null;
+              _hookContainer = createUnloadHookContainer();
+              _unloadHandlerContainer = /* @__PURE__ */ createUnloadHandlerContainer();
+            }
+          }
+          BaseTelemetryPlugin2.__ieDyn = 1;
+          return BaseTelemetryPlugin2;
+        })()
+      );
+      function _addInitializer(_initializers, id, telemetryInitializer) {
+        var theInitializer = {
+          id,
+          fn: telemetryInitializer
+        };
+        arrAppend(_initializers, theInitializer);
+        var handler = {
+          remove: function() {
+            arrForEach(_initializers, function(initializer3, idx) {
+              if (initializer3.id === theInitializer.id) {
+                _initializers[_DYN_SPLICE](idx, 1);
+                return -1;
+              }
+            });
+          }
+        };
+        return handler;
+      }
+      function _runInitializers(_initializers, item, logger) {
+        var doNotSendItem = false;
+        var telemetryInitializersCount = _initializers[_DYN_LENGTH$1];
+        for (var i = 0; i < telemetryInitializersCount; ++i) {
+          var telemetryInitializer = _initializers[i];
+          if (telemetryInitializer) {
+            try {
+              if (telemetryInitializer.fn[_DYN_APPLY](null, [item]) === false) {
+                doNotSendItem = true;
+                break;
+              }
+            } catch (e) {
+              _throwInternal(logger, 2, 64, "Telemetry initializer failed: " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) }, true);
+            }
+          }
+        }
+        return !doNotSendItem;
+      }
+      var TelemetryInitializerPlugin = (
+        /** @class */
+        (function(_super) {
+          __extendsFn(TelemetryInitializerPlugin2, _super);
+          function TelemetryInitializerPlugin2() {
+            var _this = _super.call(this) || this;
+            _this.identifier = "TelemetryInitializerPlugin";
+            _this.priority = 199;
+            var _id;
+            var _initializers;
+            _initDefaults();
+            dynamicProto(TelemetryInitializerPlugin2, _this, function(_self, _base) {
+              _self.addTelemetryInitializer = function(telemetryInitializer) {
+                return _addInitializer(_initializers, _id++, telemetryInitializer);
+              };
+              _self[STR_PROCESS_TELEMETRY] = function(item, itemCtx) {
+                if (_runInitializers(_initializers, item, itemCtx ? itemCtx[_DYN_DIAG_LOG$1]() : _self[_DYN_DIAG_LOG$1]())) {
+                  _self[_DYN_PROCESS_NEXT](item, itemCtx);
+                }
+              };
+              _self[_DYN__DO_TEARDOWN] = function() {
+                _initDefaults();
+              };
+            });
+            function _initDefaults() {
+              _id = 0;
+              _initializers = [];
+            }
+            return _this;
+          }
+          TelemetryInitializerPlugin2.__ieDyn = 1;
+          return TelemetryInitializerPlugin2;
+        })(BaseTelemetryPlugin)
+      );
+      var _a$2, _b$2, _c;
+      var strValidationError = "Plugins must provide initialize method";
+      var strNotificationManager = "_notificationManager";
+      var strSdkUnloadingError = "SDK is still unloading...";
+      var strSdkNotInitialized = "SDK is not initialized";
+      var maxInitQueueSize = 100;
+      var maxInitTimeout = 5e4;
+      var maxAttributeCount = 128;
+      var defaultConfig = objDeepFreeze((_a$2 = {
+        cookieCfg: {}
+      }, _a$2[STR_EXTENSIONS] = { rdOnly: true, ref: true, v: [] }, _a$2[STR_CHANNELS] = { rdOnly: true, ref: true, v: [] }, _a$2[STR_EXTENSION_CONFIG] = { ref: true, v: {} }, _a$2[STR_CREATE_PERF_MGR] = UNDEFINED_VALUE$2, _a$2.loggingLevelConsole = 0, _a$2.diagnosticLogInterval = UNDEFINED_VALUE$2, _a$2.traceHdrMode = 3, _a$2.traceCfg = cfgDfMerge((_b$2 = {
+        generalLimits: cfgDfMerge((_c = {
+          attributeValueLengthLimit: void 0
+        }, _c[_DYN_ATTRIBUTE_COUNT_LIMI5] = maxAttributeCount, _c)),
+        serviceName: null
+      }, _b$2[_DYN_SUPPRESS_TRACING] = false, _b$2)), _a$2));
+      function _getDefaultConfig(core) {
+        var _a3;
+        var handlers = {
+          errorHandlers: cfgDfMerge((_a3 = {
+            attribError: function(message, key, value) {
+              core.logger[_DYN_THROW_INTERNAL](2, 115, message, {
+                attribName: key,
+                value
+              });
+            },
+            spanError: function(message, spanName) {
+              core.logger[_DYN_THROW_INTERNAL](2, 116, message, {
+                spanName
+              });
+            },
+            debug: function(message) {
+              core[_DYN_LOGGER].debugToConsole(message);
+            },
+            warn: function(message) {
+              core.logger[_DYN_WARN_TO_CONSOLE](message);
+            },
+            error: function(message) {
+              core.logger[_DYN_THROW_INTERNAL](1, 117, message);
+            }
+          }, _a3[_DYN_NOT_IMPLEMENTED] = function(message) {
+            core.logger[_DYN_THROW_INTERNAL](1, 118, message);
+          }, _a3))
+        };
+        return objDeepFreeze(objAssign({}, defaultConfig, handlers));
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createPerfManager(core, notificationMgr) {
+        return new PerfManager(notificationMgr);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _validateExtensions(logger, channelPriority, allExtensions) {
+        var coreExtensions = [];
+        var channels = [];
+        var extPriorities = {};
+        arrForEach(allExtensions, function(ext) {
+          if (/* @__PURE__ */ isNullOrUndefined(ext) || /* @__PURE__ */ isNullOrUndefined(ext[_DYN_INITIALIZE$1])) {
+            throwError(strValidationError);
+          }
+          var extPriority = ext[STR_PRIORITY];
+          var identifier2 = ext[_DYN_IDENTIFIER];
+          if (ext && extPriority) {
+            if (!/* @__PURE__ */ isNullOrUndefined(extPriorities[extPriority])) {
+              _warnToConsole(logger, "Two extensions have same priority #" + extPriority + " - " + extPriorities[extPriority] + ", " + identifier2);
+            } else {
+              extPriorities[extPriority] = identifier2;
+            }
+          }
+          if (!extPriority || extPriority < channelPriority) {
+            coreExtensions[_DYN_PUSH$1](ext);
+          } else {
+            channels[_DYN_PUSH$1](ext);
+          }
+        });
+        return {
+          core: coreExtensions,
+          channels
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _isPluginPresent(thePlugin, plugins) {
+        var exists = false;
+        arrForEach(plugins, function(plugin) {
+          if (plugin === thePlugin) {
+            exists = true;
+            return -1;
+          }
+        });
+        return exists;
+      }
+      function _deepMergeConfig(details, target, newValues, merge2) {
+        if (newValues) {
+          objForEachKey(newValues, function(key, value) {
+            if (merge2) {
+              if (/* @__PURE__ */ isPlainObject3(value) && /* @__PURE__ */ isPlainObject3(target[key])) {
+                _deepMergeConfig(details, target[key], value, merge2);
+              }
+            }
+            if (merge2 && /* @__PURE__ */ isPlainObject3(value) && /* @__PURE__ */ isPlainObject3(target[key])) {
+              _deepMergeConfig(details, target[key], value, merge2);
+            } else {
+              details.set(target, key, value);
+            }
+          });
+        }
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _findWatcher(listeners, newWatcher) {
+        var theListener = null;
+        var idx = -1;
+        arrForEach(listeners, function(listener, lp) {
+          if (listener.w === newWatcher) {
+            theListener = listener;
+            idx = lp;
+            return -1;
+          }
+        });
+        return { i: idx, l: theListener };
+      }
+      function _addDelayedCfgListener(listeners, newWatcher) {
+        var theListener = (/* @__PURE__ */ _findWatcher(listeners, newWatcher)).l;
+        if (!theListener) {
+          theListener = {
+            w: newWatcher,
+            rm: function() {
+              var fnd = /* @__PURE__ */ _findWatcher(listeners, newWatcher);
+              if (fnd.i !== -1) {
+                listeners[_DYN_SPLICE](fnd.i, 1);
+              }
+            }
+          };
+          listeners[_DYN_PUSH$1](theListener);
+        }
+        return theListener;
+      }
+      function _registerDelayedCfgListener(config2, listeners, logger) {
+        arrForEach(listeners, function(listener) {
+          var unloadHdl = onConfigChange(config2, listener.w, logger);
+          delete listener.w;
+          listener.rm = function() {
+            unloadHdl.rm();
+          };
+        });
+      }
+      function _initDebugListener(configHandler, unloadContainer, notificationManager, debugListener) {
+        unloadContainer.add(configHandler[_DYN_WATCH](function(details) {
+          var disableDbgExt = details.cfg.disableDbgExt;
+          if (disableDbgExt === true && debugListener) {
+            notificationManager[_DYN_REMOVE_NOTIFICATION_0](debugListener);
+            debugListener = null;
+          }
+          if (notificationManager && !debugListener && disableDbgExt !== true) {
+            debugListener = getDebugListener(details.cfg);
+            notificationManager[_DYN_ADD_NOTIFICATION_LIS1](debugListener);
+          }
+        }));
+        return debugListener;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _createUnloadHook(unloadHook) {
+        return objDefine({
+          rm: function() {
+            unloadHook.rm();
+          }
+        }, "toJSON", { v: function() {
+          return "aicore::onCfgChange<" + JSON[_DYN_STRINGIFY$1](unloadHook) + ">";
+        } });
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getParentTraceCtx(mode) {
+        var spanContext = null;
+        var parentTrace = mode & 1 ? findW3cTraceParent() : null;
+        var parentTraceState = mode & 2 ? /* @__PURE__ */ findW3cTraceState() : null;
+        if (parentTrace || parentTraceState) {
+          spanContext = /* @__PURE__ */ createDistributedTraceContext({
+            traceId: parentTrace ? parentTrace[_DYN_TRACE_ID$1] : null,
+            spanId: parentTrace ? parentTrace[_DYN_SPAN_ID] : null,
+            traceFlags: parentTrace ? parentTrace[_DYN_TRACE_FLAGS] : UNDEFINED_VALUE$2,
+            isRemote: true,
+            traceState: parentTraceState
+          });
+        }
+        return spanContext;
+      }
+      var AppInsightsCore = (
+        /** @class */
+        (function() {
+          function AppInsightsCore2() {
+            var _configHandler;
+            var _isInitialized;
+            var _logger;
+            var _eventQueue;
+            var _notificationManager;
+            var _perfManager;
+            var _cfgPerfManager;
+            var _cookieManager;
+            var _pluginChain;
+            var _configExtensions;
+            var _channelConfig;
+            var _channels;
+            var _isUnloading;
+            var _telemetryInitializerPlugin;
+            var _serverOTelCtx;
+            var _serverTraceHdrMode;
+            var _internalLogsEventName;
+            var _evtNamespace;
+            var _unloadHandlers;
+            var _hookContainer;
+            var _debugListener2;
+            var _traceCtx;
+            var _traceProvider;
+            var _activeSpan;
+            var _instrumentationKey;
+            var _cfgListeners;
+            var _extensions;
+            var _pluginVersionStringArr;
+            var _pluginVersionString;
+            var _activeStatus;
+            var _endpoint;
+            var _initInMemoMaxSize;
+            var _isStatusSet;
+            var _initTimer;
+            var _internalLogPoller;
+            var _internalLogPollerListening;
+            var _forceStopInternalLogPoller;
+            dynamicProto(AppInsightsCore2, this, function(_self) {
+              _initDefaults();
+              _self["_getDbgPlgTargets"] = function() {
+                return [_extensions, _eventQueue];
+              };
+              _self[_DYN_IS_INITIALIZED] = function() {
+                return _isInitialized;
+              };
+              _self.activeStatus = function() {
+                return _activeStatus;
+              };
+              _self._setPendingStatus = function() {
+                _activeStatus = 3;
+              };
+              _self[_DYN_INITIALIZE$1] = function(config2, extensions2, logger, notificationManager) {
+                if (_isUnloading) {
+                  throwError(strSdkUnloadingError);
+                }
+                if (_self[_DYN_IS_INITIALIZED]()) {
+                  throwError("Core cannot be initialized more than once");
+                }
+                _configHandler = createDynamicConfig(config2, _getDefaultConfig(_self), logger || _self[_DYN_LOGGER], false);
+                config2 = _configHandler.cfg;
+                _addUnloadHook(_configHandler[_DYN_WATCH](function(details) {
+                  var rootCfg = details.cfg;
+                  _initInMemoMaxSize = rootCfg.initInMemoMaxSize || maxInitQueueSize;
+                  _handleIKeyEndpointPromises(rootCfg);
+                  var extCfg = details.ref(details.cfg, STR_EXTENSION_CONFIG);
+                  objForEachKey(extCfg, function(key) {
+                    details.ref(extCfg, key);
+                  });
+                  if (rootCfg[_DYN_TRACE_HDR_MODE] !== _serverTraceHdrMode) {
+                    _serverOTelCtx = /* @__PURE__ */ _getParentTraceCtx(rootCfg[_DYN_TRACE_HDR_MODE]);
+                    _serverTraceHdrMode = rootCfg[_DYN_TRACE_HDR_MODE];
+                  }
+                }));
+                _notificationManager = notificationManager;
+                _debugListener2 = _initDebugListener(_configHandler, _hookContainer, _notificationManager && _self[_DYN_GET_NOTIFY_MGR](), _debugListener2);
+                _initPerfManager();
+                _self[_DYN_LOGGER] = logger;
+                var cfgExtensions = config2[STR_EXTENSIONS];
+                _configExtensions = [];
+                _configExtensions[_DYN_PUSH$1].apply(_configExtensions, __spreadArrayFn(__spreadArrayFn([], extensions2, false), cfgExtensions));
+                _channelConfig = config2[STR_CHANNELS];
+                _initPluginChain(null);
+                if (!_channels || _channels[_DYN_LENGTH$1] === 0) {
+                  throwError("No " + STR_CHANNELS + " available");
+                }
+                if (_channelConfig && _channelConfig[_DYN_LENGTH$1] > 1) {
+                  var teeController = _self[_DYN_GET_PLUGIN]("TeeChannelController");
+                  if (!teeController || !teeController.plugin) {
+                    _throwInternal(_logger, 1, 28, "TeeChannel required");
+                  }
+                }
+                _registerDelayedCfgListener(config2, _cfgListeners, _logger);
+                _cfgListeners = null;
+                _isInitialized = true;
+                if (_activeStatus === ActiveStatus.ACTIVE) {
+                  _releaseQueues();
+                }
+              };
+              _self.getChannels = function() {
+                var controls = [];
+                if (_channels) {
+                  arrForEach(_channels, function(channel) {
+                    controls[_DYN_PUSH$1](channel);
+                  });
+                }
+                return objFreeze(controls);
+              };
+              _self[_DYN_TRACK] = function(telemetryItem) {
+                doPerf(_self[STR_GET_PERF_MGR](), function() {
+                  return "AppInsightsCore:track";
+                }, function() {
+                  if (telemetryItem === null) {
+                    _notifyInvalidEvent(telemetryItem);
+                    throwError("Invalid telemetry item");
+                  }
+                  if (!telemetryItem[_DYN_NAME$1] && /* @__PURE__ */ isNullOrUndefined(telemetryItem[_DYN_NAME$1])) {
+                    _notifyInvalidEvent(telemetryItem);
+                    throwError("telemetry name required");
+                  }
+                  telemetryItem[_DYN_I_KEY] = telemetryItem[_DYN_I_KEY] || _instrumentationKey;
+                  telemetryItem[_DYN_TIME] = telemetryItem[_DYN_TIME] || /* @__PURE__ */ toISOString(/* @__PURE__ */ new Date());
+                  telemetryItem.ver = telemetryItem.ver || "4.0";
+                  if (!_isUnloading && _self[_DYN_IS_INITIALIZED]() && _activeStatus === ActiveStatus.ACTIVE) {
+                    _createTelCtx()[_DYN_PROCESS_NEXT](telemetryItem);
+                  } else if (_activeStatus !== ActiveStatus.INACTIVE) {
+                    if (_eventQueue[_DYN_LENGTH$1] <= _initInMemoMaxSize) {
+                      _eventQueue[_DYN_PUSH$1](telemetryItem);
+                    }
+                  }
+                }, function() {
+                  return { item: telemetryItem };
+                }, !telemetryItem.sync);
+              };
+              _self[_DYN_GET_PROCESS_TEL_CONT2] = _createTelCtx;
+              _self[_DYN_GET_NOTIFY_MGR] = function() {
+                if (!_notificationManager) {
+                  _notificationManager = new NotificationManager(_configHandler.cfg);
+                  _self[strNotificationManager] = _notificationManager;
+                }
+                return _notificationManager;
+              };
+              _self[_DYN_ADD_NOTIFICATION_LIS1] = function(listener) {
+                _self.getNotifyMgr()[_DYN_ADD_NOTIFICATION_LIS1](listener);
+              };
+              _self[_DYN_REMOVE_NOTIFICATION_0] = function(listener) {
+                if (_notificationManager) {
+                  _notificationManager[_DYN_REMOVE_NOTIFICATION_0](listener);
+                }
+              };
+              _self.getCookieMgr = function() {
+                if (!_cookieManager) {
+                  _cookieManager = createCookieMgr(_configHandler.cfg, _self[_DYN_LOGGER]);
+                }
+                return _cookieManager;
+              };
+              _self.setCookieMgr = function(cookieMgr) {
+                if (_cookieManager !== cookieMgr) {
+                  runTargetUnload(_cookieManager, false);
+                  _cookieManager = cookieMgr;
+                }
+              };
+              _self[STR_GET_PERF_MGR] = function() {
+                return _perfManager || _cfgPerfManager || getGblPerfMgr();
+              };
+              _self.setPerfMgr = function(perfMgr) {
+                _perfManager = perfMgr;
+              };
+              _self.eventCnt = function() {
+                return _eventQueue[_DYN_LENGTH$1];
+              };
+              _self.releaseQueue = function() {
+                if (_isInitialized && _eventQueue[_DYN_LENGTH$1] > 0) {
+                  var eventQueue = _eventQueue;
+                  _eventQueue = [];
+                  if (_activeStatus === 2) {
+                    arrForEach(eventQueue, function(event) {
+                      event[_DYN_I_KEY] = event[_DYN_I_KEY] || _instrumentationKey;
+                      _createTelCtx()[_DYN_PROCESS_NEXT](event);
+                    });
+                  } else {
+                    _throwInternal(_logger, 2, 20, "core init status is not active");
+                  }
+                }
+              };
+              _self[_DYN_POLL_INTERNAL_LOGS] = function(eventName) {
+                _internalLogsEventName = eventName || null;
+                _forceStopInternalLogPoller = false;
+                _internalLogPoller && _internalLogPoller[_DYN_CANCEL]();
+                return _startLogPoller(true);
+              };
+              function _handleIKeyEndpointPromises(theConfig) {
+                var ikey = theConfig.instrumentationKey;
+                var endpointUrl = theConfig.endpointUrl;
+                if (_activeStatus !== 3) {
+                  if (/* @__PURE__ */ isNullOrUndefined(ikey)) {
+                    _instrumentationKey = null;
+                    _activeStatus = ActiveStatus.INACTIVE;
+                    var msg = "Please provide instrumentation key";
+                    if (!_isInitialized) {
+                      throwError(msg);
+                    } else {
+                      _throwInternal(_logger, 1, 100, msg);
+                      _releaseQueues();
+                    }
+                    return;
+                  }
+                  var promises3 = [];
+                  if (/* @__PURE__ */ isPromiseLike(ikey)) {
+                    promises3[_DYN_PUSH$1](ikey);
+                    _instrumentationKey = null;
+                  } else {
+                    _instrumentationKey = ikey;
+                  }
+                  if (/* @__PURE__ */ isPromiseLike(endpointUrl)) {
+                    promises3[_DYN_PUSH$1](endpointUrl);
+                    _endpoint = null;
+                  } else {
+                    _endpoint = endpointUrl;
+                  }
+                  if (promises3[_DYN_LENGTH$1]) {
+                    _waitForInitPromises(theConfig, promises3);
+                  } else {
+                    _setStatus();
+                  }
+                }
+              }
+              function _waitForInitPromises(theConfig, promises3) {
+                _isStatusSet = false;
+                _activeStatus = 3;
+                var initTimeout = /* @__PURE__ */ isNotNullOrUndefined(theConfig.initTimeOut) ? theConfig.initTimeOut : maxInitTimeout;
+                var allPromises = createSyncAllSettledPromise(promises3);
+                if (_initTimer) {
+                  _initTimer[_DYN_CANCEL]();
+                }
+                _initTimer = scheduleTimeout(function() {
+                  _initTimer = null;
+                  if (!_isStatusSet) {
+                    _setStatus();
+                  }
+                }, initTimeout);
+                doAwaitResponse(allPromises, function(response) {
+                  try {
+                    if (_isStatusSet) {
+                      return;
+                    }
+                    if (!response.rejected) {
+                      var values = response[_DYN_VALUE];
+                      if (values && values[_DYN_LENGTH$1]) {
+                        var ikeyRes = values[0];
+                        _instrumentationKey = ikeyRes && ikeyRes[_DYN_VALUE];
+                        if (values[_DYN_LENGTH$1] > 1) {
+                          var endpointRes = values[1];
+                          _endpoint = endpointRes && endpointRes[_DYN_VALUE];
+                        }
+                      }
+                      if (_instrumentationKey) {
+                        theConfig.instrumentationKey = _instrumentationKey;
+                        theConfig.endpointUrl = _endpoint;
+                      }
+                    }
+                    _setStatus();
+                  } catch (e) {
+                    if (!_isStatusSet) {
+                      _setStatus();
+                    }
+                  }
+                });
+              }
+              function _setStatus() {
+                _isStatusSet = true;
+                if (/* @__PURE__ */ isNullOrUndefined(_instrumentationKey)) {
+                  _activeStatus = ActiveStatus.INACTIVE;
+                  _throwInternal(_logger, 1, 112, "ikey can't be resolved from promises");
+                } else {
+                  _activeStatus = ActiveStatus.ACTIVE;
+                }
+                _releaseQueues();
+              }
+              function _releaseQueues() {
+                if (_isInitialized) {
+                  _self.releaseQueue();
+                  _self[_DYN_POLL_INTERNAL_LOGS]();
+                }
+              }
+              function _startLogPoller(alwaysStart) {
+                if ((!_internalLogPoller || !_internalLogPoller[_DYN_ENABLED]) && !_forceStopInternalLogPoller) {
+                  var shouldStart = alwaysStart || _logger && _logger.queue[_DYN_LENGTH$1] > 0;
+                  if (shouldStart) {
+                    if (!_internalLogPollerListening) {
+                      _internalLogPollerListening = true;
+                      _addUnloadHook(_configHandler[_DYN_WATCH](function(details) {
+                        var interval = details.cfg.diagnosticLogInterval;
+                        if (!interval || !(interval > 0)) {
+                          interval = 1e4;
+                        }
+                        var isRunning = false;
+                        if (_internalLogPoller) {
+                          isRunning = _internalLogPoller[_DYN_ENABLED];
+                          _internalLogPoller[_DYN_CANCEL]();
+                        }
+                        _internalLogPoller = createTimeout(_flushInternalLogs, interval);
+                        _internalLogPoller.unref();
+                        _internalLogPoller[_DYN_ENABLED] = isRunning;
+                      }));
+                    }
+                    _internalLogPoller[_DYN_ENABLED] = true;
+                  }
+                }
+                return _internalLogPoller;
+              }
+              _self[_DYN_STOP_POLLING_INTERNA3] = function() {
+                _forceStopInternalLogPoller = true;
+                _internalLogPoller && _internalLogPoller[_DYN_CANCEL]();
+                _flushInternalLogs();
+              };
+              proxyFunctions(_self, function() {
+                return _telemetryInitializerPlugin;
+              }, ["addTelemetryInitializer"]);
+              _self[_DYN_UNLOAD] = function(isAsync2, unloadComplete, cbTimeout) {
+                if (isAsync2 === void 0) {
+                  isAsync2 = true;
+                }
+                if (!_isInitialized) {
+                  throwError(strSdkNotInitialized);
+                }
+                if (_isUnloading) {
+                  throwError(strSdkUnloadingError);
+                }
+                var unloadState = {
+                  reason: 50,
+                  isAsync: isAsync2,
+                  flushComplete: false
+                };
+                var result;
+                if (isAsync2 && !unloadComplete) {
+                  result = createPromise(function(resolve) {
+                    unloadComplete = resolve;
+                  });
+                }
+                var processUnloadCtx = createProcessTelemetryUnloadContext(_getPluginChain(), _self);
+                processUnloadCtx[_DYN_ON_COMPLETE](function() {
+                  _hookContainer.run(_self[_DYN_LOGGER]);
+                  doUnloadAll([_cookieManager, _notificationManager, _logger], isAsync2, function() {
+                    _initDefaults();
+                    unloadComplete && unloadComplete(unloadState);
+                  });
+                }, _self);
+                function _doUnload(flushComplete) {
+                  unloadState.flushComplete = flushComplete;
+                  _isUnloading = true;
+                  _unloadHandlers.run(processUnloadCtx, unloadState);
+                  _self[_DYN_STOP_POLLING_INTERNA3]();
+                  processUnloadCtx[_DYN_PROCESS_NEXT](unloadState);
+                }
+                _flushInternalLogs();
+                if (!_flushChannels(isAsync2, _doUnload, 6, cbTimeout)) ;
+                return result;
+              };
+              _self[_DYN_GET_PLUGIN] = _getPlugin;
+              _self.addPlugin = function(plugin, replaceExisting, isAsync2, addCb) {
+                if (!plugin) {
+                  addCb && addCb(false);
+                  _logOrThrowError(strValidationError);
+                  return;
+                }
+                var existingPlugin = _getPlugin(plugin[_DYN_IDENTIFIER]);
+                if (existingPlugin && !replaceExisting) {
+                  addCb && addCb(false);
+                  _logOrThrowError("Plugin [" + plugin[_DYN_IDENTIFIER] + "] is already loaded!");
+                  return;
+                }
+                var updateState = {
+                  reason: 16
+                };
+                function _addPlugin(removed) {
+                  _configExtensions[_DYN_PUSH$1](plugin);
+                  updateState.added = [plugin];
+                  _initPluginChain(updateState);
+                  addCb && addCb(true);
+                }
+                if (existingPlugin) {
+                  var removedPlugins_1 = [existingPlugin.plugin];
+                  var unloadState = {
+                    reason: 2,
+                    isAsync: !!isAsync2
+                  };
+                  _removePlugins(removedPlugins_1, unloadState, function(removed) {
+                    if (!removed) {
+                      addCb && addCb(false);
+                    } else {
+                      updateState.removed = removedPlugins_1;
+                      updateState[_DYN_REASON] |= 32;
+                      _addPlugin();
+                    }
+                  });
+                } else {
+                  _addPlugin();
+                }
+              };
+              _self.updateCfg = function(newConfig, mergeExisting) {
+                if (mergeExisting === void 0) {
+                  mergeExisting = true;
+                }
+                var updateState;
+                if (_self[_DYN_IS_INITIALIZED]()) {
+                  updateState = {
+                    reason: 1,
+                    cfg: _configHandler.cfg,
+                    oldCfg: deepExtend({}, _configHandler.cfg),
+                    newConfig: deepExtend({}, newConfig),
+                    merge: mergeExisting
+                  };
+                  newConfig = updateState.newConfig;
+                  var cfg = _configHandler.cfg;
+                  newConfig[STR_EXTENSIONS] = cfg[STR_EXTENSIONS];
+                  newConfig[STR_CHANNELS] = cfg[STR_CHANNELS];
+                }
+                _configHandler._block(function(details) {
+                  var theConfig = details.cfg;
+                  _deepMergeConfig(details, theConfig, newConfig, mergeExisting);
+                  if (!mergeExisting) {
+                    objForEachKey(theConfig, function(key) {
+                      if (!objHasOwn(newConfig, key)) {
+                        details.set(theConfig, key, UNDEFINED_VALUE$2);
+                      }
+                    });
+                  }
+                  details.setDf(theConfig, defaultConfig);
+                }, true);
+                _configHandler.notify();
+                if (updateState) {
+                  _doUpdate(updateState);
+                }
+              };
+              _self.evtNamespace = function() {
+                return _evtNamespace;
+              };
+              _self[_DYN_FLUSH] = _flushChannels;
+              _self[_DYN_GET_TRACE_CTX] = function(createNew) {
+                if (!_traceCtx && createNew !== false || createNew === true) {
+                  _traceCtx = /* @__PURE__ */ createDistributedTraceContext(_serverOTelCtx);
+                }
+                return _traceCtx;
+              };
+              _self[_DYN_SET_TRACE_CTX] = function(traceCtx) {
+                _traceCtx = traceCtx || null;
+              };
+              _self.startSpan = function(name, options, parent) {
+                if (!_traceProvider || !_traceProvider.v || !_traceProvider.v.isAvailable()) {
+                  return null;
+                }
+                return _traceProvider.v.createSpan(name, options, parent || _self[_DYN_GET_TRACE_CTX]());
+              };
+              _self[_DYN_GET_ACTIVE_SPAN] = function(createNew) {
+                if (createNew !== false && _traceProvider && !_activeSpan && _traceProvider.v) {
+                  _activeSpan = _traceProvider.v.createSpan(_traceProvider.v.getProviderId(), {
+                    recording: false,
+                    root: true
+                  });
+                }
+                return _activeSpan;
+              };
+              _self[_DYN_SET_ACTIVE_SPAN] = function(span) {
+                var theSpanContext = null;
+                var currentCtx = _self[_DYN_GET_TRACE_CTX]();
+                var currentSpan = _activeSpan;
+                var scope;
+                if (span) {
+                  var otelSpanContext = null;
+                  if (span[_DYN_SPAN_CONTEXT]) {
+                    otelSpanContext = span[_DYN_SPAN_CONTEXT]();
+                  } else if (span.context) {
+                    otelSpanContext = span.context();
+                  }
+                  if (otelSpanContext) {
+                    if (/* @__PURE__ */ isDistributedTraceContext(otelSpanContext)) {
+                      theSpanContext = otelSpanContext;
+                    } else {
+                      theSpanContext = /* @__PURE__ */ createDistributedTraceContext(currentCtx);
+                      var parentContext = span[_DYN_PARENT_SPAN_CONTEXT];
+                      if (!parentContext) {
+                        if (span[_DYN_PARENT_SPAN_ID]) {
+                          parentContext = {
+                            traceId: otelSpanContext[_DYN_TRACE_ID$1],
+                            spanId: span[_DYN_PARENT_SPAN_ID]
+                          };
+                        }
+                      }
+                      if (parentContext && parentContext[_DYN_TRACE_ID$1] !== theSpanContext[_DYN_TRACE_ID$1] && parentContext[_DYN_SPAN_ID] !== theSpanContext[_DYN_SPAN_ID] && parentContext[_DYN_TRACE_FLAGS] !== theSpanContext[_DYN_TRACE_FLAGS]) {
+                        theSpanContext[_DYN_TRACE_ID$1] = parentContext[_DYN_TRACE_ID$1];
+                        theSpanContext[_DYN_SPAN_ID] = parentContext[_DYN_SPAN_ID];
+                        theSpanContext[_DYN_TRACE_FLAGS] = parentContext[_DYN_TRACE_FLAGS];
+                        theSpanContext = /* @__PURE__ */ createDistributedTraceContext(theSpanContext);
+                      }
+                      theSpanContext[_DYN_TRACE_ID$1] = otelSpanContext[_DYN_TRACE_ID$1];
+                      theSpanContext[_DYN_SPAN_ID] = otelSpanContext[_DYN_SPAN_ID];
+                      theSpanContext[_DYN_TRACE_FLAGS] = otelSpanContext[_DYN_TRACE_FLAGS];
+                    }
+                  }
+                }
+                scope = {
+                  host: _self,
+                  span,
+                  prvSpan: currentSpan,
+                  restore: function() {
+                    if (currentSpan) {
+                      _self[_DYN_SET_ACTIVE_SPAN](currentSpan);
+                    } else {
+                      _activeSpan = null;
+                      _self[_DYN_SET_TRACE_CTX](currentCtx);
+                    }
+                    scope.restore = _noopVoid;
+                  }
+                };
+                _activeSpan = span;
+                if (theSpanContext) {
+                  _self[_DYN_SET_TRACE_CTX](theSpanContext);
+                }
+                return scope;
+              };
+              _self.setTraceProvider = function(traceProvider) {
+                _traceProvider = traceProvider;
+              };
+              _self.getTraceProvider = function() {
+                return _traceProvider ? _traceProvider.v : null;
+              };
+              _self.addUnloadHook = _addUnloadHook;
+              proxyFunctionAs(_self, "addUnloadCb", function() {
+                return _unloadHandlers;
+              }, "add");
+              _self.onCfgChange = function(handler) {
+                var unloadHook;
+                if (!_isInitialized) {
+                  unloadHook = _addDelayedCfgListener(_cfgListeners, handler);
+                } else {
+                  unloadHook = onConfigChange(_configHandler.cfg, handler, _self[_DYN_LOGGER]);
+                }
+                return /* @__PURE__ */ _createUnloadHook(unloadHook);
+              };
+              _self.getWParam = function() {
+                return /* @__PURE__ */ hasDocument() || !!_configHandler.cfg.enableWParam ? 0 : -1;
+              };
+              function _setPluginVersions() {
+                var thePlugins = {};
+                _pluginVersionStringArr = [];
+                var _addPluginVersions = function(plugins) {
+                  if (plugins) {
+                    arrForEach(plugins, function(plugin) {
+                      if (plugin[_DYN_IDENTIFIER] && plugin[STR_VERSION] && !thePlugins[plugin.identifier]) {
+                        var ver = plugin[_DYN_IDENTIFIER] + "=" + plugin[STR_VERSION];
+                        _pluginVersionStringArr[_DYN_PUSH$1](ver);
+                        thePlugins[plugin.identifier] = plugin;
+                      }
+                    });
+                  }
+                };
+                _addPluginVersions(_channels);
+                if (_channelConfig) {
+                  arrForEach(_channelConfig, function(channels) {
+                    _addPluginVersions(channels);
+                  });
+                }
+                _addPluginVersions(_configExtensions);
+              }
+              function _initDefaults() {
+                _isInitialized = false;
+                _configHandler = createDynamicConfig({}, defaultConfig, _self[_DYN_LOGGER]);
+                _configHandler.cfg[_DYN_LOGGING_LEVEL_CONSOL4] = 1;
+                objDefine(_self, "config", {
+                  g: function() {
+                    return _configHandler.cfg;
+                  },
+                  s: function(newValue) {
+                    _self.updateCfg(newValue, false);
+                  }
+                });
+                objDefine(_self, "pluginVersionStringArr", {
+                  g: function() {
+                    if (!_pluginVersionStringArr) {
+                      _setPluginVersions();
+                    }
+                    return _pluginVersionStringArr;
+                  }
+                });
+                objDefine(_self, "pluginVersionString", {
+                  g: function() {
+                    if (!_pluginVersionString) {
+                      if (!_pluginVersionStringArr) {
+                        _setPluginVersions();
+                      }
+                      _pluginVersionString = _pluginVersionStringArr[_DYN_JOIN](";");
+                    }
+                    return _pluginVersionString || STR_EMPTY;
+                  }
+                });
+                objDefine(_self, "logger", {
+                  g: function() {
+                    if (!_logger) {
+                      _logger = new DiagnosticLogger(_configHandler.cfg);
+                      _configHandler[_DYN_LOGGER] = _logger;
+                    }
+                    return _logger;
+                  },
+                  s: function(newLogger) {
+                    _configHandler[_DYN_LOGGER] = newLogger;
+                    if (_logger !== newLogger) {
+                      runTargetUnload(_logger, false);
+                      _logger = newLogger;
+                    }
+                  }
+                });
+                _self[_DYN_LOGGER] = new DiagnosticLogger(_configHandler.cfg);
+                _extensions = [];
+                var cfgExtensions = _self[_DYN_CONFIG][STR_EXTENSIONS] || [];
+                cfgExtensions.splice(0, cfgExtensions[_DYN_LENGTH$1]);
+                arrAppend(cfgExtensions, _extensions);
+                _telemetryInitializerPlugin = new TelemetryInitializerPlugin();
+                _serverOTelCtx = null;
+                _serverTraceHdrMode = 0;
+                _eventQueue = [];
+                runTargetUnload(_notificationManager, false);
+                _notificationManager = null;
+                _perfManager = null;
+                _cfgPerfManager = null;
+                runTargetUnload(_cookieManager, false);
+                _cookieManager = null;
+                _pluginChain = null;
+                _configExtensions = [];
+                _channelConfig = null;
+                _channels = null;
+                _isUnloading = false;
+                _internalLogsEventName = null;
+                _evtNamespace = createUniqueNamespace("AIBaseCore", true);
+                _unloadHandlers = /* @__PURE__ */ createUnloadHandlerContainer();
+                _traceCtx = null;
+                _traceProvider = null;
+                _instrumentationKey = null;
+                _hookContainer = createUnloadHookContainer();
+                _cfgListeners = [];
+                _pluginVersionString = null;
+                _pluginVersionStringArr = null;
+                _forceStopInternalLogPoller = false;
+                _internalLogPoller = null;
+                _internalLogPollerListening = false;
+                _activeStatus = 0;
+                _endpoint = null;
+                _initInMemoMaxSize = null;
+                _isStatusSet = false;
+                _initTimer = null;
+              }
+              function _createTelCtx() {
+                var theCtx = createProcessTelemetryContext(_getPluginChain(), _configHandler.cfg, _self);
+                theCtx[_DYN_ON_COMPLETE](_startLogPoller);
+                return theCtx;
+              }
+              function _initPluginChain(updateState) {
+                var theExtensions = /* @__PURE__ */ _validateExtensions(_self[_DYN_LOGGER], ChannelControllerPriority, _configExtensions);
+                _pluginChain = null;
+                _pluginVersionString = null;
+                _pluginVersionStringArr = null;
+                _channels = (_channelConfig || [])[0] || [];
+                _channels = sortPlugins(arrAppend(_channels, theExtensions[STR_CHANNELS]));
+                var allExtensions = arrAppend(sortPlugins(theExtensions[STR_CORE]), _channels);
+                _extensions = objFreeze(allExtensions);
+                var cfgExtensions = _self[_DYN_CONFIG][STR_EXTENSIONS] || [];
+                cfgExtensions.splice(0, cfgExtensions[_DYN_LENGTH$1]);
+                arrAppend(cfgExtensions, _extensions);
+                var rootCtx = _createTelCtx();
+                if (_channels && _channels[_DYN_LENGTH$1] > 0) {
+                  initializePlugins(rootCtx[_DYN_CREATE_NEW](_channels), allExtensions);
+                }
+                initializePlugins(rootCtx, allExtensions);
+                if (updateState) {
+                  _doUpdate(updateState);
+                }
+              }
+              function _getPlugin(pluginIdentifier) {
+                var theExt = null;
+                var thePlugin = null;
+                var channelHosts = [];
+                arrForEach(_extensions, function(ext) {
+                  if (ext[_DYN_IDENTIFIER] === pluginIdentifier && ext !== _telemetryInitializerPlugin) {
+                    thePlugin = ext;
+                    return -1;
+                  }
+                  if (ext.getChannel) {
+                    channelHosts[_DYN_PUSH$1](ext);
+                  }
+                });
+                if (!thePlugin && channelHosts[_DYN_LENGTH$1] > 0) {
+                  arrForEach(channelHosts, function(host) {
+                    thePlugin = host.getChannel(pluginIdentifier);
+                    if (!thePlugin) {
+                      return -1;
+                    }
+                  });
+                }
+                if (thePlugin) {
+                  theExt = {
+                    plugin: thePlugin,
+                    setEnabled: function(enabled) {
+                      _getPluginState(thePlugin)[STR_DISABLED] = !enabled;
+                    },
+                    isEnabled: function() {
+                      var pluginState = _getPluginState(thePlugin);
+                      return !pluginState[_DYN_TEARDOWN] && !pluginState[STR_DISABLED];
+                    },
+                    remove: function(isAsync2, removeCb) {
+                      if (isAsync2 === void 0) {
+                        isAsync2 = true;
+                      }
+                      var pluginsToRemove = [thePlugin];
+                      var unloadState = {
+                        reason: 1,
+                        isAsync: isAsync2
+                      };
+                      _removePlugins(pluginsToRemove, unloadState, function(removed) {
+                        if (removed) {
+                          _initPluginChain({
+                            reason: 32,
+                            removed: pluginsToRemove
+                          });
+                        }
+                        removeCb && removeCb(removed);
+                      });
+                    }
+                  };
+                }
+                return theExt;
+              }
+              function _getPluginChain() {
+                if (!_pluginChain) {
+                  var extensions2 = (_extensions || []).slice();
+                  if (arrIndexOf(extensions2, _telemetryInitializerPlugin) === -1) {
+                    extensions2[_DYN_PUSH$1](_telemetryInitializerPlugin);
+                  }
+                  _pluginChain = createTelemetryProxyChain(sortPlugins(extensions2), _configHandler.cfg, _self);
+                }
+                return _pluginChain;
+              }
+              function _removePlugins(thePlugins, unloadState, removeComplete) {
+                if (thePlugins && thePlugins[_DYN_LENGTH$1] > 0) {
+                  var unloadChain = createTelemetryProxyChain(thePlugins, _configHandler.cfg, _self);
+                  var unloadCtx = createProcessTelemetryUnloadContext(unloadChain, _self);
+                  unloadCtx[_DYN_ON_COMPLETE](function() {
+                    var removed = false;
+                    var newConfigExtensions = [];
+                    arrForEach(_configExtensions, function(plugin, idx) {
+                      if (!/* @__PURE__ */ _isPluginPresent(plugin, thePlugins)) {
+                        newConfigExtensions[_DYN_PUSH$1](plugin);
+                      } else {
+                        removed = true;
+                      }
+                    });
+                    _configExtensions = newConfigExtensions;
+                    _pluginVersionString = null;
+                    _pluginVersionStringArr = null;
+                    var newChannelConfig = [];
+                    if (_channelConfig) {
+                      arrForEach(_channelConfig, function(queue, idx) {
+                        var newQueue = [];
+                        arrForEach(queue, function(channel) {
+                          if (!/* @__PURE__ */ _isPluginPresent(channel, thePlugins)) {
+                            newQueue[_DYN_PUSH$1](channel);
+                          } else {
+                            removed = true;
+                          }
+                        });
+                        newChannelConfig[_DYN_PUSH$1](newQueue);
+                      });
+                      _channelConfig = newChannelConfig;
+                    }
+                    removeComplete && removeComplete(removed);
+                    _startLogPoller();
+                  });
+                  unloadCtx[_DYN_PROCESS_NEXT](unloadState);
+                } else {
+                  removeComplete(false);
+                }
+              }
+              function _flushInternalLogs() {
+                if (_logger && _logger.queue) {
+                  var queue = _logger.queue.slice(0);
+                  _logger.queue[_DYN_LENGTH$1] = 0;
+                  arrForEach(queue, function(logMessage) {
+                    var item = {
+                      name: _internalLogsEventName ? _internalLogsEventName : "InternalMessageId: " + logMessage[_DYN_MESSAGE_ID],
+                      iKey: _instrumentationKey,
+                      time: /* @__PURE__ */ toISOString(/* @__PURE__ */ new Date()),
+                      baseType: _InternalLogMessage.dataType,
+                      baseData: { message: logMessage[_DYN_MESSAGE] }
+                    };
+                    _self[_DYN_TRACK](item);
+                  });
+                }
+              }
+              function _flushChannels(isAsync2, callBack, sendReason, cbTimeout) {
+                var waiting = 1;
+                var doneIterating = false;
+                var cbTimer = null;
+                cbTimeout = cbTimeout || 5e3;
+                function doCallback() {
+                  waiting--;
+                  if (doneIterating && waiting === 0) {
+                    cbTimer && cbTimer[_DYN_CANCEL]();
+                    cbTimer = null;
+                    callBack && callBack(doneIterating);
+                    callBack = null;
+                  }
+                }
+                if (_channels && _channels[_DYN_LENGTH$1] > 0) {
+                  var flushCtx = _createTelCtx()[_DYN_CREATE_NEW](_channels);
+                  flushCtx.iterate(function(plugin) {
+                    if (plugin[_DYN_FLUSH]) {
+                      waiting++;
+                      var handled_1 = false;
+                      if (!plugin[_DYN_FLUSH](isAsync2, function() {
+                        handled_1 = true;
+                        doCallback();
+                      }, sendReason)) {
+                        if (!handled_1) {
+                          if (isAsync2 && cbTimer == null) {
+                            cbTimer = scheduleTimeout(function() {
+                              cbTimer = null;
+                              doCallback();
+                            }, cbTimeout);
+                          } else {
+                            doCallback();
+                          }
+                        }
+                      }
+                    }
+                  });
+                }
+                doneIterating = true;
+                doCallback();
+                return true;
+              }
+              function _initPerfManager() {
+                var prevCfgPerfMgr;
+                _addUnloadHook(_configHandler[_DYN_WATCH](function(details) {
+                  var enablePerfMgr = details.cfg.enablePerfMgr;
+                  if (enablePerfMgr) {
+                    var createPerfMgr = details.cfg[STR_CREATE_PERF_MGR];
+                    if (prevCfgPerfMgr !== createPerfMgr || !prevCfgPerfMgr) {
+                      if (!createPerfMgr) {
+                        createPerfMgr = _createPerfManager;
+                      }
+                      getSetValue(details.cfg, STR_CREATE_PERF_MGR, createPerfMgr);
+                      prevCfgPerfMgr = createPerfMgr;
+                      _cfgPerfManager = null;
+                    }
+                    if (!_perfManager && !_cfgPerfManager && isFunction(createPerfMgr)) {
+                      _cfgPerfManager = createPerfMgr(_self, _self[_DYN_GET_NOTIFY_MGR]());
+                    }
+                  } else {
+                    _cfgPerfManager = null;
+                    prevCfgPerfMgr = null;
+                  }
+                }));
+              }
+              function _doUpdate(updateState) {
+                var updateCtx = createProcessTelemetryUpdateContext(_getPluginChain(), _self);
+                updateCtx[_DYN_ON_COMPLETE](_startLogPoller);
+                if (!_self._updateHook || _self._updateHook(updateCtx, updateState) !== true) {
+                  updateCtx[_DYN_PROCESS_NEXT](updateState);
+                }
+              }
+              function _logOrThrowError(message) {
+                var logger = _self[_DYN_LOGGER];
+                if (logger) {
+                  _throwInternal(logger, 2, 73, message);
+                  _startLogPoller();
+                } else {
+                  throwError(message);
+                }
+              }
+              function _notifyInvalidEvent(telemetryItem) {
+                var manager = _self[_DYN_GET_NOTIFY_MGR]();
+                if (manager) {
+                  manager[STR_EVENTS_DISCARDED]([telemetryItem], 2);
+                }
+              }
+              function _addUnloadHook(hooks) {
+                _hookContainer.add(hooks);
+              }
+            });
+          }
+          AppInsightsCore2.__ieDyn = 1;
+          return AppInsightsCore2;
+        })()
+      );
+      function parseResponse(response, diagLog) {
+        try {
+          if (response && response !== STR_EMPTY) {
+            var result = (/* @__PURE__ */ getJSON()).parse(response);
+            if (result && result[_DYN_ITEMS_RECEIVED$1] && result[_DYN_ITEMS_RECEIVED$1] >= result.itemsAccepted && result.itemsReceived - result.itemsAccepted === result.errors[_DYN_LENGTH$1]) {
+              return result;
+            }
+          }
+        } catch (e) {
+          _throwInternal(diagLog, 1, 43, "Cannot parse the response. " + (e[_DYN_NAME$1] || /* @__PURE__ */ dumpObj(e)), {
+            response
+          });
+        }
+        return null;
+      }
+      var STR_NO_RESPONSE_BODY = "NoResponseBody";
+      var _noResponseQs = "&" + STR_NO_RESPONSE_BODY + "=true";
+      var STR_POST_METHOD = "POST";
+      var SenderPostManager = (
+        /** @class */
+        (function() {
+          function SenderPostManager2() {
+            var _syncFetchPayload = 0;
+            var _enableSendPromise;
+            var _isInitialized;
+            var _diagLog;
+            var _isOneDs;
+            var _onCompleteFuncs;
+            var _disableCredentials;
+            var _fetchCredentials;
+            var _fallbackInst;
+            var _disableXhr;
+            var _disableBeacon;
+            var _disableBeaconSync;
+            var _disableFetchKeepAlive;
+            var _addNoResponse;
+            var _timeoutWrapper;
+            dynamicProto(SenderPostManager2, this, function(_self, _base) {
+              var _sendCredentials = true;
+              _initDefaults();
+              _self[_DYN_INITIALIZE$1] = function(config2, diagLog) {
+                _diagLog = diagLog;
+                if (_isInitialized) {
+                  _throwInternal(_diagLog, 1, 28, "Sender is already initialized");
+                }
+                _self.SetConfig(config2);
+                _isInitialized = true;
+              };
+              _self["_getDbgPlgTargets"] = function() {
+                return [_isInitialized, _isOneDs, _disableCredentials, _enableSendPromise];
+              };
+              _self.SetConfig = function(config2) {
+                try {
+                  _onCompleteFuncs = config2.senderOnCompleteCallBack || {};
+                  _disableCredentials = !!config2.disableCredentials;
+                  _fetchCredentials = config2.fetchCredentials;
+                  _isOneDs = !!config2.isOneDs;
+                  _enableSendPromise = !!config2.enableSendPromise;
+                  _disableXhr = !!config2.disableXhr;
+                  _disableBeacon = !!config2.disableBeacon;
+                  _disableBeaconSync = !!config2.disableBeaconSync;
+                  _timeoutWrapper = config2.timeWrapper;
+                  _addNoResponse = !!config2.addNoResponse;
+                  _disableFetchKeepAlive = !!config2.disableFetchKeepAlive;
+                  _fallbackInst = { sendPOST: _xhrSender };
+                  if (!_isOneDs) {
+                    _sendCredentials = false;
+                  }
+                  if (_disableCredentials) {
+                    var location_1 = /* @__PURE__ */ getLocation();
+                    if (location_1 && location_1.protocol && location_1.protocol[_DYN_TO_LOWER_CASE]() === "file:") {
+                      _sendCredentials = false;
+                    }
+                  }
+                  return true;
+                } catch (e) {
+                }
+                return false;
+              };
+              _self.getSyncFetchPayload = function() {
+                return _syncFetchPayload;
+              };
+              _self.getSenderInst = function(transports, sync) {
+                if (transports && transports[_DYN_LENGTH$1]) {
+                  return _getSenderInterface(transports, sync);
+                }
+                return null;
+              };
+              _self.getFallbackInst = function() {
+                return _fallbackInst;
+              };
+              _self[_DYN__DO_TEARDOWN] = function(unloadCtx, unloadState) {
+                _initDefaults();
+              };
+              _self.preparePayload = function(callback, zipPayload, payload, isSync) {
+                if (!zipPayload || isSync || !payload[_DYN_DATA$1]) {
+                  callback(payload);
+                  return;
+                }
+                try {
+                  var csStream = /* @__PURE__ */ getInst("CompressionStream");
+                  if (!isFunction(csStream)) {
+                    callback(payload);
+                    return;
+                  }
+                  var body = new ReadableStream({
+                    start: function(controller) {
+                      controller.enqueue(isString(payload[_DYN_DATA$1]) ? new TextEncoder().encode(payload[_DYN_DATA$1]) : payload[_DYN_DATA$1]);
+                      controller.close();
+                    }
+                  });
+                  var compressedStream = body.pipeThrough(new csStream("gzip"));
+                  var reader_1 = compressedStream.getReader();
+                  var chunks_1 = [];
+                  var totalLength_1 = 0;
+                  var callbackCalled_1 = false;
+                  doAwaitResponse(reader_1.read(), function processChunk(response) {
+                    if (!callbackCalled_1 && !response.rejected) {
+                      var result = response[_DYN_VALUE];
+                      if (!result.done) {
+                        chunks_1[_DYN_PUSH$1](result[_DYN_VALUE]);
+                        totalLength_1 += result.value[_DYN_LENGTH$1];
+                        return doAwaitResponse(reader_1.read(), processChunk);
+                      }
+                      var combined = new Uint8Array(totalLength_1);
+                      var offset = 0;
+                      for (var _i = 0, chunks_2 = chunks_1; _i < chunks_2.length; _i++) {
+                        var chunk = chunks_2[_i];
+                        combined.set(chunk, offset);
+                        offset += chunk[_DYN_LENGTH$1];
+                      }
+                      payload[_DYN_DATA$1] = combined;
+                      payload[_DYN_HEADERS]["Content-Encoding"] = "gzip";
+                      payload._chunkCount = chunks_1[_DYN_LENGTH$1];
+                    }
+                    if (!callbackCalled_1) {
+                      callbackCalled_1 = true;
+                      callback(payload);
+                    }
+                  });
+                  return reader_1;
+                } catch (error2) {
+                  callback(payload);
+                  return;
+                }
+              };
+              function _onSuccess(res, onComplete) {
+                _doOnComplete(onComplete, 200, {}, res);
+              }
+              function _onError2(message, onComplete) {
+                _throwInternal(_diagLog, 2, 26, "Failed to send telemetry.", { message });
+                _doOnComplete(onComplete, 400, {});
+              }
+              function _onNoPayloadUrl(onComplete) {
+                _onError2("No endpoint url is provided for the batch", onComplete);
+              }
+              function _getSenderInterface(transports, syncSupport) {
+                var transportType = 0;
+                var sendPostFunc = null;
+                var lp = 0;
+                while (sendPostFunc == null && lp < transports[_DYN_LENGTH$1]) {
+                  transportType = transports[lp];
+                  if (!_disableXhr && transportType === 1) {
+                    if (/* @__PURE__ */ isXhrSupported()) {
+                      sendPostFunc = _xhrSender;
+                    }
+                  } else if (transportType === 2 && /* @__PURE__ */ isFetchSupported(syncSupport) && (!syncSupport || !_disableFetchKeepAlive)) {
+                    sendPostFunc = _doFetchSender;
+                  } else if (transportType === 3 && isBeaconsSupported() && (syncSupport ? !_disableBeaconSync : !_disableBeacon)) {
+                    sendPostFunc = _beaconSender;
+                  }
+                  lp++;
+                }
+                if (sendPostFunc) {
+                  return {
+                    _transport: transportType,
+                    _isSync: syncSupport,
+                    sendPOST: sendPostFunc
+                  };
+                }
+                return null;
+              }
+              function _doOnComplete(oncomplete, status, headers, response) {
+                try {
+                  oncomplete && oncomplete(status, headers, response);
+                } catch (e) {
+                }
+              }
+              function _doBeaconSend(payload, oncomplete) {
+                var nav = getNavigator();
+                var url2 = payload[_DYN_URL_STRING];
+                if (!url2) {
+                  _onNoPayloadUrl(oncomplete);
+                  return true;
+                }
+                url2 = payload[_DYN_URL_STRING] + (_addNoResponse ? _noResponseQs : STR_EMPTY);
+                var data = payload[_DYN_DATA$1];
+                var plainTextBatch = _isOneDs ? data : new Blob([data], { type: "text/plain;charset=UTF-8" });
+                var queued = nav.sendBeacon(url2, plainTextBatch);
+                return queued;
+              }
+              function _beaconSender(payload, oncomplete, sync) {
+                var data = payload[_DYN_DATA$1];
+                try {
+                  if (data) {
+                    if (!_doBeaconSend(payload, oncomplete)) {
+                      var onRetry = _onCompleteFuncs && _onCompleteFuncs.beaconOnRetry;
+                      if (onRetry && isFunction(onRetry)) {
+                        onRetry(payload, oncomplete, _doBeaconSend);
+                      } else {
+                        _fallbackInst && _fallbackInst.sendPOST(payload, oncomplete, true);
+                        _throwInternal(_diagLog, 2, 40, ". Failed to send telemetry with Beacon API, retried with normal sender.");
+                      }
+                    } else {
+                      _onSuccess(STR_EMPTY, oncomplete);
+                    }
+                  }
+                } catch (e) {
+                  _isOneDs && _warnToConsole(_diagLog, "Failed to send telemetry using sendBeacon API. Ex:" + /* @__PURE__ */ dumpObj(e));
+                  _doOnComplete(oncomplete, _isOneDs ? 0 : 400, {}, STR_EMPTY);
+                }
+                return;
+              }
+              function _xhrSender(payload, oncomplete, sync) {
+                var thePromise;
+                var resolveFunc;
+                var rejectFunc;
+                var headers = payload[_DYN_HEADERS] || {};
+                if (!sync && _enableSendPromise) {
+                  thePromise = createPromise(function(resolve, reject) {
+                    resolveFunc = resolve;
+                    rejectFunc = reject;
+                  });
+                }
+                if (_isOneDs && sync && payload.disableXhrSync) {
+                  sync = false;
+                }
+                var endPointUrl = payload[_DYN_URL_STRING];
+                if (!endPointUrl) {
+                  _onNoPayloadUrl(oncomplete);
+                  resolveFunc && resolveFunc(false);
+                  return;
+                }
+                var xhr = openXhr(STR_POST_METHOD, endPointUrl, _sendCredentials, true, sync, payload[_DYN_TIMEOUT]);
+                if (!_isOneDs) {
+                  xhr.setRequestHeader("Content-type", "application/json");
+                }
+                arrForEach(objKeys(headers), function(headerName) {
+                  xhr.setRequestHeader(headerName, headers[headerName]);
+                });
+                xhr.onreadystatechange = function() {
+                  if (!_isOneDs) {
+                    _doOnReadyFunc(xhr);
+                    if (xhr.readyState === 4) {
+                      resolveFunc && resolveFunc(true);
+                    }
+                  }
+                };
+                xhr.onload = function() {
+                  if (_isOneDs) {
+                    _doOnReadyFunc(xhr);
+                  }
+                };
+                function _doOnReadyFunc(xhr2) {
+                  var onReadyFunc = _onCompleteFuncs && _onCompleteFuncs.xhrOnComplete;
+                  var onReadyFuncExist = onReadyFunc && isFunction(onReadyFunc);
+                  if (onReadyFuncExist) {
+                    onReadyFunc(xhr2, oncomplete, payload);
+                  } else {
+                    var response = /* @__PURE__ */ getResponseText(xhr2);
+                    _doOnComplete(oncomplete, xhr2[_DYN_STATUS], _getAllResponseHeaders(xhr2, _isOneDs), response);
+                  }
+                }
+                xhr.onerror = function(event) {
+                  _doOnComplete(oncomplete, _isOneDs ? xhr[_DYN_STATUS] : 400, _getAllResponseHeaders(xhr, _isOneDs), _isOneDs ? STR_EMPTY : /* @__PURE__ */ formatErrorMessageXhr(xhr));
+                  rejectFunc && rejectFunc(event);
+                };
+                xhr.ontimeout = function() {
+                  _doOnComplete(oncomplete, _isOneDs ? xhr[_DYN_STATUS] : 500, _getAllResponseHeaders(xhr, _isOneDs), _isOneDs ? STR_EMPTY : /* @__PURE__ */ formatErrorMessageXhr(xhr));
+                  resolveFunc && resolveFunc(false);
+                };
+                xhr.send(payload[_DYN_DATA$1]);
+                return thePromise;
+              }
+              function _doFetchSender(payload, oncomplete, sync) {
+                var _a3;
+                var endPointUrl = payload[_DYN_URL_STRING];
+                var batch = payload[_DYN_DATA$1];
+                var plainTextBatch = _isOneDs ? batch : new Blob([batch], { type: "application/json" });
+                var thePromise;
+                var resolveFunc;
+                var rejectFunc;
+                var requestHeaders = new Headers();
+                var batchLength = batch[_DYN_LENGTH$1];
+                var ignoreResponse = false;
+                var responseHandled = false;
+                var headers = payload[_DYN_HEADERS] || {};
+                var init = (_a3 = {
+                  method: STR_POST_METHOD,
+                  body: plainTextBatch
+                }, _a3[DisabledPropertyName] = true, _a3);
+                if (payload.headers && objKeys(payload.headers)[_DYN_LENGTH$1] > 0) {
+                  arrForEach(objKeys(headers), function(headerName) {
+                    requestHeaders.append(headerName, headers[headerName]);
+                  });
+                  init[_DYN_HEADERS] = requestHeaders;
+                }
+                if (_fetchCredentials) {
+                  init.credentials = _fetchCredentials;
+                } else if (_sendCredentials && _isOneDs) {
+                  init.credentials = "include";
+                }
+                if (sync) {
+                  init.keepalive = true;
+                  _syncFetchPayload += batchLength;
+                  if (_isOneDs) {
+                    if (payload["_sendReason"] === 2) {
+                      ignoreResponse = true;
+                      if (_addNoResponse) {
+                        endPointUrl += _noResponseQs;
+                      }
+                    }
+                  } else {
+                    ignoreResponse = true;
+                  }
+                }
+                var request = new Request(endPointUrl, init);
+                try {
+                  request[DisabledPropertyName] = true;
+                } catch (e) {
+                }
+                if (!sync && _enableSendPromise) {
+                  thePromise = createPromise(function(resolve, reject) {
+                    resolveFunc = resolve;
+                    rejectFunc = reject;
+                  });
+                }
+                if (!endPointUrl) {
+                  _onNoPayloadUrl(oncomplete);
+                  resolveFunc && resolveFunc(false);
+                  return;
+                }
+                function _handleError(res, statusCode) {
+                  if (statusCode) {
+                    _doOnComplete(oncomplete, _isOneDs ? 0 : statusCode, {}, _isOneDs ? STR_EMPTY : res);
+                  } else {
+                    _doOnComplete(oncomplete, _isOneDs ? 0 : 400, {}, _isOneDs ? STR_EMPTY : res);
+                  }
+                }
+                function _onFetchComplete(response, payload2, value) {
+                  var status = response[_DYN_STATUS];
+                  var onCompleteFunc = _onCompleteFuncs.fetchOnComplete;
+                  if (onCompleteFunc && isFunction(onCompleteFunc)) {
+                    onCompleteFunc(response, oncomplete, value || STR_EMPTY, payload2);
+                  } else {
+                    _doOnComplete(oncomplete, status, {}, value || STR_EMPTY);
+                  }
+                }
+                try {
+                  doAwaitResponse(fetch(_isOneDs ? endPointUrl : request, _isOneDs ? init : null), function(result) {
+                    if (sync) {
+                      _syncFetchPayload -= batchLength;
+                      batchLength = 0;
+                    }
+                    if (!responseHandled) {
+                      responseHandled = true;
+                      if (!result.rejected) {
+                        var response_1 = result[_DYN_VALUE];
+                        try {
+                          if (!_isOneDs && !response_1.ok) {
+                            if (response_1[_DYN_STATUS]) {
+                              _handleError(response_1.statusText, response_1[_DYN_STATUS]);
+                            } else {
+                              _handleError(response_1.statusText, 499);
+                            }
+                            resolveFunc && resolveFunc(false);
+                          } else {
+                            if (_isOneDs && !response_1.body) {
+                              _onFetchComplete(response_1, null, STR_EMPTY);
+                              resolveFunc && resolveFunc(true);
+                            } else {
+                              doAwaitResponse(response_1.text(), function(resp) {
+                                _onFetchComplete(response_1, payload, resp[_DYN_VALUE]);
+                                resolveFunc && resolveFunc(true);
+                              });
+                            }
+                          }
+                        } catch (e) {
+                          if (response_1 && response_1[_DYN_STATUS]) {
+                            _handleError(/* @__PURE__ */ dumpObj(e), response_1[_DYN_STATUS]);
+                          } else {
+                            _handleError(/* @__PURE__ */ dumpObj(e), 499);
+                          }
+                          rejectFunc && rejectFunc(e);
+                        }
+                      } else {
+                        _handleError(result[_DYN_REASON] && result[_DYN_REASON][_DYN_MESSAGE], 499);
+                        rejectFunc && rejectFunc(result[_DYN_REASON]);
+                      }
+                    }
+                  });
+                } catch (e) {
+                  if (!responseHandled) {
+                    _handleError(/* @__PURE__ */ dumpObj(e), 499);
+                    rejectFunc && rejectFunc(e);
+                  }
+                }
+                if (ignoreResponse && !responseHandled) {
+                  responseHandled = true;
+                  _doOnComplete(oncomplete, 200, {});
+                  resolveFunc && resolveFunc(true);
+                }
+                if (_isOneDs && !responseHandled && payload[_DYN_TIMEOUT] > 0) {
+                  _timeoutWrapper && _timeoutWrapper.set(function() {
+                    if (!responseHandled) {
+                      responseHandled = true;
+                      _doOnComplete(oncomplete, 500, {});
+                      resolveFunc && resolveFunc(true);
+                    }
+                  }, payload[_DYN_TIMEOUT]);
+                }
+                return thePromise;
+              }
+              function _initDefaults() {
+                _syncFetchPayload = 0;
+                _isInitialized = false;
+                _enableSendPromise = false;
+                _diagLog = null;
+                _isOneDs = null;
+                _onCompleteFuncs = null;
+                _disableCredentials = null;
+                _fetchCredentials = null;
+                _fallbackInst = null;
+                _disableXhr = false;
+                _disableBeacon = false;
+                _disableBeaconSync = false;
+                _disableFetchKeepAlive = false;
+                _addNoResponse = false;
+                _timeoutWrapper = null;
+              }
+            });
+          }
+          SenderPostManager2.__ieDyn = 1;
+          return SenderPostManager2;
+        })()
+      );
+      var strOnPrefix = "on";
+      var strAttachEvent = "attachEvent";
+      var strAddEventHelper = "addEventListener";
+      var strDetachEvent = "detachEvent";
+      var strRemoveEventListener = "removeEventListener";
+      var strEvents = "events";
+      var rRemoveEmptyNs = /\.[\.]+/g;
+      var rRemoveTrailingEmptyNs = /[\.]+$/;
+      var _guid2 = 1;
+      var _elmNodeData;
+      // @__NO_SIDE_EFFECTS__
+      function _getElmNodeData() {
+        !_elmNodeData && (_elmNodeData = /* @__PURE__ */ createCachedValue(createElmNodeData("events")));
+        return _elmNodeData.v;
+      }
+      var eventNamespace = /^([^.]*)(?:\.(.+)|)/;
+      // @__NO_SIDE_EFFECTS__
+      function _normalizeNamespace(name) {
+        if (name && name[_DYN_REPLACE]) {
+          return name[_DYN_REPLACE](/^[\s\.]+|(?=[\s\.])[\.\s]+$/g, STR_EMPTY);
+        }
+        return name;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getEvtNamespace(eventName, evtNamespace) {
+        if (evtNamespace) {
+          var theNamespace_1 = STR_EMPTY;
+          if (isArray(evtNamespace)) {
+            theNamespace_1 = STR_EMPTY;
+            arrForEach(evtNamespace, function(name) {
+              name = /* @__PURE__ */ _normalizeNamespace(name);
+              if (name) {
+                if (name[0] !== ".") {
+                  name = "." + name;
+                }
+                theNamespace_1 += name;
+              }
+            });
+          } else {
+            theNamespace_1 = /* @__PURE__ */ _normalizeNamespace(evtNamespace);
+          }
+          if (theNamespace_1) {
+            if (theNamespace_1[0] !== ".") {
+              theNamespace_1 = "." + theNamespace_1;
+            }
+            eventName = (eventName || STR_EMPTY) + theNamespace_1;
+          }
+        }
+        var parsedEvent = eventNamespace.exec(eventName || STR_EMPTY) || [];
+        return {
+          type: parsedEvent[1],
+          ns: (parsedEvent[2] || STR_EMPTY).replace(rRemoveEmptyNs, ".").replace(rRemoveTrailingEmptyNs, STR_EMPTY).split(".").sort()[_DYN_JOIN](".")
+        };
+      }
+      // @__NO_SIDE_EFFECTS__
+      function _getRegisteredEvents(target, evtName, addDefault) {
+        if (addDefault === void 0) {
+          addDefault = true;
+        }
+        var aiEvts = (/* @__PURE__ */ _getElmNodeData()).get(target, strEvents, {}, addDefault);
+        var registeredEvents = aiEvts[evtName];
+        if (!registeredEvents) {
+          registeredEvents = aiEvts[evtName] = [];
+        }
+        return registeredEvents;
+      }
+      function _doDetach(obj, evtName, handlerRef, useCapture) {
+        if (obj && evtName && evtName[_DYN_TYPE]) {
+          if (obj[strRemoveEventListener]) {
+            obj[strRemoveEventListener](evtName[_DYN_TYPE], handlerRef, useCapture);
+          } else if (obj[strDetachEvent]) {
+            obj[strDetachEvent](strOnPrefix + evtName[_DYN_TYPE], handlerRef);
+          }
+        }
+      }
+      function _doAttach(obj, evtName, handlerRef, useCapture) {
+        var result = false;
+        if (obj && evtName && evtName[_DYN_TYPE] && handlerRef) {
+          if (obj[strAddEventHelper]) {
+            obj[strAddEventHelper](evtName[_DYN_TYPE], handlerRef, useCapture);
+            result = true;
+          } else if (obj[strAttachEvent]) {
+            obj[strAttachEvent](strOnPrefix + evtName[_DYN_TYPE], handlerRef);
+            result = true;
+          }
+        }
+        return result;
+      }
+      function _doUnregister(target, events, evtName, unRegFn) {
+        var idx = events[_DYN_LENGTH$1];
+        while (idx--) {
+          var theEvent = events[idx];
+          if (theEvent) {
+            if (!evtName.ns || evtName.ns === theEvent[_DYN_EVT_NAME].ns) {
+              if (!unRegFn || unRegFn(theEvent)) {
+                _doDetach(target, theEvent.evtName, theEvent[_DYN_HANDLER], theEvent.capture);
+                events[_DYN_SPLICE](idx, 1);
+              }
+            }
+          }
+        }
+      }
+      function _unregisterEvents(target, evtName, unRegFn) {
+        if (evtName[_DYN_TYPE]) {
+          _doUnregister(target, /* @__PURE__ */ _getRegisteredEvents(target, evtName[_DYN_TYPE]), evtName, unRegFn);
+        } else {
+          var eventCache = (/* @__PURE__ */ _getElmNodeData()).get(target, strEvents, {});
+          objForEachKey(eventCache, function(evtType, events) {
+            _doUnregister(target, events, evtName, unRegFn);
+          });
+          if (objKeys(eventCache)[_DYN_LENGTH$1] === 0) {
+            (/* @__PURE__ */ _getElmNodeData()).kill(target, strEvents);
+          }
+        }
+      }
+      // @__NO_SIDE_EFFECTS__
+      function mergeEvtNamespace(theNamespace, namespaces) {
+        var newNamespaces;
+        if (namespaces) {
+          if (isArray(namespaces)) {
+            newNamespaces = [theNamespace][_DYN_CONCAT$1](namespaces);
+          } else {
+            newNamespaces = [theNamespace, namespaces];
+          }
+          newNamespaces = (/* @__PURE__ */ _getEvtNamespace("xx", newNamespaces)).ns[_DYN_SPLIT](".");
+        } else {
+          newNamespaces = theNamespace;
+        }
+        return newNamespaces;
+      }
+      function eventOn(target, eventName, handlerRef, evtNamespace, useCapture) {
+        if (useCapture === void 0) {
+          useCapture = false;
+        }
+        var result = false;
+        if (target) {
+          try {
+            var evtName = /* @__PURE__ */ _getEvtNamespace(eventName, evtNamespace);
+            result = _doAttach(target, evtName, handlerRef, useCapture);
+            if (result && (/* @__PURE__ */ _getElmNodeData()).accept(target)) {
+              var registeredEvent = {
+                guid: _guid2++,
+                evtName,
+                handler: handlerRef,
+                capture: useCapture
+              };
+              (/* @__PURE__ */ _getRegisteredEvents(target, evtName.type))[_DYN_PUSH$1](registeredEvent);
+            }
+          } catch (e) {
+          }
+        }
+        return result;
+      }
+      function eventOff(target, eventName, handlerRef, evtNamespace, useCapture) {
+        if (useCapture === void 0) {
+          useCapture = false;
+        }
+        if (target) {
+          try {
+            var evtName_1 = /* @__PURE__ */ _getEvtNamespace(eventName, evtNamespace);
+            var found_1 = false;
+            _unregisterEvents(target, evtName_1, function(regEvent) {
+              if (evtName_1.ns && !handlerRef || regEvent[_DYN_HANDLER] === handlerRef) {
+                found_1 = true;
+                return true;
+              }
+              return false;
+            });
+            if (!found_1) {
+              _doDetach(target, evtName_1, handlerRef, useCapture);
+            }
+          } catch (e) {
+          }
+        }
+      }
+      var RequestHeaders = /* @__PURE__ */ createValueMap({
+        requestContextHeader: [0, "Request-Context"],
+        requestContextTargetKey: [1, "appId"],
+        requestContextAppIdFormat: [2, "appId=cid-v1:"],
+        requestIdHeader: [3, "Request-Id"],
+        traceParentHeader: [4, "traceparent"],
+        traceStateHeader: [5, "tracestate"],
+        sdkContextHeader: [6, "Sdk-Context"],
+        sdkContextHeaderAppIdRequest: [7, "appId"],
+        requestContextHeaderLowerCase: [8, "request-context"]
+      });
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeKeyAndAddUniqueness(logger, key, map2) {
+        var origLength = key[_DYN_LENGTH$1];
+        var field = /* @__PURE__ */ dataSanitizeKey(logger, key);
+        if (field[_DYN_LENGTH$1] !== origLength) {
+          var i = 0;
+          var uniqueField = field;
+          while (map2[uniqueField] !== void 0) {
+            i++;
+            uniqueField = strSubstring(field, 0, 150 - 3) + /* @__PURE__ */ dsPadNumber(i);
+          }
+          field = uniqueField;
+        }
+        return field;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeKey(logger, name) {
+        var nameTrunc;
+        if (name) {
+          name = strTrim(asString(name));
+          if (name[_DYN_LENGTH$1] > 150) {
+            nameTrunc = strSubstring(name, 0, 150);
+            _throwInternal(logger, 2, 57, "name is too long.  It has been truncated to 150 characters.", { name }, true);
+          }
+        }
+        return nameTrunc || name;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeString(logger, value, maxLength) {
+        if (maxLength === void 0) {
+          maxLength = 1024;
+        }
+        var valueTrunc;
+        if (value) {
+          maxLength = maxLength ? maxLength : 1024;
+          value = strTrim(asString(value));
+          if (value[_DYN_LENGTH$1] > maxLength) {
+            valueTrunc = strSubstring(value, 0, maxLength);
+            _throwInternal(logger, 2, 61, "string value is too long. It has been truncated to " + maxLength + " characters.", { value }, true);
+          }
+        }
+        return valueTrunc || value;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeUrl(logger, url2, config2) {
+        if (isString(url2)) {
+          url2 = /* @__PURE__ */ fieldRedaction(url2, config2);
+        }
+        return /* @__PURE__ */ dataSanitizeInput(logger, url2, 2048, 66);
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeMessage(logger, message) {
+        var messageTrunc;
+        if (message) {
+          if (message[_DYN_LENGTH$1] > 32768) {
+            messageTrunc = strSubstring(message, 0, 32768);
+            _throwInternal(logger, 2, 56, "message is too long, it has been truncated to 32768 characters.", { message }, true);
+          }
+        }
+        return messageTrunc || message;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeException(logger, exception) {
+        var exceptionTrunc;
+        if (exception) {
+          var value = "" + exception;
+          if (value[_DYN_LENGTH$1] > 32768) {
+            exceptionTrunc = strSubstring(value, 0, 32768);
+            _throwInternal(logger, 2, 52, "exception is too long, it has been truncated to 32768 characters.", { exception }, true);
+          }
+        }
+        return exceptionTrunc || exception;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeProperties(logger, properties) {
+        if (properties) {
+          var tempProps_1 = {};
+          objForEachKey(properties, function(prop, value) {
+            if (/* @__PURE__ */ isObject2(value) && /* @__PURE__ */ hasJSON()) {
+              try {
+                value = (/* @__PURE__ */ getJSON())[_DYN_STRINGIFY$1](value);
+              } catch (e) {
+                _throwInternal(logger, 2, 49, "custom property is not valid", { exception: e }, true);
+              }
+            }
+            value = /* @__PURE__ */ dataSanitizeString(logger, value, 8192);
+            prop = /* @__PURE__ */ dataSanitizeKeyAndAddUniqueness(logger, prop, tempProps_1);
+            tempProps_1[prop] = value;
+          });
+          properties = tempProps_1;
+        }
+        return properties;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeMeasurements(logger, measurements) {
+        if (measurements) {
+          var tempMeasurements_1 = {};
+          objForEachKey(measurements, function(measure, value) {
+            measure = /* @__PURE__ */ dataSanitizeKeyAndAddUniqueness(logger, measure, tempMeasurements_1);
+            tempMeasurements_1[measure] = value;
+          });
+          measurements = tempMeasurements_1;
+        }
+        return measurements;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeId(logger, id) {
+        return id ? (/* @__PURE__ */ dataSanitizeInput(logger, id, 128, 69))[_DYN_TO_STRING$1]() : id;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dataSanitizeInput(logger, input, maxLength, _msgId) {
+        var inputTrunc;
+        if (input) {
+          input = strTrim(asString(input));
+          if (input[_DYN_LENGTH$1] > maxLength) {
+            inputTrunc = strSubstring(input, 0, maxLength);
+            _throwInternal(logger, 2, _msgId, "input is too long, it has been truncated to " + maxLength + " characters.", { data: input }, true);
+          }
+        }
+        return inputTrunc || input;
+      }
+      // @__NO_SIDE_EFFECTS__
+      function dsPadNumber(num) {
+        var s = "00" + num;
+        return strSubstr(s, s[_DYN_LENGTH$1] - 3);
+      }
+      var _document = getDocument() || {};
+      var _htmlAnchorIdx = 0;
+      var _htmlAnchorElement = [null, null, null, null, null];
+      function urlParseUrl(url2) {
+        var anchorIdx = _htmlAnchorIdx;
+        var anchorCache = _htmlAnchorElement;
+        var tempAnchor = anchorCache[anchorIdx];
+        if (!_document.createElement) {
+          tempAnchor = { host: urlParseHost(url2, true) };
+        } else if (!anchorCache[anchorIdx]) {
+          tempAnchor = anchorCache[anchorIdx] = _document.createElement("a");
+        }
+        tempAnchor.href = url2;
+        anchorIdx++;
+        if (anchorIdx >= anchorCache[_DYN_LENGTH$1]) {
+          anchorIdx = 0;
+        }
+        _htmlAnchorIdx = anchorIdx;
+        return tempAnchor;
+      }
+      function urlParseHost(url2, inclPort) {
+        var fullHost = urlParseFullHost(url2, inclPort) || STR_EMPTY;
+        if (fullHost) {
+          var match = fullHost[_DYN_MATCH](/(www\d{0,5}\.)?([^\/:]{1,256})(:\d{1,20})?/i);
+          if (match != null && match[_DYN_LENGTH$1] > 3 && isString(match[2]) && match[2][_DYN_LENGTH$1] > 0) {
+            return match[2] + (match[3] || STR_EMPTY);
+          }
+        }
+        return fullHost;
+      }
+      function urlParseFullHost(url2, inclPort) {
+        var result = null;
+        if (url2) {
+          var match = url2[_DYN_MATCH](/(\w{1,150}):\/\/([^\/:]{1,256})(:\d{1,20})?/i);
+          if (match != null && match[_DYN_LENGTH$1] > 2 && isString(match[2]) && match[2][_DYN_LENGTH$1] > 0) {
+            result = match[2] || STR_EMPTY;
+            if (inclPort && match[_DYN_LENGTH$1] > 2) {
+              var protocol = (match[1] || STR_EMPTY)[_DYN_TO_LOWER_CASE]();
+              var port = match[3] || STR_EMPTY;
+              if (protocol === "http" && port === ":80") {
+                port = STR_EMPTY;
+              } else if (protocol === "https" && port === ":443") {
+                port = STR_EMPTY;
+              }
+              result += port;
+            }
+          }
+        }
+        return result;
+      }
+      var _internalEndpoints = [
+        DEFAULT_BREEZE_ENDPOINT + DEFAULT_BREEZE_PATH,
+        "https://breeze.aimon.applicationinsights.io" + DEFAULT_BREEZE_PATH,
+        "https://dc-int.services.visualstudio.com" + DEFAULT_BREEZE_PATH
+      ];
+      function isInternalApplicationInsightsEndpoint(endpointUrl) {
+        return arrIndexOf(_internalEndpoints, endpointUrl[_DYN_TO_LOWER_CASE]()) !== -1;
+      }
+      var StorageType = /* @__PURE__ */ createEnumStyle({
+        LocalStorage: 0,
+        SessionStorage: 1
+      });
+      var _canUseSessionStorage = void 0;
+      var _storagePrefix = STR_EMPTY;
+      function _getVerifiedStorageObject(storageType) {
+        try {
+          if (/* @__PURE__ */ isNullOrUndefined(getGlobal())) {
+            return null;
+          }
+          var uid = (/* @__PURE__ */ new Date())[_DYN_TO_STRING$1]();
+          var storage = /* @__PURE__ */ getInst(storageType === StorageType.LocalStorage ? "localStorage" : "sessionStorage");
+          var name_1 = _storagePrefix + uid;
+          storage.setItem(name_1, uid);
+          var fail = storage.getItem(name_1) !== uid;
+          storage[_DYN_REMOVE_ITEM](name_1);
+          if (!fail) {
+            return storage;
+          }
+        } catch (exception) {
+        }
+        return null;
+      }
+      function _getSessionStorageObject() {
+        if (utlCanUseSessionStorage()) {
+          return _getVerifiedStorageObject(StorageType.SessionStorage);
+        }
+        return null;
+      }
+      function utlSetStoragePrefix(storagePrefix) {
+        _storagePrefix = storagePrefix || STR_EMPTY;
+      }
+      function utlCanUseSessionStorage(reset) {
+        if (reset || _canUseSessionStorage === void 0) {
+          _canUseSessionStorage = !!_getVerifiedStorageObject(StorageType.SessionStorage);
+        }
+        return _canUseSessionStorage;
+      }
+      function utlGetSessionStorage(logger, name) {
+        var storage = _getSessionStorageObject();
+        if (storage !== null) {
+          try {
+            return storage.getItem(name);
+          } catch (e) {
+            _canUseSessionStorage = false;
+            _throwInternal(logger, 2, 2, "Browser failed read of session storage. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return null;
+      }
+      function utlSetSessionStorage(logger, name, data) {
+        var storage = _getSessionStorageObject();
+        if (storage !== null) {
+          try {
+            storage.setItem(name, data);
+            return true;
+          } catch (e) {
+            _canUseSessionStorage = false;
+            _throwInternal(logger, 2, 4, "Browser failed write to session storage. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return false;
+      }
+      function utlRemoveSessionStorage(logger, name) {
+        var storage = _getSessionStorageObject();
+        if (storage !== null) {
+          try {
+            storage[_DYN_REMOVE_ITEM](name);
+            return true;
+          } catch (e) {
+            _canUseSessionStorage = false;
+            _throwInternal(logger, 2, 6, "Browser failed removal of session storage item. " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+          }
+        }
+        return false;
+      }
+      var _FIELDS_SEPARATOR = ";";
+      var _FIELD_KEY_VALUE_SEPARATOR = "=";
+      function parseConnectionString(connectionString) {
+        if (!connectionString) {
+          return {};
+        }
+        var kvPairs = connectionString[_DYN_SPLIT](_FIELDS_SEPARATOR);
+        var result = arrReduce(kvPairs, function(fields, kv) {
+          var kvParts = kv[_DYN_SPLIT](_FIELD_KEY_VALUE_SEPARATOR);
+          if (kvParts[_DYN_LENGTH$1] === 2) {
+            var key = kvParts[0][_DYN_TO_LOWER_CASE]();
+            var value = kvParts[1];
+            fields[key] = value;
+          }
+          return fields;
+        }, {});
+        if (objKeys(result)[_DYN_LENGTH$1] > 0) {
+          if (result.endpointsuffix) {
+            var locationPrefix = result.location ? result.location + "." : "";
+            result[_DYN_INGESTIONENDPOINT] = result[_DYN_INGESTIONENDPOINT] || "https://" + locationPrefix + "dc." + result.endpointsuffix;
+          }
+          result[_DYN_INGESTIONENDPOINT] = result[_DYN_INGESTIONENDPOINT] || DEFAULT_BREEZE_ENDPOINT;
+          if (strEndsWith(result[_DYN_INGESTIONENDPOINT], "/")) {
+            result[_DYN_INGESTIONENDPOINT] = result[_DYN_INGESTIONENDPOINT].slice(0, -1);
+          }
+        }
+        return result;
+      }
+      var Envelope = (
+        /** @class */
+        /* @__PURE__ */ (function() {
+          function Envelope2(logger, data, name) {
+            var _this = this;
+            var _self = this;
+            _self.ver = 1;
+            _self.sampleRate = 100;
+            _self.tags = {};
+            _self[_DYN_NAME$1] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            _self[_DYN_DATA$1] = data;
+            _self[_DYN_TIME] = /* @__PURE__ */ toISOString(/* @__PURE__ */ new Date());
+            _self[_DYN_AI_DATA_CONTRACT] = {
+              time: 1,
+              iKey: 1,
+              name: 1,
+              sampleRate: function() {
+                return _this.sampleRate === 100 ? 4 : 1;
+              },
+              tags: 1,
+              data: 1
+            };
+          }
+          return Envelope2;
+        })()
+      );
+      var EventDataType = "EventData";
+      var ExceptionDataType = "ExceptionData";
+      var MetricDataType = "MetricData";
+      var PageViewDataType = "PageviewData";
+      var PageViewPerformanceDataType = "PageviewPerformanceData";
+      var RemoteDependencyDataType = "RemoteDependencyData";
+      var RequestDataType = "RequestData";
+      var TraceDataType = "MessageData";
+      // @__NO_SIDE_EFFECTS__
+      function _AddPrefix(name) {
+        return "Microsoft.ApplicationInsights.{0}." + name;
+      }
+      var EventEnvelopeType = /* @__PURE__ */ _AddPrefix("Event");
+      var ExceptionEnvelopeType = /* @__PURE__ */ _AddPrefix("Exception");
+      var MetricEnvelopeType = /* @__PURE__ */ _AddPrefix("Metric");
+      var PageViewEnvelopeType = /* @__PURE__ */ _AddPrefix("Pageview");
+      var PageViewPerformanceEnvelopeType = /* @__PURE__ */ _AddPrefix("PageviewPerformance");
+      var TraceEnvelopeType = /* @__PURE__ */ _AddPrefix("Message");
+      var Event$1 = (
+        /** @class */
+        (function() {
+          function Event2(logger, name, properties, measurements) {
+            this.aiDataContract = {
+              ver: 1,
+              name: 1,
+              properties: 0,
+              measurements: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            _self[_DYN_NAME$1] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS$1] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+          }
+          Event2.envelopeType = EventEnvelopeType;
+          Event2.dataType = EventDataType;
+          return Event2;
+        })()
+      );
+      var STACKFRAME_BASE_SIZE = 58;
+      var IS_FRAME = /^\s{0,50}(from\s|at\s|Line\s{1,5}\d{1,10}\s{1,5}of|\w{1,50}@\w{1,80}|[^\(\s\n]+:[0-9\?]+(?::[0-9\?]+)?)/;
+      var FULL_STACK_FRAME_1 = /^(?:\s{0,50}at)?\s{0,50}([^\@\()\s]+)?\s{0,50}(?:\s|\@|\()\s{0,5}([^\(\s\n\]]+):([0-9\?]+):([0-9\?]+)\)?$/;
+      var FULL_STACK_FRAME_2 = /^(?:\s{0,50}at)?\s{0,50}([^\@\()\s]+)?\s{0,50}(?:\s|\@|\()\s{0,5}([^\(\s\n\]]+):([0-9\?]+)\)?$/;
+      var FULL_STACK_FRAME_3 = /^(?:\s{0,50}at)?\s{0,50}([^\@\()\s]+)?\s{0,50}(?:\s|\@|\()\s{0,5}([^\(\s\n\)\]]+)\)?$/;
+      var EXTRACT_FILENAME = /(?:^|\(|\s{0,10}[\w\)]+\@)?([^\(\n\s\]\)]+)(?:\:([0-9]+)(?:\:([0-9]+))?)?\)?(?:,|$)/;
+      var PARSE_FILENAME_LINE_COL = /([^\(\s\n]+):([0-9]+):([0-9]+)$/;
+      var PARSE_FILENAME_LINE_ONLY = /([^\(\s\n]+):([0-9]+)$/;
+      var NoMethod = "<no_method>";
+      var strError = "error";
+      var strStack = "stack";
+      var strStackDetails = "stackDetails";
+      var strErrorSrc = "errorSrc";
+      var strMessage = "message";
+      var strDescription = "description";
+      var _parseSequence = [
+        { re: FULL_STACK_FRAME_1, len: 5, m: 1, fn: 2, ln: 3, col: 4 },
+        { chk: _ignoreNative, pre: _scrubAnonymous, re: FULL_STACK_FRAME_2, len: 4, m: 1, fn: 2, ln: 3 },
+        { re: FULL_STACK_FRAME_3, len: 3, m: 1, fn: 2, hdl: _handleFilename },
+        { re: EXTRACT_FILENAME, len: 2, fn: 1, hdl: _handleFilename }
+      ];
+      function _scrubAnonymous(frame) {
+        return frame[_DYN_REPLACE](/(\(anonymous\))/, "<anonymous>");
+      }
+      function _ignoreNative(frame) {
+        return strIndexOf(frame, "[native") < 0;
+      }
+      function _stringify(value, convertToString) {
+        var result = value;
+        if (result && !isString(result)) {
+          if (JSON && JSON[_DYN_STRINGIFY$1]) {
+            result = JSON[_DYN_STRINGIFY$1](value);
+            if (convertToString && (!result || result === "{}")) {
+              if (isFunction(value[_DYN_TO_STRING$1])) {
+                result = value[_DYN_TO_STRING$1]();
+              } else {
+                result = "" + value;
+              }
+            }
+          } else {
+            result = "" + value + " - (Missing JSON.stringify)";
+          }
+        }
+        return result || "";
+      }
+      function _formatMessage(theEvent, errorType) {
+        var evtMessage = theEvent;
+        if (theEvent) {
+          if (evtMessage && !isString(evtMessage)) {
+            evtMessage = theEvent[strMessage] || theEvent[strDescription] || evtMessage;
+          }
+          if (evtMessage && !isString(evtMessage)) {
+            evtMessage = _stringify(evtMessage, true);
+          }
+          if (theEvent["filename"]) {
+            evtMessage = evtMessage + " @" + (theEvent["filename"] || "") + ":" + (theEvent["lineno"] || "?") + ":" + (theEvent["colno"] || "?");
+          }
+        }
+        if (errorType && errorType !== "String" && errorType !== "Object" && errorType !== "Error" && strIndexOf(evtMessage || "", errorType) === -1) {
+          evtMessage = errorType + ": " + evtMessage;
+        }
+        return evtMessage || "";
+      }
+      function _isExceptionDetailsInternal(value) {
+        try {
+          if (/* @__PURE__ */ isObject2(value)) {
+            return "hasFullStack" in value && "typeName" in value;
+          }
+        } catch (e) {
+        }
+        return false;
+      }
+      function _isExceptionInternal(value) {
+        try {
+          if (/* @__PURE__ */ isObject2(value)) {
+            return "ver" in value && "exceptions" in value && "properties" in value;
+          }
+        } catch (e) {
+        }
+        return false;
+      }
+      function _isStackDetails(details) {
+        return details && details.src && isString(details.src) && details.obj && isArray(details.obj);
+      }
+      function _convertStackObj(errorStack) {
+        var src = errorStack || "";
+        if (!isString(src)) {
+          if (isString(src[strStack])) {
+            src = src[strStack];
+          } else {
+            src = "" + src;
+          }
+        }
+        var items = src[_DYN_SPLIT]("\n");
+        return {
+          src,
+          obj: items
+        };
+      }
+      function _getOperaStack(errorMessage) {
+        var stack = [];
+        var lines = errorMessage[_DYN_SPLIT]("\n");
+        for (var lp = 0; lp < lines[_DYN_LENGTH$1]; lp++) {
+          var entry = lines[lp];
+          if (lines[lp + 1]) {
+            entry += "@" + lines[lp + 1];
+            lp++;
+          }
+          stack[_DYN_PUSH$1](entry);
+        }
+        return {
+          src: errorMessage,
+          obj: stack
+        };
+      }
+      function _getStackFromErrorObj(errorObj) {
+        var details = null;
+        if (errorObj) {
+          try {
+            if (errorObj[strStack]) {
+              details = _convertStackObj(errorObj[strStack]);
+            } else if (errorObj[strError] && errorObj[strError][strStack]) {
+              details = _convertStackObj(errorObj[strError][strStack]);
+            } else if (errorObj["exception"] && errorObj[_DYN_EXCEPTION][strStack]) {
+              details = _convertStackObj(errorObj[_DYN_EXCEPTION][strStack]);
+            } else if (_isStackDetails(errorObj)) {
+              details = errorObj;
+            } else if (_isStackDetails(errorObj[strStackDetails])) {
+              details = errorObj[strStackDetails];
+            } else if (getWindow() && getWindow()["opera"] && errorObj[strMessage]) {
+              details = _getOperaStack(errorObj[_DYN_MESSAGE]);
+            } else if (errorObj["reason"] && errorObj[_DYN_REASON][strStack]) {
+              details = _convertStackObj(errorObj[_DYN_REASON][strStack]);
+            } else if (isString(errorObj)) {
+              details = _convertStackObj(errorObj);
+            } else {
+              var evtMessage = errorObj[strMessage] || errorObj[strDescription] || "";
+              if (isString(errorObj[strErrorSrc])) {
+                if (evtMessage) {
+                  evtMessage += "\n";
+                }
+                evtMessage += " from " + errorObj[strErrorSrc];
+              }
+              if (evtMessage) {
+                details = _convertStackObj(evtMessage);
+              }
+            }
+          } catch (e) {
+            details = _convertStackObj(e);
+          }
+        }
+        return details || {
+          src: "",
+          obj: null
+        };
+      }
+      function _formatStackTrace(stackDetails) {
+        var stack = "";
+        if (stackDetails) {
+          if (stackDetails.obj) {
+            stack = stackDetails.obj[_DYN_JOIN]("\n");
+          } else {
+            stack = stackDetails.src || "";
+          }
+        }
+        return stack;
+      }
+      function _parseStack(stack) {
+        var parsedStack;
+        var frames = stack.obj;
+        if (frames && frames[_DYN_LENGTH$1] > 0) {
+          parsedStack = [];
+          var level_1 = 0;
+          var foundStackStart_1 = false;
+          var totalSizeInBytes_1 = 0;
+          arrForEach(frames, function(frame) {
+            if (foundStackStart_1 || _isStackFrame(frame)) {
+              var theFrame = asString(frame);
+              foundStackStart_1 = true;
+              var parsedFrame = _extractStackFrame(theFrame, level_1);
+              if (parsedFrame) {
+                totalSizeInBytes_1 += parsedFrame[_DYN_SIZE_IN_BYTES];
+                parsedStack[_DYN_PUSH$1](parsedFrame);
+                level_1++;
+              }
+            }
+          });
+          var exceptionParsedStackThreshold = 32 * 1024;
+          if (totalSizeInBytes_1 > exceptionParsedStackThreshold) {
+            var left = 0;
+            var right = parsedStack[_DYN_LENGTH$1] - 1;
+            var size = 0;
+            var acceptedLeft = left;
+            var acceptedRight = right;
+            while (left < right) {
+              var lSize = parsedStack[left][_DYN_SIZE_IN_BYTES];
+              var rSize = parsedStack[right][_DYN_SIZE_IN_BYTES];
+              size += lSize + rSize;
+              if (size > exceptionParsedStackThreshold) {
+                var howMany = acceptedRight - acceptedLeft + 1;
+                parsedStack[_DYN_SPLICE](acceptedLeft, howMany);
+                break;
+              }
+              acceptedLeft = left;
+              acceptedRight = right;
+              left++;
+              right--;
+            }
+          }
+        }
+        return parsedStack;
+      }
+      function _getErrorType(errorType) {
+        var typeName = "";
+        if (errorType) {
+          typeName = errorType.typeName || errorType[_DYN_NAME$1] || "";
+          if (!typeName) {
+            try {
+              var funcNameRegex = /function (.{1,200})\(/;
+              var results = funcNameRegex.exec(errorType.constructor[_DYN_TO_STRING$1]());
+              typeName = results && results[_DYN_LENGTH$1] > 1 ? results[1] : "";
+            } catch (e) {
+            }
+          }
+        }
+        return typeName;
+      }
+      function _formatErrorCode(errorObj) {
+        if (errorObj) {
+          try {
+            if (!isString(errorObj)) {
+              var errorType = _getErrorType(errorObj);
+              var result = _stringify(errorObj, false);
+              if (!result || result === "{}") {
+                if (errorObj[strError]) {
+                  errorObj = errorObj[strError];
+                  errorType = _getErrorType(errorObj);
+                }
+                result = _stringify(errorObj, true);
+              }
+              if (strIndexOf(result, errorType) !== 0 && errorType !== "String") {
+                return errorType + ":" + result;
+              }
+              return result;
+            }
+          } catch (e) {
+          }
+        }
+        return "" + (errorObj || "");
+      }
+      var Exception = (
+        /** @class */
+        (function() {
+          function Exception2(logger, exception, properties, measurements, severityLevel, id) {
+            this.aiDataContract = {
+              ver: 1,
+              exceptions: 1,
+              severityLevel: 0,
+              properties: 0,
+              measurements: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            if (!_isExceptionInternal(exception)) {
+              if (!properties) {
+                properties = {};
+              }
+              if (id) {
+                properties.id = id;
+              }
+              _self[_DYN_EXCEPTIONS] = [_createExceptionDetails(logger, exception, properties)];
+              _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+              _self[_DYN_MEASUREMENTS$1] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+              if (severityLevel) {
+                _self[_DYN_SEVERITY_LEVEL] = severityLevel;
+              }
+              if (id) {
+                _self.id = id;
+              }
+            } else {
+              _self[_DYN_EXCEPTIONS] = exception[_DYN_EXCEPTIONS] || [];
+              _self[_DYN_PROPERTIES] = exception[_DYN_PROPERTIES];
+              _self[_DYN_MEASUREMENTS$1] = exception[_DYN_MEASUREMENTS$1];
+              if (exception[_DYN_SEVERITY_LEVEL]) {
+                _self[_DYN_SEVERITY_LEVEL] = exception[_DYN_SEVERITY_LEVEL];
+              }
+              if (exception.id) {
+                _self.id = exception.id;
+                exception[_DYN_PROPERTIES].id = exception.id;
+              }
+              if (exception[_DYN_PROBLEM_GROUP]) {
+                _self[_DYN_PROBLEM_GROUP] = exception[_DYN_PROBLEM_GROUP];
+              }
+              if (!/* @__PURE__ */ isNullOrUndefined(exception.isManual)) {
+                _self.isManual = exception.isManual;
+              }
+            }
+          }
+          Exception2.CreateAutoException = function(message, url2, lineNumber, columnNumber, error2, evt, stack, errorSrc) {
+            var errorType = _getErrorType(error2 || evt || message);
+            return {
+              message: _formatMessage(message, errorType),
+              url: url2,
+              lineNumber,
+              columnNumber,
+              error: _formatErrorCode(error2 || evt || message),
+              evt: _formatErrorCode(evt || message),
+              typeName: errorType,
+              stackDetails: _getStackFromErrorObj(stack || error2 || evt),
+              errorSrc
+            };
+          };
+          Exception2.CreateFromInterface = function(logger, exception, properties, measurements) {
+            var exceptions = exception[_DYN_EXCEPTIONS] && arrMap(exception[_DYN_EXCEPTIONS], function(ex) {
+              return _createExDetailsFromInterface(logger, ex);
+            });
+            var exceptionData = new Exception2(logger, __assignFn(__assignFn({}, exception), { exceptions }), properties, measurements);
+            return exceptionData;
+          };
+          Exception2.prototype.toInterface = function() {
+            var _a3 = this, exceptions = _a3.exceptions, properties = _a3.properties, measurements = _a3.measurements, severityLevel = _a3.severityLevel, problemGroup = _a3.problemGroup, id = _a3.id, isManual = _a3.isManual;
+            var exceptionDetailsInterface = exceptions instanceof Array && arrMap(exceptions, function(exception) {
+              return exception.toInterface();
+            }) || void 0;
+            return {
+              ver: "4.0",
+              exceptions: exceptionDetailsInterface,
+              severityLevel,
+              properties,
+              measurements,
+              problemGroup,
+              id,
+              isManual
+            };
+          };
+          Exception2.CreateSimpleException = function(message, typeName, assembly, fileName, details, line) {
+            var _a3;
+            return {
+              exceptions: [
+                (_a3 = {}, _a3[_DYN_HAS_FULL_STACK] = true, _a3.message = message, _a3.stack = details, _a3.typeName = typeName, _a3)
+              ]
+            };
+          };
+          Exception2.envelopeType = ExceptionEnvelopeType;
+          Exception2.dataType = ExceptionDataType;
+          Exception2.formatError = _formatErrorCode;
+          return Exception2;
+        })()
+      );
+      var exDetailsAiDataContract = /* @__PURE__ */ objFreeze({
+        id: 0,
+        outerId: 0,
+        typeName: 1,
+        message: 1,
+        hasFullStack: 0,
+        stack: 0,
+        parsedStack: 2
+      });
+      function _toInterface() {
+        var _self = this;
+        var parsedStack = isArray(_self[_DYN_PARSED_STACK]) && arrMap(_self[_DYN_PARSED_STACK], function(frame) {
+          return _parsedFrameToInterface(frame);
+        });
+        var exceptionDetailsInterface = {
+          id: _self.id,
+          outerId: _self.outerId,
+          typeName: _self[_DYN_TYPE_NAME],
+          message: _self[_DYN_MESSAGE],
+          hasFullStack: _self[_DYN_HAS_FULL_STACK],
+          stack: _self[strStack],
+          parsedStack: parsedStack || void 0
+        };
+        return exceptionDetailsInterface;
+      }
+      function _createExceptionDetails(logger, exception, properties) {
+        var _a3;
+        var id;
+        var outerId;
+        var typeName;
+        var message;
+        var hasFullStack;
+        var theStack;
+        var parsedStack;
+        if (!_isExceptionDetailsInternal(exception)) {
+          var error2 = exception;
+          var evt = error2 && error2.evt;
+          if (!isError(error2)) {
+            error2 = error2[strError] || evt || error2;
+          }
+          typeName = /* @__PURE__ */ dataSanitizeString(logger, _getErrorType(error2)) || strNotSpecified;
+          message = /* @__PURE__ */ dataSanitizeMessage(logger, _formatMessage(exception || error2, typeName)) || strNotSpecified;
+          var stack = exception[strStackDetails] || _getStackFromErrorObj(exception);
+          parsedStack = _parseStack(stack);
+          if (isArray(parsedStack)) {
+            arrMap(parsedStack, function(frame) {
+              frame[_DYN_ASSEMBLY] = /* @__PURE__ */ dataSanitizeString(logger, frame[_DYN_ASSEMBLY]);
+              frame[_DYN_FILE_NAME] = /* @__PURE__ */ dataSanitizeString(logger, frame[_DYN_FILE_NAME]);
+            });
+          }
+          theStack = /* @__PURE__ */ dataSanitizeException(logger, _formatStackTrace(stack));
+          hasFullStack = isArray(parsedStack) && parsedStack[_DYN_LENGTH$1] > 0;
+          if (properties) {
+            properties[_DYN_TYPE_NAME] = properties[_DYN_TYPE_NAME] || typeName;
+          }
+        } else {
+          typeName = exception[_DYN_TYPE_NAME];
+          message = exception[_DYN_MESSAGE];
+          theStack = exception[strStack];
+          parsedStack = exception[_DYN_PARSED_STACK] || [];
+          hasFullStack = exception[_DYN_HAS_FULL_STACK];
+        }
+        return _a3 = {}, _a3[_DYN_AI_DATA_CONTRACT] = exDetailsAiDataContract, _a3.id = id, _a3.outerId = outerId, _a3.typeName = typeName, _a3.message = message, _a3[_DYN_HAS_FULL_STACK] = hasFullStack, _a3.stack = theStack, _a3.parsedStack = parsedStack, _a3.toInterface = _toInterface, _a3;
+      }
+      function _createExDetailsFromInterface(logger, exception) {
+        var parsedStack = isArray(exception[_DYN_PARSED_STACK]) && arrMap(exception[_DYN_PARSED_STACK], function(frame) {
+          return _stackFrameFromInterface(frame);
+        }) || exception[_DYN_PARSED_STACK];
+        var exceptionDetails = _createExceptionDetails(logger, __assignFn(__assignFn({}, exception), { parsedStack }));
+        return exceptionDetails;
+      }
+      function _parseFilename(theFrame, fileName) {
+        var lineCol = fileName[_DYN_MATCH](PARSE_FILENAME_LINE_COL);
+        if (lineCol && lineCol[_DYN_LENGTH$1] >= 4) {
+          theFrame[_DYN_FILE_NAME] = lineCol[1];
+          theFrame[_DYN_LINE] = parseInt(lineCol[2]);
+        } else {
+          var lineNo = fileName[_DYN_MATCH](PARSE_FILENAME_LINE_ONLY);
+          if (lineNo && lineNo[_DYN_LENGTH$1] >= 3) {
+            theFrame[_DYN_FILE_NAME] = lineNo[1];
+            theFrame[_DYN_LINE] = parseInt(lineNo[2]);
+          } else {
+            theFrame[_DYN_FILE_NAME] = fileName;
+          }
+        }
+      }
+      function _handleFilename(theFrame, sequence, matches) {
+        var filename = theFrame[_DYN_FILE_NAME];
+        if (sequence.fn && matches && matches[_DYN_LENGTH$1] > sequence.fn) {
+          if (sequence.ln && matches[_DYN_LENGTH$1] > sequence.ln) {
+            filename = strTrim(matches[sequence.fn] || "");
+            theFrame[_DYN_LINE] = parseInt(strTrim(matches[sequence.ln] || "")) || 0;
+          } else {
+            filename = strTrim(matches[sequence.fn] || "");
+          }
+        }
+        if (filename) {
+          _parseFilename(theFrame, filename);
+        }
+      }
+      function _isStackFrame(frame) {
+        var result = false;
+        if (frame && isString(frame)) {
+          var trimmedFrame = strTrim(frame);
+          if (trimmedFrame) {
+            result = IS_FRAME.test(trimmedFrame);
+          }
+        }
+        return result;
+      }
+      var stackFrameAiDataContract = /* @__PURE__ */ objFreeze({
+        level: 1,
+        method: 1,
+        assembly: 0,
+        fileName: 0,
+        line: 0
+      });
+      function _extractStackFrame(frame, level) {
+        var _a3;
+        var theFrame;
+        if (frame && isString(frame) && strTrim(frame)) {
+          theFrame = (_a3 = {}, _a3[_DYN_AI_DATA_CONTRACT] = stackFrameAiDataContract, _a3.level = level, _a3.assembly = strTrim(frame), _a3.method = NoMethod, _a3.fileName = "", _a3.line = 0, _a3.sizeInBytes = 0, _a3);
+          var idx = 0;
+          while (idx < _parseSequence[_DYN_LENGTH$1]) {
+            var sequence = _parseSequence[idx];
+            if (sequence.chk && !sequence.chk(frame)) {
+              break;
+            }
+            if (sequence.pre) {
+              frame = sequence.pre(frame);
+            }
+            var matches = frame[_DYN_MATCH](sequence.re);
+            if (matches && matches[_DYN_LENGTH$1] >= sequence.len) {
+              if (sequence.m) {
+                theFrame.method = strTrim(matches[sequence.m] || NoMethod);
+              }
+              if (sequence.hdl) {
+                sequence.hdl(theFrame, sequence, matches);
+              } else if (sequence.fn) {
+                if (sequence.ln) {
+                  theFrame[_DYN_FILE_NAME] = strTrim(matches[sequence.fn] || "");
+                  theFrame[_DYN_LINE] = parseInt(strTrim(matches[sequence.ln] || "")) || 0;
+                } else {
+                  _parseFilename(theFrame, matches[sequence.fn] || "");
+                }
+              }
+              break;
+            }
+            idx++;
+          }
+        }
+        return _populateFrameSizeInBytes(theFrame);
+      }
+      function _stackFrameFromInterface(frame) {
+        var _a3;
+        var parsedFrame = (_a3 = {}, _a3[_DYN_AI_DATA_CONTRACT] = stackFrameAiDataContract, _a3.level = frame.level, _a3.method = frame.method, _a3.assembly = frame[_DYN_ASSEMBLY], _a3.fileName = frame[_DYN_FILE_NAME], _a3.line = frame[_DYN_LINE], _a3.sizeInBytes = 0, _a3);
+        return _populateFrameSizeInBytes(parsedFrame);
+      }
+      function _populateFrameSizeInBytes(frame) {
+        var sizeInBytes = STACKFRAME_BASE_SIZE;
+        if (frame) {
+          sizeInBytes += frame.method[_DYN_LENGTH$1];
+          sizeInBytes += frame.assembly[_DYN_LENGTH$1];
+          sizeInBytes += frame.fileName[_DYN_LENGTH$1];
+          sizeInBytes += frame.level.toString()[_DYN_LENGTH$1];
+          sizeInBytes += frame.line.toString()[_DYN_LENGTH$1];
+          frame[_DYN_SIZE_IN_BYTES] = sizeInBytes;
+        }
+        return frame;
+      }
+      function _parsedFrameToInterface(frame) {
+        return {
+          level: frame.level,
+          method: frame.method,
+          assembly: frame[_DYN_ASSEMBLY],
+          fileName: frame[_DYN_FILE_NAME],
+          line: frame[_DYN_LINE]
+        };
+      }
+      var DataPoint = (
+        /** @class */
+        /* @__PURE__ */ (function() {
+          function DataPoint2() {
+            this.aiDataContract = {
+              name: 1,
+              kind: 0,
+              value: 1,
+              count: 0,
+              min: 0,
+              max: 0,
+              stdDev: 0
+            };
+            this.kind = 0;
+          }
+          return DataPoint2;
+        })()
+      );
+      var Metric = (
+        /** @class */
+        (function() {
+          function Metric2(logger, name, value, count, min, max, stdDev, properties, measurements) {
+            this.aiDataContract = {
+              ver: 1,
+              metrics: 1,
+              properties: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            var dataPoint = new DataPoint();
+            dataPoint[_DYN_COUNT$1] = count > 0 ? count : void 0;
+            dataPoint.max = isNaN(max) || max === null ? void 0 : max;
+            dataPoint.min = isNaN(min) || min === null ? void 0 : min;
+            dataPoint[_DYN_NAME$1] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            dataPoint[_DYN_VALUE] = value;
+            dataPoint.stdDev = isNaN(stdDev) || stdDev === null ? void 0 : stdDev;
+            _self.metrics = [dataPoint];
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS$1] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+          }
+          Metric2.envelopeType = MetricEnvelopeType;
+          Metric2.dataType = MetricDataType;
+          return Metric2;
+        })()
+      );
+      var PageView = (
+        /** @class */
+        (function() {
+          function PageView2(logger, name, url2, durationMs, properties, measurements, id) {
+            this.aiDataContract = {
+              ver: 1,
+              name: 0,
+              url: 0,
+              duration: 0,
+              properties: 0,
+              measurements: 0,
+              id: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            _self.id = /* @__PURE__ */ dataSanitizeId(logger, id);
+            _self.url = /* @__PURE__ */ dataSanitizeUrl(logger, url2);
+            _self[_DYN_NAME$1] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            if (!isNaN(durationMs)) {
+              _self[_DYN_DURATION] = /* @__PURE__ */ msToTimeSpan(durationMs);
+            }
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS$1] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+          }
+          PageView2.envelopeType = PageViewEnvelopeType;
+          PageView2.dataType = PageViewDataType;
+          return PageView2;
+        })()
+      );
+      var Trace = (
+        /** @class */
+        (function() {
+          function Trace2(logger, message, severityLevel, properties, measurements) {
+            this.aiDataContract = {
+              ver: 1,
+              message: 1,
+              severityLevel: 0,
+              properties: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            message = message || strNotSpecified;
+            _self[_DYN_MESSAGE] = /* @__PURE__ */ dataSanitizeMessage(logger, message);
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS$1] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+            if (severityLevel) {
+              _self[_DYN_SEVERITY_LEVEL] = severityLevel;
+            }
+          }
+          Trace2.envelopeType = TraceEnvelopeType;
+          Trace2.dataType = TraceDataType;
+          return Trace2;
+        })()
+      );
+      var PageViewPerformance = (
+        /** @class */
+        (function() {
+          function PageViewPerformance2(logger, name, url2, unused, properties, measurements, cs4BaseData) {
+            this.aiDataContract = {
+              ver: 1,
+              name: 0,
+              url: 0,
+              duration: 0,
+              perfTotal: 0,
+              networkConnect: 0,
+              sentRequest: 0,
+              receivedResponse: 0,
+              domProcessing: 0,
+              properties: 0,
+              measurements: 0
+            };
+            var _self = this;
+            _self.ver = 2;
+            _self.url = /* @__PURE__ */ dataSanitizeUrl(logger, url2);
+            _self[_DYN_NAME$1] = /* @__PURE__ */ dataSanitizeString(logger, name) || strNotSpecified;
+            _self[_DYN_PROPERTIES] = /* @__PURE__ */ dataSanitizeProperties(logger, properties);
+            _self[_DYN_MEASUREMENTS$1] = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements);
+            if (cs4BaseData) {
+              _self.domProcessing = cs4BaseData.domProcessing;
+              _self[_DYN_DURATION] = cs4BaseData[_DYN_DURATION];
+              _self.networkConnect = cs4BaseData.networkConnect;
+              _self.perfTotal = cs4BaseData.perfTotal;
+              _self.receivedResponse = cs4BaseData.receivedResponse;
+              _self.sentRequest = cs4BaseData.sentRequest;
+            }
+          }
+          PageViewPerformance2.envelopeType = PageViewPerformanceEnvelopeType;
+          PageViewPerformance2.dataType = PageViewPerformanceDataType;
+          return PageViewPerformance2;
+        })()
+      );
+      var SeverityLevel = /* @__PURE__ */ createEnumStyle({
+        Verbose: 0,
+        Information: 1,
+        Warning: 2,
+        Error: 3,
+        Critical: 4
+      });
+      function _aiNameFunc(baseName) {
+        var aiName = "ai." + baseName + ".";
+        return function(name) {
+          return aiName + name;
+        };
+      }
+      var _aiApplication = _aiNameFunc("application");
+      var _aiDevice = _aiNameFunc("device");
+      var _aiLocation = _aiNameFunc("location");
+      var _aiOperation = _aiNameFunc("operation");
+      var _aiSession = _aiNameFunc("session");
+      var _aiUser = _aiNameFunc("user");
+      var _aiCloud = _aiNameFunc("cloud");
+      var _aiInternal = _aiNameFunc("internal");
+      var ContextTagKeys = (
+        /** @class */
+        (function(_super) {
+          __extendsFn(ContextTagKeys2, _super);
+          function ContextTagKeys2() {
+            return _super.call(this) || this;
+          }
+          return ContextTagKeys2;
+        })(/* @__PURE__ */ createClassFromInterface({
+          applicationVersion: _aiApplication("ver"),
+          applicationBuild: _aiApplication("build"),
+          applicationTypeId: _aiApplication("typeId"),
+          applicationId: _aiApplication("applicationId"),
+          applicationLayer: _aiApplication("layer"),
+          deviceId: _aiDevice("id"),
+          deviceIp: _aiDevice("ip"),
+          deviceLanguage: _aiDevice("language"),
+          deviceLocale: _aiDevice("locale"),
+          deviceModel: _aiDevice("model"),
+          deviceFriendlyName: _aiDevice("friendlyName"),
+          deviceNetwork: _aiDevice("network"),
+          deviceNetworkName: _aiDevice("networkName"),
+          deviceOEMName: _aiDevice("oemName"),
+          deviceOS: _aiDevice("os"),
+          deviceOSVersion: _aiDevice("osVersion"),
+          deviceRoleInstance: _aiDevice("roleInstance"),
+          deviceRoleName: _aiDevice("roleName"),
+          deviceScreenResolution: _aiDevice("screenResolution"),
+          deviceType: _aiDevice("type"),
+          deviceMachineName: _aiDevice("machineName"),
+          deviceVMName: _aiDevice("vmName"),
+          deviceBrowser: _aiDevice("browser"),
+          deviceBrowserVersion: _aiDevice("browserVersion"),
+          locationIp: _aiLocation("ip"),
+          locationCountry: _aiLocation("country"),
+          locationProvince: _aiLocation("province"),
+          locationCity: _aiLocation("city"),
+          operationId: _aiOperation("id"),
+          operationName: _aiOperation("name"),
+          operationParentId: _aiOperation("parentId"),
+          operationRootId: _aiOperation("rootId"),
+          operationSyntheticSource: _aiOperation("syntheticSource"),
+          operationCorrelationVector: _aiOperation("correlationVector"),
+          sessionId: _aiSession("id"),
+          sessionIsFirst: _aiSession("isFirst"),
+          sessionIsNew: _aiSession("isNew"),
+          userAccountAcquisitionDate: _aiUser("accountAcquisitionDate"),
+          userAccountId: _aiUser("accountId"),
+          userAgent: _aiUser("userAgent"),
+          userId: _aiUser("id"),
+          userStoreRegion: _aiUser("storeRegion"),
+          userAuthUserId: _aiUser("authUserId"),
+          userAnonymousUserAcquisitionDate: _aiUser("anonUserAcquisitionDate"),
+          userAuthenticatedUserAcquisitionDate: _aiUser("authUserAcquisitionDate"),
+          cloudName: _aiCloud("name"),
+          cloudRole: _aiCloud("role"),
+          cloudRoleVer: _aiCloud("roleVer"),
+          cloudRoleInstance: _aiCloud("roleInstance"),
+          cloudEnvironment: _aiCloud("environment"),
+          cloudLocation: _aiCloud("location"),
+          cloudDeploymentUnit: _aiCloud("deploymentUnit"),
+          internalNodeName: _aiInternal("nodeName"),
+          internalSdkVersion: _aiInternal("sdkVersion"),
+          internalAgentVersion: _aiInternal("agentVersion"),
+          internalSnippet: _aiInternal("snippet"),
+          internalSdkSrc: _aiInternal("sdkSrc")
+        }))
+      );
+      var CtxTagKeys = /* @__PURE__ */ new ContextTagKeys();
+      function _disableEvents(target, evtNamespace) {
+        eventOff(target, null, null, evtNamespace);
+      }
+      function createOfflineListener(parentEvtNamespace) {
+        var _document2 = getDocument();
+        var _navigator = getNavigator();
+        var _isListening = false;
+        var listenerList = [];
+        var rState = 1;
+        if (_navigator && !/* @__PURE__ */ isNullOrUndefined(_navigator.onLine) && !_navigator.onLine) {
+          rState = 2;
+        }
+        var uState = 0;
+        var _currentState = calCurrentState();
+        var _evtNamespace = /* @__PURE__ */ mergeEvtNamespace(createUniqueNamespace("OfflineListener"), parentEvtNamespace);
+        try {
+          if (_enableEvents(getWindow())) {
+            _isListening = true;
+          }
+          if (_document2) {
+            var target = _document2.body || _document2;
+            if (target.ononline) {
+              if (_enableEvents(target)) {
+                _isListening = true;
+              }
+            }
+          }
+        } catch (e) {
+          _isListening = false;
+        }
+        function _enableEvents(target2) {
+          var enabled = false;
+          if (target2) {
+            enabled = eventOn(target2, "online", _setOnline, _evtNamespace);
+            if (enabled) {
+              eventOn(target2, "offline", _setOffline, _evtNamespace);
+            }
+          }
+          return enabled;
+        }
+        function _isOnline() {
+          return _currentState;
+        }
+        function calCurrentState() {
+          if (uState === 2 || rState === 2) {
+            return false;
+          }
+          return true;
+        }
+        function listnerNoticeCheck() {
+          var newState = calCurrentState();
+          if (_currentState !== newState) {
+            _currentState = newState;
+            arrForEach(listenerList, function(callback) {
+              var offlineState = {
+                isOnline: _currentState,
+                rState,
+                uState
+              };
+              try {
+                callback(offlineState);
+              } catch (e) {
+              }
+            });
+          }
+        }
+        function setOnlineState(newState) {
+          uState = newState;
+          listnerNoticeCheck();
+        }
+        function _setOnline() {
+          rState = 1;
+          listnerNoticeCheck();
+        }
+        function _setOffline() {
+          rState = 2;
+          listnerNoticeCheck();
+        }
+        function _unload() {
+          var win = getWindow();
+          if (win && _isListening) {
+            _disableEvents(win, _evtNamespace);
+            if (_document2) {
+              var target2 = _document2.body || _document2;
+              if (!/* @__PURE__ */ isUndefined(target2.ononline)) {
+                _disableEvents(target2, _evtNamespace);
+              }
+            }
+            _isListening = false;
+          }
+        }
+        function addListener(callback) {
+          listenerList[_DYN_PUSH$1](callback);
+          return {
+            rm: function() {
+              var index = arrIndexOf(listenerList, callback);
+              if (index > -1) {
+                return listenerList[_DYN_SPLICE](index, 1);
+              } else {
+                return;
+              }
+            }
+          };
+        }
+        return {
+          isOnline: _isOnline,
+          isListening: function() {
+            return _isListening;
+          },
+          unload: _unload,
+          addListener,
+          setOnlineState
+        };
+      }
+      var BreezeChannelIdentifier = "AppInsightsChannelPlugin";
+      var STR_DURATION = "duration";
+      function _createData(baseType, data) {
+        return {
+          baseType,
+          baseData: data,
+          aiDataContract: {
+            baseType: 1,
+            baseData: 1
+          }
+        };
+      }
+      var _DYN_TAGS = "tags";
+      var _DYN_DEVICE_TYPE = "deviceType";
+      var _DYN_DATA = "data";
+      var _DYN_NAME = "name";
+      var _DYN_TRACE_ID = "traceID";
+      var _DYN_LENGTH = "length";
+      var _DYN_STRINGIFY = "stringify";
+      var _DYN_MEASUREMENTS = "measurements";
+      var _DYN_RESPONSE_CODE = "responseCode";
+      var _DYN_TO_STRING = "toString";
+      var _DYN_ENQUEUE = "enqueue";
+      var _DYN_COUNT = "count";
+      var _DYN_PUSH = "push";
+      var _DYN_EMIT_LINE_DELIMITED_0 = "emitLineDelimitedJson";
+      var _DYN_CLEAR = "clear";
+      var _DYN_MARK_AS_SENT = "markAsSent";
+      var _DYN_CLEAR_SENT = "clearSent";
+      var _DYN_BUFFER_OVERRIDE = "bufferOverride";
+      var _DYN__BUFFER__KEY = "BUFFER_KEY";
+      var _DYN__SENT__BUFFER__KEY = "SENT_BUFFER_KEY";
+      var _DYN_CONCAT = "concat";
+      var _DYN__MAX__BUFFER__SIZE = "MAX_BUFFER_SIZE";
+      var _DYN_TRIGGER_SEND = "triggerSend";
+      var _DYN_DIAG_LOG = "diagLog";
+      var _DYN_INITIALIZE = "initialize";
+      var _DYN__SENDER = "_sender";
+      var _DYN_ENDPOINT_URL$1 = "endpointUrl";
+      var _DYN_INSTRUMENTATION_KEY$1 = "instrumentationKey";
+      var _DYN_CUSTOM_HEADERS = "customHeaders";
+      var _DYN_MAX_BATCH_SIZE_IN_BY1 = "maxBatchSizeInBytes";
+      var _DYN_ONUNLOAD_DISABLE_BEA2 = "onunloadDisableBeacon";
+      var _DYN_IS_BEACON_API_DISABL3 = "isBeaconApiDisabled";
+      var _DYN_ALWAYS_USE_XHR_OVERR4 = "alwaysUseXhrOverride";
+      var _DYN_ENABLE_SESSION_STORA5 = "enableSessionStorageBuffer";
+      var _DYN__BUFFER = "_buffer";
+      var _DYN_ONUNLOAD_DISABLE_FET6 = "onunloadDisableFetch";
+      var _DYN_DISABLE_SEND_BEACON_7 = "disableSendBeaconSplit";
+      var _DYN_GET_SENDER_INST = "getSenderInst";
+      var _DYN__ON_ERROR = "_onError";
+      var _DYN__ON_PARTIAL_SUCCESS = "_onPartialSuccess";
+      var _DYN__ON_SUCCESS = "_onSuccess";
+      var _DYN_ITEMS_RECEIVED = "itemsReceived";
+      var _DYN_ITEMS_ACCEPTED = "itemsAccepted";
+      var _DYN_BASE_TYPE = "baseType";
+      var _DYN_SAMPLE_RATE = "sampleRate";
+      var RemoteDependencyEnvelopeType = "Microsoft.ApplicationInsights.{0}.RemoteDependency";
+      function AjaxHelperParseDependencyPath(logger, absoluteUrl, method, commandName) {
+        var target, name = commandName, data = commandName;
+        if (absoluteUrl && absoluteUrl[_DYN_LENGTH] > 0) {
+          var parsedUrl = urlParseUrl(absoluteUrl);
+          target = parsedUrl.host;
+          if (!name) {
+            if (parsedUrl.pathname != null) {
+              var pathName = parsedUrl.pathname[_DYN_LENGTH] === 0 ? "/" : parsedUrl.pathname;
+              if (pathName.charAt(0) !== "/") {
+                pathName = "/" + pathName;
+              }
+              data = parsedUrl.pathname;
+              name = /* @__PURE__ */ dataSanitizeString(logger, method ? method + " " + pathName : pathName);
+            } else {
+              name = /* @__PURE__ */ dataSanitizeString(logger, absoluteUrl);
+            }
+          }
+        } else {
+          target = commandName;
+          name = commandName;
+        }
+        return {
+          target,
+          name,
+          data
+        };
+      }
+      function createRemoteDependencyData(logger, id, absoluteUrl, commandName, value, success2, resultCode, method, requestAPI, correlationContext, properties, measurements) {
+        if (requestAPI === void 0) {
+          requestAPI = "Ajax";
+        }
+        var dependencyFields = AjaxHelperParseDependencyPath(logger, absoluteUrl, method, commandName);
+        var data = {
+          ver: 2,
+          id,
+          duration: /* @__PURE__ */ msToTimeSpan(value),
+          success: success2,
+          resultCode: "" + resultCode,
+          type: /* @__PURE__ */ dataSanitizeString(logger, requestAPI),
+          data: /* @__PURE__ */ dataSanitizeUrl(logger, commandName) || dependencyFields[_DYN_DATA],
+          target: /* @__PURE__ */ dataSanitizeString(logger, dependencyFields.target),
+          name: /* @__PURE__ */ dataSanitizeString(logger, dependencyFields[_DYN_NAME]),
+          properties: /* @__PURE__ */ dataSanitizeProperties(logger, properties),
+          measurements: /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements),
+          aiDataContract: {
+            id: 1,
+            ver: 1,
+            name: 0,
+            resultCode: 0,
+            duration: 0,
+            success: 0,
+            data: 0,
+            target: 0,
+            type: 0,
+            properties: 0,
+            measurements: 0,
+            kind: 0,
+            value: 0,
+            count: 0,
+            min: 0,
+            max: 0,
+            stdDev: 0,
+            dependencyKind: 0,
+            dependencySource: 0,
+            commandName: 0,
+            dependencyTypeName: 0
+          }
+        };
+        if (correlationContext) {
+          data.target = "" + data.target + " | " + correlationContext;
+        }
+        return data;
+      }
+      function createRequestData(logger, id, name, value, success2, responseCode, source, url2, properties, measurements) {
+        var _a3;
+        return _a3 = {
+          ver: 2,
+          id,
+          name: /* @__PURE__ */ dataSanitizeString(logger, name),
+          duration: /* @__PURE__ */ msToTimeSpan(value),
+          success: success2
+        }, _a3[_DYN_RESPONSE_CODE] = asString(responseCode || "0"), _a3.source = /* @__PURE__ */ dataSanitizeString(logger, source), _a3.url = /* @__PURE__ */ dataSanitizeUrl(logger, url2), _a3.properties = /* @__PURE__ */ dataSanitizeProperties(logger, properties), _a3.measurements = /* @__PURE__ */ dataSanitizeMeasurements(logger, measurements), _a3.aiDataContract = {
+          id: 1,
+          ver: 1,
+          name: 0,
+          responseCode: 1,
+          duration: 1,
+          success: 1,
+          source: 0,
+          url: 0,
+          properties: 0,
+          measurements: 0
+        }, _a3;
+      }
+      var strBaseType = "baseType";
+      var strBaseData = "baseData";
+      var strProperties = "properties";
+      var strTrue = "true";
+      function _setValueIf(target, field, value) {
+        return setValue(target, field, value, isTruthy);
+      }
+      function _extractPartAExtensions(logger, item, env3) {
+        var envTags = env3[_DYN_TAGS] = env3[_DYN_TAGS] || {};
+        var itmExt = item.ext = item.ext || {};
+        var itmTags = item[_DYN_TAGS] = item[_DYN_TAGS] || {};
+        var extUser = itmExt.user;
+        if (extUser) {
+          _setValueIf(envTags, CtxTagKeys.userAuthUserId, extUser.authId);
+          _setValueIf(envTags, CtxTagKeys.userId, extUser.id || extUser.localId);
+        }
+        var extApp = itmExt.app;
+        if (extApp) {
+          _setValueIf(envTags, CtxTagKeys.sessionId, extApp.sesId);
+        }
+        var extDevice = itmExt.device;
+        if (extDevice) {
+          _setValueIf(envTags, CtxTagKeys.deviceId, extDevice.id || extDevice.localId);
+          _setValueIf(envTags, CtxTagKeys[_DYN_DEVICE_TYPE], extDevice.deviceClass);
+          _setValueIf(envTags, CtxTagKeys.deviceIp, extDevice.ip);
+          _setValueIf(envTags, CtxTagKeys.deviceModel, extDevice.model);
+          _setValueIf(envTags, CtxTagKeys[_DYN_DEVICE_TYPE], extDevice[_DYN_DEVICE_TYPE]);
+        }
+        var web = item.ext.web;
+        if (web) {
+          _setValueIf(envTags, CtxTagKeys.deviceLanguage, web.browserLang);
+          _setValueIf(envTags, CtxTagKeys.deviceBrowserVersion, web.browserVer);
+          _setValueIf(envTags, CtxTagKeys.deviceBrowser, web.browser);
+          var envData = env3[_DYN_DATA] = env3[_DYN_DATA] || {};
+          var envBaseData = envData[strBaseData] = envData[strBaseData] || {};
+          var envProps = envBaseData[strProperties] = envBaseData[strProperties] || {};
+          _setValueIf(envProps, "domain", web.domain);
+          _setValueIf(envProps, "isManual", web.isManual ? strTrue : null);
+          _setValueIf(envProps, "screenRes", web.screenRes);
+          _setValueIf(envProps, "userConsent", web.userConsent ? strTrue : null);
+        }
+        var extOs = itmExt.os;
+        if (extOs) {
+          _setValueIf(envTags, CtxTagKeys.deviceOS, extOs[_DYN_NAME]);
+          _setValueIf(envTags, CtxTagKeys.deviceOSVersion, extOs.osVer);
+        }
+        var extTrace = itmExt.trace;
+        if (extTrace) {
+          _setValueIf(envTags, CtxTagKeys.operationParentId, extTrace.parentID);
+          _setValueIf(envTags, CtxTagKeys.operationName, /* @__PURE__ */ dataSanitizeString(logger, extTrace[_DYN_NAME]));
+          _setValueIf(envTags, CtxTagKeys.operationId, extTrace[_DYN_TRACE_ID]);
+        }
+        var tgs = {};
+        for (var i = itmTags[_DYN_LENGTH] - 1; i >= 0; i--) {
+          var tg = itmTags[i];
+          objForEachKey(tg, function(key, value) {
+            tgs[key] = value;
+          });
+          itmTags.splice(i, 1);
+        }
+        objForEachKey(itmTags, function(tg2, value) {
+          tgs[tg2] = value;
+        });
+        var theTags = __assignFn(__assignFn({}, envTags), tgs);
+        if (!theTags[CtxTagKeys.internalSdkVersion]) {
+          theTags[CtxTagKeys.internalSdkVersion] = /* @__PURE__ */ dataSanitizeString(logger, "javascript:".concat(EnvelopeCreator.Version), 64);
+        }
+        env3[_DYN_TAGS] = /* @__PURE__ */ optimizeObject(theTags);
+      }
+      function _extractPropsAndMeasurements(data, properties, measurements) {
+        if (!/* @__PURE__ */ isNullOrUndefined(data)) {
+          objForEachKey(data, function(key, value) {
+            if (isNumber(value)) {
+              measurements[key] = value;
+            } else if (isString(value)) {
+              properties[key] = value;
+            } else if (/* @__PURE__ */ hasJSON()) {
+              properties[key] = (/* @__PURE__ */ getJSON())[_DYN_STRINGIFY](value);
+            }
+          });
+        }
+      }
+      function _convertPropsUndefinedToCustomDefinedValue(properties, customUndefinedValue) {
+        if (!/* @__PURE__ */ isNullOrUndefined(properties)) {
+          objForEachKey(properties, function(key, value) {
+            properties[key] = value || customUndefinedValue;
+          });
+        }
+      }
+      function _createEnvelope(logger, envelopeType, telemetryItem, data) {
+        var envelope = new Envelope(logger, data, envelopeType);
+        _setValueIf(envelope, "sampleRate", telemetryItem[SampleRate]);
+        var startTime = (telemetryItem[strBaseData] || {}).startTime;
+        if (isDate(startTime)) {
+          envelope.time = /* @__PURE__ */ toISOString(startTime);
+        }
+        envelope.iKey = telemetryItem.iKey;
+        var iKeyNoDashes = telemetryItem.iKey.replace(/-/g, "");
+        envelope[_DYN_NAME] = envelope[_DYN_NAME].replace("{0}", iKeyNoDashes);
+        _extractPartAExtensions(logger, telemetryItem, envelope);
+        telemetryItem[_DYN_TAGS] = telemetryItem[_DYN_TAGS] || [];
+        return /* @__PURE__ */ optimizeObject(envelope);
+      }
+      function EnvelopeCreatorInit(logger, telemetryItem) {
+        if (/* @__PURE__ */ isNullOrUndefined(telemetryItem[strBaseData])) {
+          _throwInternal(logger, 1, 46, "telemetryItem.baseData cannot be null.");
+        }
+      }
+      var EnvelopeCreator = {
+        Version: "3.4.1"
+      };
+      function DependencyEnvelopeCreator(logger, telemetryItem, customUndefinedValue) {
+        EnvelopeCreatorInit(logger, telemetryItem);
+        var customMeasurements = telemetryItem[strBaseData][_DYN_MEASUREMENTS] || {};
+        var customProperties = telemetryItem[strBaseData][strProperties] || {};
+        _extractPropsAndMeasurements(telemetryItem[_DYN_DATA], customProperties, customMeasurements);
+        if (!/* @__PURE__ */ isNullOrUndefined(customUndefinedValue)) {
+          _convertPropsUndefinedToCustomDefinedValue(customProperties, customUndefinedValue);
+        }
+        var bd = telemetryItem[strBaseData];
+        if (/* @__PURE__ */ isNullOrUndefined(bd)) {
+          _warnToConsole(logger, "Invalid input for dependency data");
+          return null;
+        }
+        var method = bd[strProperties] && bd[strProperties][HttpMethod] ? bd[strProperties][HttpMethod] : "GET";
+        var remoteDepData = createRemoteDependencyData(logger, bd.id, bd.target, bd[_DYN_NAME], bd[STR_DURATION], bd.success, bd[_DYN_RESPONSE_CODE], method, bd.type, bd.correlationContext, customProperties, customMeasurements);
+        var data = _createData(RemoteDependencyDataType, remoteDepData);
+        return _createEnvelope(logger, RemoteDependencyEnvelopeType, telemetryItem, data);
+      }
+      function RequestEnvelopeCreator(logger, telemetryItem, customUndefinedValue) {
+        EnvelopeCreatorInit(logger, telemetryItem);
+        var customMeasurements = telemetryItem[strBaseData][_DYN_MEASUREMENTS] || {};
+        var customProperties = telemetryItem[strBaseData][strProperties] || {};
+        _extractPropsAndMeasurements(telemetryItem[_DYN_DATA], customProperties, customMeasurements);
+        if (!/* @__PURE__ */ isNullOrUndefined(customUndefinedValue)) {
+          _convertPropsUndefinedToCustomDefinedValue(customProperties, customUndefinedValue);
+        }
+        var bd = telemetryItem[strBaseData];
+        var requestData = createRequestData(logger, bd.id, bd[_DYN_NAME], bd[STR_DURATION], bd.success, bd[_DYN_RESPONSE_CODE], bd.source, bd.url, customProperties, customMeasurements);
+        var data = _createData(RequestDataType, requestData);
+        return _createEnvelope(logger, RequestDataType, telemetryItem, data);
+      }
+      function EventEnvelopeCreator(logger, telemetryItem, customUndefinedValue) {
+        EnvelopeCreatorInit(logger, telemetryItem);
+        var customProperties = {};
+        var customMeasurements = {};
+        if (telemetryItem[strBaseType] !== EventDataType) {
+          customProperties["baseTypeSource"] = telemetryItem[strBaseType];
+        }
+        if (telemetryItem[strBaseType] === EventDataType) {
+          customProperties = telemetryItem[strBaseData][strProperties] || {};
+          customMeasurements = telemetryItem[strBaseData][_DYN_MEASUREMENTS] || {};
+        } else {
+          if (telemetryItem[strBaseData]) {
+            _extractPropsAndMeasurements(telemetryItem[strBaseData], customProperties, customMeasurements);
+          }
+        }
+        _extractPropsAndMeasurements(telemetryItem[_DYN_DATA], customProperties, customMeasurements);
+        if (!/* @__PURE__ */ isNullOrUndefined(customUndefinedValue)) {
+          _convertPropsUndefinedToCustomDefinedValue(customProperties, customUndefinedValue);
+        }
+        var eventName = telemetryItem[strBaseData][_DYN_NAME];
+        var eventData = new Event$1(logger, eventName, customProperties, customMeasurements);
+        var data = _createData(EventDataType, eventData);
+        return _createEnvelope(logger, EventEnvelopeType, telemetryItem, data);
+      }
+      function ExceptionEnvelopeCreator(logger, telemetryItem, customUndefinedValue) {
+        EnvelopeCreatorInit(logger, telemetryItem);
+        var customMeasurements = telemetryItem[strBaseData][_DYN_MEASUREMENTS] || {};
+        var customProperties = telemetryItem[strBaseData][strProperties] || {};
+        _extractPropsAndMeasurements(telemetryItem[_DYN_DATA], customProperties, customMeasurements);
+        if (!/* @__PURE__ */ isNullOrUndefined(customUndefinedValue)) {
+          _convertPropsUndefinedToCustomDefinedValue(customProperties, customUndefinedValue);
+        }
+        var bd = telemetryItem[strBaseData];
+        var exData = Exception.CreateFromInterface(logger, bd, customProperties, customMeasurements);
+        var data = _createData(ExceptionDataType, exData);
+        return _createEnvelope(logger, ExceptionEnvelopeType, telemetryItem, data);
+      }
+      function MetricEnvelopeCreator(logger, telemetryItem, customUndefinedValue) {
+        EnvelopeCreatorInit(logger, telemetryItem);
+        var baseData = telemetryItem[strBaseData];
+        var props = baseData[strProperties] || {};
+        var measurements = baseData[_DYN_MEASUREMENTS] || {};
+        _extractPropsAndMeasurements(telemetryItem[_DYN_DATA], props, measurements);
+        if (!/* @__PURE__ */ isNullOrUndefined(customUndefinedValue)) {
+          _convertPropsUndefinedToCustomDefinedValue(props, customUndefinedValue);
+        }
+        var baseMetricData = new Metric(logger, baseData[_DYN_NAME], baseData.average, baseData.sampleCount, baseData.min, baseData.max, baseData.stdDev, props, measurements);
+        var data = _createData(MetricDataType, baseMetricData);
+        return _createEnvelope(logger, MetricEnvelopeType, telemetryItem, data);
+      }
+      function PageViewEnvelopeCreator(logger, telemetryItem, customUndefinedValue) {
+        EnvelopeCreatorInit(logger, telemetryItem);
+        var duration3;
+        var baseData = telemetryItem[strBaseData];
+        if (!/* @__PURE__ */ isNullOrUndefined(baseData) && !/* @__PURE__ */ isNullOrUndefined(baseData[strProperties]) && !/* @__PURE__ */ isNullOrUndefined(baseData[strProperties][STR_DURATION])) {
+          duration3 = baseData[strProperties][STR_DURATION];
+          delete baseData[strProperties][STR_DURATION];
+        } else if (!/* @__PURE__ */ isNullOrUndefined(telemetryItem[_DYN_DATA]) && !/* @__PURE__ */ isNullOrUndefined(telemetryItem[_DYN_DATA][STR_DURATION])) {
+          duration3 = telemetryItem[_DYN_DATA][STR_DURATION];
+          delete telemetryItem[_DYN_DATA][STR_DURATION];
+        }
+        var bd = telemetryItem[strBaseData];
+        var currentContextId;
+        if (((telemetryItem.ext || {}).trace || {})[_DYN_TRACE_ID]) {
+          currentContextId = telemetryItem.ext.trace[_DYN_TRACE_ID];
+        }
+        var id = bd.id || currentContextId;
+        var name = bd[_DYN_NAME];
+        var url2 = bd.uri;
+        var properties = bd[strProperties] || {};
+        var measurements = bd[_DYN_MEASUREMENTS] || {};
+        if (!/* @__PURE__ */ isNullOrUndefined(bd.refUri)) {
+          properties["refUri"] = bd.refUri;
+        }
+        if (!/* @__PURE__ */ isNullOrUndefined(bd.pageType)) {
+          properties["pageType"] = bd.pageType;
+        }
+        if (!/* @__PURE__ */ isNullOrUndefined(bd.isLoggedIn)) {
+          properties["isLoggedIn"] = bd.isLoggedIn[_DYN_TO_STRING]();
+        }
+        if (!/* @__PURE__ */ isNullOrUndefined(bd[strProperties])) {
+          var pageTags = bd[strProperties];
+          objForEachKey(pageTags, function(key, value) {
+            properties[key] = value;
+          });
+        }
+        _extractPropsAndMeasurements(telemetryItem[_DYN_DATA], properties, measurements);
+        if (!/* @__PURE__ */ isNullOrUndefined(customUndefinedValue)) {
+          _convertPropsUndefinedToCustomDefinedValue(properties, customUndefinedValue);
+        }
+        var pageViewData = new PageView(logger, name, url2, duration3, properties, measurements, id);
+        var data = _createData(PageViewDataType, pageViewData);
+        return _createEnvelope(logger, PageViewEnvelopeType, telemetryItem, data);
+      }
+      function PageViewPerformanceEnvelopeCreator(logger, telemetryItem, customUndefinedValue) {
+        EnvelopeCreatorInit(logger, telemetryItem);
+        var bd = telemetryItem[strBaseData];
+        var name = bd[_DYN_NAME];
+        var url2 = bd.uri || bd.url;
+        var properties = bd[strProperties] || {};
+        var measurements = bd[_DYN_MEASUREMENTS] || {};
+        _extractPropsAndMeasurements(telemetryItem[_DYN_DATA], properties, measurements);
+        if (!/* @__PURE__ */ isNullOrUndefined(customUndefinedValue)) {
+          _convertPropsUndefinedToCustomDefinedValue(properties, customUndefinedValue);
+        }
+        var baseData = new PageViewPerformance(logger, name, url2, void 0, properties, measurements, bd);
+        var data = _createData(PageViewPerformanceDataType, baseData);
+        return _createEnvelope(logger, PageViewPerformanceEnvelopeType, telemetryItem, data);
+      }
+      function TraceEnvelopeCreator(logger, telemetryItem, customUndefinedValue) {
+        EnvelopeCreatorInit(logger, telemetryItem);
+        var message = telemetryItem[strBaseData].message;
+        var severityLevel = telemetryItem[strBaseData].severityLevel;
+        var props = telemetryItem[strBaseData][strProperties] || {};
+        var measurements = telemetryItem[strBaseData][_DYN_MEASUREMENTS] || {};
+        _extractPropsAndMeasurements(telemetryItem[_DYN_DATA], props, measurements);
+        if (!/* @__PURE__ */ isNullOrUndefined(customUndefinedValue)) {
+          _convertPropsUndefinedToCustomDefinedValue(props, customUndefinedValue);
+        }
+        var baseData = new Trace(logger, message, severityLevel, props, measurements);
+        var data = _createData(TraceDataType, baseData);
+        return _createEnvelope(logger, TraceEnvelopeType, telemetryItem, data);
+      }
+      var BaseSendBuffer = (
+        /** @class */
+        (function() {
+          function BaseSendBuffer2(logger, config2) {
+            var _buffer = [];
+            var _bufferFullMessageSent = false;
+            var _maxRetryCnt = config2.maxRetryCnt;
+            this._get = function() {
+              return _buffer;
+            };
+            this._set = function(buffer) {
+              _buffer = buffer;
+              return _buffer;
+            };
+            dynamicProto(BaseSendBuffer2, this, function(_self) {
+              _self[_DYN_ENQUEUE] = function(payload) {
+                if (_self[_DYN_COUNT]() >= config2.eventsLimitInMem) {
+                  if (!_bufferFullMessageSent) {
+                    _throwInternal(logger, 2, 105, "Maximum in-memory buffer size reached: " + _self[_DYN_COUNT](), true);
+                    _bufferFullMessageSent = true;
+                  }
+                  return;
+                }
+                payload.cnt = payload.cnt || 0;
+                if (!/* @__PURE__ */ isNullOrUndefined(_maxRetryCnt)) {
+                  if (payload.cnt > _maxRetryCnt) {
+                    return;
+                  }
+                }
+                _buffer[_DYN_PUSH](payload);
+                return;
+              };
+              _self[_DYN_COUNT] = function() {
+                return _buffer[_DYN_LENGTH];
+              };
+              _self.size = function() {
+                var size = _buffer[_DYN_LENGTH];
+                for (var lp = 0; lp < _buffer[_DYN_LENGTH]; lp++) {
+                  size += _buffer[lp].item[_DYN_LENGTH];
+                }
+                if (!config2[_DYN_EMIT_LINE_DELIMITED_0]) {
+                  size += 2;
+                }
+                return size;
+              };
+              _self[_DYN_CLEAR] = function() {
+                _buffer = [];
+                _bufferFullMessageSent = false;
+              };
+              _self.getItems = function() {
+                return _buffer.slice(0);
+              };
+              _self.batchPayloads = function(payloads) {
+                if (payloads && payloads[_DYN_LENGTH] > 0) {
+                  var payloadStr_1 = [];
+                  arrForEach(payloads, function(payload) {
+                    payloadStr_1[_DYN_PUSH](payload.item);
+                  });
+                  var batch = config2[_DYN_EMIT_LINE_DELIMITED_0] ? payloadStr_1.join("\n") : "[" + payloadStr_1.join(",") + "]";
+                  return batch;
+                }
+                return null;
+              };
+              _self.createNew = function(newLogger, newConfig, canUseSessionStorage) {
+                var items = _buffer.slice(0);
+                newLogger = newLogger || logger;
+                newConfig = newConfig || {};
+                var newBuffer = !!canUseSessionStorage ? new SessionStorageSendBuffer(newLogger, newConfig) : new ArraySendBuffer(newLogger, newConfig);
+                arrForEach(items, function(payload) {
+                  newBuffer[_DYN_ENQUEUE](payload);
+                });
+                return newBuffer;
+              };
+            });
+          }
+          BaseSendBuffer2.__ieDyn = 1;
+          return BaseSendBuffer2;
+        })()
+      );
+      var ArraySendBuffer = (
+        /** @class */
+        (function(_super) {
+          __extendsFn(ArraySendBuffer2, _super);
+          function ArraySendBuffer2(logger, config2) {
+            var _this = _super.call(this, logger, config2) || this;
+            dynamicProto(ArraySendBuffer2, _this, function(_self, _base) {
+              _self[_DYN_MARK_AS_SENT] = function(payload) {
+                _base[_DYN_CLEAR]();
+              };
+              _self[_DYN_CLEAR_SENT] = function(payload) {
+              };
+            });
+            return _this;
+          }
+          ArraySendBuffer2.__ieDyn = 1;
+          return ArraySendBuffer2;
+        })(BaseSendBuffer)
+      );
+      var PREVIOUS_KEYS = ["AI_buffer", "AI_sentBuffer"];
+      var SessionStorageSendBuffer = (
+        /** @class */
+        (function(_super) {
+          __extendsFn(SessionStorageSendBuffer2, _super);
+          function SessionStorageSendBuffer2(logger, config2) {
+            var _this = _super.call(this, logger, config2) || this;
+            var _bufferFullMessageSent = false;
+            var _namePrefix = config2 === null || config2 === void 0 ? void 0 : config2.namePrefix;
+            var _b2 = config2[_DYN_BUFFER_OVERRIDE] || { getItem: utlGetSessionStorage, setItem: utlSetSessionStorage }, getItem = _b2.getItem, setItem = _b2.setItem;
+            var _maxRetryCnt = config2.maxRetryCnt;
+            dynamicProto(SessionStorageSendBuffer2, _this, function(_self, _base) {
+              var bufferItems = _getBuffer(SessionStorageSendBuffer2[_DYN__BUFFER__KEY]);
+              var itemsInSentBuffer = _getBuffer(SessionStorageSendBuffer2[_DYN__SENT__BUFFER__KEY]);
+              var previousItems = _getPreviousEvents();
+              var notDeliveredItems = itemsInSentBuffer[_DYN_CONCAT](previousItems);
+              var buffer = _self._set(bufferItems[_DYN_CONCAT](notDeliveredItems));
+              if (buffer[_DYN_LENGTH] > SessionStorageSendBuffer2[_DYN__MAX__BUFFER__SIZE]) {
+                buffer[_DYN_LENGTH] = SessionStorageSendBuffer2[_DYN__MAX__BUFFER__SIZE];
+              }
+              _setBuffer(SessionStorageSendBuffer2[_DYN__SENT__BUFFER__KEY], []);
+              _setBuffer(SessionStorageSendBuffer2[_DYN__BUFFER__KEY], buffer);
+              _self[_DYN_ENQUEUE] = function(payload) {
+                if (_self[_DYN_COUNT]() >= SessionStorageSendBuffer2[_DYN__MAX__BUFFER__SIZE]) {
+                  if (!_bufferFullMessageSent) {
+                    _throwInternal(logger, 2, 67, "Maximum buffer size reached: " + _self[_DYN_COUNT](), true);
+                    _bufferFullMessageSent = true;
+                  }
+                  return;
+                }
+                payload.cnt = payload.cnt || 0;
+                if (!/* @__PURE__ */ isNullOrUndefined(_maxRetryCnt)) {
+                  if (payload.cnt > _maxRetryCnt) {
+                    return;
+                  }
+                }
+                _base[_DYN_ENQUEUE](payload);
+                _setBuffer(SessionStorageSendBuffer2[_DYN__BUFFER__KEY], _self._get());
+              };
+              _self[_DYN_CLEAR] = function() {
+                _base[_DYN_CLEAR]();
+                _setBuffer(SessionStorageSendBuffer2[_DYN__BUFFER__KEY], _self._get());
+                _setBuffer(SessionStorageSendBuffer2[_DYN__SENT__BUFFER__KEY], []);
+                _bufferFullMessageSent = false;
+              };
+              _self[_DYN_MARK_AS_SENT] = function(payload) {
+                _setBuffer(SessionStorageSendBuffer2[_DYN__BUFFER__KEY], _self._set(_removePayloadsFromBuffer(payload, _self._get())));
+                var sentElements = _getBuffer(SessionStorageSendBuffer2[_DYN__SENT__BUFFER__KEY]);
+                if (sentElements instanceof Array && payload instanceof Array) {
+                  sentElements = sentElements[_DYN_CONCAT](payload);
+                  if (sentElements[_DYN_LENGTH] > SessionStorageSendBuffer2[_DYN__MAX__BUFFER__SIZE]) {
+                    _throwInternal(logger, 1, 67, "Sent buffer reached its maximum size: " + sentElements[_DYN_LENGTH], true);
+                    sentElements[_DYN_LENGTH] = SessionStorageSendBuffer2[_DYN__MAX__BUFFER__SIZE];
+                  }
+                  _setBuffer(SessionStorageSendBuffer2[_DYN__SENT__BUFFER__KEY], sentElements);
+                }
+              };
+              _self[_DYN_CLEAR_SENT] = function(payload) {
+                var sentElements = _getBuffer(SessionStorageSendBuffer2[_DYN__SENT__BUFFER__KEY]);
+                sentElements = _removePayloadsFromBuffer(payload, sentElements);
+                _setBuffer(SessionStorageSendBuffer2[_DYN__SENT__BUFFER__KEY], sentElements);
+              };
+              _self.createNew = function(newLogger, newConfig, canUseSessionStorage) {
+                canUseSessionStorage = !!canUseSessionStorage;
+                var unsentItems = _self._get().slice(0);
+                var sentItems = _getBuffer(SessionStorageSendBuffer2[_DYN__SENT__BUFFER__KEY]).slice(0);
+                newLogger = newLogger || logger;
+                newConfig = newConfig || {};
+                _self[_DYN_CLEAR]();
+                var newBuffer = canUseSessionStorage ? new SessionStorageSendBuffer2(newLogger, newConfig) : new ArraySendBuffer(newLogger, newConfig);
+                arrForEach(unsentItems, function(payload) {
+                  newBuffer[_DYN_ENQUEUE](payload);
+                });
+                if (canUseSessionStorage) {
+                  newBuffer[_DYN_MARK_AS_SENT](sentItems);
+                }
+                return newBuffer;
+              };
+              function _removePayloadsFromBuffer(payloads, buffer2) {
+                var remaining = [];
+                var payloadStr = [];
+                arrForEach(payloads, function(payload) {
+                  payloadStr[_DYN_PUSH](payload.item);
+                });
+                arrForEach(buffer2, function(value) {
+                  if (!isFunction(value) && arrIndexOf(payloadStr, value.item) === -1) {
+                    remaining[_DYN_PUSH](value);
+                  }
+                });
+                return remaining;
+              }
+              function _getBuffer(key) {
+                var prefixedKey = key;
+                prefixedKey = _namePrefix ? _namePrefix + "_" + prefixedKey : prefixedKey;
+                return _getBufferBase(prefixedKey);
+              }
+              function _getBufferBase(key) {
+                try {
+                  var bufferJson = getItem(logger, key);
+                  if (bufferJson) {
+                    var buffer_1 = (/* @__PURE__ */ getJSON()).parse(bufferJson);
+                    if (isString(buffer_1)) {
+                      buffer_1 = (/* @__PURE__ */ getJSON()).parse(buffer_1);
+                    }
+                    if (buffer_1 && isArray(buffer_1)) {
+                      return buffer_1;
+                    }
+                  }
+                } catch (e) {
+                  _throwInternal(logger, 1, 42, " storage key: " + key + ", " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+                }
+                return [];
+              }
+              function _setBuffer(key, buffer2) {
+                var prefixedKey = key;
+                try {
+                  prefixedKey = _namePrefix ? _namePrefix + "_" + prefixedKey : prefixedKey;
+                  var bufferJson = JSON[_DYN_STRINGIFY](buffer2);
+                  setItem(logger, prefixedKey, bufferJson);
+                } catch (e) {
+                  setItem(logger, prefixedKey, JSON[_DYN_STRINGIFY]([]));
+                  _throwInternal(logger, 2, 41, " storage key: " + prefixedKey + ", " + /* @__PURE__ */ getExceptionName(e) + ". Buffer cleared", { exception: /* @__PURE__ */ dumpObj(e) });
+                }
+              }
+              function _getPreviousEvents() {
+                var items = [];
+                try {
+                  arrForEach(PREVIOUS_KEYS, function(key) {
+                    var events = _getItemsFromPreviousKey(key);
+                    items = items[_DYN_CONCAT](events);
+                    if (_namePrefix) {
+                      var prefixedKey = _namePrefix + "_" + key;
+                      var prefixEvents = _getItemsFromPreviousKey(prefixedKey);
+                      items = items[_DYN_CONCAT](prefixEvents);
+                    }
+                  });
+                  return items;
+                } catch (e) {
+                  _throwInternal(logger, 2, 41, "Transfer events from previous buffers: " + /* @__PURE__ */ getExceptionName(e) + ". previous Buffer items can not be removed", { exception: /* @__PURE__ */ dumpObj(e) });
+                }
+                return [];
+              }
+              function _getItemsFromPreviousKey(key) {
+                try {
+                  var items = _getBufferBase(key);
+                  var transFormedItems_1 = [];
+                  arrForEach(items, function(item) {
+                    var internalItem = {
+                      item,
+                      cnt: 0
+                    };
+                    transFormedItems_1[_DYN_PUSH](internalItem);
+                  });
+                  utlRemoveSessionStorage(logger, key);
+                  return transFormedItems_1;
+                } catch (e) {
+                }
+                return [];
+              }
+            });
+            return _this;
+          }
+          var _a3;
+          _a3 = SessionStorageSendBuffer2;
+          SessionStorageSendBuffer2.VERSION = "_1";
+          SessionStorageSendBuffer2.BUFFER_KEY = "AI_buffer" + _a3.VERSION;
+          SessionStorageSendBuffer2.SENT_BUFFER_KEY = "AI_sentBuffer" + _a3.VERSION;
+          SessionStorageSendBuffer2.MAX_BUFFER_SIZE = 2e3;
+          return SessionStorageSendBuffer2;
+        })(BaseSendBuffer)
+      );
+      var circularReferenceCheck = "__aiCircularRefCheck";
+      function _serializeObject(logger, source, name) {
+        var output = {};
+        if (!source) {
+          _throwInternal(logger, 1, 48, "cannot serialize object because it is null or undefined", { name }, true);
+          return output;
+        }
+        if (source[circularReferenceCheck]) {
+          _throwInternal(logger, 2, 50, "Circular reference detected while serializing object", { name }, true);
+          return output;
+        }
+        if (!source.aiDataContract) {
+          if (name === "measurements") {
+            output = _serializeStringMap(logger, source, 2);
+          } else if (name === "properties") {
+            output = _serializeStringMap(logger, source, 1);
+          } else if (name === "tags") {
+            output = _serializeStringMap(logger, source, 1);
+          } else if (isArray(source)) {
+            output = _serializeArray(logger, source, name);
+          } else {
+            _throwInternal(logger, 2, 49, "Attempting to serialize an object which does not implement ISerializable", { name }, true);
+            try {
+              (/* @__PURE__ */ getJSON())[_DYN_STRINGIFY](source);
+              output = source;
+            } catch (e) {
+              _throwInternal(logger, 1, 48, e && isFunction(e[_DYN_TO_STRING]) ? e[_DYN_TO_STRING]() : "Error serializing object", null, true);
+            }
+          }
+          return output;
+        }
+        source[circularReferenceCheck] = true;
+        objForEachKey(source.aiDataContract, function(field, contract) {
+          var fieldType = isFunction(contract) ? contract() : contract;
+          var isRequired = fieldType & 1;
+          var isHidden = fieldType & 4;
+          var isArray2 = fieldType & 2;
+          var isPresent = source[field] !== void 0;
+          var isObj = /* @__PURE__ */ isObject2(source[field]) && source[field] !== null;
+          if (isRequired && !isPresent && !isArray2) {
+            _throwInternal(logger, 1, 24, "Missing required field specification. The field is required but not present on source", { field, name });
+          } else if (!isHidden) {
+            var value = void 0;
+            if (isObj) {
+              if (isArray2) {
+                value = _serializeArray(logger, source[field], field);
+              } else {
+                value = _serializeObject(logger, source[field], field);
+              }
+            } else {
+              value = source[field];
+            }
+            if (value !== void 0) {
+              output[field] = value;
+            }
+          }
+        });
+        delete source[circularReferenceCheck];
+        return output;
+      }
+      function _serializeArray(logger, sources, name) {
+        var output;
+        if (!!sources) {
+          if (!isArray(sources)) {
+            _throwInternal(logger, 1, 54, "This field was specified as an array in the contract but the item is not an array.\r\n", { name }, true);
+          } else {
+            output = [];
+            for (var i = 0; i < sources[_DYN_LENGTH]; i++) {
+              var source = sources[i];
+              var item = _serializeObject(logger, source, name + "[" + i + "]");
+              output[_DYN_PUSH](item);
+            }
+          }
+        }
+        return output;
+      }
+      function _serializeStringMap(logger, map2, expectedType, name) {
+        var output;
+        if (map2) {
+          output = {};
+          objForEachKey(map2, function(field, value) {
+            var serializedValue;
+            if (value === void 0) {
+              serializedValue = "undefined";
+            } else if (value === null) {
+              serializedValue = "null";
+            }
+            if (expectedType === 1 && !serializedValue) {
+              if (!value[_DYN_TO_STRING]) {
+                serializedValue = "invalid field: toString() is not defined.";
+              } else {
+                serializedValue = value[_DYN_TO_STRING]();
+              }
+            } else if (expectedType === 2 && !serializedValue) {
+              serializedValue = parseFloat(value);
+            }
+            if (serializedValue || !/* @__PURE__ */ isNullOrUndefined(value)) {
+              output[field] = serializedValue;
+            }
+          });
+        }
+        return output;
+      }
+      var Serializer = (
+        /** @class */
+        (function() {
+          function Serializer2(logger) {
+            dynamicProto(Serializer2, this, function(_self) {
+              _self.serialize = function(input) {
+                var output = _serializeObject(logger, input, "root");
+                try {
+                  return (/* @__PURE__ */ getJSON())[_DYN_STRINGIFY](output);
+                } catch (e) {
+                  _throwInternal(logger, 1, 48, e && isFunction(e[_DYN_TO_STRING]) ? e[_DYN_TO_STRING]() : "Error serializing object", null, true);
+                }
+              };
+            });
+          }
+          Serializer2.__ieDyn = 1;
+          return Serializer2;
+        })()
+      );
+      var MIN_INPUT_LENGTH = 8;
+      var INT_MAX_VALUE = 2147483647;
+      function getHashCodeScore(key) {
+        var score = 0;
+        var input = key;
+        if (input) {
+          while (input[_DYN_LENGTH] < MIN_INPUT_LENGTH) {
+            input = input[_DYN_CONCAT](input);
+          }
+          var hash2 = 5381;
+          for (var i = 0; i < input[_DYN_LENGTH]; ++i) {
+            hash2 = (hash2 << 5) + hash2 + input.charCodeAt(i);
+            hash2 = hash2 & hash2;
+          }
+          score = mathAbs(hash2) / INT_MAX_VALUE;
+        }
+        return score * 100;
+      }
+      function createSamplingScoreGenerator() {
+        var keys = new ContextTagKeys();
+        return {
+          getScore: function(item) {
+            var score = 0;
+            if (item[_DYN_TAGS] && item[_DYN_TAGS][keys.userId]) {
+              score = getHashCodeScore(item[_DYN_TAGS][keys.userId]);
+            } else if (item.ext && item.ext.user && item.ext.user.id) {
+              score = getHashCodeScore(item.ext.user.id);
+            } else if (item[_DYN_TAGS] && item[_DYN_TAGS][keys.operationId]) {
+              score = getHashCodeScore(item[_DYN_TAGS][keys.operationId]);
+            } else if (item.ext && item.ext.telemetryTrace && item.ext.telemetryTrace[_DYN_TRACE_ID]) {
+              score = getHashCodeScore(item.ext.telemetryTrace[_DYN_TRACE_ID]);
+            } else {
+              score = Math.random() * 100;
+            }
+            return score;
+          }
+        };
+      }
+      function _isSampledIn(envelope, samplingPercentage, scoreGenerator) {
+        var isSampledIn = false;
+        if (samplingPercentage === null || samplingPercentage === void 0 || samplingPercentage >= 100) {
+          isSampledIn = true;
+        } else if (envelope[_DYN_BASE_TYPE] === MetricDataType) {
+          isSampledIn = true;
+        }
+        if (!isSampledIn) {
+          isSampledIn = scoreGenerator.getScore(envelope) < samplingPercentage;
+        }
+        return isSampledIn;
+      }
+      function createSampler(sampleRate, logger) {
+        var _samplingScoreGenerator = createSamplingScoreGenerator();
+        if (sampleRate > 100 || sampleRate < 0) {
+          _throwInternal(logger, 2, 58, "Sampling rate is out of range (0..100). Sampling will be disabled, you may be sending too much data which may affect your AI service level.", { samplingRate: sampleRate }, true);
+          sampleRate = 100;
+        }
+        var sampler = {
+          sampleRate,
+          generator: _samplingScoreGenerator,
+          isSampledIn: function(envelope) {
+            return _isSampledIn(envelope, sampler[_DYN_SAMPLE_RATE], sampler.generator);
+          }
+        };
+        return sampler;
+      }
+      var _a$1, _b$1;
+      var UNDEFINED_VALUE$1 = void 0;
+      var EMPTY_STR = "";
+      var FetchSyncRequestSizeLimitBytes = 65e3;
+      function _getResponseText(xhr) {
+        try {
+          return xhr.responseText;
+        } catch (e) {
+        }
+        return null;
+      }
+      function isOverrideFn(httpXHROverride) {
+        return httpXHROverride && httpXHROverride.sendPOST;
+      }
+      var defaultAppInsightsChannelConfig = objDeepFreeze((_a$1 = {
+        endpointUrl: cfgDfValidate(isTruthy, DEFAULT_BREEZE_ENDPOINT + DEFAULT_BREEZE_PATH)
+      }, _a$1[_DYN_EMIT_LINE_DELIMITED_0] = cfgDfBoolean(), _a$1.maxBatchInterval = 15e3, _a$1[_DYN_MAX_BATCH_SIZE_IN_BY1] = 102400, _a$1.disableTelemetry = cfgDfBoolean(), _a$1[_DYN_ENABLE_SESSION_STORA5] = cfgDfBoolean(true), _a$1.isRetryDisabled = cfgDfBoolean(), _a$1[_DYN_IS_BEACON_API_DISABL3] = cfgDfBoolean(true), _a$1[_DYN_DISABLE_SEND_BEACON_7] = cfgDfBoolean(true), _a$1.disableXhr = cfgDfBoolean(), _a$1[_DYN_ONUNLOAD_DISABLE_FET6] = cfgDfBoolean(), _a$1[_DYN_ONUNLOAD_DISABLE_BEA2] = cfgDfBoolean(), _a$1[_DYN_INSTRUMENTATION_KEY$1] = UNDEFINED_VALUE$1, _a$1.namePrefix = UNDEFINED_VALUE$1, _a$1.samplingPercentage = cfgDfValidate(_chkSampling, 100), _a$1[_DYN_CUSTOM_HEADERS] = UNDEFINED_VALUE$1, _a$1.convertUndefined = UNDEFINED_VALUE$1, _a$1.eventsLimitInMem = 1e4, _a$1[_DYN_BUFFER_OVERRIDE] = false, _a$1.httpXHROverride = { isVal: isOverrideFn, v: UNDEFINED_VALUE$1 }, _a$1[_DYN_ALWAYS_USE_XHR_OVERR4] = cfgDfBoolean(), _a$1.transports = UNDEFINED_VALUE$1, _a$1.retryCodes = UNDEFINED_VALUE$1, _a$1.corsPolicy = UNDEFINED_VALUE$1, _a$1.maxRetryCnt = { isVal: isNumber, v: 10 }, _a$1));
+      var CrossOriginResourcePolicyHeader = "X-Set-Cross-Origin-Resource-Policy";
+      function _chkSampling(value) {
+        return !isNaN(value) && value > 0 && value <= 100;
+      }
+      var EnvelopeTypeCreator = (_b$1 = {}, _b$1[EventDataType] = EventEnvelopeCreator, _b$1[TraceDataType] = TraceEnvelopeCreator, _b$1[PageViewDataType] = PageViewEnvelopeCreator, _b$1[PageViewPerformanceDataType] = PageViewPerformanceEnvelopeCreator, _b$1[ExceptionDataType] = ExceptionEnvelopeCreator, _b$1[MetricDataType] = MetricEnvelopeCreator, _b$1[RemoteDependencyDataType] = DependencyEnvelopeCreator, _b$1[RequestDataType] = RequestEnvelopeCreator, _b$1);
+      var Sender2 = (
+        /** @class */
+        (function(_super) {
+          __extendsFn(Sender3, _super);
+          function Sender3() {
+            var _this = _super.call(this) || this;
+            _this.priority = 1001;
+            _this.identifier = BreezeChannelIdentifier;
+            var _consecutiveErrors;
+            var _retryAt;
+            var _paused;
+            var _timeoutHandle;
+            var _serializer;
+            var _stamp_specific_redirects;
+            var _headers;
+            var _syncFetchPayload = 0;
+            var _syncUnloadSender;
+            var _offlineListener;
+            var _evtNamespace;
+            var _endpointUrl;
+            var _orgEndpointUrl;
+            var _maxBatchSizeInBytes;
+            var _beaconSupported;
+            var _beaconOnUnloadSupported;
+            var _beaconNormalSupported;
+            var _customHeaders;
+            var _disableTelemetry;
+            var _instrumentationKey;
+            var _convertUndefined;
+            var _isRetryDisabled;
+            var _maxBatchInterval;
+            var _sessionStorageUsed;
+            var _bufferOverrideUsed;
+            var _namePrefix;
+            var _enableSendPromise;
+            var _alwaysUseCustomSend;
+            var _disableXhr;
+            var _fetchKeepAlive;
+            var _xhrSend;
+            var _fallbackSend;
+            var _disableBeaconSplit;
+            var _sendPostMgr;
+            var _retryCodes;
+            var _zipPayload;
+            dynamicProto(Sender3, _this, function(_self, _base) {
+              _initDefaults();
+              _self.pause = function() {
+                _clearScheduledTimer();
+                _paused = true;
+              };
+              _self.resume = function() {
+                if (_paused) {
+                  _paused = false;
+                  _retryAt = null;
+                  _checkMaxSize();
+                  _setupTimer();
+                }
+              };
+              _self.flush = function(isAsync2, callBack, sendReason) {
+                if (isAsync2 === void 0) {
+                  isAsync2 = true;
+                }
+                if (!_paused) {
+                  _clearScheduledTimer();
+                  try {
+                    var result_1 = _self[_DYN_TRIGGER_SEND](isAsync2, null, sendReason || 1);
+                    return doAwaitResponse(result_1, function(rsp) {
+                      if (callBack) {
+                        callBack(!rsp.rejected);
+                        return true;
+                      }
+                      if (isAsync2) {
+                        return createPromise(function(resolve) {
+                          resolve(!rsp.rejected);
+                        });
+                      }
+                      return result_1;
+                    });
+                  } catch (e) {
+                    _throwInternal(_self[_DYN_DIAG_LOG](), 1, 22, "flush failed, telemetry will not be collected: " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+                  }
+                }
+              };
+              _self.onunloadFlush = function() {
+                if (!_paused) {
+                  if (_beaconSupported || _alwaysUseCustomSend) {
+                    try {
+                      return _self[_DYN_TRIGGER_SEND](true, _doUnloadSend, 2);
+                    } catch (e) {
+                      _throwInternal(_self[_DYN_DIAG_LOG](), 1, 20, "failed to flush with beacon sender on page unload, telemetry will not be collected: " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+                    }
+                  } else {
+                    _self.flush(false);
+                  }
+                }
+              };
+              _self.addHeader = function(name, value) {
+                _headers[name] = value;
+              };
+              _self[_DYN_INITIALIZE] = function(config2, core, extensions2, pluginChain) {
+                if (_self.isInitialized()) {
+                  _throwInternal(_self[_DYN_DIAG_LOG](), 1, 28, "Sender is already initialized");
+                }
+                _base[_DYN_INITIALIZE](config2, core, extensions2, pluginChain);
+                var identifier2 = _self.identifier;
+                _serializer = new Serializer(core.logger);
+                _consecutiveErrors = 0;
+                _retryAt = null;
+                _self[_DYN__SENDER] = null;
+                _stamp_specific_redirects = 0;
+                var diagLog = _self[_DYN_DIAG_LOG]();
+                _evtNamespace = /* @__PURE__ */ mergeEvtNamespace(createUniqueNamespace("Sender"), core.evtNamespace && core.evtNamespace());
+                _offlineListener = createOfflineListener(_evtNamespace);
+                _self._addHook(onConfigChange(config2, function(details) {
+                  var config3 = details.cfg;
+                  if (config3.storagePrefix) {
+                    utlSetStoragePrefix(config3.storagePrefix);
+                  }
+                  var ctx = createProcessTelemetryContext(null, config3, core);
+                  var senderConfig = ctx.getExtCfg(identifier2, defaultAppInsightsChannelConfig);
+                  var curExtUrl = senderConfig[_DYN_ENDPOINT_URL$1];
+                  if (_endpointUrl && curExtUrl === _endpointUrl) {
+                    var coreUrl = config3[_DYN_ENDPOINT_URL$1];
+                    if (coreUrl && coreUrl !== curExtUrl) {
+                      senderConfig[_DYN_ENDPOINT_URL$1] = coreUrl;
+                    }
+                  }
+                  var csStream = /* @__PURE__ */ getInst("CompressionStream");
+                  _zipPayload = /* @__PURE__ */ isFeatureEnabled("zipPayload", config3, false);
+                  if (!isFunction(csStream)) {
+                    _zipPayload = false;
+                  }
+                  var corsPolicy = senderConfig.corsPolicy;
+                  if (corsPolicy) {
+                    if (corsPolicy === "same-origin" || corsPolicy === "same-site" || corsPolicy === "cross-origin") {
+                      _this.addHeader(CrossOriginResourcePolicyHeader, corsPolicy);
+                    }
+                  } else {
+                    delete _headers[CrossOriginResourcePolicyHeader];
+                  }
+                  if (/* @__PURE__ */ isPromiseLike(senderConfig[_DYN_INSTRUMENTATION_KEY$1])) {
+                    senderConfig[_DYN_INSTRUMENTATION_KEY$1] = config3[_DYN_INSTRUMENTATION_KEY$1];
+                  }
+                  objDefine(_self, "_senderConfig", {
+                    g: function() {
+                      return senderConfig;
+                    }
+                  });
+                  if (_orgEndpointUrl !== senderConfig[_DYN_ENDPOINT_URL$1]) {
+                    _endpointUrl = _orgEndpointUrl = senderConfig[_DYN_ENDPOINT_URL$1];
+                  }
+                  if (core.activeStatus() === ActiveStatus.PENDING) {
+                    _self.pause();
+                  } else if (core.activeStatus() === ActiveStatus.ACTIVE) {
+                    _self.resume();
+                  }
+                  if (_customHeaders && _customHeaders !== senderConfig[_DYN_CUSTOM_HEADERS]) {
+                    arrForEach(_customHeaders, function(customHeader) {
+                      delete _headers[customHeader.header];
+                    });
+                  }
+                  _maxBatchSizeInBytes = senderConfig[_DYN_MAX_BATCH_SIZE_IN_BY1];
+                  _beaconSupported = (senderConfig[_DYN_ONUNLOAD_DISABLE_BEA2] === false || senderConfig[_DYN_IS_BEACON_API_DISABL3] === false) && isBeaconsSupported();
+                  _beaconOnUnloadSupported = senderConfig[_DYN_ONUNLOAD_DISABLE_BEA2] === false && isBeaconsSupported();
+                  _beaconNormalSupported = senderConfig[_DYN_IS_BEACON_API_DISABL3] === false && isBeaconsSupported();
+                  _alwaysUseCustomSend = senderConfig[_DYN_ALWAYS_USE_XHR_OVERR4];
+                  _disableXhr = !!senderConfig.disableXhr;
+                  _retryCodes = senderConfig.retryCodes;
+                  var bufferOverride = senderConfig[_DYN_BUFFER_OVERRIDE];
+                  var canUseSessionStorage = !!senderConfig[_DYN_ENABLE_SESSION_STORA5] && (!!bufferOverride || utlCanUseSessionStorage());
+                  var namePrefix = senderConfig.namePrefix;
+                  var shouldUpdate = canUseSessionStorage !== _sessionStorageUsed || canUseSessionStorage && _namePrefix !== namePrefix || canUseSessionStorage && _bufferOverrideUsed !== bufferOverride;
+                  if (_self[_DYN__BUFFER]) {
+                    if (shouldUpdate) {
+                      try {
+                        _self[_DYN__BUFFER] = _self[_DYN__BUFFER].createNew(diagLog, senderConfig, canUseSessionStorage);
+                      } catch (e) {
+                        _throwInternal(_self[_DYN_DIAG_LOG](), 1, 12, "failed to transfer telemetry to different buffer storage, telemetry will be lost: " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+                      }
+                    }
+                    _checkMaxSize();
+                  } else {
+                    _self[_DYN__BUFFER] = canUseSessionStorage ? new SessionStorageSendBuffer(diagLog, senderConfig) : new ArraySendBuffer(diagLog, senderConfig);
+                  }
+                  _namePrefix = namePrefix;
+                  _sessionStorageUsed = canUseSessionStorage;
+                  _bufferOverrideUsed = bufferOverride;
+                  _fetchKeepAlive = !senderConfig[_DYN_ONUNLOAD_DISABLE_FET6] && /* @__PURE__ */ isFetchSupported(true);
+                  _disableBeaconSplit = !!senderConfig[_DYN_DISABLE_SEND_BEACON_7];
+                  _self._sample = createSampler(senderConfig.samplingPercentage, diagLog);
+                  _instrumentationKey = senderConfig[_DYN_INSTRUMENTATION_KEY$1];
+                  if (!/* @__PURE__ */ isPromiseLike(_instrumentationKey) && !_validateInstrumentationKey(_instrumentationKey, config3)) {
+                    _throwInternal(diagLog, 1, 100, "Invalid Instrumentation key " + _instrumentationKey);
+                  }
+                  _customHeaders = senderConfig[_DYN_CUSTOM_HEADERS];
+                  if (isString(_endpointUrl) && !isInternalApplicationInsightsEndpoint(_endpointUrl) && _customHeaders && _customHeaders[_DYN_LENGTH] > 0) {
+                    arrForEach(_customHeaders, function(customHeader) {
+                      _this.addHeader(customHeader.header, customHeader.value);
+                    });
+                  } else {
+                    _customHeaders = null;
+                  }
+                  _enableSendPromise = senderConfig.enableSendPromise;
+                  var sendPostConfig = _getSendPostMgrConfig();
+                  if (!_sendPostMgr) {
+                    _sendPostMgr = new SenderPostManager();
+                    _sendPostMgr[_DYN_INITIALIZE](sendPostConfig, diagLog);
+                  } else {
+                    _sendPostMgr.SetConfig(sendPostConfig);
+                  }
+                  var customInterface = senderConfig.httpXHROverride;
+                  var httpInterface = null;
+                  var syncInterface = null;
+                  var theTransports = /* @__PURE__ */ prependTransports([3, 1, 2], senderConfig.transports);
+                  httpInterface = _sendPostMgr && _sendPostMgr[_DYN_GET_SENDER_INST](theTransports, false);
+                  var xhrInterface = _sendPostMgr && _sendPostMgr.getFallbackInst();
+                  _xhrSend = function(payload, isAsync2) {
+                    return _doSend(xhrInterface, payload, isAsync2);
+                  };
+                  _fallbackSend = function(payload, isAsync2) {
+                    return _doSend(xhrInterface, payload, isAsync2, false);
+                  };
+                  httpInterface = _alwaysUseCustomSend ? customInterface : httpInterface || customInterface || xhrInterface;
+                  _self[_DYN__SENDER] = function(payload, isAsync2) {
+                    return _doSend(httpInterface, payload, isAsync2);
+                  };
+                  if (_fetchKeepAlive) {
+                    _syncUnloadSender = _fetchKeepAliveSender;
+                  }
+                  var syncTransports = /* @__PURE__ */ prependTransports([3, 1], senderConfig.unloadTransports);
+                  if (!_fetchKeepAlive) {
+                    syncTransports = syncTransports.filter(function(transport) {
+                      return transport !== 2;
+                    });
+                  }
+                  syncInterface = _sendPostMgr && _sendPostMgr[_DYN_GET_SENDER_INST](syncTransports, true);
+                  syncInterface = _alwaysUseCustomSend ? customInterface : syncInterface || customInterface;
+                  if ((_alwaysUseCustomSend || senderConfig.unloadTransports || !_syncUnloadSender) && syncInterface) {
+                    _syncUnloadSender = function(payload, isAsync2) {
+                      return _doSend(syncInterface, payload, isAsync2);
+                    };
+                  }
+                  if (!_syncUnloadSender) {
+                    _syncUnloadSender = _xhrSend;
+                  }
+                  _disableTelemetry = senderConfig.disableTelemetry;
+                  _convertUndefined = senderConfig.convertUndefined || UNDEFINED_VALUE$1;
+                  _isRetryDisabled = senderConfig.isRetryDisabled;
+                  _maxBatchInterval = senderConfig.maxBatchInterval;
+                }));
+              };
+              _self.processTelemetry = function(telemetryItem, itemCtx) {
+                itemCtx = _self._getTelCtx(itemCtx);
+                var diagLogger = itemCtx[_DYN_DIAG_LOG]();
+                try {
+                  var isValidate = _validate(telemetryItem, diagLogger);
+                  if (!isValidate) {
+                    return;
+                  }
+                  var aiEnvelope = _getEnvelope(telemetryItem, diagLogger);
+                  if (!aiEnvelope) {
+                    return;
+                  }
+                  var payload = _serializer.serialize(aiEnvelope);
+                  var buffer = _self[_DYN__BUFFER];
+                  _checkMaxSize(payload);
+                  var payloadItem = {
+                    item: payload,
+                    cnt: 0
+                  };
+                  buffer[_DYN_ENQUEUE](payloadItem);
+                  _setupTimer();
+                } catch (e) {
+                  _throwInternal(diagLogger, 2, 12, "Failed adding telemetry to the sender's buffer, some telemetry will be lost: " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+                }
+                _self.processNext(telemetryItem, itemCtx);
+              };
+              _self.isCompletelyIdle = function() {
+                return !_paused && _syncFetchPayload === 0 && _self._buffer[_DYN_COUNT]() === 0;
+              };
+              _self.getOfflineListener = function() {
+                return _offlineListener;
+              };
+              _self._xhrReadyStateChange = function(xhr, payload, countOfItemsInPayload) {
+                if (_isStringArr(payload)) {
+                  return;
+                }
+                return _xhrReadyStateChange(xhr, payload, countOfItemsInPayload);
+              };
+              _self[_DYN_TRIGGER_SEND] = function(isAsync2, forcedSender, sendReason) {
+                if (isAsync2 === void 0) {
+                  isAsync2 = true;
+                }
+                var result;
+                if (!_paused) {
+                  try {
+                    var buffer = _self[_DYN__BUFFER];
+                    if (!_disableTelemetry) {
+                      if (buffer[_DYN_COUNT]() > 0) {
+                        var payload = buffer.getItems();
+                        _notifySendRequest(sendReason || 0, isAsync2);
+                        if (forcedSender) {
+                          result = forcedSender.call(_self, payload, isAsync2);
+                        } else {
+                          result = _self[_DYN__SENDER](payload, isAsync2);
+                        }
+                      }
+                    } else {
+                      buffer[_DYN_CLEAR]();
+                    }
+                    _clearScheduledTimer();
+                  } catch (e) {
+                    var ieVer = /* @__PURE__ */ getIEVersion();
+                    if (!ieVer || ieVer > 9) {
+                      _throwInternal(_self[_DYN_DIAG_LOG](), 1, 40, "Telemetry transmission failed, some telemetry will be lost: " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+                    }
+                  }
+                }
+                return result;
+              };
+              _self.getOfflineSupport = function() {
+                return {
+                  getUrl: function() {
+                    return _endpointUrl;
+                  },
+                  createPayload: _createPayload,
+                  serialize: _serialize,
+                  batch: _batch,
+                  shouldProcess: function(evt) {
+                    return !!_validate(evt);
+                  }
+                };
+              };
+              _self._doTeardown = function(unloadCtx, unloadState) {
+                _self.onunloadFlush();
+                runTargetUnload(_offlineListener, false);
+                _initDefaults();
+              };
+              _self[_DYN__ON_ERROR] = function(payload, message, event) {
+                if (_isStringArr(payload)) {
+                  return;
+                }
+                return _onError2(payload, message);
+              };
+              _self[_DYN__ON_PARTIAL_SUCCESS] = function(payload, results) {
+                if (_isStringArr(payload)) {
+                  return;
+                }
+                return _onPartialSuccess(payload, results);
+              };
+              _self[_DYN__ON_SUCCESS] = function(payload, countOfItemsInPayload) {
+                if (_isStringArr(payload)) {
+                  return;
+                }
+                return _onSuccess(payload);
+              };
+              _self._xdrOnLoad = function(xdr, payload) {
+                if (_isStringArr(payload)) {
+                  return;
+                }
+                return _xdrOnLoad(xdr, payload);
+              };
+              function _xdrOnLoad(xdr, payload) {
+                var responseText = _getResponseText(xdr);
+                if (xdr && (responseText + "" === "200" || responseText === "")) {
+                  _consecutiveErrors = 0;
+                  _self[_DYN__ON_SUCCESS](payload, 0);
+                } else {
+                  var results = parseResponse(responseText);
+                  if (results && results[_DYN_ITEMS_RECEIVED] && results[_DYN_ITEMS_RECEIVED] > results[_DYN_ITEMS_ACCEPTED] && !_isRetryDisabled) {
+                    _self[_DYN__ON_PARTIAL_SUCCESS](payload, results);
+                  } else {
+                    _self[_DYN__ON_ERROR](payload, /* @__PURE__ */ formatErrorMessageXdr(xdr));
+                  }
+                }
+              }
+              function _getSendPostMgrConfig() {
+                try {
+                  var onCompleteFuncs = {
+                    xdrOnComplete: function(xdr, oncomplete, payload) {
+                      var payloadArr = _getPayloadArr(payload);
+                      if (!payloadArr) {
+                        return;
+                      }
+                      return _xdrOnLoad(xdr, payloadArr);
+                    },
+                    fetchOnComplete: function(response, onComplete, resValue, payload) {
+                      var payloadArr = _getPayloadArr(payload);
+                      if (!payloadArr) {
+                        return;
+                      }
+                      return _checkResponsStatus(response.status, payloadArr, response.url, payloadArr[_DYN_LENGTH], response.statusText, resValue || "");
+                    },
+                    xhrOnComplete: function(request, oncomplete, payload) {
+                      var payloadArr = _getPayloadArr(payload);
+                      if (!payloadArr) {
+                        return;
+                      }
+                      return _xhrReadyStateChange(request, payloadArr, payloadArr[_DYN_LENGTH]);
+                    },
+                    beaconOnRetry: function(data, onComplete, canSend) {
+                      return _onBeaconRetry(data, onComplete, canSend);
+                    }
+                  };
+                  var config2 = {
+                    enableSendPromise: _enableSendPromise,
+                    isOneDs: false,
+                    disableCredentials: false,
+                    disableXhr: _disableXhr,
+                    disableBeacon: !_beaconNormalSupported,
+                    disableBeaconSync: !_beaconOnUnloadSupported,
+                    senderOnCompleteCallBack: onCompleteFuncs
+                  };
+                  return config2;
+                } catch (e) {
+                }
+                return null;
+              }
+              function _xhrReadyStateChange(xhr, payload, countOfItemsInPayload) {
+                if (xhr.readyState === 4) {
+                  _checkResponsStatus(xhr.status, payload, xhr.responseURL, countOfItemsInPayload, /* @__PURE__ */ formatErrorMessageXhr(xhr), _getResponseText(xhr) || xhr.response);
+                }
+              }
+              function _onError2(payload, message, event) {
+                _throwInternal(_self[_DYN_DIAG_LOG](), 2, 26, "Failed to send telemetry.", { message });
+                _self._buffer && _self._buffer[_DYN_CLEAR_SENT](payload);
+              }
+              function _onPartialSuccess(payload, results) {
+                var failed = [];
+                var retry = [];
+                var errors = results.errors.reverse();
+                for (var _i = 0, errors_1 = errors; _i < errors_1.length; _i++) {
+                  var error2 = errors_1[_i];
+                  var extracted = payload.splice(error2.index, 1)[0];
+                  if (_isRetriable(error2.statusCode)) {
+                    retry[_DYN_PUSH](extracted);
+                  } else {
+                    failed[_DYN_PUSH](extracted);
+                  }
+                }
+                if (payload[_DYN_LENGTH] > 0) {
+                  _self[_DYN__ON_SUCCESS](payload, results[_DYN_ITEMS_ACCEPTED]);
+                }
+                if (failed[_DYN_LENGTH] > 0) {
+                  _self[_DYN__ON_ERROR](failed, /* @__PURE__ */ formatErrorMessageXhr(null, ["partial success", results[_DYN_ITEMS_ACCEPTED], "of", results.itemsReceived].join(" ")));
+                }
+                if (retry[_DYN_LENGTH] > 0) {
+                  _resendPayload(retry);
+                  _throwInternal(_self[_DYN_DIAG_LOG](), 2, 40, "Partial success. Delivered: " + payload[_DYN_LENGTH] + ", Failed: " + failed[_DYN_LENGTH] + ". Will retry to send " + retry[_DYN_LENGTH] + " our of " + results[_DYN_ITEMS_RECEIVED] + " items");
+                }
+              }
+              function _onSuccess(payload, countOfItemsInPayload) {
+                _self._buffer && _self._buffer[_DYN_CLEAR_SENT](payload);
+              }
+              function _getPayloadArr(payload) {
+                try {
+                  if (payload) {
+                    var internalPayload = payload;
+                    var arr = internalPayload.oriPayload;
+                    if (arr && arr[_DYN_LENGTH]) {
+                      return arr;
+                    }
+                    return null;
+                  }
+                } catch (e) {
+                }
+                return null;
+              }
+              function _validate(telemetryItem, diagLogger) {
+                if (_disableTelemetry) {
+                  return false;
+                }
+                if (!telemetryItem) {
+                  diagLogger && _throwInternal(diagLogger, 1, 7, "Cannot send empty telemetry");
+                  return false;
+                }
+                if (telemetryItem.baseData && !telemetryItem[_DYN_BASE_TYPE]) {
+                  diagLogger && _throwInternal(diagLogger, 1, 70, "Cannot send telemetry without baseData and baseType");
+                  return false;
+                }
+                if (!telemetryItem[_DYN_BASE_TYPE]) {
+                  telemetryItem[_DYN_BASE_TYPE] = "EventData";
+                }
+                if (!_self[_DYN__SENDER]) {
+                  diagLogger && _throwInternal(diagLogger, 1, 28, "Sender was not initialized");
+                  return false;
+                }
+                var sampleRate = telemetryItem[_DYN_SAMPLE_RATE];
+                if (/* @__PURE__ */ isNullOrUndefined(sampleRate) || !isNumber(sampleRate) || sampleRate < 0 || sampleRate > 100) {
+                  if (!_isSampledIn2(telemetryItem)) {
+                    diagLogger && _throwInternal(diagLogger, 2, 33, "Telemetry item was sampled out and not sent", { SampleRate: _self._sample[_DYN_SAMPLE_RATE] });
+                    return false;
+                  } else {
+                    telemetryItem[SampleRate] = _self._sample[_DYN_SAMPLE_RATE];
+                  }
+                }
+                return true;
+              }
+              function _getEnvelope(telemetryItem, diagLogger) {
+                var defaultEnvelopeIkey = telemetryItem.iKey || _instrumentationKey;
+                var aiEnvelope = Sender3.constructEnvelope(telemetryItem, defaultEnvelopeIkey, diagLogger, _convertUndefined);
+                if (!aiEnvelope) {
+                  _throwInternal(diagLogger, 1, 47, "Unable to create an AppInsights envelope");
+                  return;
+                }
+                var doNotSendItem = false;
+                if (telemetryItem[_DYN_TAGS] && telemetryItem[_DYN_TAGS][ProcessLegacy]) {
+                  arrForEach(telemetryItem[_DYN_TAGS][ProcessLegacy], function(callBack) {
+                    try {
+                      if (callBack && callBack(aiEnvelope) === false) {
+                        doNotSendItem = true;
+                        _warnToConsole(diagLogger, "Telemetry processor check returns false");
+                      }
+                    } catch (e) {
+                      _throwInternal(diagLogger, 1, 64, "One of telemetry initializers failed, telemetry item will not be sent: " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) }, true);
+                    }
+                  });
+                  delete telemetryItem[_DYN_TAGS][ProcessLegacy];
+                }
+                if (doNotSendItem) {
+                  return;
+                }
+                return aiEnvelope;
+              }
+              function _serialize(item) {
+                var rlt = EMPTY_STR;
+                var diagLogger = _self[_DYN_DIAG_LOG]();
+                try {
+                  var valid = _validate(item, diagLogger);
+                  var envelope = null;
+                  if (valid) {
+                    envelope = _getEnvelope(item, diagLogger);
+                  }
+                  if (envelope) {
+                    rlt = _serializer.serialize(envelope);
+                  }
+                } catch (e) {
+                }
+                return rlt;
+              }
+              function _batch(arr) {
+                var rlt = EMPTY_STR;
+                if (arr && arr[_DYN_LENGTH]) {
+                  rlt = "[" + arr.join(",") + "]";
+                }
+                return rlt;
+              }
+              function _createPayload(data) {
+                var headers = _getHeaders();
+                return {
+                  urlString: _endpointUrl,
+                  data,
+                  headers
+                };
+              }
+              function _isSampledIn2(envelope) {
+                return _self._sample.isSampledIn(envelope);
+              }
+              function _getOnComplete(payload, status, headers, response) {
+                if (status === 200 && payload) {
+                  _self._onSuccess(payload, payload[_DYN_LENGTH]);
+                } else {
+                  response && _self[_DYN__ON_ERROR](payload, response);
+                }
+              }
+              function _doSend(sendInterface, payload, isAsync2, markAsSent) {
+                if (markAsSent === void 0) {
+                  markAsSent = true;
+                }
+                var onComplete = function(status, headers, response) {
+                  return _getOnComplete(payload, status, headers, response);
+                };
+                var payloadData = _getPayload(payload);
+                var sendPostFunc = sendInterface && sendInterface.sendPOST;
+                if (sendPostFunc && payloadData) {
+                  if (markAsSent) {
+                    _self._buffer[_DYN_MARK_AS_SENT](payload);
+                  }
+                  var result_2;
+                  var callbackExecuted_1 = false;
+                  var resolveFn_1;
+                  var rejectFn_1;
+                  _sendPostMgr.preparePayload(function(processedPayload) {
+                    result_2 = sendPostFunc(processedPayload, onComplete, !isAsync2);
+                    callbackExecuted_1 = true;
+                    if (resolveFn_1) {
+                      doAwait(result_2, resolveFn_1, rejectFn_1);
+                    }
+                  }, _zipPayload, payloadData, !isAsync2);
+                  if (callbackExecuted_1) {
+                    return result_2;
+                  }
+                  return createPromise(function(resolve, reject) {
+                    resolveFn_1 = resolve;
+                    rejectFn_1 = reject;
+                  });
+                }
+                return null;
+              }
+              function _getPayload(payload) {
+                if (isArray(payload) && payload[_DYN_LENGTH] > 0) {
+                  var batch = _self[_DYN__BUFFER].batchPayloads(payload);
+                  var headers = _getHeaders();
+                  var payloadData = {
+                    data: batch,
+                    urlString: _endpointUrl,
+                    headers,
+                    disableXhrSync: _disableXhr,
+                    disableFetchKeepAlive: !_fetchKeepAlive,
+                    oriPayload: payload
+                  };
+                  return payloadData;
+                }
+                return null;
+              }
+              function _getHeaders() {
+                try {
+                  var headers = _headers || {};
+                  if (isInternalApplicationInsightsEndpoint(_endpointUrl)) {
+                    headers[RequestHeaders[6]] = RequestHeaders[7];
+                  }
+                  return headers;
+                } catch (e) {
+                }
+                return null;
+              }
+              function _checkMaxSize(incomingPayload) {
+                var incomingSize = incomingPayload ? incomingPayload[_DYN_LENGTH] : 0;
+                if (_self[_DYN__BUFFER].size() + incomingSize > _maxBatchSizeInBytes) {
+                  if (!_offlineListener || _offlineListener.isOnline()) {
+                    _self[_DYN_TRIGGER_SEND](true, null, 10);
+                  }
+                  return true;
+                }
+                return false;
+              }
+              function _checkResponsStatus(status, payload, responseUrl, countOfItemsInPayload, errorMessage, res) {
+                var response = null;
+                if (!_self._appId) {
+                  response = parseResponse(res);
+                  if (response && response.appId) {
+                    _self._appId = response.appId;
+                  }
+                }
+                if ((status < 200 || status >= 300) && status !== 0) {
+                  if (status === 301 || status === 307 || status === 308) {
+                    if (!_checkAndUpdateEndPointUrl(responseUrl)) {
+                      _self[_DYN__ON_ERROR](payload, errorMessage);
+                      return;
+                    }
+                  }
+                  if (_offlineListener && !_offlineListener.isOnline()) {
+                    if (!_isRetryDisabled) {
+                      var offlineBackOffMultiplier = 10;
+                      _resendPayload(payload, offlineBackOffMultiplier);
+                      _throwInternal(_self[_DYN_DIAG_LOG](), 2, 40, ". Offline - Response Code: ".concat(status, ". Offline status: ").concat(!_offlineListener.isOnline(), ". Will retry to send ").concat(payload.length, " items."));
+                    }
+                    return;
+                  }
+                  if (!_isRetryDisabled && _isRetriable(status)) {
+                    _resendPayload(payload);
+                    _throwInternal(_self[_DYN_DIAG_LOG](), 2, 40, ". Response code " + status + ". Will retry to send " + payload[_DYN_LENGTH] + " items.");
+                  } else {
+                    _self[_DYN__ON_ERROR](payload, errorMessage);
+                  }
+                } else {
+                  _checkAndUpdateEndPointUrl(responseUrl);
+                  if (status === 206) {
+                    if (!response) {
+                      response = parseResponse(res);
+                    }
+                    if (response && !_isRetryDisabled) {
+                      _self[_DYN__ON_PARTIAL_SUCCESS](payload, response);
+                    } else {
+                      _self[_DYN__ON_ERROR](payload, errorMessage);
+                    }
+                  } else {
+                    _consecutiveErrors = 0;
+                    _self[_DYN__ON_SUCCESS](payload, countOfItemsInPayload);
+                  }
+                }
+              }
+              function _checkAndUpdateEndPointUrl(responseUrl) {
+                if (_stamp_specific_redirects >= 10) {
+                  return false;
+                }
+                if (!/* @__PURE__ */ isNullOrUndefined(responseUrl) && responseUrl !== "") {
+                  if (responseUrl !== _endpointUrl) {
+                    _endpointUrl = responseUrl;
+                    ++_stamp_specific_redirects;
+                    return true;
+                  }
+                }
+                return false;
+              }
+              function _doUnloadSend(payload, isAsync2) {
+                if (_syncUnloadSender) {
+                  _syncUnloadSender(payload, false);
+                } else {
+                  var beaconInst = _sendPostMgr && _sendPostMgr[_DYN_GET_SENDER_INST]([3], true);
+                  return _doSend(beaconInst, payload, isAsync2);
+                }
+              }
+              function _onBeaconRetry(payload, onComplete, canSend) {
+                var internalPayload = payload;
+                var data = internalPayload && internalPayload.oriPayload;
+                if (!_disableBeaconSplit) {
+                  var droppedPayload = [];
+                  for (var lp = 0; lp < data[_DYN_LENGTH]; lp++) {
+                    var thePayload = data[lp];
+                    var arr = [thePayload];
+                    var item = _getPayload(arr);
+                    if (!canSend(item, onComplete)) {
+                      droppedPayload[_DYN_PUSH](thePayload);
+                    } else {
+                      _self._onSuccess(arr, arr[_DYN_LENGTH]);
+                    }
+                  }
+                  if (droppedPayload[_DYN_LENGTH] > 0) {
+                    _fallbackSend && _fallbackSend(droppedPayload, true);
+                    _throwInternal(_self[_DYN_DIAG_LOG](), 2, 40, ". Failed to send telemetry with Beacon API, retried with normal sender.");
+                  }
+                } else {
+                  _fallbackSend && _fallbackSend(data, true);
+                  _throwInternal(_self[_DYN_DIAG_LOG](), 2, 40, ". Failed to send telemetry with Beacon API, retried with normal sender.");
+                }
+              }
+              function _isStringArr(arr) {
+                try {
+                  if (arr && arr[_DYN_LENGTH]) {
+                    return isString(arr[0]);
+                  }
+                } catch (e) {
+                }
+                return null;
+              }
+              function _fetchKeepAliveSender(payload, isAsync2) {
+                var transport = null;
+                if (isArray(payload)) {
+                  var payloadSize = payload[_DYN_LENGTH];
+                  for (var lp = 0; lp < payload[_DYN_LENGTH]; lp++) {
+                    payloadSize += payload[lp].item[_DYN_LENGTH];
+                  }
+                  var syncFetchPayload = _sendPostMgr.getSyncFetchPayload();
+                  if (syncFetchPayload + payloadSize <= FetchSyncRequestSizeLimitBytes) {
+                    transport = 2;
+                  } else if (isBeaconsSupported()) {
+                    transport = 3;
+                  } else {
+                    transport = 1;
+                    _throwInternal(_self[_DYN_DIAG_LOG](), 2, 40, ". Failed to send telemetry with Beacon API, retried with xhrSender.");
+                  }
+                  var inst = _sendPostMgr && _sendPostMgr[_DYN_GET_SENDER_INST]([transport], true);
+                  return _doSend(inst, payload, isAsync2);
+                }
+                return null;
+              }
+              function _resendPayload(payload, linearFactor) {
+                if (linearFactor === void 0) {
+                  linearFactor = 1;
+                }
+                if (!payload || payload[_DYN_LENGTH] === 0) {
+                  return;
+                }
+                var buffer = _self[_DYN__BUFFER];
+                buffer[_DYN_CLEAR_SENT](payload);
+                _consecutiveErrors++;
+                for (var _i = 0, payload_1 = payload; _i < payload_1.length; _i++) {
+                  var item = payload_1[_i];
+                  item.cnt = item.cnt || 0;
+                  item.cnt++;
+                  buffer[_DYN_ENQUEUE](item);
+                }
+                _setRetryTime(linearFactor);
+                _setupTimer();
+              }
+              function _setRetryTime(linearFactor) {
+                var SlotDelayInSeconds = 10;
+                var delayInSeconds;
+                if (_consecutiveErrors <= 1) {
+                  delayInSeconds = SlotDelayInSeconds;
+                } else {
+                  var backOffSlot = (Math.pow(2, _consecutiveErrors) - 1) / 2;
+                  var backOffDelay = mathFloor(Math.random() * backOffSlot * SlotDelayInSeconds) + 1;
+                  backOffDelay = linearFactor * backOffDelay;
+                  delayInSeconds = mathMax(mathMin(backOffDelay, 3600), SlotDelayInSeconds);
+                }
+                var retryAfterTimeSpan = /* @__PURE__ */ utcNow() + delayInSeconds * 1e3;
+                _retryAt = retryAfterTimeSpan;
+              }
+              function _setupTimer() {
+                if (!_timeoutHandle && !_paused) {
+                  var retryInterval = _retryAt ? mathMax(0, _retryAt - /* @__PURE__ */ utcNow()) : 0;
+                  var timerValue = mathMax(_maxBatchInterval, retryInterval);
+                  _timeoutHandle = scheduleTimeout(function() {
+                    _timeoutHandle = null;
+                    _self[_DYN_TRIGGER_SEND](true, null, 1);
+                  }, timerValue);
+                }
+              }
+              function _clearScheduledTimer() {
+                _timeoutHandle && _timeoutHandle.cancel();
+                _timeoutHandle = null;
+                _retryAt = null;
+              }
+              function _isRetriable(statusCode) {
+                if (!/* @__PURE__ */ isNullOrUndefined(_retryCodes)) {
+                  return _retryCodes[_DYN_LENGTH] && _retryCodes.indexOf(statusCode) > -1;
+                }
+                return statusCode === 401 || statusCode === 408 || statusCode === 429 || statusCode === 500 || statusCode === 502 || statusCode === 503 || statusCode === 504;
+              }
+              function _getNotifyMgr() {
+                var func = "getNotifyMgr";
+                var result;
+                var core = _self.core;
+                if (core) {
+                  if (core[func]) {
+                    result = core[func]();
+                  } else {
+                    result = core["_notificationManager"];
+                  }
+                }
+                return result;
+              }
+              function _notifySendRequest(sendRequest, isAsync2) {
+                var manager = _getNotifyMgr();
+                if (manager && manager.eventsSendRequest) {
+                  try {
+                    manager.eventsSendRequest(sendRequest, isAsync2);
+                  } catch (e) {
+                    _throwInternal(_self[_DYN_DIAG_LOG](), 1, 74, "send request notification failed: " + /* @__PURE__ */ getExceptionName(e), { exception: /* @__PURE__ */ dumpObj(e) });
+                  }
+                }
+              }
+              function _validateInstrumentationKey(instrumentationKey, config2) {
+                var disableValidation = config2.disableInstrumentationKeyValidation;
+                var disableIKeyValidationFlag = /* @__PURE__ */ isNullOrUndefined(disableValidation) ? false : disableValidation;
+                if (disableIKeyValidationFlag) {
+                  return true;
+                }
+                var UUID_Regex = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
+                var regexp = new RegExp(UUID_Regex);
+                return regexp.test(instrumentationKey);
+              }
+              function _initDefaults() {
+                _self[_DYN__SENDER] = null;
+                _self[_DYN__BUFFER] = null;
+                _self._appId = null;
+                _self._sample = null;
+                _headers = {};
+                _offlineListener = null;
+                _consecutiveErrors = 0;
+                _retryAt = null;
+                _paused = false;
+                _timeoutHandle = null;
+                _serializer = null;
+                _stamp_specific_redirects = 0;
+                _syncFetchPayload = 0;
+                _syncUnloadSender = null;
+                _evtNamespace = null;
+                _endpointUrl = null;
+                _orgEndpointUrl = null;
+                _maxBatchSizeInBytes = 0;
+                _beaconSupported = false;
+                _customHeaders = null;
+                _disableTelemetry = false;
+                _instrumentationKey = null;
+                _convertUndefined = UNDEFINED_VALUE$1;
+                _isRetryDisabled = false;
+                _sessionStorageUsed = null;
+                _namePrefix = UNDEFINED_VALUE$1;
+                _disableXhr = false;
+                _fetchKeepAlive = false;
+                _disableBeaconSplit = false;
+                _xhrSend = null;
+                _fallbackSend = null;
+                _sendPostMgr = null;
+                objDefine(_self, "_senderConfig", {
+                  g: function() {
+                    return objExtend({}, defaultAppInsightsChannelConfig);
+                  }
+                });
+              }
+            });
+            return _this;
+          }
+          Sender3.constructEnvelope = function(orig, iKey, logger, convertUndefined) {
+            var envelope;
+            if (iKey !== orig.iKey && !/* @__PURE__ */ isNullOrUndefined(iKey)) {
+              envelope = __assignFn(__assignFn({}, orig), { iKey });
+            } else {
+              envelope = orig;
+            }
+            var creator = EnvelopeTypeCreator[envelope.baseType] || EventEnvelopeCreator;
+            return creator(logger, envelope, convertUndefined);
+          };
+          return Sender3;
+        })(BaseTelemetryPlugin)
+      );
+      var _DYN_INSTRUMENTATION_KEY = "instrumentationKey";
+      var _DYN_CONNECTION_STRING = "connectionString";
+      var _DYN_ENDPOINT_URL = "endpointUrl";
+      var _DYN_USER_OVERRIDE_ENDPOI0 = "userOverrideEndpointUrl";
+      var _a2, _b;
+      var UNDEFINED_VALUE = void 0;
+      var defaultConfigValues = (_a2 = {
+        diagnosticLogInterval: cfgDfValidate(_chkDiagLevel, 1e4)
+      }, _a2[_DYN_CONNECTION_STRING] = UNDEFINED_VALUE, _a2.endpointUrl = UNDEFINED_VALUE, _a2[_DYN_INSTRUMENTATION_KEY] = UNDEFINED_VALUE, _a2.featureOptIn = (_b = {}, _b["zipPayload"] = { mode: 1 }, _b), _a2.extensionConfig = {}, _a2);
+      function _chkDiagLevel(value) {
+        return value && value > 0;
+      }
+      var ApplicationInsights = (
+        /** @class */
+        (function() {
+          function ApplicationInsights2(config2) {
+            var core = new AppInsightsCore();
+            var _config;
+            if (/* @__PURE__ */ isNullOrUndefined(config2) || /* @__PURE__ */ isNullOrUndefined(config2[_DYN_INSTRUMENTATION_KEY]) && /* @__PURE__ */ isNullOrUndefined(config2[_DYN_CONNECTION_STRING])) {
+              throwError("Invalid input configuration");
+            }
+            dynamicProto(ApplicationInsights2, this, function(_self) {
+              objDefine(_self, "config", {
+                g: function() {
+                  return _config;
+                }
+              });
+              _initialize();
+              _self.initialize = _initialize;
+              _self.track = _track;
+              proxyFunctions(_self, core, [
+                "flush",
+                "pollInternalLogs",
+                "stopPollingInternalLogs",
+                "unload",
+                "getPlugin",
+                "addPlugin",
+                "evtNamespace",
+                "addUnloadCb",
+                "onCfgChange",
+                "getTraceCtx",
+                "updateCfg",
+                "addTelemetryInitializer"
+              ]);
+              function _initialize() {
+                var cfgHandler = createDynamicConfig(config2 || {}, defaultConfigValues);
+                _config = cfgHandler.cfg;
+                core.addUnloadHook(onConfigChange(cfgHandler, function() {
+                  var configCs = _config[_DYN_CONNECTION_STRING];
+                  if (/* @__PURE__ */ isPromiseLike(configCs)) {
+                    var ikeyPromise = createSyncPromise(function(resolve, reject) {
+                      doAwaitResponse(configCs, function(res) {
+                        var curCs = res.value;
+                        var ikey = _config[_DYN_INSTRUMENTATION_KEY];
+                        if (!res.rejected && curCs) {
+                          _config[_DYN_CONNECTION_STRING] = curCs;
+                          var resolvedCs = parseConnectionString(curCs);
+                          ikey = resolvedCs.instrumentationkey || ikey;
+                        }
+                        resolve(ikey);
+                      });
+                    });
+                    var urlPromise = createSyncPromise(function(resolve, reject) {
+                      doAwaitResponse(configCs, function(res) {
+                        var curCs = res.value;
+                        var url2 = _config[_DYN_ENDPOINT_URL];
+                        if (!res.rejected && curCs) {
+                          var resolvedCs = parseConnectionString(curCs);
+                          var ingest2 = resolvedCs.ingestionendpoint;
+                          url2 = ingest2 ? ingest2 + DEFAULT_BREEZE_PATH : url2;
+                        }
+                        resolve(url2);
+                      });
+                    });
+                    _config[_DYN_INSTRUMENTATION_KEY] = ikeyPromise;
+                    _config[_DYN_ENDPOINT_URL] = _config[_DYN_USER_OVERRIDE_ENDPOI0] || urlPromise;
+                  }
+                  if (isString(configCs)) {
+                    var cs = parseConnectionString(configCs);
+                    var ingest = cs.ingestionendpoint;
+                    _config[_DYN_ENDPOINT_URL] = _config[_DYN_USER_OVERRIDE_ENDPOI0] ? _config[_DYN_USER_OVERRIDE_ENDPOI0] : ingest + DEFAULT_BREEZE_PATH;
+                    _config[_DYN_INSTRUMENTATION_KEY] = cs.instrumentationkey || _config[_DYN_INSTRUMENTATION_KEY];
+                  }
+                  _config[_DYN_ENDPOINT_URL] = _config[_DYN_USER_OVERRIDE_ENDPOI0] ? _config[_DYN_USER_OVERRIDE_ENDPOI0] : _config[_DYN_ENDPOINT_URL];
+                }));
+                core.initialize(_config, [new Sender2()]);
+              }
+            });
+            function _track(item) {
+              if (item) {
+                item.baseData = item.baseData || {};
+                item.baseType = item.baseType || "EventData";
+              }
+              core.track(item);
+            }
+          }
+          ApplicationInsights2.__ieDyn = 1;
+          return ApplicationInsights2;
+        })()
+      );
+      exports3.AppInsightsCore = AppInsightsCore;
+      exports3.ApplicationInsights = ApplicationInsights;
+      exports3.Sender = Sender2;
+      exports3.SeverityLevel = SeverityLevel;
+      exports3.arrForEach = arrForEach;
+      exports3.isNullOrUndefined = isNullOrUndefined;
+      exports3.proxyFunctions = proxyFunctions;
+      exports3.throwError = throwError;
+    }));
+  }
+});
+
 // node_modules/@vscode/extension-telemetry/dist/node/common/appInsightsClientFactory.js
 var require_appInsightsClientFactory = __commonJS({
   "node_modules/@vscode/extension-telemetry/dist/node/common/appInsightsClientFactory.js"(exports2) {
@@ -67333,12 +83103,12 @@ var require_appInsightsClientFactory = __commonJS({
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.appInsightsClientFactory = void 0;
-    var applicationinsights_common_1 = require("@microsoft/applicationinsights-common");
+    var applicationinsights_common_1 = require_applicationinsights_common();
     var util_1 = require_util3();
     var appInsightsClientFactory = async (connectionString, machineId, sessionId, xhrOverride, replacementOptions, options) => {
       let appInsightsClient;
       try {
-        const basicAISDK = await Promise.resolve().then(() => __importStar3(require("@microsoft/applicationinsights-web-basic")));
+        const basicAISDK = await Promise.resolve().then(() => __importStar3(require_applicationinsights_web_basic()));
         let instrumentationKey;
         if (!connectionString.startsWith("InstrumentationKey=")) {
           instrumentationKey = connectionString;
@@ -77379,7 +93149,7 @@ var ExtensionHostProfiler = class {
 
 // src/services/TelemetryService.ts
 var import_extension_telemetry = __toESM(require_telemetryReporter());
-var CONNECTION_STRING = "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/";
+var CONNECTION_STRING = "InstrumentationKey=0cd16943-5132-4204-91da-961cfeb4c886;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=edf9eba3-8dc8-4911-a81e-2d7a1d9ef160";
 var reporter;
 function initTelemetry(context) {
   reporter = new import_extension_telemetry.TelemetryReporter(CONNECTION_STRING);
@@ -78038,6 +93808,26 @@ tslib/tslib.es6.js:
    * 1DS JS SDK POST plugin, 4.4.1
    * Copyright (c) Microsoft and contributors. All rights reserved.
    * (Microsoft Internal Only)
+   *)
+  (*! https://github.com/nevware21/ts-utils v0.13.0 *)
+  (*!
+   * NevWare21 Solutions LLC - ts-async, 0.5.5
+   * https://github.com/nevware21/ts-async
+   * Copyright (c) NevWare21 Solutions LLC and contributors. All rights reserved.
+   * Licensed under the MIT license.
+   *)
+
+@microsoft/applicationinsights-common/dist/es5/applicationinsights-common.js:
+  (*!
+   * Application Insights JavaScript SDK - Common, 3.4.1
+   * Copyright (c) Microsoft and contributors. All rights reserved.
+   *)
+  (*! https://github.com/nevware21/ts-utils v0.13.0 *)
+
+@microsoft/applicationinsights-web-basic/dist/es5/applicationinsights-web-basic.js:
+  (*!
+   * Application Insights JavaScript Web SDK - Basic, 3.4.1
+   * Copyright (c) Microsoft and contributors. All rights reserved.
    *)
   (*! https://github.com/nevware21/ts-utils v0.13.0 *)
   (*!
