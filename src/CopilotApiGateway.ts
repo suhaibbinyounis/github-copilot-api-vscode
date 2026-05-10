@@ -2407,7 +2407,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 								role: 'model',
 								parts: [{ text: textValue }]
 							},
-							finishReason: 'STOP',
+							finishReason: null,
 							index: 0
 						}],
 						usageMetadata: {
@@ -2422,6 +2422,25 @@ export class CopilotApiGateway implements vscode.Disposable {
 			}
 
 			if (!cts.token.isCancellationRequested) {
+				if (!firstPart) {
+					res.write(',\n');
+				}
+				const finalChunk = {
+					candidates: [{
+						content: {
+							role: 'model',
+							parts: []
+						},
+						finishReason: 'STOP',
+						index: 0
+					}],
+					usageMetadata: {
+						promptTokenCount: 0,
+						candidatesTokenCount: 0,
+						totalTokenCount: 0
+					}
+				};
+				res.write(JSON.stringify(finalChunk));
 				res.write('\n]\n');
 				res.end();
 			}
