@@ -72704,7 +72704,7 @@ var require_util3 = __commonJS({
           "common.nodeArch": osShim.architecture,
           "common.platformversion": (osShim.release || "").replace(/^(\d+)(\.\d+)?(\.\d+)?(.*)/, "$1$2$3"),
           // Do not change this string as it gets found and replaced upon packaging
-          "common.telemetryclientversion": "1.5.1"
+          "common.telemetryclientversion": "1.5.2"
         };
       }
       // Get singleton instance of TelemetryUtil
@@ -86150,6 +86150,11 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
       "Connection": "keep-alive",
       "Access-Control-Allow-Origin": "*"
     });
+    const cts = new vscode4.CancellationTokenSource();
+    req.on("close", () => {
+      cts.cancel();
+      this.logInfo(`[OpenAI] Client disconnected, cancelling request ${logRequestId || ""}`);
+    });
     try {
       const copilotModels = await vscode4.lm.selectChatModels();
       if (!copilotModels || copilotModels.length === 0) {
@@ -86187,7 +86192,9 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
             lmMessages.push(vscode4.LanguageModelChatMessage.User(content));
         }
       }
-      const options = {};
+      const options = {
+        justification: "Processing streaming chat request via Copilot API Gateway"
+      };
       if (tools && tools.length > 0) {
         options.tools = tools;
         if (toolChoice === "required" || toolChoice === "any") {
@@ -86196,7 +86203,21 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
           options.toolMode = vscode4.LanguageModelChatToolMode.Auto;
         }
       }
-      const response = await lmModel.sendRequest(lmMessages, options, new vscode4.CancellationTokenSource().token);
+      let response;
+      try {
+        response = await lmModel.sendRequest(lmMessages, options, cts.token);
+      } catch (lmError) {
+        if (lmError instanceof vscode4.LanguageModelError) {
+          if (lmError.code === vscode4.LanguageModelError.NoPermissions.name) {
+            throw new ApiError(403, "No permission to use the language model. Ensure you are signed into GitHub Copilot.", "permission_denied", "no_permissions");
+          } else if (lmError.code === vscode4.LanguageModelError.Blocked.name) {
+            throw new ApiError(429, "Language model access is blocked or quota exceeded.", "rate_limit_error", "model_blocked");
+          } else if (lmError.code === vscode4.LanguageModelError.NotFound.name) {
+            throw new ApiError(404, `Model "${model}" not found or no longer available.`, "not_found", "model_not_found");
+          }
+        }
+        throw lmError;
+      }
       const toolCalls = [];
       let toolCallIndex = 0;
       for await (const part of response.stream) {
@@ -86285,17 +86306,17 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
       res.write(`data: ${JSON.stringify(finalChunk)}
 
 `);
+      let tokensIn = 0;
+      let tokensOut = 0;
+      try {
+        const inputString = lmMessages.map((m) => {
+          return typeof m.content === "string" ? m.content : JSON.stringify(m.content);
+        }).join("\n");
+        tokensIn = await lmModel.countTokens(inputString);
+        tokensOut = await lmModel.countTokens(totalContent);
+      } catch (_) {
+      }
       if (payload?.stream_options?.include_usage) {
-        let tokensIn2 = 0;
-        let tokensOut2 = 0;
-        try {
-          const inputString = lmMessages.map((m) => {
-            return typeof m.content === "string" ? m.content : JSON.stringify(m.content);
-          }).join("\n");
-          tokensIn2 = await lmModel.countTokens(inputString, new vscode4.CancellationTokenSource().token);
-          tokensOut2 = await lmModel.countTokens(totalContent, new vscode4.CancellationTokenSource().token);
-        } catch (_) {
-        }
         const usageChunk = {
           id: requestId,
           object: "chat.completion.chunk",
@@ -86303,9 +86324,9 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
           model,
           choices: [],
           usage: {
-            prompt_tokens: tokensIn2,
-            completion_tokens: tokensOut2,
-            total_tokens: tokensIn2 + tokensOut2
+            prompt_tokens: tokensIn,
+            completion_tokens: tokensOut,
+            total_tokens: tokensIn + tokensOut
           }
         };
         res.write(`data: ${JSON.stringify(usageChunk)}
@@ -86314,17 +86335,6 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
       }
       res.write("data: [DONE]\n\n");
       res.end();
-      let tokensIn = 0;
-      let tokensOut = 0;
-      try {
-        const inputString = lmMessages.map((m) => {
-          return typeof m.content === "string" ? m.content : JSON.stringify(m.content);
-        }).join("\n");
-        tokensIn = await lmModel.countTokens(inputString, new vscode4.CancellationTokenSource().token);
-        tokensOut = await lmModel.countTokens(totalContent, new vscode4.CancellationTokenSource().token);
-      } catch (e) {
-        console.error("Failed to count tokens:", e);
-      }
       if (logRequestId && logRequestStart) {
         this.logRequest(logRequestId, "POST", "/v1/chat/completions", 200, Date.now() - logRequestStart, {
           requestPayload: payload,
@@ -86340,7 +86350,8 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
       const errorChunk = {
         error: {
           message: error2 instanceof Error ? error2.message : "Unknown error",
-          type: "server_error"
+          type: error2 instanceof ApiError ? error2.type : "server_error",
+          code: error2 instanceof ApiError ? error2.code : void 0
         }
       };
       res.write(`data: ${JSON.stringify(errorChunk)}
@@ -86348,13 +86359,15 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
 `);
       res.end();
       if (logRequestId && logRequestStart) {
-        this.logRequest(logRequestId, "POST", "/v1/chat/completions", 500, Date.now() - logRequestStart, {
+        this.logRequest(logRequestId, "POST", "/v1/chat/completions", error2 instanceof ApiError ? error2.status : 500, Date.now() - logRequestStart, {
           requestPayload: payload,
           error: error2 instanceof Error ? error2.message : String(error2),
           model: payload?.model,
           requestHeaders: req.headers
         });
       }
+    } finally {
+      cts.dispose();
     }
   }
   async processTokenize(payload) {
@@ -86414,21 +86427,28 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
     if (!selectedModel) {
       throw new ApiError(404, `Model "${model}" not found. Available models: ${copilotModels.map((m) => m.id).join(", ")}`, "invalid_request_error", "model_not_found");
     }
-    const modelOptions = {};
+    const modelOptions = {
+      justification: "Processing Responses API request via Copilot API Gateway"
+    };
     const text = await this.runWithConcurrency(async () => {
-      const response = await selectedModel.sendRequest(lmMessages, modelOptions, new vscode4.CancellationTokenSource().token);
-      let result = "";
-      for await (const part of response.stream) {
-        if (part instanceof vscode4.LanguageModelTextPart) {
-          result += part.value;
-        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
-          const textValue = this.extractTextFromPart(part);
-          if (textValue) {
-            result += textValue;
+      const cts = new vscode4.CancellationTokenSource();
+      try {
+        const response = await selectedModel.sendRequest(lmMessages, modelOptions, cts.token);
+        let result = "";
+        for await (const part of response.stream) {
+          if (part instanceof vscode4.LanguageModelTextPart) {
+            result += part.value;
+          } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+            const textValue = this.extractTextFromPart(part);
+            if (textValue) {
+              result += textValue;
+            }
           }
         }
+        return result;
+      } finally {
+        cts.dispose();
       }
-      return result;
     });
     let inputTokens = 0;
     let outputTokens = 0;
@@ -86796,49 +86816,54 @@ data: ${JSON.stringify({
         const tcType = typeof tc === "string" ? tc : tc?.type;
         options.toolMode = tcType === "any" || tcType === "tool" ? vscode4.LanguageModelChatToolMode.Required : vscode4.LanguageModelChatToolMode.Auto;
       }
-      const result = await lmModel.sendRequest(messages, options, new vscode4.CancellationTokenSource().token);
-      const contentBlocks = [];
-      let currentText = "";
-      for await (const part of result.stream) {
-        if (part instanceof vscode4.LanguageModelTextPart) {
-          currentText += part.value;
-        } else if (part instanceof vscode4.LanguageModelToolCallPart) {
-          if (currentText) {
-            contentBlocks.push({ type: "text", text: currentText });
-            currentText = "";
-          }
-          const toolCallId = getAnthropicToolUseId(
-            part.callId,
-            () => `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`
-          );
-          let parsedInput;
-          if (typeof part.input === "string") {
-            try {
-              parsedInput = JSON.parse(part.input || "{}");
-            } catch (e) {
-              console.error("Invalid JSON in tool input for tool:", part.name, "| input length:", String(part.input).length);
-              parsedInput = {};
+      const cts = new vscode4.CancellationTokenSource();
+      try {
+        const result = await lmModel.sendRequest(messages, options, cts.token);
+        const contentBlocks = [];
+        let currentText = "";
+        for await (const part of result.stream) {
+          if (part instanceof vscode4.LanguageModelTextPart) {
+            currentText += part.value;
+          } else if (part instanceof vscode4.LanguageModelToolCallPart) {
+            if (currentText) {
+              contentBlocks.push({ type: "text", text: currentText });
+              currentText = "";
             }
+            const toolCallId = getAnthropicToolUseId(
+              part.callId,
+              () => `toolu_${(0, import_crypto.randomUUID)().replace(/-/g, "").slice(0, 24)}`
+            );
+            let parsedInput;
+            if (typeof part.input === "string") {
+              try {
+                parsedInput = JSON.parse(part.input || "{}");
+              } catch (e) {
+                console.error("Invalid JSON in tool input for tool:", part.name, "| input length:", String(part.input).length);
+                parsedInput = {};
+              }
+            } else {
+              parsedInput = part.input || {};
+            }
+            contentBlocks.push({
+              type: "tool_use",
+              id: toolCallId,
+              name: part.name,
+              input: parsedInput
+            });
           } else {
-            parsedInput = part.input || {};
-          }
-          contentBlocks.push({
-            type: "tool_use",
-            id: toolCallId,
-            name: part.name,
-            input: parsedInput
-          });
-        } else {
-          const textValue = this.extractTextFromPart(part);
-          if (textValue) {
-            currentText += textValue;
+            const textValue = this.extractTextFromPart(part);
+            if (textValue) {
+              currentText += textValue;
+            }
           }
         }
+        if (currentText) {
+          contentBlocks.push({ type: "text", text: currentText });
+        }
+        return { contentBlocks, lmModel };
+      } finally {
+        cts.dispose();
       }
-      if (currentText) {
-        contentBlocks.push({ type: "text", text: currentText });
-      }
-      return { contentBlocks, lmModel };
     });
     let inputTokens = 0;
     let outputTokens = 0;
@@ -86899,19 +86924,26 @@ data: ${JSON.stringify({
       throw new ApiError(404, `Model "${resolvedModel}" not found.Available models: ${copilotModels.map((m) => m.id).join(", ")}`, "invalid_request_error", "model_not_found");
     }
     const text = await this.runWithConcurrency(async () => {
-      const result = await lmModel.sendRequest(messages, {}, new vscode4.CancellationTokenSource().token);
-      let output = "";
-      for await (const part of result.stream) {
-        if (part instanceof vscode4.LanguageModelTextPart) {
-          output += part.value;
-        } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
-          const textValue = this.extractTextFromPart(part);
-          if (textValue) {
-            output += textValue;
+      const cts = new vscode4.CancellationTokenSource();
+      try {
+        const result = await lmModel.sendRequest(messages, {
+          justification: "Processing Google GenerateContent request via Copilot API Gateway"
+        }, cts.token);
+        let output = "";
+        for await (const part of result.stream) {
+          if (part instanceof vscode4.LanguageModelTextPart) {
+            output += part.value;
+          } else if (!(part instanceof vscode4.LanguageModelToolCallPart)) {
+            const textValue = this.extractTextFromPart(part);
+            if (textValue) {
+              output += textValue;
+            }
           }
         }
+        return output;
+      } finally {
+        cts.dispose();
       }
-      return output;
     });
     let inputTokens = 0;
     let outputTokens = 0;
@@ -89375,7 +89407,7 @@ function getServerConfig() {
   const configuration = vscode4.workspace.getConfiguration("githubCopilotApi");
   const enabled = configuration.get("server.enabled", false);
   const enableHttp = configuration.get("server.enableHttp", true);
-  const enableWebSocket = configuration.get("server.enableWebSocket", true);
+  const enableWebSocket = configuration.get("server.enableWebSocket", false);
   const enableHttps = configuration.get("server.enableHttps", false);
   const tlsCertPath = configuration.get("server.tlsCertPath", "").trim();
   const tlsKeyPath = configuration.get("server.tlsKeyPath", "").trim();
