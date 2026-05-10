@@ -1930,18 +1930,33 @@ export class CopilotApiGateway implements vscode.Disposable {
 		// List all available tools (MCP + VS Code built-in)
 		if (req.method === 'GET' && url.pathname === '/v1/tools') {
 			const mcpService = await this.ensureMcpService();
-			const tools = mcpService ? await mcpService.getAllTools() : [];
-			this.sendJson(res, 200, {
-				object: 'list',
-				data: tools.map(t => ({
+			const mcpTools = mcpService ? await mcpService.getAllTools() : [];
+			const nativeTools = vscode.lm.tools ? Array.from(vscode.lm.tools) : [];
+			
+			const allTools = [
+				...mcpTools.map(t => ({
 					type: 'function',
 					server: t.serverName,
+					function: {
+						name: `mcp_${t.serverName}_${t.name}`,
+						description: t.description || '',
+						parameters: t.inputSchema || {}
+					}
+				})),
+				...nativeTools.map(t => ({
+					type: 'function',
+					server: 'vscode',
 					function: {
 						name: t.name,
 						description: t.description || '',
 						parameters: t.inputSchema || {}
 					}
 				}))
+			];
+
+			this.sendJson(res, 200, {
+				object: 'list',
+				data: allTools
 			});
 			return;
 		}
@@ -1950,14 +1965,42 @@ export class CopilotApiGateway implements vscode.Disposable {
 		if (req.method === 'POST' && url.pathname === '/v1/tools/call') {
 			const body = await this.readJsonBody(req);
 			const { server, name, arguments: args } = body || {};
-			if (!server || !name) {
-				throw new ApiError(400, 'server and name are required', 'invalid_request_error', 'missing_params');
+			if (!name) {
+				throw new ApiError(400, 'name is required', 'invalid_request_error', 'missing_params');
 			}
-			const mcpService = await this.ensureMcpService();
-			if (!mcpService) {
-				throw new ApiError(503, 'MCP service not available', 'service_unavailable', 'mcp_unavailable');
+			
+			let result: unknown;
+			if (server === 'vscode' || !server || !name.startsWith('mcp_')) {
+				// Invoke native VS Code tool
+				const actualName = name.startsWith('vscode_') ? name.replace('vscode_', '') : name;
+				try {
+					const toolResult = await vscode.lm.invokeTool(actualName, { 
+						input: args || {}, 
+						toolInvocationToken: undefined 
+					}, new vscode.CancellationTokenSource().token);
+					
+					// Map LanguageModelToolResult parts to string
+					result = toolResult.content.map(part => {
+						if (part instanceof vscode.LanguageModelTextPart) {
+							return part.value;
+						}
+						// Fallback for other parts like PromptTsxPart
+						return typeof part === 'object' && part ? JSON.stringify(part) : String(part);
+					}).join('\n');
+				} catch (e: any) {
+					throw new ApiError(500, `Failed to invoke VS Code tool ${actualName}: ${e.message}`, 'tool_error', 'tool_invocation_failed');
+				}
+			} else {
+				// Invoke MCP tool
+				const mcpService = await this.ensureMcpService();
+				if (!mcpService) {
+					throw new ApiError(503, 'MCP service not available', 'service_unavailable', 'mcp_unavailable');
+				}
+				const actualServer = server || name.split('_')[1];
+				const actualName = name.split('_').slice(2).join('_') || name;
+				result = await mcpService.callTool(actualServer, actualName, args || {});
 			}
-			const result = await mcpService.callTool(server, name, args || {});
+
 			this.sendJson(res, 200, {
 				object: 'tool_result',
 				server,
@@ -3690,7 +3733,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 			inputSchema: t.inputSchema
 		}));
 
-		const allTools = [...baseTools, ...mappedMcpTools];
+		// Fetch native VS Code tools
+		const nativeTools = vscode.lm.tools ? Array.from(vscode.lm.tools).map(t => ({
+			name: t.name,
+			description: t.description || `Built-in VS Code tool ${t.name}`,
+			inputSchema: t.inputSchema
+		})) : [];
+
+		const allTools = [...baseTools, ...mappedMcpTools, ...nativeTools];
 		const toolChoice = payload?.tool_choice || payload?.function_call;
 		const responseFormat = payload?.response_format;
 
@@ -3716,9 +3766,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 			);
 
 			if (result.toolCalls && result.toolCalls.length > 0) {
-				const mcpToolCalls = result.toolCalls.filter((tc: any) => tc.name.startsWith('mcp_'));
+				const handledToolCalls = result.toolCalls.filter((tc: any) => 
+					tc.name.startsWith('mcp_') || nativeTools.some(nt => nt.name === tc.name)
+				);
 
-				if (mcpToolCalls.length > 0) {
+				if (handledToolCalls.length > 0) {
 					// Add assistant message with tool calls to history
 					messages.push({
 						role: 'assistant',
@@ -3733,18 +3785,31 @@ export class CopilotApiGateway implements vscode.Disposable {
 						}))
 					});
 
-					// Execute MCP tools
-					for (const tc of mcpToolCalls) {
-						const parts = tc.name.split('_');
-						const serverName = parts[1];
-						const toolName = parts.slice(2).join('_');
-
+					// Execute MCP and native tools
+					for (const tc of handledToolCalls) {
 						try {
-							const mcp = await this.ensureMcpService();
-							if (!mcp) {
-								throw new Error('MCP service not available');
+							let toolResult: any;
+							if (tc.name.startsWith('mcp_')) {
+								const parts = tc.name.split('_');
+								const serverName = parts[1];
+								const toolName = parts.slice(2).join('_');
+
+								const mcp = await this.ensureMcpService();
+								if (!mcp) {
+									throw new Error('MCP service not available');
+								}
+								toolResult = await mcp.callTool(serverName, toolName, tc.arguments);
+							} else {
+								// Native tools
+								const res = await vscode.lm.invokeTool(tc.name, {
+									input: tc.arguments,
+									toolInvocationToken: undefined
+								}, new vscode.CancellationTokenSource().token);
+								toolResult = res.content.map(part => {
+									if (part instanceof vscode.LanguageModelTextPart) { return part.value; }
+									return typeof part === 'object' && part ? JSON.stringify(part) : String(part);
+								}).join('\n');
 							}
-							const toolResult = await mcp.callTool(serverName, toolName, tc.arguments);
 							messages.push({
 								role: 'tool',
 								tool_call_id: `call_${randomUUID().slice(0, 24)}`, // Best effort ID mapping
@@ -3754,7 +3819,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 							messages.push({
 								role: 'tool',
 								tool_call_id: `call_${randomUUID().slice(0, 24)}`,
-								content: `Error executing MCP tool: ${error.message} `
+								content: `Error executing tool: ${error.message} `
 							});
 						}
 					}
