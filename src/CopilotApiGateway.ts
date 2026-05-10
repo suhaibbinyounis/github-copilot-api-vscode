@@ -2725,6 +2725,13 @@ export class CopilotApiGateway implements vscode.Disposable {
 			'Access-Control-Allow-Origin': '*'
 		});
 
+		// Create CTS early so client-disconnect cancels the model request (#98)
+		const cts = new vscode.CancellationTokenSource();
+		req.on('close', () => {
+			cts.cancel();
+			this.logInfo(`[OpenAI] Client disconnected, cancelling request ${logRequestId || ''}`);
+		});
+
 		try {
 			const copilotModels = await vscode.lm.selectChatModels();
 			if (!copilotModels || copilotModels.length === 0) {
@@ -2768,7 +2775,9 @@ export class CopilotApiGateway implements vscode.Disposable {
 			}
 
 			// Build request options with tools
-			const options: vscode.LanguageModelChatRequestOptions = {};
+			const options: vscode.LanguageModelChatRequestOptions = {
+				justification: 'Processing streaming chat request via Copilot API Gateway'
+			};
 			if (tools && tools.length > 0) {
 				options.tools = tools;
 				if (toolChoice === 'required' || toolChoice === 'any') {
@@ -2778,7 +2787,22 @@ export class CopilotApiGateway implements vscode.Disposable {
 				}
 			}
 
-			const response = await lmModel.sendRequest(lmMessages, options, new vscode.CancellationTokenSource().token);
+			// Map LanguageModelError → proper HTTP status (#97)
+			let response: vscode.LanguageModelChatResponse;
+			try {
+				response = await lmModel.sendRequest(lmMessages, options, cts.token);
+			} catch (lmError) {
+				if (lmError instanceof vscode.LanguageModelError) {
+					if (lmError.code === vscode.LanguageModelError.NoPermissions.name) {
+						throw new ApiError(403, 'No permission to use the language model. Ensure you are signed into GitHub Copilot.', 'permission_denied', 'no_permissions');
+					} else if (lmError.code === vscode.LanguageModelError.Blocked.name) {
+						throw new ApiError(429, 'Language model access is blocked or quota exceeded.', 'rate_limit_error', 'model_blocked');
+					} else if (lmError.code === vscode.LanguageModelError.NotFound.name) {
+						throw new ApiError(404, `Model "${model}" not found or no longer available.`, 'not_found', 'model_not_found');
+					}
+				}
+				throw lmError;
+			}
 
 			// Track tool calls during streaming
 			const toolCalls: Array<{ id: string; name: string; arguments: string }> = [];
@@ -2871,18 +2895,20 @@ export class CopilotApiGateway implements vscode.Disposable {
 			};
 			res.write(`data: ${JSON.stringify(finalChunk)}\n\n`);
 
+			// Count tokens once and reuse for both include_usage chunk and logging (#99)
+			let tokensIn = 0;
+			let tokensOut = 0;
+			try {
+				const inputString = lmMessages.map(m => {
+					// @ts-ignore
+					return typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
+				}).join('\n');
+				tokensIn = await lmModel.countTokens(inputString);
+				tokensOut = await lmModel.countTokens(totalContent);
+			} catch (_) { /* best effort */ }
+
 			// Emit usage chunk if stream_options.include_usage is requested
 			if (payload?.stream_options?.include_usage) {
-				let tokensIn = 0;
-				let tokensOut = 0;
-				try {
-					const inputString = lmMessages.map(m => {
-						// @ts-ignore
-						return typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
-					}).join('\n');
-					tokensIn = await lmModel.countTokens(inputString, new vscode.CancellationTokenSource().token);
-					tokensOut = await lmModel.countTokens(totalContent, new vscode.CancellationTokenSource().token);
-				} catch (_) { /* best effort */ }
 				const usageChunk = {
 					id: requestId,
 					object: 'chat.completion.chunk',
@@ -2901,21 +2927,6 @@ export class CopilotApiGateway implements vscode.Disposable {
 			res.write('data: [DONE]\n\n');
 			res.end();
 
-			// Calculate tokens manually since streaming responses often don't include usage
-			let tokensIn = 0;
-			let tokensOut = 0;
-			try {
-				const inputString = lmMessages.map(m => {
-					// @ts-ignore - Check for content property structure
-					return typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
-				}).join('\n');
-				tokensIn = await lmModel.countTokens(inputString, new vscode.CancellationTokenSource().token);
-				tokensOut = await lmModel.countTokens(totalContent, new vscode.CancellationTokenSource().token);
-			} catch (e) {
-				// Ignore token counting errors
-				console.error('Failed to count tokens:', e);
-			}
-
 			// Log the streaming request
 			if (logRequestId && logRequestStart) {
 				this.logRequest(logRequestId, 'POST', '/v1/chat/completions', 200, Date.now() - logRequestStart, {
@@ -2932,7 +2943,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 			const errorChunk = {
 				error: {
 					message: error instanceof Error ? error.message : 'Unknown error',
-					type: 'server_error'
+					type: error instanceof ApiError ? error.type : 'server_error',
+					code: error instanceof ApiError ? error.code : undefined
 				}
 			};
 			res.write(`data: ${JSON.stringify(errorChunk)}\n\n`);
@@ -2940,13 +2952,15 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 			// Log error for streaming request
 			if (logRequestId && logRequestStart) {
-				this.logRequest(logRequestId, 'POST', '/v1/chat/completions', 500, Date.now() - logRequestStart, {
+				this.logRequest(logRequestId, 'POST', '/v1/chat/completions', error instanceof ApiError ? error.status : 500, Date.now() - logRequestStart, {
 					requestPayload: payload,
 					error: error instanceof Error ? error.message : String(error),
 					model: payload?.model,
 					requestHeaders: req.headers
 				});
 			}
+		} finally {
+			cts.dispose();
 		}
 	}
 
@@ -3027,23 +3041,28 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}
 
 		// Build model options (new in 2026 spec support)
-		const modelOptions: vscode.LanguageModelChatRequestOptions = {};
-		// Note: VS Code LM API doesn't expose temperature/top_p directly,
-		// but we prepare the structure for future compatibility
+		const modelOptions: vscode.LanguageModelChatRequestOptions = {
+			justification: 'Processing Responses API request via Copilot API Gateway'
+		};
 
 		// Invoke Copilot
 		const text = await this.runWithConcurrency(async () => {
-			const response = await selectedModel.sendRequest(lmMessages, modelOptions, new vscode.CancellationTokenSource().token);
-			let result = '';
-			for await (const part of response.stream) {
-				if (part instanceof vscode.LanguageModelTextPart) {
-					result += part.value;
-				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
-					const textValue = this.extractTextFromPart(part);
-					if (textValue) { result += textValue; }
+			const cts = new vscode.CancellationTokenSource();
+			try {
+				const response = await selectedModel.sendRequest(lmMessages, modelOptions, cts.token);
+				let result = '';
+				for await (const part of response.stream) {
+					if (part instanceof vscode.LanguageModelTextPart) {
+						result += part.value;
+					} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+						const textValue = this.extractTextFromPart(part);
+						if (textValue) { result += textValue; }
+					}
 				}
+				return result;
+			} finally {
+				cts.dispose();
 			}
-			return result;
 		});
 
 		// Count tokens
@@ -3441,53 +3460,58 @@ export class CopilotApiGateway implements vscode.Disposable {
 					: vscode.LanguageModelChatToolMode.Auto;
 			}
 
-			const result = await lmModel.sendRequest(messages, options, new vscode.CancellationTokenSource().token);
+			const cts = new vscode.CancellationTokenSource();
+			try {
+				const result = await lmModel.sendRequest(messages, options, cts.token);
 
-			type ContentBlock = AnthropicMessageResponse['content'][number];
-			const contentBlocks: ContentBlock[] = [];
-			let currentText = '';
+				type ContentBlock = AnthropicMessageResponse['content'][number];
+				const contentBlocks: ContentBlock[] = [];
+				let currentText = '';
 
-			for await (const part of result.stream) {
-				if (part instanceof vscode.LanguageModelTextPart) {
-					currentText += part.value;
-				} else if (part instanceof vscode.LanguageModelToolCallPart) {
-					if (currentText) {
-						contentBlocks.push({ type: 'text', text: currentText });
-						currentText = '';
-					}
-					const toolCallId = getAnthropicToolUseId(
-						part.callId,
-						() => `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`
-					);
-
-					let parsedInput: Record<string, unknown>;
-					if (typeof part.input === 'string') {
-						try {
-							parsedInput = JSON.parse(part.input || '{}') as Record<string, unknown>;
-						} catch (e) {
-							console.error('Invalid JSON in tool input for tool:', part.name, '| input length:', String(part.input).length);
-							parsedInput = {};
+				for await (const part of result.stream) {
+					if (part instanceof vscode.LanguageModelTextPart) {
+						currentText += part.value;
+					} else if (part instanceof vscode.LanguageModelToolCallPart) {
+						if (currentText) {
+							contentBlocks.push({ type: 'text', text: currentText });
+							currentText = '';
 						}
+						const toolCallId = getAnthropicToolUseId(
+							part.callId,
+							() => `toolu_${randomUUID().replace(/-/g, '').slice(0, 24)}`
+						);
+
+						let parsedInput: Record<string, unknown>;
+						if (typeof part.input === 'string') {
+							try {
+								parsedInput = JSON.parse(part.input || '{}') as Record<string, unknown>;
+							} catch (e) {
+								console.error('Invalid JSON in tool input for tool:', part.name, '| input length:', String(part.input).length);
+								parsedInput = {};
+							}
+						} else {
+							parsedInput = (part.input as Record<string, unknown>) || {};
+						}
+
+						contentBlocks.push({
+							type: 'tool_use',
+							id: toolCallId,
+							name: part.name,
+							input: parsedInput
+						});
 					} else {
-						parsedInput = (part.input as Record<string, unknown>) || {};
+						const textValue = this.extractTextFromPart(part);
+						if (textValue) { currentText += textValue; }
 					}
-
-					contentBlocks.push({
-						type: 'tool_use',
-						id: toolCallId,
-						name: part.name,
-						input: parsedInput
-					});
-				} else {
-					const textValue = this.extractTextFromPart(part);
-					if (textValue) { currentText += textValue; }
 				}
-			}
-			if (currentText) {
-				contentBlocks.push({ type: 'text', text: currentText });
-			}
+				if (currentText) {
+					contentBlocks.push({ type: 'text', text: currentText });
+				}
 
-			return { contentBlocks, lmModel };
+				return { contentBlocks, lmModel };
+			} finally {
+				cts.dispose();
+			}
 		});
 
 		// Count tokens using the correctly resolved model
@@ -3562,18 +3586,25 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		// Use sendRequest directly to preserve message structure instead of flattening to string
 		const text = await this.runWithConcurrency(async () => {
-			const result = await lmModel.sendRequest(messages, {}, new vscode.CancellationTokenSource().token);
+			const cts = new vscode.CancellationTokenSource();
+			try {
+				const result = await lmModel.sendRequest(messages, {
+					justification: 'Processing Google GenerateContent request via Copilot API Gateway'
+				}, cts.token);
 
-			let output = '';
-			for await (const part of result.stream) {
-				if (part instanceof vscode.LanguageModelTextPart) {
-					output += part.value;
-				} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
-					const textValue = this.extractTextFromPart(part);
-					if (textValue) { output += textValue; }
+				let output = '';
+				for await (const part of result.stream) {
+					if (part instanceof vscode.LanguageModelTextPart) {
+						output += part.value;
+					} else if (!(part instanceof vscode.LanguageModelToolCallPart)) {
+						const textValue = this.extractTextFromPart(part);
+						if (textValue) { output += textValue; }
+					}
 				}
+				return output;
+			} finally {
+				cts.dispose();
 			}
-			return output;
 		});
 
 		// Count tokens
@@ -6314,7 +6345,7 @@ function getServerConfig(): ApiServerConfig {
 	const configuration = vscode.workspace.getConfiguration('githubCopilotApi');
 	const enabled = configuration.get<boolean>('server.enabled', false);
 	const enableHttp = configuration.get<boolean>('server.enableHttp', true);
-	const enableWebSocket = configuration.get<boolean>('server.enableWebSocket', true);
+	const enableWebSocket = configuration.get<boolean>('server.enableWebSocket', false);
 	const enableHttps = configuration.get<boolean>('server.enableHttps', false);
 	const tlsCertPath = configuration.get<string>('server.tlsCertPath', '').trim();
 	const tlsKeyPath = configuration.get<string>('server.tlsKeyPath', '').trim();
