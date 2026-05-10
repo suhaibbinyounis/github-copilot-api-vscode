@@ -2256,6 +2256,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 			return;
 		}
 
+		// Responses API (Retrieval/Deletion stubs)
+		if ((req.method === 'GET' || req.method === 'DELETE') && url.pathname.startsWith('/v1/responses/')) {
+			throw new ApiError(501, 'Responses API retrieval and deletion are not supported. Copilot API Gateway is stateless.', 'not_implemented', 'responses_stateless');
+		}
+
 		// Google Generative AI API
 		const googleMatch = url.pathname.match(/^\/v1beta\/models\/(.+):generateContent$/);
 		const googleStreamMatch = url.pathname.match(/^\/v1beta\/models\/(.+):streamGenerateContent$/);
