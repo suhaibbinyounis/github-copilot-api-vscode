@@ -150,6 +150,31 @@
         "command": "github-copilot-api-vscode.createDesktopShortcut",
         "title": "Copilot API: Create Desktop Shortcut",
         "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.perf.resetMetrics",
+        "title": "Copilot API (Dev): Reset Perf Metrics",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.perf.getMetrics",
+        "title": "Copilot API (Dev): Get Perf Metrics",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.perf.validateRequestTracking",
+        "title": "Copilot API (Dev): Validate Request Tracking",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.perf.startCpuProfile",
+        "title": "Copilot API (Dev): Start CPU Profile",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.perf.stopCpuProfile",
+        "title": "Copilot API (Dev): Stop CPU Profile",
+        "category": "GitHub Copilot"
       }
     ],
     "menus": {
