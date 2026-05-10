@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { AuditService, AuditEntry } from './services/AuditService';
 import type { McpService } from './McpService';
+import { telemetryRequest } from './services/TelemetryService';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
 import {
 	applyStructuredAnthropicToolPairLimit,
@@ -6102,6 +6103,36 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		// Always record usage stats
 		this.recordRequestStats(durationMs, tokensIn, tokensOut, isError);
+
+		// Record telemetry
+		let durationBucket = '>5s';
+		if (durationMs < 100) { durationBucket = '<100ms'; }
+		else if (durationMs < 500) { durationBucket = '<500ms'; }
+		else if (durationMs < 1000) { durationBucket = '<1s'; }
+		else if (durationMs < 5000) { durationBucket = '<5s'; }
+
+		let modelFamily = 'unknown';
+		const m = String(extra?.model || '').toLowerCase();
+		if (m.includes('gpt-4')) { modelFamily = 'gpt-4'; }
+		else if (m.includes('gpt-3') || m.includes('gpt-3.5') || m.includes('o1') || m.includes('o3')) { modelFamily = 'openai-other'; }
+		else if (m.includes('claude')) { modelFamily = 'claude'; }
+		else if (m.includes('gemini')) { modelFamily = 'gemini'; }
+		else if (m.includes('llama')) { modelFamily = 'llama'; }
+		else if (m) { modelFamily = 'other'; }
+
+		let isStreaming = 'false';
+		if (extra?.responsePayload && typeof extra.responsePayload === 'object' && 'streamed' in extra.responsePayload && extra.responsePayload.streamed === true) {
+			isStreaming = 'true';
+		} else if (extra?.requestPayload && typeof extra.requestPayload === 'object' && 'stream' in extra.requestPayload && extra.requestPayload.stream === true) {
+			isStreaming = 'true';
+		}
+
+		telemetryRequest({
+			statusCode: String(status),
+			durationBucket,
+			isStreaming,
+			modelFamily
+		});
 
 		// Determine if we should log detailed body/headers
 		// User requested: "i want it to logs request body and response body as well as headers"
