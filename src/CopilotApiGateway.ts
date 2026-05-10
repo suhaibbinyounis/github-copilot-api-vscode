@@ -2818,27 +2818,27 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 				switch (msg.role) {
 					case 'system':
-						lmMessages.push(vscode.LanguageModelChatMessage.User(`[System]: ${content}`));
+						lmMessages.push(vscode.LanguageModelChatMessage.User(`[System]: ${content}`, (msg as any).name));
 						break;
 					case 'user':
-						lmMessages.push(vscode.LanguageModelChatMessage.User(content));
+						lmMessages.push(vscode.LanguageModelChatMessage.User(content, (msg as any).name));
 						break;
 					case 'assistant':
 						if (msg.tool_calls && msg.tool_calls.length > 0) {
 							const toolCallInfo = msg.tool_calls.map((tc: any) =>
 								`[Called function: ${tc.function?.name || tc.name}(${tc.function?.arguments || JSON.stringify(tc.arguments)})]`
 							).join('\n');
-							lmMessages.push(vscode.LanguageModelChatMessage.Assistant(toolCallInfo));
+							lmMessages.push(vscode.LanguageModelChatMessage.Assistant(toolCallInfo, (msg as any).name));
 						} else {
-							lmMessages.push(vscode.LanguageModelChatMessage.Assistant(content));
+							lmMessages.push(vscode.LanguageModelChatMessage.Assistant(content, (msg as any).name));
 						}
 						break;
 					case 'tool':
 						const toolResultContent = `[Tool result for ${msg.tool_call_id || 'unknown'}]: ${content}`;
-						lmMessages.push(vscode.LanguageModelChatMessage.User(toolResultContent));
+						lmMessages.push(vscode.LanguageModelChatMessage.User(toolResultContent, (msg as any).name));
 						break;
 					default:
-						lmMessages.push(vscode.LanguageModelChatMessage.User(content));
+						lmMessages.push(vscode.LanguageModelChatMessage.User(content, (msg as any).name));
 				}
 			}
 
@@ -3978,10 +3978,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 			switch (msg.role) {
 				case 'system':
-					lmMessages.push(vscode.LanguageModelChatMessage.User(`[System]: ${content} `));
+					lmMessages.push(vscode.LanguageModelChatMessage.User(`[System]: ${content} `, (msg as any).name));
 					break;
 				case 'user':
-					lmMessages.push(vscode.LanguageModelChatMessage.User(content));
+					lmMessages.push(vscode.LanguageModelChatMessage.User(content, (msg as any).name));
 					break;
 				case 'assistant':
 					if (msg.tool_calls && msg.tool_calls.length > 0) {
@@ -3989,18 +3989,18 @@ export class CopilotApiGateway implements vscode.Disposable {
 						const toolCallInfo = msg.tool_calls.map((tc: any) =>
 							`[Called function: ${tc.function?.name || tc.name} (${tc.function?.arguments || JSON.stringify(tc.arguments)})]`
 						).join('\n');
-						lmMessages.push(vscode.LanguageModelChatMessage.Assistant(toolCallInfo));
+						lmMessages.push(vscode.LanguageModelChatMessage.Assistant(toolCallInfo, (msg as any).name));
 					} else {
-						lmMessages.push(vscode.LanguageModelChatMessage.Assistant(content));
+						lmMessages.push(vscode.LanguageModelChatMessage.Assistant(content, (msg as any).name));
 					}
 					break;
 				case 'tool':
 					// Tool result message
 					const toolResultContent = `[Tool result for ${msg.tool_call_id || 'unknown'}]: ${content} `;
-					lmMessages.push(vscode.LanguageModelChatMessage.User(toolResultContent));
+					lmMessages.push(vscode.LanguageModelChatMessage.User(toolResultContent, (msg as any).name));
 					break;
 				default:
-					lmMessages.push(vscode.LanguageModelChatMessage.User(content));
+					lmMessages.push(vscode.LanguageModelChatMessage.User(content, (msg as any).name));
 			}
 		}
 
