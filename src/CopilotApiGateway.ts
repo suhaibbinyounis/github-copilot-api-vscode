@@ -2516,8 +2516,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 			if (cts.token.isCancellationRequested) { return; }
 			console.error('Google streaming error:', error);
 			const apiError = error instanceof ApiError ? error : new ApiError(500, error.message || 'Internal Server Error', 'server_error');
-			res.write(JSON.stringify({ error: { code: apiError.status, message: apiError.message, status: apiError.code } }));
-			res.end();
+			if (!res.writableEnded && !res.destroyed) {
+				res.write(JSON.stringify({ error: { code: apiError.status, message: apiError.message, status: apiError.code } }));
+				res.end();
+			}
 		} finally {
 			cts.dispose();
 		}
@@ -2739,8 +2741,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 					responseHeaders: res.getHeaders()
 				});
 			}
-			res.write(`event: error\ndata: ${JSON.stringify({ type: 'error', error: { type: apiError.code || 'api_error', message: apiError.message } })}\n\n`);
-			res.end();
+			if (!res.writableEnded && !res.destroyed) {
+				res.write(`event: error\ndata: ${JSON.stringify({ type: 'error', error: { type: apiError.code || 'api_error', message: apiError.message } })}\n\n`);
+				res.end();
+			}
 		} finally {
 			clearInterval(heartbeat);
 			cts.dispose();
@@ -3008,6 +3012,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 				});
 			}
 		} catch (error) {
+			if (cts.token.isCancellationRequested) { return; }
 			const errorChunk = {
 				error: {
 					message: error instanceof Error ? error.message : 'Unknown error',
@@ -3015,8 +3020,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 					code: error instanceof ApiError ? error.code : undefined
 				}
 			};
-			res.write(`data: ${JSON.stringify(errorChunk)}\n\n`);
-			res.end();
+			if (!res.writableEnded && !res.destroyed) {
+				res.write(`data: ${JSON.stringify(errorChunk)}\n\n`);
+				res.end();
+			}
 
 			// Log error for streaming request
 			if (logRequestId && logRequestStart) {
@@ -3472,12 +3479,13 @@ export class CopilotApiGateway implements vscode.Disposable {
 			if (cts.token.isCancellationRequested) { return; }
 			console.error('Responses API streaming error:', error);
 			const apiError = error instanceof ApiError ? error : new ApiError(500, error.message || 'Internal Server Error', 'api_error');
-			res.write(`event: error\ndata: ${JSON.stringify({
-				type: 'error',
-				error: { type: apiError.type, message: apiError.message, code: apiError.code }
-			})
-				}\n\n`);
-			res.end();
+			if (!res.writableEnded && !res.destroyed) {
+				res.write(`event: error\ndata: ${JSON.stringify({
+					type: 'error',
+					error: { type: apiError.type, message: apiError.message, code: apiError.code }
+				})}\n\n`);
+				res.end();
+			}
 		} finally {
 			clearInterval(heartbeat);
 			cts.dispose();
@@ -4237,8 +4245,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 			if (cts.token.isCancellationRequested) { return; }
 			console.error('Completions streaming error:', error);
 			const apiError = error instanceof ApiError ? error : new ApiError(500, error.message || 'Internal Server Error', 'api_error');
-			res.write(`data: ${JSON.stringify({ error: { message: apiError.message, type: apiError.type, code: apiError.code } })} \n\n`);
-			res.end();
+			if (!res.writableEnded && !res.destroyed) {
+				res.write(`data: ${JSON.stringify({ error: { message: apiError.message, type: apiError.type, code: apiError.code } })} \n\n`);
+				res.end();
+			}
 		} finally {
 			cts.dispose();
 		}
