@@ -138,7 +138,12 @@
       },
       {
         "command": "github-copilot-api-vscode.openDashboard",
-        "title": "Copilot API: Open Dashboard",
+        "title": "Copilot API: Dashboard",
+        "category": "GitHub Copilot"
+      },
+      {
+        "command": "github-copilot-api-vscode.editSystemPrompt",
+        "title": "Copilot API: Edit Default System Prompt",
         "category": "GitHub Copilot"
       },
       {
