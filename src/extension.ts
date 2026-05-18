@@ -8,23 +8,53 @@ import { createDesktopShortcut } from './commands/createDesktopShortcut';
 import { ExtensionHostProfiler } from './services/ExtensionHostProfiler';
 import { PerfMetrics } from './services/PerfMetrics';
 import {
+	durationBucket,
+	heapMbBucket,
 	initTelemetry,
+	modelFamily as telModelFamily,
 	telemetryActivate,
 	telemetryCommand,
+	telemetryConfigChanged,
+	telemetryDeactivate,
+	telemetryModelSwitched,
+	telemetryPerfHeartbeat,
+	telemetryRateLimitHit,
+	telemetryRequestError,
 	telemetryServerError,
 	telemetryServerStarted,
 	telemetryServerStopped,
 	telemetryTunnelStarted,
 	telemetryTunnelStopped,
+	telemetryUriHandler,
+	telemetryWsEvent,
+	uptimeBucket,
 } from './services/TelemetryService';
+// Re-export for use inside gateway without a second import path
+export {
+	telemetryRateLimitHit,
+	telemetryRequestError,
+	telemetryWsEvent,
+};
 
 let gateway: CopilotApiGateway | undefined;
 let gatewayPromise: Promise<CopilotApiGateway> | undefined;
+let perfHeartbeatTimer: NodeJS.Timeout | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
 	// Telemetry — automatically respects vscode telemetry.telemetryLevel setting
 	initTelemetry(context);
-	telemetryActivate();
+
+	// Activation telemetry: rich environment context
+	const copilotChatExt = vscode.extensions.getExtension('GitHub.copilot-chat');
+	telemetryActivate({
+		vscodeVersion: vscode.version,
+		extensionVersion: context.extension.packageJSON.version ?? 'unknown',
+		osPlatform: process.platform,
+		osArch: process.arch,
+		nodeVersion: process.versions.node,
+		copilotChatPresent: String(!!copilotChatExt),
+		copilotChatActive: String(copilotChatExt?.isActive ?? false),
+	});
 
 	const output = vscode.window.createOutputChannel('GitHub Copilot API Server');
 	const extensionHostProfiler = new ExtensionHostProfiler();
@@ -158,15 +188,44 @@ Server is stopped. Click to start or manage.
 				// Notifications
 				const status = await gw.getStatus();
 				if (status.running && !wasRunning) {
-					// Track server start (sanitized — no IPs, no API keys)
+					// Track server start — no IPs, no API keys, no model IDs (only family)
 					telemetryServerStarted({
 						port: String(status.config.port),
-						host: status.config.host === '0.0.0.0' ? 'all-interfaces'
-							: status.config.host === '127.0.0.1' || status.config.host === 'localhost' ? 'localhost'
+						hostBucket: status.config.host === '0.0.0.0' ? 'all-interfaces'
+							: (status.config.host === '127.0.0.1' || status.config.host === 'localhost') ? 'localhost'
 							: 'custom',
 						isHttps: String(status.isHttps),
 						autoStart: String(autoStart),
+						enableWebSocket: String(status.config.enableWebSocket ?? false),
+						enableMcp: String(status.config.mcpEnabled ?? false),
+						modelFamily: telModelFamily(status.config.defaultModel ?? ''),
+						maxConcurrency: String(status.config.maxConcurrentRequests ?? 4),
+						hasApiKey: String(!!(status.config.apiKey)),
+						hasRateLimit: String((status.config.rateLimitPerMinute ?? 0) > 0),
 					});
+
+					// Start perf heartbeat (every 5 min)
+					if (!perfHeartbeatTimer) {
+						perfHeartbeatTimer = setInterval(async () => {
+							try {
+								const s = await gw.getStatus();
+								const heap = process.memoryUsage().heapUsed;
+								const heapMb = Math.round(heap / 1024 / 1024);
+								const uptimeSec = s.stats.uptimeMs ? Math.round(s.stats.uptimeMs / 1000) : 0;
+								const rpm = s.stats.requestsPerMinute ?? 0;
+								const errRate = s.stats.errorRate ?? 0;
+								const wsClients = 0; // tracked via ws.connected/disconnected events
+								telemetryPerfHeartbeat({
+									heapMbBucket: heapMbBucket(heapMb),
+									uptimeBucket: uptimeBucket(uptimeSec),
+									rpmBucket: rpm === 0 ? '0' : rpm < 5 ? '<5' : rpm < 20 ? '<20' : rpm < 60 ? '<60' : '60+',
+									errorRateBucket: errRate === 0 ? '0%' : errRate < 1 ? '<1%' : errRate < 5 ? '<5%' : errRate < 20 ? '<20%' : '20%+',
+									serverRunning: String(s.running),
+									wsConnections: String(wsClients),
+								});
+							} catch { /* non-fatal */ }
+						}, 5 * 60 * 1000);
+					}
 
 					const config = vscode.workspace.getConfiguration('githubCopilotApi.server');
 					if (config.get<boolean>('showNotifications', true)) {
@@ -184,8 +243,20 @@ Server is stopped. Click to start or manage.
 						}
 					}
 				} else if (wasRunning && !status.running) {
-					// Track server stop
-					telemetryServerStopped();
+					// Stop perf heartbeat
+					if (perfHeartbeatTimer) {
+						clearInterval(perfHeartbeatTimer);
+						perfHeartbeatTimer = undefined;
+					}
+					// Track server stop with aggregate stats
+					const uptimeSec2 = status.stats.uptimeMs ? Math.round(status.stats.uptimeMs / 1000) : 0;
+					const errRate2 = status.stats.errorRate ?? 0;
+					telemetryServerStopped({
+						uptimeBucket: uptimeBucket(uptimeSec2),
+						totalRequests: String(status.stats.totalRequests ?? 0),
+						totalErrors: String(Math.round((status.stats.totalRequests ?? 0) * errRate2 / 100)),
+						errorRateBucket: errRate2 === 0 ? '0%' : errRate2 < 5 ? '<5%' : errRate2 < 20 ? '<20%' : '20%+',
+					});
 				}
 				wasRunning = status.running;
 			}));
@@ -350,14 +421,20 @@ Server is stopped. Click to start or manage.
 			const modelSelection = await vscode.window.showQuickPick(modelItems, { placeHolder: 'Select default model', title: 'Switch Default Model' });
 			if (modelSelection) {
 				const newModel = (modelSelection as any).modelId;
+				const oldModel = status.config.defaultModel ?? '';
 				await gw.setDefaultModel(newModel);
+				telemetryModelSwitched({
+					fromFamily: telModelFamily(oldModel),
+					toFamily: telModelFamily(newModel),
+					triggeredFrom: 'quickpick',
+				});
 				void vscode.window.showInformationMessage(`Default model set to: ${newModel}`);
 			}
 		} else if (selection.label.includes('Edit System Prompt')) {
 			void vscode.commands.executeCommand('github-copilot-api-vscode.editSystemPrompt');
 		} else if (selection.label.includes('Start Tunnel')) {
 			const result = await gw.startTunnel();
-			telemetryTunnelStarted(String(result.success));
+			telemetryTunnelStarted({ success: String(result.success), provider: 'cloudflare' });
 			if (result.success) {
 				void vscode.window.showInformationMessage(`Tunnel active at: ${result.url}`);
 			} else {
@@ -369,7 +446,7 @@ Server is stopped. Click to start or manage.
 				await vscode.env.clipboard.writeText(status.tunnel.url);
 				void vscode.window.showInformationMessage(`Copied: ${status.tunnel.url}`);
 			} else if (action === 'Stop Tunnel') {
-				telemetryTunnelStopped();
+				telemetryTunnelStopped({});
 				await gw.stopTunnel();
 				void vscode.window.showInformationMessage('Tunnel stopped.');
 			}
@@ -387,6 +464,21 @@ Server is stopped. Click to start or manage.
 
 	output.appendLine(`[DEBUG] Activation. Enabled: ${enabled}, AutoStart: ${autoStart}`);
 
+	// Observe config changes and emit telemetry
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
+		const tracked = [
+			'server.port', 'server.host', 'server.defaultModel', 'server.enableHttps',
+			'server.enableWebSocket', 'server.rateLimitPerMinute', 'server.maxConcurrentRequests',
+			'server.apiKey', 'server.autoStart', 'server.enableLogging', 'tunnel.cloudflaredPath',
+			'mcp.enabled',
+		];
+		for (const key of tracked) {
+			if (e.affectsConfiguration(`githubCopilotApi.${key}`)) {
+				telemetryConfigChanged({ settingKey: key, serverRestarted: String(gateway !== undefined) });
+			}
+		}
+	}));
+
 	if (enabled || autoStart) {
 		// If auto-start is requested, initialize immediately
 		getGateway().then(gw => {
@@ -397,7 +489,7 @@ Server is stopped. Click to start or manage.
 					: msg.includes('permission') || msg.includes('EACCES') ? 'permission_denied'
 					: msg.includes('copilot') || msg.includes('Copilot') ? 'copilot_unavailable'
 					: 'unknown';
-				telemetryServerError(errorType);
+				telemetryServerError({ errorType });
 				output.appendLine(`[${new Date().toISOString()}] ERROR Failed to start API server: ${msg}`);
 				void vscode.window.showErrorMessage(`Failed to start Copilot API server: ${msg}`);
 			});
@@ -405,7 +497,7 @@ Server is stopped. Click to start or manage.
 	}
 
 	const openChatCommand = vscode.commands.registerCommand('github-copilot-api-vscode.openCopilotChat', async () => {
-		telemetryCommand('openCopilotChat');
+		telemetryCommand('openCopilotChat', { source: 'command-palette' });
 		if (!await ensureCopilotChatReady()) {
 			return;
 		}
@@ -414,6 +506,7 @@ Server is stopped. Click to start or manage.
 	});
 
 	const askChatCommand = vscode.commands.registerCommand('github-copilot-api-vscode.askCopilot', async (rawPrompt?: unknown) => {
+		telemetryCommand('askCopilot', { source: 'command-palette' });
 		if (!await ensureCopilotChatReady()) {
 			return;
 		}
@@ -435,6 +528,7 @@ Server is stopped. Click to start or manage.
 	});
 
 	const askSelectionCommand = vscode.commands.registerTextEditorCommand('github-copilot-api-vscode.askSelectionWithCopilot', async (editor, _edit, rawPrompt?: unknown) => {
+		telemetryCommand('askSelectionWithCopilot', { source: 'context-menu' });
 		if (!await ensureCopilotChatReady()) {
 			return;
 		}
@@ -521,6 +615,7 @@ Server is stopped. Click to start or manage.
 			// Path is typically /dashboard, /start, /stop
 			const path = uri.path;
 			output.appendLine(`[URI Handler] Received URI: ${uri.toString()} (path: ${path})`);
+			telemetryUriHandler({ path: ['/dashboard', '/start', '/stop'].includes(path) ? path : 'unknown' });
 
 			if (path === '/dashboard') {
 				CopilotPanel.createOrShow(context.extensionUri, getGateway);
@@ -615,5 +710,11 @@ Server is stopped. Click to start or manage.
 }
 
 export function deactivate() {
-	// no-op
+	// Clear perf heartbeat if still running
+	if (perfHeartbeatTimer) {
+		clearInterval(perfHeartbeatTimer);
+		perfHeartbeatTimer = undefined;
+	}
+	// Send session summary
+	telemetryDeactivate();
 }

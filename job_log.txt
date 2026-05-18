@@ -1,0 +1,336 @@
+publish	Set up job	﻿2026-05-07T16:48:21.8119725Z Current runner version: '2.334.0'
+publish	Set up job	2026-05-07T16:48:21.8146015Z ##[group]Runner Image Provisioner
+publish	Set up job	2026-05-07T16:48:21.8146936Z Hosted Compute Agent
+publish	Set up job	2026-05-07T16:48:21.8147499Z Version: 20260213.493
+publish	Set up job	2026-05-07T16:48:21.8148169Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+publish	Set up job	2026-05-07T16:48:21.8148940Z Build Date: 2026-02-13T00:28:41Z
+publish	Set up job	2026-05-07T16:48:21.8149585Z Worker ID: {cfb7657d-c3c2-4ee9-b6fa-df0a52aba27f}
+publish	Set up job	2026-05-07T16:48:21.8150316Z Azure Region: westus
+publish	Set up job	2026-05-07T16:48:21.8150873Z ##[endgroup]
+publish	Set up job	2026-05-07T16:48:21.8152637Z ##[group]Operating System
+publish	Set up job	2026-05-07T16:48:21.8153353Z Ubuntu
+publish	Set up job	2026-05-07T16:48:21.8153897Z 24.04.4
+publish	Set up job	2026-05-07T16:48:21.8154342Z LTS
+publish	Set up job	2026-05-07T16:48:21.8154852Z ##[endgroup]
+publish	Set up job	2026-05-07T16:48:21.8155815Z ##[group]Runner Image
+publish	Set up job	2026-05-07T16:48:21.8156517Z Image: ubuntu-24.04
+publish	Set up job	2026-05-07T16:48:21.8157160Z Version: 20260413.86.1
+publish	Set up job	2026-05-07T16:48:21.8158202Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+publish	Set up job	2026-05-07T16:48:21.8159923Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+publish	Set up job	2026-05-07T16:48:21.8160833Z ##[endgroup]
+publish	Set up job	2026-05-07T16:48:21.8161915Z ##[group]GITHUB_TOKEN Permissions
+publish	Set up job	2026-05-07T16:48:21.8164160Z Contents: write
+publish	Set up job	2026-05-07T16:48:21.8164729Z Metadata: read
+publish	Set up job	2026-05-07T16:48:21.8165317Z ##[endgroup]
+publish	Set up job	2026-05-07T16:48:21.8168742Z Secret source: Actions
+publish	Set up job	2026-05-07T16:48:21.8169764Z Prepare workflow directory
+publish	Set up job	2026-05-07T16:48:21.8571994Z Prepare all required actions
+publish	Set up job	2026-05-07T16:48:21.8632594Z Getting action download info
+publish	Set up job	2026-05-07T16:48:22.3810055Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+publish	Set up job	2026-05-07T16:48:22.5952698Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+publish	Set up job	2026-05-07T16:48:22.7071968Z Download action repository 'softprops/action-gh-release@v3' (SHA:b4309332981a82ec1c5618f44dd2e27cc8bfbfda)
+publish	Set up job	2026-05-07T16:48:23.2223812Z Complete job name: publish
+publish	Run actions/checkout@v4	﻿2026-05-07T16:48:23.3030521Z ##[group]Run actions/checkout@v4
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3031486Z with:
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3032043Z   repository: suhaibbinyounis/github-copilot-api-vscode
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3032952Z   token: ***
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3033385Z   ssh-strict: true
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3033821Z   ssh-user: git
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3034255Z   persist-credentials: true
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3034781Z   clean: true
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3035228Z   sparse-checkout-cone-mode: true
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3036018Z   fetch-depth: 1
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3036453Z   fetch-tags: false
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3036890Z   show-progress: true
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3037340Z   lfs: false
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3037748Z   submodules: false
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3038213Z   set-safe-directory: true
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.3039009Z ##[endgroup]
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4196594Z Syncing repository: suhaibbinyounis/github-copilot-api-vscode
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4199077Z ##[group]Getting Git version info
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4200096Z Working directory is '/home/runner/work/github-copilot-api-vscode/github-copilot-api-vscode'
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4201642Z [command]/usr/bin/git version
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4240332Z git version 2.53.0
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4267404Z ##[endgroup]
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4290976Z Temporarily overriding HOME='/home/runner/work/_temp/ea9326d8-d08f-4ad7-bbf0-a5f79e1d44c4' before making global git config changes
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4293511Z Adding repository directory to the temporary git global config as a safe directory
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4296949Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/github-copilot-api-vscode/github-copilot-api-vscode
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4330603Z Deleting the contents of '/home/runner/work/github-copilot-api-vscode/github-copilot-api-vscode'
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4334426Z ##[group]Initializing the repository
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4339005Z [command]/usr/bin/git init /home/runner/work/github-copilot-api-vscode/github-copilot-api-vscode
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4422959Z hint: Using 'master' as the name for the initial branch. This default branch name
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4425056Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4426417Z hint: to use in all of your new repositories, which will suppress this warning,
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4427225Z hint: call:
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4427837Z hint:
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4428393Z hint: 	git config --global init.defaultBranch <name>
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4429030Z hint:
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4429918Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4431670Z hint: 'development'. The just-created branch can be renamed via this command:
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4432977Z hint:
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4433656Z hint: 	git branch -m <name>
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4434251Z hint:
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4434892Z hint: Disable this message with "git config set advice.defaultBranchName false"
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4436955Z Initialized empty Git repository in /home/runner/work/github-copilot-api-vscode/github-copilot-api-vscode/.git/
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4439222Z [command]/usr/bin/git remote add origin https://github.com/suhaibbinyounis/github-copilot-api-vscode
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4468004Z ##[endgroup]
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4468821Z ##[group]Disabling automatic garbage collection
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4472005Z [command]/usr/bin/git config --local gc.auto 0
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4508198Z ##[endgroup]
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4509156Z ##[group]Setting up auth
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4509924Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4538400Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4826367Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.4856953Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.5076123Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.5109434Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.5342777Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.5378928Z ##[endgroup]
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.5379796Z ##[group]Fetching the repository
+publish	Run actions/checkout@v4	2026-05-07T16:48:23.5389364Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +5049e0e469faa6ad23bed8d78c163e41a93cde6d:refs/tags/v2.12.8
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7706415Z From https://github.com/suhaibbinyounis/github-copilot-api-vscode
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7709258Z  * [new ref]         5049e0e469faa6ad23bed8d78c163e41a93cde6d -> v2.12.8
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7731774Z ##[endgroup]
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7733191Z ##[group]Determining the checkout info
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7734439Z ##[endgroup]
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7739157Z [command]/usr/bin/git sparse-checkout disable
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7777681Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7806074Z ##[group]Checking out the ref
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.7809689Z [command]/usr/bin/git checkout --progress --force refs/tags/v2.12.8
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8487465Z Note: switching to 'refs/tags/v2.12.8'.
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8488937Z 
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8489989Z You are in 'detached HEAD' state. You can look around, make experimental
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8492731Z changes and commit them, and you can discard any commits you make in this
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8495592Z state without impacting any branches by switching back to a branch.
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8497130Z 
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8498399Z If you want to create a new branch to retain commits you create, you may
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8501250Z do so (now or later) by using -c with the switch command. Example:
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8502705Z 
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8503303Z   git switch -c <new-branch-name>
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8504280Z 
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8504845Z Or undo this operation with:
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8506006Z 
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8506489Z   git switch -
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8507137Z 
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8508212Z Turn off this advice by setting config variable advice.detachedHead to false
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8510105Z 
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8510761Z HEAD is now at 5049e0e chore: release 2.12.8
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8514269Z ##[endgroup]
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8539477Z [command]/usr/bin/git log -1 --format=%H
+publish	Run actions/checkout@v4	2026-05-07T16:48:24.8562257Z 5049e0e469faa6ad23bed8d78c163e41a93cde6d
+publish	Setup Node.js	﻿2026-05-07T16:48:24.8904644Z ##[group]Run actions/setup-node@v4
+publish	Setup Node.js	2026-05-07T16:48:24.8906036Z with:
+publish	Setup Node.js	2026-05-07T16:48:24.8906889Z   node-version: 20.x
+publish	Setup Node.js	2026-05-07T16:48:24.8907789Z   cache: npm
+publish	Setup Node.js	2026-05-07T16:48:24.8908614Z   always-auth: false
+publish	Setup Node.js	2026-05-07T16:48:24.8909523Z   check-latest: false
+publish	Setup Node.js	2026-05-07T16:48:24.8910718Z   token: ***
+publish	Setup Node.js	2026-05-07T16:48:24.8911519Z ##[endgroup]
+publish	Setup Node.js	2026-05-07T16:48:25.0908180Z Found in cache @ /opt/hostedtoolcache/node/20.20.2/x64
+publish	Setup Node.js	2026-05-07T16:48:25.0911381Z ##[group]Environment details
+publish	Setup Node.js	2026-05-07T16:48:28.0267876Z node: v20.20.2
+publish	Setup Node.js	2026-05-07T16:48:28.0268643Z npm: 10.8.2
+publish	Setup Node.js	2026-05-07T16:48:28.0268952Z yarn: 1.22.22
+publish	Setup Node.js	2026-05-07T16:48:28.0269750Z ##[endgroup]
+publish	Setup Node.js	2026-05-07T16:48:28.0297027Z [command]/opt/hostedtoolcache/node/20.20.2/x64/bin/npm config get cache
+publish	Setup Node.js	2026-05-07T16:48:28.1766229Z /home/runner/.npm
+publish	Setup Node.js	2026-05-07T16:48:28.5098266Z npm cache is not found
+publish	Install Dependencies	﻿2026-05-07T16:48:28.5281453Z ##[group]Run npm ci
+publish	Install Dependencies	2026-05-07T16:48:28.5281745Z ^[[36;1mnpm ci^[[0m
+publish	Install Dependencies	2026-05-07T16:48:28.5314964Z shell: /usr/bin/bash -e {0}
+publish	Install Dependencies	2026-05-07T16:48:28.5315232Z ##[endgroup]
+publish	Install Dependencies	2026-05-07T16:48:29.8172581Z npm warn EBADENGINE Unsupported engine {
+publish	Install Dependencies	2026-05-07T16:48:29.8173609Z npm warn EBADENGINE   package: '@peculiar/x509@1.14.2',
+publish	Install Dependencies	2026-05-07T16:48:29.8174438Z npm warn EBADENGINE   required: { node: '>=22.0.0' },
+publish	Install Dependencies	2026-05-07T16:48:29.8175611Z npm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
+publish	Install Dependencies	2026-05-07T16:48:29.8176375Z npm warn EBADENGINE }
+publish	Install Dependencies	2026-05-07T16:48:29.8191820Z npm warn EBADENGINE Unsupported engine {
+publish	Install Dependencies	2026-05-07T16:48:29.8192636Z npm warn EBADENGINE   package: 'lint-staged@17.0.2',
+publish	Install Dependencies	2026-05-07T16:48:29.8193492Z npm warn EBADENGINE   required: { node: '>=22.22.1' },
+publish	Install Dependencies	2026-05-07T16:48:29.8194356Z npm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
+publish	Install Dependencies	2026-05-07T16:48:29.8195062Z npm warn EBADENGINE }
+publish	Install Dependencies	2026-05-07T16:48:29.8196840Z npm warn EBADENGINE Unsupported engine {
+publish	Install Dependencies	2026-05-07T16:48:29.8197648Z npm warn EBADENGINE   package: 'listr2@10.2.1',
+publish	Install Dependencies	2026-05-07T16:48:29.8198435Z npm warn EBADENGINE   required: { node: '>=22.13.0' },
+publish	Install Dependencies	2026-05-07T16:48:29.8199330Z npm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
+publish	Install Dependencies	2026-05-07T16:48:29.8199985Z npm warn EBADENGINE }
+publish	Install Dependencies	2026-05-07T16:48:36.8928870Z 
+publish	Install Dependencies	2026-05-07T16:48:36.8929796Z added 505 packages, and audited 506 packages in 8s
+publish	Install Dependencies	2026-05-07T16:48:36.8930454Z 
+publish	Install Dependencies	2026-05-07T16:48:36.8930864Z 176 packages are looking for funding
+publish	Install Dependencies	2026-05-07T16:48:36.8931513Z   run `npm fund` for details
+publish	Install Dependencies	2026-05-07T16:48:36.9015659Z 
+publish	Install Dependencies	2026-05-07T16:48:36.9021521Z 3 moderate severity vulnerabilities
+publish	Install Dependencies	2026-05-07T16:48:36.9035999Z 
+publish	Install Dependencies	2026-05-07T16:48:36.9036353Z To address all issues, run:
+publish	Install Dependencies	2026-05-07T16:48:36.9036816Z   npm audit fix
+publish	Install Dependencies	2026-05-07T16:48:36.9037034Z 
+publish	Install Dependencies	2026-05-07T16:48:36.9037237Z Run `npm audit` for details.
+publish	Build Extension	﻿2026-05-07T16:48:36.9287080Z ##[group]Run npm run package
+publish	Build Extension	2026-05-07T16:48:36.9287394Z ^[[36;1mnpm run package^[[0m
+publish	Build Extension	2026-05-07T16:48:36.9308561Z shell: /usr/bin/bash -e {0}
+publish	Build Extension	2026-05-07T16:48:36.9308797Z ##[endgroup]
+publish	Build Extension	2026-05-07T16:48:37.0495443Z 
+publish	Build Extension	2026-05-07T16:48:37.0496360Z > github-copilot-api-vscode@2.12.8 package
+publish	Build Extension	2026-05-07T16:48:37.0497135Z > npm run check-types && npm run lint && node esbuild.js --production
+publish	Build Extension	2026-05-07T16:48:37.0497505Z 
+publish	Build Extension	2026-05-07T16:48:37.1759005Z 
+publish	Build Extension	2026-05-07T16:48:37.1759884Z > github-copilot-api-vscode@2.12.8 check-types
+publish	Build Extension	2026-05-07T16:48:37.1761109Z > tsc --noEmit
+publish	Build Extension	2026-05-07T16:48:37.1761323Z 
+publish	Build Extension	2026-05-07T16:48:40.2191683Z 
+publish	Build Extension	2026-05-07T16:48:40.2192509Z > github-copilot-api-vscode@2.12.8 lint
+publish	Build Extension	2026-05-07T16:48:40.2193099Z > eslint src
+publish	Build Extension	2026-05-07T16:48:40.2193305Z 
+publish	Build Extension	2026-05-07T16:48:42.2326512Z [watch] build started
+publish	Build Extension	2026-05-07T16:48:42.4114987Z [watch] build finished
+publish	Package VSIX	﻿2026-05-07T16:48:42.4263859Z ##[group]Run npx @vscode/vsce package --no-dependencies
+publish	Package VSIX	2026-05-07T16:48:42.4264625Z ^[[36;1mnpx @vscode/vsce package --no-dependencies^[[0m
+publish	Package VSIX	2026-05-07T16:48:42.4287628Z shell: /usr/bin/bash -e {0}
+publish	Package VSIX	2026-05-07T16:48:42.4287866Z ##[endgroup]
+publish	Package VSIX	2026-05-07T16:48:43.1356108Z npm warn exec The following package was not found and will be installed: @vscode/vsce@3.9.1
+publish	Package VSIX	2026-05-07T16:48:49.1545784Z npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+publish	Package VSIX	2026-05-07T16:48:49.2034839Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+publish	Package VSIX	2026-05-07T16:48:49.8563676Z npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+publish	Package VSIX	2026-05-07T16:48:52.8377635Z Executing prepublish script 'npm run vscode:prepublish'...
+publish	Package VSIX	2026-05-07T16:48:52.9482583Z 
+publish	Package VSIX	2026-05-07T16:48:52.9483351Z > github-copilot-api-vscode@2.12.8 vscode:prepublish
+publish	Package VSIX	2026-05-07T16:48:52.9483844Z > npm run package
+publish	Package VSIX	2026-05-07T16:48:52.9483975Z 
+publish	Package VSIX	2026-05-07T16:48:53.0712213Z 
+publish	Package VSIX	2026-05-07T16:48:53.0712980Z > github-copilot-api-vscode@2.12.8 package
+publish	Package VSIX	2026-05-07T16:48:53.0713868Z > npm run check-types && npm run lint && node esbuild.js --production
+publish	Package VSIX	2026-05-07T16:48:53.0714347Z 
+publish	Package VSIX	2026-05-07T16:48:53.2033123Z 
+publish	Package VSIX	2026-05-07T16:48:53.2034102Z > github-copilot-api-vscode@2.12.8 check-types
+publish	Package VSIX	2026-05-07T16:48:53.2034789Z > tsc --noEmit
+publish	Package VSIX	2026-05-07T16:48:53.2034978Z 
+publish	Package VSIX	2026-05-07T16:48:54.8614971Z 
+publish	Package VSIX	2026-05-07T16:48:54.8616011Z > github-copilot-api-vscode@2.12.8 lint
+publish	Package VSIX	2026-05-07T16:48:54.8616686Z > eslint src
+publish	Package VSIX	2026-05-07T16:48:54.8616918Z 
+publish	Package VSIX	2026-05-07T16:48:56.8834941Z [watch] build started
+publish	Package VSIX	2026-05-07T16:48:57.0657238Z [watch] build finished
+publish	Package VSIX	2026-05-07T16:48:57.2311789Z Files included in the VSIX:
+publish	Package VSIX	2026-05-07T16:48:57.2312593Z github-copilot-api-vscode-2.12.8.vsix
+publish	Package VSIX	2026-05-07T16:48:57.2313559Z ├─ [Content_Types].xml 
+publish	Package VSIX	2026-05-07T16:48:57.2314148Z ├─ extension.vsixmanifest 
+publish	Package VSIX	2026-05-07T16:48:57.2314664Z └─ extension/
+publish	Package VSIX	2026-05-07T16:48:57.2315159Z    ├─ .tsbuildinfo [56.32 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2316069Z    ├─ LICENSE.txt [1.05 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2316421Z    ├─ SECURITY.md [0.73 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2316725Z    ├─ changelog.md 
+publish	Package VSIX	2026-05-07T16:48:57.2317009Z    ├─ demo.gif [4.09 MB]
+publish	Package VSIX	2026-05-07T16:48:57.2317325Z    ├─ package.json [11.28 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2317646Z    ├─ pr86_diff.txt [5.73 MB]
+publish	Package VSIX	2026-05-07T16:48:57.2318088Z    ├─ readme.md 
+publish	Package VSIX	2026-05-07T16:48:57.2318404Z    ├─ run_log.txt [32.14 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2318728Z    ├─ src_diff.txt [22.66 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2319031Z    ├─ workflow.sh [2.38 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2319380Z    ├─ .github/ (9 files) [6.08 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2319769Z    ├─ .husky/ (1 file) [0.07 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2320118Z    ├─ dist/ (1 file) [1.46 MB]
+publish	Package VSIX	2026-05-07T16:48:57.2320388Z    ├─ media/ (4 files) [3.98 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2320684Z    ├─ perf/ (6 files) [25.66 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2320981Z    └─ website/ (10 files) [179.79 KB]
+publish	Package VSIX	2026-05-07T16:48:57.2321150Z 
+publish	Package VSIX	2026-05-07T16:48:57.2321336Z => Run vsce ls --tree to see all included files.
+publish	Package VSIX	2026-05-07T16:48:57.2321542Z 
+publish	Package VSIX	2026-05-07T16:48:57.9541207Z Packaged: /home/runner/work/github-copilot-api-vscode/github-copilot-api-vscode/github-copilot-api-vscode-2.12.8.vsix (44 files, 5.5 MB)
+publish	Publish to VS Code Marketplace	﻿2026-05-07T16:48:58.0001772Z ##[group]Run npx @vscode/vsce publish --no-dependencies -p ***
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:58.0002635Z ^[[36;1mnpx @vscode/vsce publish --no-dependencies -p ***^[[0m
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:58.0024392Z shell: /usr/bin/bash -e {0}
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:58.0024643Z ##[endgroup]
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.1240469Z Executing prepublish script 'npm run vscode:prepublish'...
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.2400850Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.2401833Z > github-copilot-api-vscode@2.12.8 vscode:prepublish
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.2402906Z > npm run package
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.2403328Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.3560289Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.3560933Z > github-copilot-api-vscode@2.12.8 package
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.3561551Z > npm run check-types && npm run lint && node esbuild.js --production
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.3561859Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.4696002Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.4697020Z > github-copilot-api-vscode@2.12.8 check-types
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.4697640Z > tsc --noEmit
+publish	Publish to VS Code Marketplace	2026-05-07T16:48:59.4697814Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:01.0650021Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:01.0650587Z > github-copilot-api-vscode@2.12.8 lint
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:01.0651090Z > eslint src
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:01.0651250Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.1137056Z [watch] build started
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.3056119Z [watch] build finished
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4717028Z Files included in the VSIX:
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4717635Z tmp-2629-uYJbeP5elnOW
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4718362Z ├─ [Content_Types].xml 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4718891Z ├─ extension.vsixmanifest 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4719348Z └─ extension/
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4719812Z    ├─ .tsbuildinfo [56.32 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4720341Z    ├─ LICENSE.txt [1.05 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4720840Z    ├─ SECURITY.md [0.73 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4721289Z    ├─ changelog.md 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4721715Z    ├─ demo.gif [4.09 MB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4722197Z    ├─ package.json [11.28 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4722699Z    ├─ pr86_diff.txt [5.73 MB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4723115Z    ├─ readme.md 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4723486Z    ├─ run_log.txt [32.14 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4723913Z    ├─ src_diff.txt [22.66 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4724391Z    ├─ workflow.sh [2.38 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4724924Z    ├─ .github/ (9 files) [6.08 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4725834Z    ├─ .husky/ (1 file) [0.07 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4726431Z    ├─ dist/ (1 file) [1.46 MB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4726990Z    ├─ media/ (4 files) [3.98 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4727559Z    ├─ perf/ (6 files) [25.66 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4728154Z    └─ website/ (10 files) [179.79 KB]
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4728476Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4728821Z => Run vsce ls --tree to see all included files.
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:03.4729182Z 
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:04.1943135Z Publishing 'suhaibbinyounis.github-copilot-api-vscode v2.12.8'...
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:05.9247346Z Extension URL (might take a few minutes): https://marketplace.visualstudio.com/items?itemName=suhaibbinyounis.github-copilot-api-vscode
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:05.9249448Z Hub URL: https://marketplace.visualstudio.com/manage/publishers/suhaibbinyounis/extensions/github-copilot-api-vscode/hub
+publish	Publish to VS Code Marketplace	2026-05-07T16:49:05.9250792Z Published suhaibbinyounis.github-copilot-api-vscode v2.12.8.
+publish	Publish to Open VSX Registry	﻿2026-05-07T16:49:05.9662624Z ##[group]Run npx ovsx publish *.vsix -p ***
+publish	Publish to Open VSX Registry	2026-05-07T16:49:05.9663460Z ^[[36;1mnpx ovsx publish *.vsix -p ***^[[0m
+publish	Publish to Open VSX Registry	2026-05-07T16:49:05.9695271Z shell: /usr/bin/bash -e {0}
+publish	Publish to Open VSX Registry	2026-05-07T16:49:05.9695966Z ##[endgroup]
+publish	Publish to Open VSX Registry	2026-05-07T16:49:06.6125739Z npm warn exec The following package was not found and will be installed: ovsx@0.10.11
+publish	Publish to Open VSX Registry	2026-05-07T16:49:10.7382721Z npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+publish	Publish to Open VSX Registry	2026-05-07T16:49:10.8842374Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+publish	Publish to Open VSX Registry	2026-05-07T16:49:11.3526227Z npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+publish	Publish to Open VSX Registry	2026-05-07T16:49:15.8809789Z 🚀  Published suhaibbinyounis.github-copilot-api-vscode v2.12.8
+publish	Create GitHub Release	﻿2026-05-07T16:49:15.9294094Z ##[group]Run softprops/action-gh-release@v3
+publish	Create GitHub Release	2026-05-07T16:49:15.9294561Z with:
+publish	Create GitHub Release	2026-05-07T16:49:15.9294732Z   files: *.vsix
+publish	Create GitHub Release	2026-05-07T16:49:15.9294917Z   generate_release_notes: true
+publish	Create GitHub Release	2026-05-07T16:49:15.9295132Z   overwrite_files: true
+publish	Create GitHub Release	2026-05-07T16:49:15.9295729Z   token: ***
+publish	Create GitHub Release	2026-05-07T16:49:15.9295914Z ##[endgroup]
+publish	Create GitHub Release	2026-05-07T16:49:16.3220904Z 👩‍🏭 Creating new GitHub release for tag v2.12.8...
+publish	Create GitHub Release	2026-05-07T16:49:18.2784697Z Release 319060475 is not yet discoverable by tag v2.12.8, retrying... (2 retries remaining)
+publish	Create GitHub Release	2026-05-07T16:49:20.1353858Z ⬆️ Uploading github-copilot-api-vscode-2.12.8.vsix...
+publish	Create GitHub Release	2026-05-07T16:49:21.4731312Z ✅ Uploaded github-copilot-api-vscode-2.12.8.vsix
+publish	Create GitHub Release	2026-05-07T16:49:21.4731798Z Finalizing release...
+publish	Create GitHub Release	2026-05-07T16:49:22.1025264Z Getting assets list...
+publish	Create GitHub Release	2026-05-07T16:49:22.3299913Z 🎉 Release ready at https://github.com/suhaibbinyounis/github-copilot-api-vscode/releases/tag/v2.12.8
+publish	Post Setup Node.js	﻿2026-05-07T16:49:22.3462732Z Post job cleanup.
+publish	Post Setup Node.js	2026-05-07T16:49:22.5285297Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/github-copilot-api-vscode/github-copilot-api-vscode --files-from manifest.txt --use-compress-program zstdmt
+publish	Post Setup Node.js	2026-05-07T16:49:25.4126193Z Sent 2522957 of 136740685 (1.8%), 2.4 MBs/sec
+publish	Post Setup Node.js	2026-05-07T16:49:26.4122610Z Sent 2522957 of 136740685 (1.8%), 1.2 MBs/sec
+publish	Post Setup Node.js	2026-05-07T16:49:26.6176637Z Sent 136740685 of 136740685 (100.0%), 59.1 MBs/sec
+publish	Post Setup Node.js	2026-05-07T16:49:26.9129972Z Cache saved with the key: node-cache-Linux-x64-npm-fa917e0d4ba43a8b40a8db722655bdff5b570fffb514cf6fabd61c642bbf9118
+publish	Post Run actions/checkout@v4	﻿2026-05-07T16:49:26.9273475Z Post job cleanup.
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0259595Z [command]/usr/bin/git version
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0297742Z git version 2.53.0
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0342324Z Temporarily overriding HOME='/home/runner/work/_temp/95ee249d-b942-4c7d-abac-c910a3aea796' before making global git config changes
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0343359Z Adding repository directory to the temporary git global config as a safe directory
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0356570Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/github-copilot-api-vscode/github-copilot-api-vscode
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0394178Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0432236Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0668442Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0690867Z http.https://github.com/.extraheader
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0703663Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0736215Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0958331Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+publish	Post Run actions/checkout@v4	2026-05-07T16:49:27.0990826Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+publish	Complete job	﻿2026-05-07T16:49:27.1349168Z Cleaning up orphan processes
+publish	Complete job	2026-05-07T16:49:27.1610839Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4, actions/setup-node@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

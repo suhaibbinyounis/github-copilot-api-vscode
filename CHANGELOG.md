@@ -4,6 +4,37 @@ All notable changes to the "github-copilot-api-vscode" extension will be documen
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.14.0] - 2026-05-18
+
+### Added
+- **Comprehensive Telemetry:** Expanded from 7 sparse events to 15 rich telemetry helpers, giving deep observability via Azure Application Insights.
+  - **Activation context:** VS Code version, OS platform/arch, Node version, Copilot Chat presence, extension version.
+  - **Deactivation summary:** Session duration bucket, total commands and requests served this session.
+  - **Server start (extended):** WebSocket enabled, MCP enabled, model family, max concurrency, API key presence, rate-limit presence.
+  - **Server stop (extended):** Uptime bucket, total requests, error rate bucket.
+  - **Request details (extended):** Endpoint bucket, token-in/out buckets, message-count bucket, streaming flag, tool use flag, system-prompt flag, finish reason.
+  - **New `request.error` event:** Per-request error category (auth / rate_limit / timeout / server_error / client_error).
+  - **New `rateLimit.hit` event:** Endpoint and limit type when a 429 is returned.
+  - **New `model.switched` event:** Old/new model family and trigger source (quickpick / api / config).
+  - **New `config.changed` event:** Setting key changed (never the value) and whether a server restart followed.
+  - **New `ws.*` events:** WebSocket `connected`, `message` (type only), `disconnected`, `error` lifecycle.
+  - **New `uriHandler.invoked` event:** Deep-link path used (`/dashboard`, `/start`, `/stop`).
+  - **Performance heartbeat (`perf.heartbeat`):** Fires every 5 minutes while the server is running — heap MB bucket, uptime, RPM, error rate, server state.
+  - **All 3 chat commands now tracked:** `openCopilotChat`, `askCopilot`, `askSelectionWithCopilot` — previously had no telemetry.
+  - **Shared bucketing utilities:** `durationBucket`, `tokenBucket`, `messageCountBucket`, `uptimeBucket`, `heapMbBucket`, `modelFamily` exported from TelemetryService to eliminate duplicated logic.
+  - **`bucketEndpoint()` helper:** Maps raw URL paths to stable, low-cardinality App Insights dimension labels.
+
+### Changed
+- `telemetryServerStarted` props extended (`hostBucket`, `enableWebSocket`, `enableMcp`, `modelFamily`, `maxConcurrency`, `hasApiKey`, `hasRateLimit`).
+- `telemetryServerStopped` now includes uptime and request-count context.
+- `telemetryServerError` and `telemetryTunnelStarted` updated to use structured props objects.
+
+### Dependencies
+- `lint-staged` 17.0.2 → 17.0.4
+- `typescript-eslint` 8.59.2 → 8.59.3
+- `@types/node` 25.6.0 → 25.7.0
+- `ws` 8.20.0 → 8.20.1 (security fix: uninitialized memory disclosure in `websocket.close()`)
+
 ## [2.10.2] - 2026-03-09
 
 ### Fixed

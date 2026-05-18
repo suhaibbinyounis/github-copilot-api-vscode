@@ -10,7 +10,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { AuditService, AuditEntry } from './services/AuditService';
 import type { McpService } from './McpService';
-import { telemetryRequest } from './services/TelemetryService';
+import {
+	durationBucket as telDurationBucket,
+	messageCountBucket as telMessageCountBucket,
+	modelFamily as telModelFamily,
+	telemetryRequest,
+	telemetryRateLimitHit,
+	telemetryCacheHit,
+	telemetryRequestError,
+	telemetryWsEvent,
+	tokenBucket as telTokenBucket,
+} from './services/TelemetryService';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
 import {
 	applyStructuredAnthropicToolPairLimit,
@@ -1828,6 +1838,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 			this.logRequest(requestId, req.method || 'UNKNOWN', url.pathname, 429, Date.now() - requestStart, {
 				requestHeaders: req.headers
 			});
+			telemetryRateLimitHit({ endpoint: this.bucketEndpoint(url.pathname), limitType: 'per_minute' });
 			const oldestRequest = this.rateLimitBucket.length > 0 ? this.rateLimitBucket[0] : Date.now();
 			const waitTime = Math.ceil((oldestRequest + 60000 - Date.now()) / 1000);
 			throw new ApiError(429, `Rate limit exceeded (${this.config.rateLimitPerMinute} requests/min). Please wait ${waitTime > 0 ? waitTime : 1} seconds before retrying.`, 'rate_limit_error', 'rate_limit_exceeded');
@@ -4342,6 +4353,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 
 	private handleWebSocketConnection(socket: WebSocket, endpoint: string): void {
+		telemetryWsEvent('connected', { endpoint });
+
 		socket.send(JSON.stringify({
 			type: 'session.created',
 			session: {
@@ -4353,6 +4366,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}));
 
 		socket.on('message', (data: RawData) => {
+			// Extract message type safely for telemetry (no content)
+			try {
+				const parsed = JSON.parse(data.toString());
+				if (parsed?.type && typeof parsed.type === 'string') {
+					telemetryWsEvent('message', { endpoint, messageType: parsed.type });
+				}
+			} catch { /* ignore parse errors */ }
+
 			void this.handleWebSocketMessage(socket, data, endpoint).catch(error => {
 				if (error instanceof ApiError) {
 					this.sendWsError(socket, error);
@@ -4363,7 +4384,12 @@ export class CopilotApiGateway implements vscode.Disposable {
 			});
 		});
 
+		socket.on('close', () => {
+			telemetryWsEvent('disconnected', { endpoint });
+		});
+
 		socket.on('error', (error: Error) => {
+			telemetryWsEvent('error', { endpoint });
 			this.logError('WebSocket client error', error);
 		});
 	}
@@ -6093,6 +6119,25 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}
 	}
 
+	/**
+	 * Map a raw URL path to a stable, low-cardinality telemetry label.
+	 * Prevents per-request IDs or model names in the path from creating
+	 * unbounded App Insights dimensions.
+	 */
+	private bucketEndpoint(rawPath: string): string {
+		if (rawPath === '/v1/chat/completions') { return '/v1/chat/completions'; }
+		if (rawPath === '/v1/models') { return '/v1/models'; }
+		if (rawPath === '/v1/embeddings') { return '/v1/embeddings'; }
+		if (rawPath === '/v1/completions') { return '/v1/completions'; }
+		if (rawPath.startsWith('/anthropic')) { return 'anthropic'; }
+		if (rawPath.startsWith('/google')) { return 'google'; }
+		if (rawPath.startsWith('/llama')) { return 'llama'; }
+		if (rawPath === '/health') { return '/health'; }
+		if (rawPath === '/openapi.json' || rawPath === '/docs') { return '/docs'; }
+		if (rawPath.startsWith('/v1/realtime')) { return '/v1/realtime'; }
+		return 'other';
+	}
+
 	private logRequest(
 		requestId: string,
 		method: string,
@@ -6119,35 +6164,67 @@ export class CopilotApiGateway implements vscode.Disposable {
 		// Always record usage stats
 		this.recordRequestStats(durationMs, tokensIn, tokensOut, isError);
 
-		// Record telemetry
-		let durationBucket = '>5s';
-		if (durationMs < 100) { durationBucket = '<100ms'; }
-		else if (durationMs < 500) { durationBucket = '<500ms'; }
-		else if (durationMs < 1000) { durationBucket = '<1s'; }
-		else if (durationMs < 5000) { durationBucket = '<5s'; }
+		// Record telemetry (reuse tokensIn/tokensOut already declared above)
 
-		let modelFamily = 'unknown';
-		const m = String(extra?.model || '').toLowerCase();
-		if (m.includes('gpt-4')) { modelFamily = 'gpt-4'; }
-		else if (m.includes('gpt-3') || m.includes('gpt-3.5') || m.includes('o1') || m.includes('o3')) { modelFamily = 'openai-other'; }
-		else if (m.includes('claude')) { modelFamily = 'claude'; }
-		else if (m.includes('gemini')) { modelFamily = 'gemini'; }
-		else if (m.includes('llama')) { modelFamily = 'llama'; }
-		else if (m) { modelFamily = 'other'; }
+		// Derive bucketed endpoint label
+		const endpointBucket = this.bucketEndpoint(path);
 
-		let isStreaming = 'false';
-		if (extra?.responsePayload && typeof extra.responsePayload === 'object' && 'streamed' in extra.responsePayload && extra.responsePayload.streamed === true) {
-			isStreaming = 'true';
-		} else if (extra?.requestPayload && typeof extra.requestPayload === 'object' && 'stream' in extra.requestPayload && extra.requestPayload.stream === true) {
-			isStreaming = 'true';
-		}
+		// Detect streaming, tools, system prompt
+		const reqPayload = extra?.requestPayload as Record<string, unknown> | undefined;
+		const resPayload = extra?.responsePayload as Record<string, unknown> | undefined;
+		const isStreaming = String(
+			(resPayload && 'streamed' in resPayload && resPayload.streamed === true) ||
+			(reqPayload && 'stream' in reqPayload && reqPayload.stream === true)
+		);
+		const hasTools = String(!!(reqPayload && ('tools' in reqPayload || 'tool_choice' in reqPayload)));
+		const hasSystemPrompt = String(
+			!!(reqPayload && ('system' in reqPayload)) ||
+			(Array.isArray(reqPayload?.['messages']) && (reqPayload['messages'] as any[]).some((m: any) => m?.role === 'system'))
+		);
+		const messages = Array.isArray(reqPayload?.['messages']) ? (reqPayload!['messages'] as any[]) : [];
+		const finishReason = (() => {
+			try {
+				const choices = (resPayload as any)?.choices;
+				if (Array.isArray(choices) && choices.length > 0) {
+					return String(choices[0]?.finish_reason ?? 'unknown');
+				}
+			} catch { /* ignore */ }
+			return 'unknown';
+		})();
+
+		// Determine model family
+		const mFamily = telModelFamily(extra?.model ?? '');
 
 		telemetryRequest({
 			statusCode: String(status),
-			durationBucket,
+			durationBucket: telDurationBucket(durationMs),
 			isStreaming,
-			modelFamily
+			modelFamily: mFamily,
+			endpoint: endpointBucket,
+			tokensInBucket: telTokenBucket(tokensIn),
+			tokensOutBucket: telTokenBucket(tokensOut),
+			messageCountBucket: telMessageCountBucket(messages.length),
+			cacheHit: 'false',
+			hasTools,
+			hasSystemPrompt,
+			finishReason,
 		});
+
+		// Emit a dedicated error event for non-2xx responses
+		if (isError) {
+			const errorCategory = status === 401 ? 'auth'
+				: status === 429 ? 'rate_limit'
+				: status === 504 ? 'timeout'
+				: status >= 500 ? 'server_error'
+				: status >= 400 ? 'client_error'
+				: 'unknown';
+			telemetryRequestError({
+				errorCategory,
+				endpoint: endpointBucket,
+				modelFamily: mFamily,
+				statusCode: String(status),
+			});
+		}
 
 		// Determine if we should log detailed body/headers
 		// User requested: "i want it to logs request body and response body as well as headers"
