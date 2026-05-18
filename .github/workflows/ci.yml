@@ -10,30 +10,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         # Node 22+ required for lint-staged v17 (needs >= 22.22.1).
         # VS Code 1.95+ compatibility is unaffected — the compiled .vsix runs
         # inside VS Code's own Node host, not the CI build environment.
-        node-version: [22.x]
+        node-version: [24.x]
 
     steps:
-    - uses: actions/checkout@v4
-    
+    - uses: actions/checkout@v4.2.2
+
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v4.4.0
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        
+
     - name: Install Dependencies
       run: npm ci
-      
+
     - name: Build and Lint
       # 'compile' script runs: check-types && lint && node esbuild.js
       run: npm run compile
-      
+
     - name: Test
       if: runner.os == 'Linux' # vscode-test requires a display server or xvfb on Linux, skipping for simple CI for now or strictly running unit tests
       run: echo "Skipping UI tests in headless CI for now"
