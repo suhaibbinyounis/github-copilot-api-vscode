@@ -91,7 +91,7 @@
     "@vscode/extension-telemetry": "^1.5.2",
     "cloudflared": "^0.7.1",
     "selfsigned": "^5.5.0",
-    "ws": "^8.20.1"
+    "ws": "^8.21.0"
   },
   "overrides": {
     "diff": "^8.0.3",
