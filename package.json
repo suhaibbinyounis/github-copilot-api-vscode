@@ -3,7 +3,7 @@
   "displayName": "GitHub Copilot API Gateway",
   "description": "Free & open-source universal API Gateway for all VS Code language models. Auto-discovers GitHub Copilot, Gemini, Ollama & any AI extension — exposing them via local OpenAI, Anthropic, Google & Llama compatible APIs. One endpoint, every model. Use with Cursor, LangChain, Agents & more.",
   "icon": "media/icon.png",
-  "version": "2.14.0",
+  "version": "2.14.1",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
@@ -91,25 +91,25 @@
     "@vscode/extension-telemetry": "^1.5.2",
     "cloudflared": "^0.7.1",
     "selfsigned": "^5.5.0",
-    "ws": "^8.20.1"
+    "ws": "^8.21.0"
   },
   "overrides": {
     "diff": "^8.0.3",
     "serialize-javascript": "^7.0.4"
   },
   "devDependencies": {
-    "@types/node": "^25.7.0",
+    "@types/node": "^25.9.1",
     "@types/vscode": "1.95.0",
     "@types/ws": "^8.18.1",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.28.0",
-    "eslint": "10.3.0",
-    "lint-staged": "^17.0.4",
+    "eslint": "10.4.1",
+    "lint-staged": "^17.0.7",
     "make-coverage-badge": "^1.2.0",
     "npm-run-all": "^4.1.5",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.59.3"
+    "typescript-eslint": "8.60.1"
   },
   "lint-staged": {
     "src/**/*.ts": "eslint --fix"
