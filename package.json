@@ -85,7 +85,7 @@
   },
   "dependencies": {
     "@microsoft/applicationinsights-common": "^3.4.1",
-    "@microsoft/applicationinsights-core-js": "^3.4.1",
+    "@microsoft/applicationinsights-core-js": "^3.4.2",
     "@microsoft/applicationinsights-web": "^3.4.1",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@vscode/extension-telemetry": "^1.5.2",
