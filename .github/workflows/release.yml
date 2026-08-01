@@ -39,7 +39,7 @@ jobs:
         continue-on-error: true
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3.0.0
+        uses: softprops/action-gh-release@v3.0.2
         with:
           files: "*.vsix"
           generate_release_notes: true
