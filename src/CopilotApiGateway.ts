@@ -32,6 +32,11 @@ import {
 	normalizeAnthropicContent,
 	type AnthropicToolResultContent
 } from './anthropicToolPairs';
+import {
+	buildCursorCompatibleAlias,
+	flattenOpenAICompatibleMessageContent,
+	normalizeModelLookupKey
+} from './compatibility';
 
 const COPILOT_CHAT_EXTENSION_ID = 'GitHub.copilot-chat';
 const COPILOT_CHAT_SEARCH_QUERY = '@id:GitHub.copilot-chat';
@@ -2767,7 +2772,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		// Fetch ALL language models registered in VS Code, not just Copilot
 		const allModels = await vscode.lm.selectChatModels();
 
-		const modelData = allModels.map(model => ({
+		const modelData: Array<Record<string, unknown>> = allModels.map(model => ({
 			id: model.id,
 			object: 'model',
 			created: now,
@@ -2783,6 +2788,32 @@ export class CopilotApiGateway implements vscode.Disposable {
 				token_counting: true
 			}
 		}));
+
+		const seenModelIds = new Set(modelData.map(model => String(model.id).toLowerCase()));
+		for (const model of allModels) {
+			const alias = buildCursorCompatibleAlias(model.family || model.id);
+			if (!alias || seenModelIds.has(alias)) {
+				continue;
+			}
+			seenModelIds.add(alias);
+			modelData.push({
+				id: alias,
+				object: 'model',
+				created: now,
+				owned_by: model.vendor || 'unknown',
+				name: `${model.name} (Cursor alias)`,
+				family: model.family,
+				version: model.version,
+				aliased_model_id: model.id,
+				max_input_tokens: model.maxInputTokens,
+				capabilities: {
+					chat_completion: true,
+					text_completion: true,
+					streaming: true,
+					token_counting: true
+				}
+			});
+		}
 
 		return modelData;
 	}
@@ -3091,7 +3122,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 					// Handle message-type input items
 					messages.push({
 						role: item.role || 'user',
-						content: typeof item.content === 'string' ? item.content : JSON.stringify(item.content)
+						content: this.flattenMessageContent(item.content)
 					});
 				}
 				// Skip other types like 'item_reference' for now
@@ -3242,7 +3273,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 				} else if (item.type === 'message' || !item.type) {
 					messages.push({
 						role: item.role || 'user',
-						content: typeof item.content === 'string' ? item.content : JSON.stringify(item.content)
+						content: this.flattenMessageContent(item.content)
 					});
 				}
 			}
@@ -4547,44 +4578,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 	}
 
 	private flattenMessageContent(content: unknown): string {
-		if (typeof content === 'string') {
-			return content;
-		}
-		if (content === undefined || content === null) {
-			return '';
-		}
-		if (Array.isArray(content)) {
-			return content.map(part => {
-				if (typeof part === 'string') {
-					return part;
-				}
-				if (part && typeof part === 'object') {
-					const p = part as Record<string, unknown>;
-					// Plain text block: {type:'text', text:'...'}
-					if (typeof p.text === 'string') {
-						return p.text;
-					}
-					// tool_result block: extract nested content
-					if (p.type === 'tool_result') {
-						const c = p.content;
-						if (typeof c === 'string') { return c; }
-						if (Array.isArray(c)) {
-							return c.map((cp: any) => {
-								if (cp.type === 'image') { return '[image omitted]'; }
-								return cp.text || '';
-							}).join('\n');
-						}
-						return '';
-					}
-					// tool_use block: format as a human-readable call summary
-					if (p.type === 'tool_use') {
-						return `[Tool call: ${p.name}(${typeof p.input === 'string' ? p.input : JSON.stringify(p.input)})]`;
-					}
-				}
-				return '';
-			}).join('\n');
-		}
-		return String(content);
+		return flattenOpenAICompatibleMessageContent(content);
 	}
 
 	/**
@@ -4771,15 +4765,30 @@ export class CopilotApiGateway implements vscode.Disposable {
 		});
 
 		const requested = requestedModel.toLowerCase();
+		const requestedNormalized = normalizeModelLookupKey(requested);
+		const matchesModel = (candidate: vscode.LanguageModelChat): boolean => {
+			const aliases = [
+				candidate.id,
+				candidate.family || '',
+				buildCursorCompatibleAlias(candidate.family || candidate.id) || ''
+			];
+			return aliases.some(alias => {
+				if (!alias) {
+					return false;
+				}
+				const lowered = alias.toLowerCase();
+				return lowered === requested || normalizeModelLookupKey(lowered) === requestedNormalized;
+			});
+		};
 
 		// 1. Exact match on model id
-		const exactMatch = sortedModels.find(m => m.id.toLowerCase() === requested);
+		const exactMatch = sortedModels.find(matchesModel);
 		if (exactMatch) {
 			return exactMatch;
 		}
 
 		// 2. Exact match on family (e.g., "gpt-4o" matches family "gpt-4o")
-		const familyMatch = sortedModels.find(m => m.family?.toLowerCase() === requested);
+		const familyMatch = sortedModels.find(m => m.family?.toLowerCase() === requestedNormalized);
 		if (familyMatch) {
 			return familyMatch;
 		}
@@ -4788,15 +4797,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 		// claude-3-5-sonnet-20241022 -> claude-3-5-sonnet
 		// gemini-1.5-pro-002 -> gemini-1.5-pro
 		// gemini-1.5-pro-preview-0409 -> gemini-1.5-pro
-		const cleaned = requested
-			.replace(/-\d{8}$/, '')           // Claude date suffix
-			.replace(/-preview-\d{4}$/, '')   // Gemini preview suffix
-			.replace(/-\d{3}$/, '');           // Gemini version suffix
-		
-		const normed = cleaned.replace(/\./g, '-');
+		const normed = requestedNormalized;
 		const fuzzyMatch = sortedModels.find(m => {
-			const mId = m.id.toLowerCase().replace('copilot-', '').replace(/\./g, '-');
-			const mFamily = (m.family || '').toLowerCase().replace('copilot-', '').replace(/\./g, '-');
+			const mId = normalizeModelLookupKey(m.id);
+			const mFamily = normalizeModelLookupKey(m.family || '');
 			return normed === mId || normed === mFamily ||
 				normed.startsWith(mId + '-') || mId.startsWith(normed + '-') ||
 				normed.startsWith(mFamily + '-') || mFamily.startsWith(normed + '-');
