@@ -265,9 +265,11 @@ response = query_engine.query(<span class="code-string">"Summarize the documents
                     <li>Set the API Key to any value (e.g., <code>copilot</code>)</li>
                     <li>Enable <strong>Override OpenAI Base URL</strong></li>
                     <li>Set Base URL to: <code>http://127.0.0.1:3030/v1</code></li>
-                    <li>Select your preferred model (e.g., <code>gpt-4o</code>)</li>
+                    <li>Select a <strong>Copilot-prefixed model alias</strong> (e.g., <code>copilot-gpt-4o</code>)</li>
                 </ol>
 
+                <p><strong>Important:</strong> Cursor may intercept first-party OpenAI model names like <code>gpt-4o</code>. Using the <code>copilot-*</code> aliases from <code>/v1/models</code> forces requests through your local gateway and custom key/base URL.</p>
+                <p>Image/vision prompts are also normalized by the gateway so Cursor multimodal requests are forwarded safely even when image blocks are present.</p>
                 <p>Now Cursor will use your Copilot subscription for all AI features!</p>
 
                 <!-- Aider -->

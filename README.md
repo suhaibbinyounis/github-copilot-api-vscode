@@ -117,6 +117,8 @@ response = client.chat.completions.create(
 
 If it speaks OpenAI, it works with this gateway.
 
+> 🎯 **Cursor tip:** If Cursor bypasses your custom base URL for model names like `gpt-4o`, pick a `copilot-*` model alias from `GET /v1/models` (for example `copilot-gpt-4o`). These aliases are provided specifically to prevent Cursor model-name interception.
+
 ### 🔀 Multi-Provider: One Endpoint, Every Model
 
 This gateway **auto-discovers all AI models** registered in VS Code — not just Copilot.
