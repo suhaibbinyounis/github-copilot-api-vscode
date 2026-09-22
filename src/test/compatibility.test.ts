@@ -4,6 +4,7 @@ import * as assert from 'assert';
 import {
 	buildCursorCompatibleAlias,
 	flattenOpenAICompatibleMessageContent,
+	normalizeOpenAIToolCallHistory,
 	normalizeModelLookupKey
 } from '../compatibility.js';
 
@@ -41,5 +42,47 @@ suite('compatibility helpers', () => {
 		]);
 
 		assert.equal(flattened, '[image omitted]\nOCR text');
+	});
+
+	test('normalizes OpenAI tool call history arguments to structured input objects', () => {
+		const calls = normalizeOpenAIToolCallHistory([
+			{
+				id: 'call_1',
+				type: 'function',
+				function: {
+					name: 'read_file',
+					arguments: '{"path":"README.md"}'
+				}
+			}
+		]);
+
+		assert.deepEqual(calls, [
+			{
+				id: 'call_1',
+				name: 'read_file',
+				input: { path: 'README.md' }
+			}
+		]);
+	});
+
+	test('falls back to empty object for invalid OpenAI tool call argument JSON', () => {
+		const calls = normalizeOpenAIToolCallHistory([
+			{
+				id: 'call_1',
+				type: 'function',
+				function: {
+					name: 'read_file',
+					arguments: '{"path":'
+				}
+			}
+		]);
+
+		assert.deepEqual(calls, [
+			{
+				id: 'call_1',
+				name: 'read_file',
+				input: {}
+			}
+		]);
 	});
 });

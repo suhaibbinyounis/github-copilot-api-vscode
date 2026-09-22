@@ -99,3 +99,43 @@ export function flattenOpenAICompatibleMessageContent(content: unknown): string 
 	}
 	return flattenContentPart(content) || String(content);
 }
+
+export interface OpenAIToolCallHistoryEntry {
+	id: string;
+	name: string;
+	input: Record<string, unknown>;
+}
+
+function parseOpenAIToolCallInput(value: unknown): Record<string, unknown> {
+	if (typeof value === 'string') {
+		try {
+			const parsed = JSON.parse(value || '{}');
+			return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+				? parsed as Record<string, unknown>
+				: {};
+		} catch {
+			return {};
+		}
+	}
+	if (value && typeof value === 'object' && !Array.isArray(value)) {
+		return value as Record<string, unknown>;
+	}
+	return {};
+}
+
+export function normalizeOpenAIToolCallHistory(toolCalls: unknown): OpenAIToolCallHistoryEntry[] {
+	if (!Array.isArray(toolCalls)) {
+		return [];
+	}
+
+	return toolCalls.map((toolCall, index) => {
+		const candidate = toolCall as Record<string, unknown> | undefined;
+		const fn = candidate?.function as Record<string, unknown> | undefined;
+		const id = typeof candidate?.id === 'string' && candidate.id.trim() ? candidate.id : `call_${index}`;
+		const name = typeof fn?.name === 'string' && fn.name.trim()
+			? fn.name
+			: (typeof candidate?.name === 'string' ? candidate.name : '');
+		const input = parseOpenAIToolCallInput(fn?.arguments ?? candidate?.arguments);
+		return { id, name, input };
+	}).filter(call => call.name.length > 0);
+}

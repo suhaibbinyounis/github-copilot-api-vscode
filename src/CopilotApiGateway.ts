@@ -35,6 +35,7 @@ import {
 import {
 	buildCursorCompatibleAlias,
 	flattenOpenAICompatibleMessageContent,
+	normalizeOpenAIToolCallHistory,
 	normalizeModelLookupKey
 } from './compatibility';
 
@@ -2876,17 +2877,13 @@ export class CopilotApiGateway implements vscode.Disposable {
 						break;
 					case 'assistant':
 						if (msg.tool_calls && msg.tool_calls.length > 0) {
-							const toolCallInfo = msg.tool_calls.map((tc: any) =>
-								`[Called function: ${tc.function?.name || tc.name}(${tc.function?.arguments || JSON.stringify(tc.arguments)})]`
-							).join('\n');
-							lmMessages.push(vscode.LanguageModelChatMessage.Assistant(toolCallInfo, (msg as any).name));
+							lmMessages.push(this.buildAssistantToolCallHistoryMessage(content, msg.tool_calls, (msg as any).name));
 						} else {
 							lmMessages.push(vscode.LanguageModelChatMessage.Assistant(content, (msg as any).name));
 						}
 						break;
 					case 'tool':
-						const toolResultContent = `[Tool result for ${msg.tool_call_id || 'unknown'}]: ${content}`;
-						lmMessages.push(vscode.LanguageModelChatMessage.User(toolResultContent, (msg as any).name));
+						lmMessages.push(this.buildToolResultHistoryMessage(content, msg.tool_call_id, (msg as any).name));
 						break;
 					default:
 						lmMessages.push(vscode.LanguageModelChatMessage.User(content, (msg as any).name));
@@ -4045,19 +4042,13 @@ export class CopilotApiGateway implements vscode.Disposable {
 					break;
 				case 'assistant':
 					if (msg.tool_calls && msg.tool_calls.length > 0) {
-						// Assistant message with tool calls - include tool call info
-						const toolCallInfo = msg.tool_calls.map((tc: any) =>
-							`[Called function: ${tc.function?.name || tc.name} (${tc.function?.arguments || JSON.stringify(tc.arguments)})]`
-						).join('\n');
-						lmMessages.push(vscode.LanguageModelChatMessage.Assistant(toolCallInfo, (msg as any).name));
+						lmMessages.push(this.buildAssistantToolCallHistoryMessage(content, msg.tool_calls, (msg as any).name));
 					} else {
 						lmMessages.push(vscode.LanguageModelChatMessage.Assistant(content, (msg as any).name));
 					}
 					break;
 				case 'tool':
-					// Tool result message
-					const toolResultContent = `[Tool result for ${msg.tool_call_id || 'unknown'}]: ${content} `;
-					lmMessages.push(vscode.LanguageModelChatMessage.User(toolResultContent, (msg as any).name));
+					lmMessages.push(this.buildToolResultHistoryMessage(content, msg.tool_call_id, (msg as any).name));
 					break;
 				default:
 					lmMessages.push(vscode.LanguageModelChatMessage.User(content, (msg as any).name));
@@ -4658,6 +4649,36 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 	private flattenMessageContent(content: unknown): string {
 		return flattenOpenAICompatibleMessageContent(content);
+	}
+
+	private buildAssistantToolCallHistoryMessage(
+		content: string,
+		toolCalls: unknown,
+		name?: string
+	): vscode.LanguageModelChatMessage {
+		const parts: (vscode.LanguageModelTextPart | vscode.LanguageModelToolCallPart)[] = [];
+		if (content) {
+			parts.push(new vscode.LanguageModelTextPart(content));
+		}
+		for (const call of normalizeOpenAIToolCallHistory(toolCalls)) {
+			parts.push(new vscode.LanguageModelToolCallPart(call.id, call.name, call.input));
+		}
+		if (parts.length === 0) {
+			return vscode.LanguageModelChatMessage.Assistant(content, name);
+		}
+		return vscode.LanguageModelChatMessage.Assistant(parts, name);
+	}
+
+	private buildToolResultHistoryMessage(
+		content: string,
+		toolCallId?: string,
+		name?: string
+	): vscode.LanguageModelChatMessage {
+		const callId = typeof toolCallId === 'string' && toolCallId.trim() ? toolCallId : 'unknown';
+		const resultParts = content ? [new vscode.LanguageModelTextPart(content)] : [];
+		return vscode.LanguageModelChatMessage.User([
+			new vscode.LanguageModelToolResultPart(callId, resultParts)
+		], name);
 	}
 
 	/**
