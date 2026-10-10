@@ -3834,12 +3834,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 				);
 
 				if (handledToolCalls.length > 0) {
-					// Add assistant message with tool calls to history
+					// Add assistant message with tool calls to history.
+					// Use the original callId from the model response so the downstream
+					// tool result tool_call_id can reference the same ID (fixes #183).
 					messages.push({
 						role: 'assistant',
 						content: result.content || null,
 						tool_calls: result.toolCalls.map((tc: any) => ({
-							id: `call_${randomUUID().slice(0, 24)}`,
+							id: tc.callId,
 							type: 'function',
 							function: {
 								name: tc.name,
@@ -3873,15 +3875,16 @@ export class CopilotApiGateway implements vscode.Disposable {
 									return typeof part === 'object' && part ? JSON.stringify(part) : String(part);
 								}).join('\n');
 							}
+							// Reuse the same callId from the assistant message so the IDs match.
 							messages.push({
 								role: 'tool',
-								tool_call_id: `call_${randomUUID().slice(0, 24)}`, // Best effort ID mapping
+								tool_call_id: tc.callId,
 								content: JSON.stringify(toolResult)
 							});
 						} catch (error: any) {
 							messages.push({
 								role: 'tool',
-								tool_call_id: `call_${randomUUID().slice(0, 24)}`,
+								tool_call_id: tc.callId,
 								content: `Error executing tool: ${error.message} `
 							});
 						}
@@ -3933,8 +3936,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 						message: {
 							role: 'assistant',
 							content: result.content || null,
-							tool_calls: result.toolCalls.map((tc: any, idx: number) => ({
-								id: `call_${randomUUID().slice(0, 24)}`,
+							tool_calls: result.toolCalls.map((tc: any) => ({
+								// Preserve the original callId so callers can correlate
+								// tool results (fixes #183).
+								id: tc.callId,
 								type: 'function',
 								function: {
 									name: tc.name,
@@ -4079,7 +4084,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 			const response = await model.sendRequest(lmMessages, options, cts.token);
 
 			let textContent = '';
-			const toolCalls: Array<{ name: string; arguments: any }> = [];
+			const toolCalls: Array<{ callId: string; name: string; arguments: any }> = [];
 
 			// Process the response stream
 			for await (const part of response.stream) {
@@ -4089,7 +4094,10 @@ export class CopilotApiGateway implements vscode.Disposable {
 				if (part instanceof vscode.LanguageModelTextPart) {
 					textContent += part.value;
 				} else if (part instanceof vscode.LanguageModelToolCallPart) {
+					// Preserve the original callId so that assistant tool_calls[].id and
+					// tool result tool_call_id always match (fixes #183).
 					toolCalls.push({
+						callId: part.callId || `call_${randomUUID().slice(0, 24)}`,
 						name: part.name,
 						arguments: part.input
 					});
