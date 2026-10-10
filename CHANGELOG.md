@@ -4,6 +4,16 @@ All notable changes to the "github-copilot-api-vscode" extension will be documen
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.15.2] - 2026-10-10
+
+### Fixed
+- **Tool call ID mismatch in non-streaming completions:** `invokeCopilotWithTools` now preserves the original `LanguageModelToolCallPart.callId` instead of discarding it. `processChatCompletion` reuses that ID for `assistant.tool_calls[].id`, the tool result `tool_call_id` (both success and error paths), and external tool calls returned to the client. Previously each was assigned an independent random UUID, causing the upstream model to return HTTP 400 `No tool output found for function call <id>` on the follow-up turn. ([#183](https://github.com/suhaibbinyounis/github-copilot-api-vscode/issues/183))
+
+### Changed
+- **Dependencies:** `lint-staged` 17.5.1→17.6.0, `ws` 8.21.3→8.22.0, `typescript-eslint` 8.70.0→8.71.0, `@modelcontextprotocol/sdk` 1.30.0→1.32.0, `eslint` 10.11.0→10.12.0, `@types/node` 26.6.2→26.6.4.
+
+---
+
 ## [2.15.1] - 2026-09-27
 
 ### Fixed
