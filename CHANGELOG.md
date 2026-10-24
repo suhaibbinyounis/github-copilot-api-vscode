@@ -4,6 +4,13 @@ All notable changes to the "github-copilot-api-vscode" extension will be documen
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.15.3] - 2026-10-24
+
+### Changed
+- **Dependencies:** `eslint` 10.12.0→10.13.0, `typescript-eslint` 8.71.0→8.71.2, `@types/node` 26.6.4→26.6.5, `@types/ws` 8.18.1→8.18.2, `@modelcontextprotocol/sdk` 1.32.0→1.32.1, `@microsoft/applicationinsights-web` 3.4.4→3.4.5, `@microsoft/applicationinsights-common` 3.4.4→3.4.5, `@microsoft/applicationinsights-core-js` 3.4.4→3.4.5.
+
+---
+
 ## [2.15.2] - 2026-10-10
 
 ### Fixed
