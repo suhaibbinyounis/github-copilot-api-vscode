@@ -87,7 +87,7 @@
     "@microsoft/applicationinsights-common": "^3.4.5",
     "@microsoft/applicationinsights-core-js": "^3.4.5",
     "@microsoft/applicationinsights-web": "^3.4.5",
-    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@vscode/extension-telemetry": "^1.5.2",
     "cloudflared": "^0.7.3",
     "selfsigned": "^5.5.0",
