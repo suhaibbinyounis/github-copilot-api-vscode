@@ -14,6 +14,9 @@
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="GitHub Copilot API Gateway">
     <meta property="og:url" content="https://copilot-api.suhaib.in/wiki.html">
     <meta property="og:title" content="Wiki & Guides | GitHub Copilot API Gateway">
     <meta property="og:description" content="Integration guides for LangChain, Cursor, Aider, and more.">
@@ -22,6 +25,67 @@
     <link rel="icon" type="image/png"
         href="https://raw.githubusercontent.com/suhaibbinyounis/github-copilot-api-vscode/main/media/icon.png">
     <link rel="canonical" href="https://copilot-api.suhaib.in/wiki.html">
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://suhaibbinyounis.com/#person",
+      "name": "Suhaib Bin Younis",
+      "url": "https://suhaibbinyounis.com/",
+      "jobTitle": "Software Engineer",
+      "alternateName": [
+        "suhaibbinyounis",
+        "@suhaibbinyounis"
+      ],
+      "sameAs": [
+        "https://suhaibbinyounis.com/",
+        "https://suhaib.in/",
+        "https://notes.suhaib.in/",
+        "https://apps.suhaib.in/",
+        "https://transfer.suhaib.in/",
+        "https://quran.suhaib.in/",
+        "https://copilot-api.suhaib.in/",
+        "https://github.com/suhaibbinyounis",
+        "https://in.linkedin.com/in/suhaibbinyounis",
+        "https://scholar.google.com/citations?user=v6lmurQAAAAJ&hl=en",
+        "https://www.researchgate.net/profile/Suhaib-Bin-Younis",
+        "https://pypi.org/org/suhaib/",
+        "https://dev.to/suhaibbinyounis",
+        "https://x.com/Suhaibbinyounis",
+        "https://open-vsx.org/namespace/suhaibbinyounis",
+        "https://marketplace.visualstudio.com/items?itemName=SuhaibBinYounis.github-copilot-api-vscode"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://copilot-api.suhaib.in/#website",
+      "url": "https://copilot-api.suhaib.in/",
+      "name": "GitHub Copilot API Gateway",
+      "publisher": {
+        "@id": "https://suhaibbinyounis.com/#person"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://copilot-api.suhaib.in/wiki.html#webpage",
+      "url": "https://copilot-api.suhaib.in/wiki.html",
+      "name": "Wiki & Guides | GitHub Copilot API Gateway",
+      "description": "Integration guides for LangChain, Cursor, Aider, and more. Learn how to use GitHub Copilot API Gateway with your favorite AI tools.",
+      "isPartOf": {
+        "@id": "https://copilot-api.suhaib.in/#website"
+      },
+      "about": {
+        "@id": "https://suhaibbinyounis.com/#person"
+      },
+      "inLanguage": "en"
+    }
+  ]
+}
+    </script>
+
     <meta name="theme-color" content="#0d1117">
 
     <meta name="twitter:site" content="@suhaibbinyounis">
@@ -533,6 +597,14 @@ data = json.loads(response.choices[<span class="code-number">0</span>].message.c
     <!-- Footer -->
     <footer class="footer" style="margin-top: 4rem;">
         <div class="container">
+            <nav aria-label="More from Suhaib" style="display:flex;flex-wrap:wrap;gap:.65rem 1rem;margin:0 0 1.25rem;padding:1rem 0;border-bottom:1px solid rgba(139,148,158,.2);font-size:.85rem;">
+  <a href="https://suhaibbinyounis.com/" target="_blank" rel="noopener noreferrer">Portfolio</a>
+  <a href="https://suhaib.in/" target="_blank" rel="noopener noreferrer">Personal site</a>
+  <a href="https://notes.suhaib.in/docs/explore/" target="_blank" rel="noopener noreferrer">Technical notes</a>
+  <a href="https://apps.suhaib.in/" target="_blank" rel="noopener noreferrer">Apps &amp; tools</a>
+  <a href="https://transfer.suhaib.in/" target="_blank" rel="noopener noreferrer">Transfer</a>
+  <a href="https://quran.suhaib.in/" target="_blank" rel="noopener noreferrer">Read &amp; Reflect</a>
+</nav>
             <div class="footer-bottom">
                 <p class="text-muted">&copy;
                     <script>document.write(new Date().getFullYear())</script> Suhaib Bin Younis. MIT License.

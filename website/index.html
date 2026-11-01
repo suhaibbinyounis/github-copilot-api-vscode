@@ -17,6 +17,8 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="GitHub Copilot API Gateway">
   <meta property="og:url" content="https://copilot-api.suhaib.in/">
   <meta property="og:title" content="GitHub Copilot API Gateway - Unlock Copilot as an API">
   <meta property="og:description"
@@ -55,56 +57,86 @@
   <!-- Structured Data -->
   <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Person",
-        "@id": "https://copilot-api.suhaib.in/#person",
-        "name": "Suhaib Bin Younis",
-        "url": "https://suhaib.in/",
-        "sameAs": [
-          "https://github.com/suhaibbinyounis",
-          "https://twitter.com/suhaibbinyounis",
-          "https://www.linkedin.com/in/suhaibbinyounis"
-        ]
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://suhaibbinyounis.com/#person",
+      "name": "Suhaib Bin Younis",
+      "url": "https://suhaibbinyounis.com/",
+      "sameAs": [
+        "https://suhaibbinyounis.com/",
+        "https://suhaib.in/",
+        "https://notes.suhaib.in/",
+        "https://apps.suhaib.in/",
+        "https://transfer.suhaib.in/",
+        "https://quran.suhaib.in/",
+        "https://copilot-api.suhaib.in/",
+        "https://github.com/suhaibbinyounis",
+        "https://in.linkedin.com/in/suhaibbinyounis",
+        "https://scholar.google.com/citations?user=v6lmurQAAAAJ&hl=en",
+        "https://www.researchgate.net/profile/Suhaib-Bin-Younis",
+        "https://pypi.org/org/suhaib/",
+        "https://dev.to/suhaibbinyounis",
+        "https://x.com/Suhaibbinyounis",
+        "https://open-vsx.org/namespace/suhaibbinyounis",
+        "https://marketplace.visualstudio.com/items?itemName=SuhaibBinYounis.github-copilot-api-vscode"
+      ],
+      "jobTitle": "Software Engineer",
+      "alternateName": [
+        "suhaibbinyounis",
+        "@suhaibbinyounis"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://copilot-api.suhaib.in/#website",
+      "url": "https://copilot-api.suhaib.in/",
+      "name": "GitHub Copilot API Gateway",
+      "description": "Unlock GitHub Copilot as an OpenAI-compatible API.",
+      "publisher": {
+        "@id": "https://suhaibbinyounis.com/#person"
       },
-      {
-        "@type": "WebSite",
-        "@id": "https://copilot-api.suhaib.in/#website",
-        "url": "https://copilot-api.suhaib.in/",
-        "name": "GitHub Copilot API Gateway",
-        "description": "Unlock GitHub Copilot as an OpenAI-compatible API.",
-        "publisher": {
-          "@id": "https://copilot-api.suhaib.in/#person"
-        },
-        "inLanguage": "en-US"
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://copilot-api.suhaib.in/#webpage",
+      "url": "https://copilot-api.suhaib.in/",
+      "name": "GitHub Copilot API Gateway — OpenAI-compatible APIs from VS Code models",
+      "description": "An open-source local gateway for VS Code language models with OpenAI, Anthropic, Google, and Llama-compatible APIs.",
+      "isPartOf": {
+        "@id": "https://copilot-api.suhaib.in/#website"
       },
-      {
-        "@type": "SoftwareApplication",
-        "@id": "https://copilot-api.suhaib.in/#application",
-        "name": "GitHub Copilot API Gateway",
-        "operatingSystem": "Windows, macOS, Linux",
-        "applicationCategory": "DeveloperApplication",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "5",
-          "ratingCount": "100"
-        },
-        "description": "Transform your GitHub Copilot subscription into a universal AI API gateway compatible with OpenAI, Anthropic, Google, and Llama.",
-        "author": {
-          "@id": "https://copilot-api.suhaib.in/#person"
-        },
-        "isPartOf": {
-          "@id": "https://copilot-api.suhaib.in/#website"
-        }
+      "about": {
+        "@id": "https://suhaibbinyounis.com/#person"
+      },
+      "mainEntity": {
+        "@id": "https://copilot-api.suhaib.in/#application"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://copilot-api.suhaib.in/#application",
+      "name": "GitHub Copilot API Gateway",
+      "operatingSystem": "Web, Windows, macOS, Linux",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Transform your GitHub Copilot subscription into a universal AI API gateway compatible with OpenAI, Anthropic, Google, and Llama.",
+      "author": {
+        "@id": "https://suhaibbinyounis.com/#person"
+      },
+      "isPartOf": {
+        "@id": "https://copilot-api.suhaib.in/#website"
       }
-    ]
-  }
+    }
+  ]
+}
   </script>
 
   <!-- Google tag (gtag.js) -->
@@ -533,7 +565,12 @@ response = client.chat.completions.create(
                 rel="noopener">Report Issues</a></li>
             <li><a href="https://github.com/sponsors/suhaibbinyounis" target="_blank" rel="noopener"
                 style="color: #db61a2;">Sponsor ❤️</a></li>
-            <li><a href="https://suhaib.in" target="_blank" rel="noopener">Author</a></li>
+            <li><a href="https://suhaib.in/" target="_blank" rel="noopener noreferrer">Personal site</a></li>
+            <li><a href="https://suhaibbinyounis.com/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
+            <li><a href="https://notes.suhaib.in/docs/explore/" target="_blank" rel="noopener noreferrer">Technical notes</a></li>
+            <li><a href="https://apps.suhaib.in/" target="_blank" rel="noopener noreferrer">Apps &amp; tools</a></li>
+            <li><a href="https://transfer.suhaib.in/" target="_blank" rel="noopener noreferrer">Transfer</a></li>
+            <li><a href="https://quran.suhaib.in/" target="_blank" rel="noopener noreferrer">Read &amp; Reflect</a></li>
           </ul>
         </div>
       </div>
