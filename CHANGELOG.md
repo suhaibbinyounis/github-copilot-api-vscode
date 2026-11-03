@@ -4,6 +4,13 @@ All notable changes to the "github-copilot-api-vscode" extension will be documen
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+
+## [2.15.4] - 2026-11-03
+
+### Fixed
+- **WebSocket authorization bypass:** Upgrade requests now enforce API key authentication, IP allowlisting, rate limits, per-IP connection limits, and Host checks. Browser connections require a same-origin Origin header unless an exact trusted origin is configured; custom proxy hosts can be explicitly allowed. WebSocket messages also consume the configured rate limit. Thanks to [@orshih6](https://github.com/orshih6) for identifying and responsibly disclosing this issue.
+
 ## [2.15.3] - 2026-10-24
 
 ### Changed

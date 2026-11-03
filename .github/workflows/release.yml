@@ -32,10 +32,12 @@ jobs:
 
       - name: Publish to VS Code Marketplace
         run: npx @vscode/vsce publish --no-dependencies -p ${{ secrets.VSCE_PAT }}
+        id: publish_vscode
         continue-on-error: true
 
       - name: Publish to Open VSX Registry
         run: npx ovsx publish *.vsix -p ${{ secrets.OVSX_PAT }}
+        id: publish_openvsx
         continue-on-error: true
 
       - name: Create GitHub Release
@@ -43,3 +45,16 @@ jobs:
         with:
           files: "*.vsix"
           generate_release_notes: true
+
+      - name: Verify registry publishing
+        if: always()
+        env:
+          VSCODE_PUBLISH_OUTCOME: ${{ steps.publish_vscode.outcome }}
+          OPENVSX_PUBLISH_OUTCOME: ${{ steps.publish_openvsx.outcome }}
+        run: |
+          echo "VS Code Marketplace publish: ${VSCODE_PUBLISH_OUTCOME}"
+          echo "Open VSX publish: ${OPENVSX_PUBLISH_OUTCOME}"
+          if [ "${VSCODE_PUBLISH_OUTCOME}" != "success" ] || [ "${OPENVSX_PUBLISH_OUTCOME}" != "success" ]; then
+            echo "One or more registry publishes failed; see the publish step logs."
+            exit 1
+          fi

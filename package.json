@@ -3,7 +3,7 @@
   "displayName": "GitHub Copilot API Gateway",
   "description": "Free & open-source universal API Gateway for all VS Code language models. Auto-discovers GitHub Copilot, Gemini, Ollama & any AI extension — exposing them via local OpenAI, Anthropic, Google & Llama compatible APIs. One endpoint, every model. Use with Cursor, LangChain, Agents & more.",
   "icon": "media/icon.png",
-  "version": "2.15.3",
+  "version": "2.15.4",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
@@ -227,7 +227,7 @@
         "githubCopilotApi.server.enableWebSocket": {
           "type": "boolean",
           "default": false,
-          "description": "Expose the WebSocket realtime endpoint at /v1/realtime. Disabled by default to reduce resource usage."
+          "description": "Expose the WebSocket realtime endpoint at /v1/realtime. Disabled by default to reduce resource usage. Upgrade requests enforce API key, IP allowlist, rate, connection, Host, and Origin checks."
         },
         "githubCopilotApi.server.enableHttps": {
           "type": "boolean",
@@ -273,7 +273,7 @@
         "githubCopilotApi.server.apiKey": {
           "type": "string",
           "default": "",
-          "description": "Optional API key for authentication. Leave empty to disable authentication. Clients must provide this as a Bearer token."
+          "description": "Optional API key for authentication. Leave empty to disable authentication. HTTP clients use a Bearer token or x-api-key header; WebSocket clients use those headers or the api-key.<key> subprotocol."
         },
         "githubCopilotApi.server.enableLogging": {
           "type": "boolean",
@@ -306,6 +306,22 @@
           },
           "default": [],
           "description": "List of allowed IP addresses or CIDR ranges. If empty, all IPs are allowed."
+        },
+        "githubCopilotApi.server.webSocketAllowedHosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Exact additional Host names allowed for WebSocket upgrades, such as api.example.com when using a reverse proxy. Local bind addresses and the active Cloudflare Tunnel hostname are allowed automatically."
+        },
+        "githubCopilotApi.server.webSocketAllowedOrigins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Exact browser origins allowed to connect cross-origin to the WebSocket API, for example https://app.example.com. Same-origin browser connections are allowed by default; leave empty to deny cross-origin browser connections."
         },
         "githubCopilotApi.server.requestTimeoutSeconds": {
           "type": "number",

@@ -98,6 +98,8 @@ export interface ApiServerConfig {
 	defaultSystemPrompt: string
 	redactionPatterns: RedactionPattern[] // Named patterns with toggle support
 	ipAllowlist: string[] // List of allowed IPs or CIDR ranges
+	webSocketAllowedHosts: string[] // Exact Host names allowed for proxied/custom WebSocket access
+	webSocketAllowedOrigins: string[] // Exact browser origins allowed to connect cross-origin
 	requestTimeoutSeconds: number
 	maxPayloadSizeMb: number
 	maxConnectionsPerIp: number
@@ -1595,7 +1597,19 @@ export class CopilotApiGateway implements vscode.Disposable {
 		// Only load WebSocket server when enabled
 		if (this.config.enableWebSocket) {
 			const { WebSocketServer: WSServer } = await import('ws');
-			this.wsServer = new WSServer({ noServer: true });
+			this.wsServer = new WSServer({
+				noServer: true,
+				// Never reflect credential-bearing subprotocols in the 101 response.
+				handleProtocols: protocols => {
+					if (protocols.has('openai-beta.realtime-v1')) {
+						return 'openai-beta.realtime-v1';
+					}
+					if (protocols.has('realtime')) {
+						return 'realtime';
+					}
+					return false;
+				}
+			});
 			this.wsServer.on('error', (error: Error) => {
 				this.logError('WebSocket server error', error);
 			});
@@ -1609,21 +1623,99 @@ export class CopilotApiGateway implements vscode.Disposable {
 			];
 
 			this.httpServer.on('upgrade', (request, socket, head) => {
+				const reject = (status: number, message: string) => {
+					const statusText = status === 401 ? 'Unauthorized' : status === 403 ? 'Forbidden' : status === 429 ? 'Too Many Requests' : status === 503 ? 'Service Unavailable' : 'Bad Request';
+					const body = `${message}\n`;
+					socket.end(`HTTP/1.1 ${status} ${statusText}\r\nConnection: close\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: ${Buffer.byteLength(body)}\r\n\r\n${body}`);
+				};
+
 				if (!request.url) {
+					reject(400, 'Missing request URL.');
+					return;
+				}
+				let url: URL;
+				try {
+					url = this.buildUrl(request.url);
+				} catch {
+					reject(400, 'Invalid request URL.');
+					return;
+				}
+				const endpoint = wsEndpoints.find(ep => url.pathname === ep);
+
+				if (!endpoint) {
 					socket.destroy();
 					return;
 				}
-				const url = this.buildUrl(request.url);
-				const endpoint = wsEndpoints.find(ep => url.pathname === ep);
 
-				if (endpoint) {
-					this.wsServer?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
+				const requestId = randomUUID().slice(0, 8);
+				const requestStart = Date.now();
+				if (!this.isAllowedWebSocketHost(request)) {
+					this.logRequest(requestId, 'GET', url.pathname, 403, Date.now() - requestStart, { error: 'WebSocket Host is not allowed.' });
+					reject(403, 'WebSocket Host is not allowed.');
+					return;
+				}
+				if (!this.isAllowedWebSocketOrigin(request)) {
+					this.logRequest(requestId, 'GET', url.pathname, 403, Date.now() - requestStart, { error: 'WebSocket Origin is not allowed.' });
+					reject(403, 'WebSocket Origin is not allowed.');
+					return;
+				}
+				if (this.config.apiKey && this.getRequestApiKey(request, true) !== this.config.apiKey) {
+					this.logRequest(requestId, 'GET', url.pathname, 401, Date.now() - requestStart, { error: 'Invalid or missing API key.' });
+					reject(401, 'Invalid or missing API key.');
+					return;
+				}
+				if (!this.checkIpAllowlist(request)) {
+					this.logRequest(requestId, 'GET', url.pathname, 403, Date.now() - requestStart, { error: 'Client IP is not allowed.' });
+					reject(403, 'Client IP is not allowed.');
+					return;
+				}
+				if (!this.checkRateLimit()) {
+					this.logRequest(requestId, 'GET', url.pathname, 429, Date.now() - requestStart, { error: 'Rate limit exceeded.' });
+					telemetryRateLimitHit({ endpoint: this.bucketEndpoint(url.pathname), limitType: 'per_minute' });
+					reject(429, 'Rate limit exceeded.');
+					return;
+				}
+
+				const clientIp = this.getRemoteClientIp(request);
+				const currentConnections = this.activeConnectionsPerIp.get(clientIp) || 0;
+				if (currentConnections >= this.config.maxConnectionsPerIp) {
+					this.logRequest(requestId, 'GET', url.pathname, 429, Date.now() - requestStart, { error: 'Per-IP connection limit exceeded.', ip: clientIp });
+					reject(429, `Too many connections from your IP. Maximum ${this.config.maxConnectionsPerIp} concurrent connections allowed.`);
+					return;
+				}
+
+				const wsServer = this.wsServer;
+				if (!wsServer || this.isShuttingDown) {
+					reject(503, 'WebSocket server is unavailable.');
+					return;
+				}
+
+				this.activeConnectionsPerIp.set(clientIp, currentConnections + 1);
+				let released = false;
+				const releaseConnection = () => {
+					if (released) {
+						return;
+					}
+					released = true;
+					const count = this.activeConnectionsPerIp.get(clientIp) || 1;
+					if (count <= 1) {
+						this.activeConnectionsPerIp.delete(clientIp);
+					} else {
+						this.activeConnectionsPerIp.set(clientIp, count - 1);
+					}
+				};
+				socket.once('close', releaseConnection);
+
+				try {
+					wsServer.handleUpgrade(request, socket, head, (ws: WebSocket) => {
 						// Attach endpoint info to the socket for routing
 						(ws as any)._endpoint = endpoint;
 						this.handleWebSocketConnection(ws, endpoint);
 					});
-				} else {
-					socket.destroy();
+				} catch (error) {
+					releaseConnection();
+					this.logError('Failed to upgrade WebSocket connection', error);
+					reject(400, 'WebSocket upgrade failed.');
 				}
 			});
 		}
@@ -1825,12 +1917,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 		// Authentication check (skip for health endpoint)
 		if (this.config.apiKey && url.pathname !== '/health') {
-			const authHeader = req.headers['authorization'];
-			const xApiKey = req.headers['x-api-key'];
-			// Accept both Bearer token (OpenAI style) and x-api-key (Anthropic/Claude Code style)
-			const providedKey = authHeader?.startsWith('Bearer ')
-				? authHeader.slice(7)
-				: (typeof xApiKey === 'string' ? xApiKey : null);
+			const providedKey = this.getRequestApiKey(req);
 			if (providedKey !== this.config.apiKey) {
 				this.logRequest(requestId, req.method || 'UNKNOWN', url.pathname, 401, Date.now() - requestStart, {
 					requestHeaders: req.headers
@@ -4306,6 +4393,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 	}
 
 	private async handleWebSocketMessage(socket: WebSocket, raw: RawData, endpoint: string): Promise<void> {
+		if (!this.checkRateLimit()) {
+			telemetryRateLimitHit({ endpoint: this.bucketEndpoint(endpoint), limitType: 'per_minute' });
+			throw new ApiError(429, `Rate limit exceeded (${this.config.rateLimitPerMinute} requests/min).`, 'rate_limit_error', 'rate_limit_exceeded');
+		}
+
 		const text = typeof raw === 'string' ? raw : raw.toString('utf8');
 		let payload: any;
 		try {
@@ -6118,6 +6210,118 @@ export class CopilotApiGateway implements vscode.Disposable {
 		res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
 	}
 
+	private getRequestApiKey(req: IncomingMessage, allowWebSocketSubprotocol = false): string | null {
+		const authHeader = req.headers['authorization'];
+		if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+			return authHeader.slice(7);
+		}
+
+		const xApiKey = req.headers['x-api-key'];
+		if (typeof xApiKey === 'string') {
+			return xApiKey;
+		}
+
+		if (allowWebSocketSubprotocol) {
+			const header = req.headers['sec-websocket-protocol'];
+			const protocols = (Array.isArray(header) ? header.join(',') : header ?? '').split(',');
+			for (const rawProtocol of protocols) {
+				const protocol = rawProtocol.trim();
+				const credential = /^(?:api-key|bearer)\.(.+)$/i.exec(protocol)?.[1];
+				if (credential) {
+					return credential;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private getRemoteClientIp(req: IncomingMessage): string {
+		const remoteAddress = req.socket.remoteAddress || 'unknown';
+		return remoteAddress.startsWith('::ffff:') ? remoteAddress.substring(7) : remoteAddress;
+	}
+
+	private normalizeHostName(host: string): string {
+		return host.trim().toLowerCase().replace(/^\[|\]$/g, '').replace(/^::ffff:/, '');
+	}
+
+	private parseWebSocketHost(req: IncomingMessage): URL | null {
+		const hostHeader = req.headers.host;
+		if (typeof hostHeader !== 'string' || !hostHeader.trim()) {
+			return null;
+		}
+
+		try {
+			const requestUrl = new URL(`${this.isHttps ? 'https' : 'http'}://${hostHeader}`);
+			if (requestUrl.username || requestUrl.password || requestUrl.pathname !== '/' || requestUrl.search || requestUrl.hash) {
+				return null;
+			}
+			return requestUrl;
+		} catch {
+			return null;
+		}
+	}
+
+	private isAllowedWebSocketHost(req: IncomingMessage): boolean {
+		const requestUrl = this.parseWebSocketHost(req);
+		if (!requestUrl) {
+			return false;
+		}
+
+		const requestHost = this.normalizeHostName(requestUrl.hostname);
+		const allowedHosts = new Set([
+			this.normalizeHostName(this.config.host),
+			this.normalizeHostName(req.socket.localAddress || ''),
+			this.normalizeHostName(os.hostname()),
+			'localhost',
+			...this.config.webSocketAllowedHosts.map(host => this.normalizeHostName(host))
+		]);
+		if (this.tunnelUrl) {
+			try {
+				allowedHosts.add(this.normalizeHostName(new URL(this.tunnelUrl).hostname));
+			} catch {
+				// Ignore an invalid tunnel URL; it cannot grant a Host exception.
+			}
+		}
+
+		return allowedHosts.has(requestHost);
+	}
+
+	private isAllowedWebSocketOrigin(req: IncomingMessage): boolean {
+		const originHeader = req.headers.origin;
+		if (originHeader === undefined) {
+			return true; // Native clients generally omit Origin; API key and IP checks still apply.
+		}
+		if (typeof originHeader !== 'string' || originHeader === 'null') {
+			return false;
+		}
+
+		const requestHost = this.parseWebSocketHost(req);
+		if (!requestHost) {
+			return false;
+		}
+
+		try {
+			const origin = new URL(originHeader);
+			if ((origin.protocol !== 'http:' && origin.protocol !== 'https:') || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) {
+				return false;
+			}
+			if (origin.origin === requestHost.origin) {
+				return true;
+			}
+
+			return this.config.webSocketAllowedOrigins.some(allowedOrigin => {
+				try {
+					return new URL(allowedOrigin).origin === origin.origin;
+				} catch {
+					return false;
+				}
+			});
+		} catch {
+			return false;
+		}
+	}
+
 	private checkRateLimit(): boolean {
 		if (this.config.rateLimitPerMinute <= 0) {
 			return true; // Rate limiting disabled
@@ -6492,6 +6696,12 @@ export class CopilotApiGateway implements vscode.Disposable {
 		if (patch.ipAllowlist !== undefined) {
 			updates.push(Promise.resolve(config.update('server.ipAllowlist', patch.ipAllowlist, vscode.ConfigurationTarget.Global)));
 		}
+		if (patch.webSocketAllowedHosts !== undefined) {
+			updates.push(Promise.resolve(config.update('server.webSocketAllowedHosts', patch.webSocketAllowedHosts, vscode.ConfigurationTarget.Global)));
+		}
+		if (patch.webSocketAllowedOrigins !== undefined) {
+			updates.push(Promise.resolve(config.update('server.webSocketAllowedOrigins', patch.webSocketAllowedOrigins, vscode.ConfigurationTarget.Global)));
+		}
 
 		this.suppressRestart = true;
 		try {
@@ -6720,6 +6930,8 @@ function getServerConfig(): ApiServerConfig {
 	}
 
 	const ipAllowlist = configuration.get<string[]>('server.ipAllowlist', []);
+	const webSocketAllowedHosts = configuration.get<string[]>('server.webSocketAllowedHosts', []);
+	const webSocketAllowedOrigins = configuration.get<string[]>('server.webSocketAllowedOrigins', []);
 	const requestTimeoutSeconds = configuration.get<number>('server.requestTimeoutSeconds', 180);
 	const maxPayloadSizeMb = configuration.get<number>('server.maxPayloadSizeMb', 1);
 	const maxConnectionsPerIp = configuration.get<number>('server.maxConnectionsPerIp', 10);
@@ -6729,7 +6941,7 @@ function getServerConfig(): ApiServerConfig {
 	return {
 		enabled, enableHttp, enableWebSocket, enableHttps, tlsCertPath, tlsKeyPath, host, port, maxConcurrentRequests,
 		defaultModel, apiKey, enableLogging, rateLimitPerMinute, defaultSystemPrompt,
-		redactionPatterns, ipAllowlist, requestTimeoutSeconds, maxPayloadSizeMb, maxConnectionsPerIp,
+		redactionPatterns, ipAllowlist, webSocketAllowedHosts, webSocketAllowedOrigins, requestTimeoutSeconds, maxPayloadSizeMb, maxConnectionsPerIp,
 		mcpEnabled, cloudflaredPath
 	};
 }
