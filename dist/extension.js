@@ -85397,8 +85397,11 @@ var CopilotApiGateway = class {
     const req = new import_events.EventEmitter();
     req.method = method;
     req.url = requestUrl;
-    req.headers = {};
-    req.socket = { remoteAddress: "127.0.0.1" };
+    req.headers = {
+      host: "127.0.0.1",
+      ...body !== void 0 ? { "content-type": "application/json" } : {}
+    };
+    req.socket = { remoteAddress: "127.0.0.1", localAddress: "127.0.0.1" };
     const responseHeaders = /* @__PURE__ */ new Map();
     let responseBody = "";
     const res = new import_events.EventEmitter();
@@ -86209,12 +86212,12 @@ ${body}`);
         }
         const requestId = (0, import_crypto.randomUUID)().slice(0, 8);
         const requestStart = Date.now();
-        if (!this.isAllowedWebSocketHost(request)) {
+        if (!this.isAllowedHost(request)) {
           this.logRequest(requestId, "GET", url2.pathname, 403, Date.now() - requestStart, { error: "WebSocket Host is not allowed." });
           reject(403, "WebSocket Host is not allowed.");
           return;
         }
-        if (!this.isAllowedWebSocketOrigin(request)) {
+        if (!this.isAllowedOrigin(request)) {
           this.logRequest(requestId, "GET", url2.pathname, 403, Date.now() - requestStart, { error: "WebSocket Origin is not allowed." });
           reject(403, "WebSocket Origin is not allowed.");
           return;
@@ -86383,7 +86386,13 @@ ${body}`);
       res.end(JSON.stringify({ error: { message: "Server is shutting down", type: "service_unavailable" } }));
       return;
     }
-    this.setCorsHeaders(res);
+    if (!this.isAllowedHost(req)) {
+      throw new ApiError(403, "Request Host is not allowed.", "access_denied", "host_not_allowed");
+    }
+    if (!this.isAllowedOrigin(req)) {
+      throw new ApiError(403, "Request Origin is not allowed.", "access_denied", "origin_not_allowed");
+    }
+    this.setCorsHeaders(res, req.headers.origin);
     res.setHeader("X-Request-ID", requestId);
     if (req.method === "OPTIONS") {
       res.writeHead(204);
@@ -87065,8 +87074,7 @@ ${body}`);
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
-      "Access-Control-Allow-Origin": "*"
+      "Connection": "keep-alive"
     });
     const messageId = "ant-" + (0, import_crypto.randomUUID)();
     let totalContent = "";
@@ -87327,8 +87335,7 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
-      "Access-Control-Allow-Origin": "*"
+      "Connection": "keep-alive"
     });
     const cts = new vscode4.CancellationTokenSource();
     req.on("close", () => {
@@ -87737,8 +87744,7 @@ data: ${JSON.stringify({ type: "error", error: { type: apiError.code || "api_err
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
-      "Access-Control-Allow-Origin": "*"
+      "Connection": "keep-alive"
     });
     const cts = new vscode4.CancellationTokenSource();
     req.on("close", () => {
@@ -88515,8 +88521,7 @@ IMPORTANT: You MUST respond with valid JSON only.No markdown, no explanation, ju
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
-      "Access-Control-Allow-Origin": "*"
+      "Connection": "keep-alive"
     });
     const cts = new vscode4.CancellationTokenSource();
     req.on("close", () => {
@@ -89157,6 +89162,10 @@ ${text} `;
     return [{ role: "system", content: this.config.defaultSystemPrompt }, ...messages];
   }
   async readJsonBody(req) {
+    const contentType = req.headers["content-type"];
+    if (typeof contentType !== "string" || contentType.split(";", 1)[0].trim().toLowerCase() !== "application/json") {
+      throw new ApiError(415, "Content-Type must be application/json.", "invalid_request_error", "unsupported_media_type");
+    }
     const chunks = [];
     let totalSize = 0;
     await new Promise((resolve, reject) => {
@@ -90318,8 +90327,11 @@ ${text} `;
       }
     }));
   }
-  setCorsHeaders(res) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
+  setCorsHeaders(res, requestOrigin) {
+    if (requestOrigin) {
+      res.setHeader("Access-Control-Allow-Origin", requestOrigin);
+      res.setHeader("Vary", "Origin");
+    }
     res.setHeader("Access-Control-Allow-Headers", "authorization, content-type, x-requested-with, x-api-key, anthropic-version, anthropic-beta");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   }
@@ -90352,7 +90364,7 @@ ${text} `;
   normalizeHostName(host) {
     return host.trim().toLowerCase().replace(/^\[|\]$/g, "").replace(/^::ffff:/, "");
   }
-  parseWebSocketHost(req) {
+  parseRequestHost(req) {
     const hostHeader = req.headers.host;
     if (typeof hostHeader !== "string" || !hostHeader.trim()) {
       return null;
@@ -90367,8 +90379,8 @@ ${text} `;
       return null;
     }
   }
-  isAllowedWebSocketHost(req) {
-    const requestUrl = this.parseWebSocketHost(req);
+  isAllowedHost(req) {
+    const requestUrl = this.parseRequestHost(req);
     if (!requestUrl) {
       return false;
     }
@@ -90378,7 +90390,7 @@ ${text} `;
       this.normalizeHostName(req.socket.localAddress || ""),
       this.normalizeHostName(os.hostname()),
       "localhost",
-      ...this.config.webSocketAllowedHosts.map((host) => this.normalizeHostName(host))
+      ...this.config.allowedHosts.map((host) => this.normalizeHostName(host))
     ]);
     if (this.tunnelUrl) {
       try {
@@ -90388,7 +90400,7 @@ ${text} `;
     }
     return allowedHosts.has(requestHost);
   }
-  isAllowedWebSocketOrigin(req) {
+  isAllowedOrigin(req) {
     const originHeader = req.headers.origin;
     if (originHeader === void 0) {
       return true;
@@ -90396,7 +90408,7 @@ ${text} `;
     if (typeof originHeader !== "string" || originHeader === "null") {
       return false;
     }
-    const requestHost = this.parseWebSocketHost(req);
+    const requestHost = this.parseRequestHost(req);
     if (!requestHost) {
       return false;
     }
@@ -90408,7 +90420,7 @@ ${text} `;
       if (origin.origin === requestHost.origin) {
         return true;
       }
-      return this.config.webSocketAllowedOrigins.some((allowedOrigin) => {
+      return this.config.allowedOrigins.some((allowedOrigin) => {
         try {
           return new URL(allowedOrigin).origin === origin.origin;
         } catch {
@@ -90730,11 +90742,11 @@ ${text} `;
     if (patch.ipAllowlist !== void 0) {
       updates.push(Promise.resolve(config2.update("server.ipAllowlist", patch.ipAllowlist, vscode4.ConfigurationTarget.Global)));
     }
-    if (patch.webSocketAllowedHosts !== void 0) {
-      updates.push(Promise.resolve(config2.update("server.webSocketAllowedHosts", patch.webSocketAllowedHosts, vscode4.ConfigurationTarget.Global)));
+    if (patch.allowedHosts !== void 0) {
+      updates.push(Promise.resolve(config2.update("server.allowedHosts", patch.allowedHosts, vscode4.ConfigurationTarget.Global)));
     }
-    if (patch.webSocketAllowedOrigins !== void 0) {
-      updates.push(Promise.resolve(config2.update("server.webSocketAllowedOrigins", patch.webSocketAllowedOrigins, vscode4.ConfigurationTarget.Global)));
+    if (patch.allowedOrigins !== void 0) {
+      updates.push(Promise.resolve(config2.update("server.allowedOrigins", patch.allowedOrigins, vscode4.ConfigurationTarget.Global)));
     }
     this.suppressRestart = true;
     try {
@@ -90927,8 +90939,14 @@ function getServerConfig() {
     }
   }
   const ipAllowlist = configuration.get("server.ipAllowlist", []);
-  const webSocketAllowedHosts = configuration.get("server.webSocketAllowedHosts", []);
-  const webSocketAllowedOrigins = configuration.get("server.webSocketAllowedOrigins", []);
+  const allowedHosts = [.../* @__PURE__ */ new Set([
+    ...configuration.get("server.allowedHosts", []),
+    ...configuration.get("server.webSocketAllowedHosts", [])
+  ])];
+  const allowedOrigins = [.../* @__PURE__ */ new Set([
+    ...configuration.get("server.allowedOrigins", []),
+    ...configuration.get("server.webSocketAllowedOrigins", [])
+  ])];
   const requestTimeoutSeconds = configuration.get("server.requestTimeoutSeconds", 180);
   const maxPayloadSizeMb = configuration.get("server.maxPayloadSizeMb", 1);
   const maxConnectionsPerIp = configuration.get("server.maxConnectionsPerIp", 10);
@@ -90951,8 +90969,8 @@ function getServerConfig() {
     defaultSystemPrompt,
     redactionPatterns,
     ipAllowlist,
-    webSocketAllowedHosts,
-    webSocketAllowedOrigins,
+    allowedHosts,
+    allowedOrigins,
     requestTimeoutSeconds,
     maxPayloadSizeMb,
     maxConnectionsPerIp,

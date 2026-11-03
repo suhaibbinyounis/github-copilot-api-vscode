@@ -6,6 +6,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.15.5] - 2026-11-03
+
+### Fixed
+- **Cross-origin access to the local HTTP API:** HTTP requests now validate Host and Origin, browser CORS access is same-origin unless an exact origin is configured, and JSON body endpoints require `Content-Type: application/json`. Exact proxy hosts and trusted browser origins can be configured. Thanks to [@orshih6](https://github.com/orshih6) for reporting this issue.
+
 ## [2.15.4] - 2026-11-03
 
 ### Fixed

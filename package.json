@@ -3,7 +3,7 @@
   "displayName": "GitHub Copilot API Gateway",
   "description": "Free & open-source universal API Gateway for all VS Code language models. Auto-discovers GitHub Copilot, Gemini, Ollama & any AI extension — exposing them via local OpenAI, Anthropic, Google & Llama compatible APIs. One endpoint, every model. Use with Cursor, LangChain, Agents & more.",
   "icon": "media/icon.png",
-  "version": "2.15.4",
+  "version": "2.15.5",
   "author": {
     "name": "Suhaib Bin Younis",
     "email": "vscode@suhaib.in",
@@ -313,7 +313,8 @@
             "type": "string"
           },
           "default": [],
-          "description": "Exact additional Host names allowed for WebSocket upgrades, such as api.example.com when using a reverse proxy. Local bind addresses and the active Cloudflare Tunnel hostname are allowed automatically."
+          "deprecationMessage": "Use githubCopilotApi.server.allowedHosts. This legacy setting remains supported for compatibility.",
+          "description": "Legacy alias for exact additional Host names accepted by the API."
         },
         "githubCopilotApi.server.webSocketAllowedOrigins": {
           "type": "array",
@@ -321,7 +322,24 @@
             "type": "string"
           },
           "default": [],
-          "description": "Exact browser origins allowed to connect cross-origin to the WebSocket API, for example https://app.example.com. Same-origin browser connections are allowed by default; leave empty to deny cross-origin browser connections."
+          "deprecationMessage": "Use githubCopilotApi.server.allowedOrigins. This legacy setting remains supported for compatibility.",
+          "description": "Legacy alias for exact browser origins allowed to make cross-origin API requests."
+        },
+        "githubCopilotApi.server.allowedHosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Exact additional Host names accepted by the HTTP and WebSocket APIs, such as api.example.com when using a reverse proxy. Local bind addresses and the active Cloudflare Tunnel hostname are allowed automatically."
+        },
+        "githubCopilotApi.server.allowedOrigins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Exact browser origins allowed to call the HTTP and WebSocket APIs cross-origin, for example https://app.example.com. Same-origin browser requests are allowed by default; leave empty to deny cross-origin browser requests."
         },
         "githubCopilotApi.server.requestTimeoutSeconds": {
           "type": "number",
