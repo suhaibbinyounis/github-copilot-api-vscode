@@ -98,8 +98,8 @@ export interface ApiServerConfig {
 	defaultSystemPrompt: string
 	redactionPatterns: RedactionPattern[] // Named patterns with toggle support
 	ipAllowlist: string[] // List of allowed IPs or CIDR ranges
-	webSocketAllowedHosts: string[] // Exact Host names allowed for proxied/custom WebSocket access
-	webSocketAllowedOrigins: string[] // Exact browser origins allowed to connect cross-origin
+	allowedHosts: string[] // Exact additional Host names accepted by HTTP and WebSocket APIs
+	allowedOrigins: string[] // Exact browser origins allowed to call APIs cross-origin
 	requestTimeoutSeconds: number
 	maxPayloadSizeMb: number
 	maxConnectionsPerIp: number
@@ -652,8 +652,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 		const req = new EventEmitter() as any;
 		req.method = method;
 		req.url = requestUrl;
-		req.headers = {};
-		req.socket = { remoteAddress: '127.0.0.1' } as any;
+		req.headers = {
+			host: '127.0.0.1',
+			...(body !== undefined ? { 'content-type': 'application/json' } : {})
+		};
+		req.socket = { remoteAddress: '127.0.0.1', localAddress: '127.0.0.1' } as any;
 
 		const responseHeaders = new Map<string, unknown>();
 		let responseBody = '';
@@ -1649,12 +1652,12 @@ export class CopilotApiGateway implements vscode.Disposable {
 
 				const requestId = randomUUID().slice(0, 8);
 				const requestStart = Date.now();
-				if (!this.isAllowedWebSocketHost(request)) {
+				if (!this.isAllowedHost(request)) {
 					this.logRequest(requestId, 'GET', url.pathname, 403, Date.now() - requestStart, { error: 'WebSocket Host is not allowed.' });
 					reject(403, 'WebSocket Host is not allowed.');
 					return;
 				}
-				if (!this.isAllowedWebSocketOrigin(request)) {
+				if (!this.isAllowedOrigin(request)) {
 					this.logRequest(requestId, 'GET', url.pathname, 403, Date.now() - requestStart, { error: 'WebSocket Origin is not allowed.' });
 					reject(403, 'WebSocket Origin is not allowed.');
 					return;
@@ -1851,7 +1854,14 @@ export class CopilotApiGateway implements vscode.Disposable {
 			return;
 		}
 
-		this.setCorsHeaders(res);
+		if (!this.isAllowedHost(req)) {
+			throw new ApiError(403, 'Request Host is not allowed.', 'access_denied', 'host_not_allowed');
+		}
+		if (!this.isAllowedOrigin(req)) {
+			throw new ApiError(403, 'Request Origin is not allowed.', 'access_denied', 'origin_not_allowed');
+		}
+
+		this.setCorsHeaders(res, req.headers.origin);
 
 		// Add X-Request-ID header for debugging
 		res.setHeader('X-Request-ID', requestId);
@@ -2670,8 +2680,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		res.writeHead(200, {
 			'Content-Type': 'text/event-stream',
 			'Cache-Control': 'no-cache',
-			'Connection': 'keep-alive',
-			'Access-Control-Allow-Origin': '*'
+			'Connection': 'keep-alive'
 		});
 
 		const messageId = 'ant-' + randomUUID();
@@ -2928,8 +2937,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		res.writeHead(200, {
 			'Content-Type': 'text/event-stream',
 			'Cache-Control': 'no-cache',
-			'Connection': 'keep-alive',
-			'Access-Control-Allow-Origin': '*'
+			'Connection': 'keep-alive'
 		});
 
 		// Create CTS early so client-disconnect cancels the model request (#98)
@@ -3392,8 +3400,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		res.writeHead(200, {
 			'Content-Type': 'text/event-stream',
 			'Cache-Control': 'no-cache',
-			'Connection': 'keep-alive',
-			'Access-Control-Allow-Origin': '*'
+			'Connection': 'keep-alive'
 		});
 
 		const cts = new vscode.CancellationTokenSource();
@@ -4290,8 +4297,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		res.writeHead(200, {
 			'Content-Type': 'text/event-stream',
 			'Cache-Control': 'no-cache',
-			'Connection': 'keep-alive',
-			'Access-Control-Allow-Origin': '*'
+			'Connection': 'keep-alive'
 		});
 
 		const cts = new vscode.CancellationTokenSource();
@@ -5027,6 +5033,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 	}
 
 	private async readJsonBody(req: IncomingMessage): Promise<any> {
+		const contentType = req.headers['content-type'];
+		if (typeof contentType !== 'string' || contentType.split(';', 1)[0].trim().toLowerCase() !== 'application/json') {
+			throw new ApiError(415, 'Content-Type must be application/json.', 'invalid_request_error', 'unsupported_media_type');
+		}
+
 		const chunks: Buffer[] = [];
 		let totalSize = 0;
 
@@ -6203,8 +6214,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}));
 	}
 
-	private setCorsHeaders(res: ServerResponse): void {
-		res.setHeader('Access-Control-Allow-Origin', '*');
+	private setCorsHeaders(res: ServerResponse, requestOrigin: string | undefined): void {
+		if (requestOrigin) {
+			res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+			res.setHeader('Vary', 'Origin');
+		}
 		// Include x-api-key and anthropic-* headers for Claude Code / Anthropic SDK compatibility
 		res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type, x-requested-with, x-api-key, anthropic-version, anthropic-beta');
 		res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -6245,7 +6259,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		return host.trim().toLowerCase().replace(/^\[|\]$/g, '').replace(/^::ffff:/, '');
 	}
 
-	private parseWebSocketHost(req: IncomingMessage): URL | null {
+	private parseRequestHost(req: IncomingMessage): URL | null {
 		const hostHeader = req.headers.host;
 		if (typeof hostHeader !== 'string' || !hostHeader.trim()) {
 			return null;
@@ -6262,8 +6276,8 @@ export class CopilotApiGateway implements vscode.Disposable {
 		}
 	}
 
-	private isAllowedWebSocketHost(req: IncomingMessage): boolean {
-		const requestUrl = this.parseWebSocketHost(req);
+	private isAllowedHost(req: IncomingMessage): boolean {
+		const requestUrl = this.parseRequestHost(req);
 		if (!requestUrl) {
 			return false;
 		}
@@ -6274,7 +6288,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 			this.normalizeHostName(req.socket.localAddress || ''),
 			this.normalizeHostName(os.hostname()),
 			'localhost',
-			...this.config.webSocketAllowedHosts.map(host => this.normalizeHostName(host))
+			...this.config.allowedHosts.map(host => this.normalizeHostName(host))
 		]);
 		if (this.tunnelUrl) {
 			try {
@@ -6287,7 +6301,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 		return allowedHosts.has(requestHost);
 	}
 
-	private isAllowedWebSocketOrigin(req: IncomingMessage): boolean {
+	private isAllowedOrigin(req: IncomingMessage): boolean {
 		const originHeader = req.headers.origin;
 		if (originHeader === undefined) {
 			return true; // Native clients generally omit Origin; API key and IP checks still apply.
@@ -6296,7 +6310,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 			return false;
 		}
 
-		const requestHost = this.parseWebSocketHost(req);
+		const requestHost = this.parseRequestHost(req);
 		if (!requestHost) {
 			return false;
 		}
@@ -6310,7 +6324,7 @@ export class CopilotApiGateway implements vscode.Disposable {
 				return true;
 			}
 
-			return this.config.webSocketAllowedOrigins.some(allowedOrigin => {
+			return this.config.allowedOrigins.some(allowedOrigin => {
 				try {
 					return new URL(allowedOrigin).origin === origin.origin;
 				} catch {
@@ -6696,11 +6710,11 @@ export class CopilotApiGateway implements vscode.Disposable {
 		if (patch.ipAllowlist !== undefined) {
 			updates.push(Promise.resolve(config.update('server.ipAllowlist', patch.ipAllowlist, vscode.ConfigurationTarget.Global)));
 		}
-		if (patch.webSocketAllowedHosts !== undefined) {
-			updates.push(Promise.resolve(config.update('server.webSocketAllowedHosts', patch.webSocketAllowedHosts, vscode.ConfigurationTarget.Global)));
+		if (patch.allowedHosts !== undefined) {
+			updates.push(Promise.resolve(config.update('server.allowedHosts', patch.allowedHosts, vscode.ConfigurationTarget.Global)));
 		}
-		if (patch.webSocketAllowedOrigins !== undefined) {
-			updates.push(Promise.resolve(config.update('server.webSocketAllowedOrigins', patch.webSocketAllowedOrigins, vscode.ConfigurationTarget.Global)));
+		if (patch.allowedOrigins !== undefined) {
+			updates.push(Promise.resolve(config.update('server.allowedOrigins', patch.allowedOrigins, vscode.ConfigurationTarget.Global)));
 		}
 
 		this.suppressRestart = true;
@@ -6930,8 +6944,14 @@ function getServerConfig(): ApiServerConfig {
 	}
 
 	const ipAllowlist = configuration.get<string[]>('server.ipAllowlist', []);
-	const webSocketAllowedHosts = configuration.get<string[]>('server.webSocketAllowedHosts', []);
-	const webSocketAllowedOrigins = configuration.get<string[]>('server.webSocketAllowedOrigins', []);
+	const allowedHosts = [...new Set([
+		...configuration.get<string[]>('server.allowedHosts', []),
+		...configuration.get<string[]>('server.webSocketAllowedHosts', [])
+	])];
+	const allowedOrigins = [...new Set([
+		...configuration.get<string[]>('server.allowedOrigins', []),
+		...configuration.get<string[]>('server.webSocketAllowedOrigins', [])
+	])];
 	const requestTimeoutSeconds = configuration.get<number>('server.requestTimeoutSeconds', 180);
 	const maxPayloadSizeMb = configuration.get<number>('server.maxPayloadSizeMb', 1);
 	const maxConnectionsPerIp = configuration.get<number>('server.maxConnectionsPerIp', 10);
@@ -6941,7 +6961,7 @@ function getServerConfig(): ApiServerConfig {
 	return {
 		enabled, enableHttp, enableWebSocket, enableHttps, tlsCertPath, tlsKeyPath, host, port, maxConcurrentRequests,
 		defaultModel, apiKey, enableLogging, rateLimitPerMinute, defaultSystemPrompt,
-		redactionPatterns, ipAllowlist, webSocketAllowedHosts, webSocketAllowedOrigins, requestTimeoutSeconds, maxPayloadSizeMb, maxConnectionsPerIp,
+		redactionPatterns, ipAllowlist, allowedHosts, allowedOrigins, requestTimeoutSeconds, maxPayloadSizeMb, maxConnectionsPerIp,
 		mcpEnabled, cloudflaredPath
 	};
 }
